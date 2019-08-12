@@ -2,7 +2,15 @@ class Table {
   String id; int value; Table tail;
   Table(String i, int v, Table t) { 
     id = i; value = v; tail = t;
-    System.out.println("Adding new symbol to table i=" + i + " v=" + v);
+  }
+  int tailCount(){
+    int r = 0;
+    Table tt = this;
+    do{
+      r++;
+      tt = tt.tail;
+    } while(tt != null);
+    return r;
   }
   int lookup(String key){
     Table tt = this;
@@ -14,13 +22,13 @@ class Table {
     throw new RuntimeException("This shouldn't happen");
   }
   public String toString(){
-    String s = "table:";
+    String s = "[table:";
     Table tt = this;
     do{
-      s = s + " id=" + id + " value=" + value;
+      s = s + " id=" + tt.id + " value=" + tt.value;//e + " tail=" + tt.tail;
       tt = tt.tail;
     } while(tt != null);
-    return s;
+    return s + "]";
   }
 }
 
@@ -54,6 +62,7 @@ public class interp {
     if(e instanceof OpExp){
       var ne = (OpExp)e;
       var left = interpExp(ne.left, t);
+      //pass the table from left into right
       var right = interpExp(ne.right, left.t);
       switch(ne.oper){
         case 1: //+
@@ -98,14 +107,16 @@ public class interp {
       AssignStm cs = (AssignStm)s;
       System.out.println("interpStm AssignStm");
       var assignResult = interpExp(cs.exp, t);
-      return new Table(cs.id, assignResult.i, t);
+      //set the assignment value and the result from the expression
+      return new Table(cs.id, assignResult.i, assignResult.t);
     }
     if(s instanceof PrintStm){
       PrintStm cs = (PrintStm)s;
-      System.out.println("interpStm PrintStm");
-      return interpExp(cs.exps, t).t;
+      IntAndTable it = interpExp(cs.exps, t);
+      System.out.println("interpStm PrintStm: " + it.i);
+      return it.t;
     }
-    return t;
+    throw new RuntimeException("This shouldn't happen " + s.getClass().getName());
   }
 
   static int maxargs(Exp e){
