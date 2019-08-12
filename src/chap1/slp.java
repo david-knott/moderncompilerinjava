@@ -20,17 +20,26 @@ abstract class Exp {}
 class IdExp extends Exp {
    String id;
    IdExp(String i) {id=i;}
+   public String toString(){
+      return "IdExp: id=" + id;
+   }
 }
 
 class NumExp extends Exp {
    int num;
    NumExp(int n) {num=n;}
+   public String toString(){
+      return "NumExp: num=" + num;
+   }
 }
 
 class OpExp extends Exp {
    Exp left, right; int oper;
    final static int Plus=1,Minus=2,Times=3,Div=4;
    OpExp(Exp l, int o, Exp r) {left=l; oper=o; right=r;}
+   public String toString(){
+      return "OpExp: l=" + left + " op=" + oper + " r=" + right;
+   }
 }
 
 class EseqExp extends Exp {
