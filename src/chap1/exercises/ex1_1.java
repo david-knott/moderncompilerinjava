@@ -1,5 +1,3 @@
-import javax.lang.model.util.ElementScanner6;
-
 class Tree {
     Tree left;
     String key;
@@ -11,17 +9,29 @@ class Tree {
         right = r;
     }
 
+    public boolean contains(String k){
+        //does current tree have key ?
+        if(k.equals(key))
+            return true;
+        //if tree has a right node, check it for the key
+        if(right != null && right.contains(k))
+            return true;
+        //if the tree has a left node, check if for the key
+        if(left != null && left.contains(k))
+            return true;
+        //no key.
+        return false;
+    }
+
     public String toString(){
         String s = "[Tree ";
-
+        s+= " key=" + key;
         s+= "]";
         return s;
     }
-
 }
 
 class Ex1_1 {
-
     
     public static Tree insert(String key, Tree t) {
         if (t == null)
@@ -35,10 +45,15 @@ class Ex1_1 {
     }
 
     public static void main(String[] args) {
-        var t1 = new Tree(null, "a", null);
-        var t2 = insert("b", t1);
-        var t3 = insert("c", t2);
-        var t4 = insert("d", t3);
-        System.out.println(t4);
+        var t1 = new Tree(null, "e", null);
+        var t2 = insert("a", t1);
+        var t3 = insert("b", t2);
+        var t4 = insert("c", t3);
+        var t5 = insert("f", t4);
+        var t6 = insert("g", t5);
+        var t7 = insert("h", t6);
+        
+        System.out.println(t7.contains("x"));
+        System.out.println(t7);
     }
 }
