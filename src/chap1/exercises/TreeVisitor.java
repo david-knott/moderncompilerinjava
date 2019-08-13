@@ -1,8 +1,10 @@
+package chap1.exercises;
+
 class Tree {
     Tree left;
     String key;
     Tree right;
-
+    
     Tree(Tree l, String k, Tree r) {
         left = l;
         key = k;
@@ -22,13 +24,39 @@ class Tree {
         //no key.
         return false;
     }
+    
+    public void accept(TreeVisitor treeVisitor){
+    	treeVisitor.visit(this);
+        if(right != null) {
+        	treeVisitor.incLevel();
+            right.accept(treeVisitor);
+            treeVisitor.decLevel();
+        }
+        if(left != null) {
+        	treeVisitor.incLevel();
+            left.accept(treeVisitor);
+            treeVisitor.decLevel();
+        }
+    }
 
     public String toString(){
         String s = "[Tree ";
         s+= " key=" + key;
+        if(this.left != null)
+            s+= this.left.toString();
+        if(this.right != null)
+            s+= this.right.toString();
         s+= "]";
         return s;
     }
+}
+
+public interface TreeVisitor{
+	void visit(Tree tree);
+
+	void decLevel();
+
+	void incLevel();
 }
 
 class Ex1_1 {
@@ -42,18 +70,5 @@ class Ex1_1 {
             return new Tree(t.left, t.key, insert(key, t.right));
         else
             return new Tree(t.left, key, t.right);
-    }
-
-    public static void main(String[] args) {
-        var t1 = new Tree(null, "e", null);
-        var t2 = insert("a", t1);
-        var t3 = insert("b", t2);
-        var t4 = insert("c", t3);
-        var t5 = insert("f", t4);
-        var t6 = insert("g", t5);
-        var t7 = insert("h", t6);
-        
-        System.out.println(t7.contains("x"));
-        System.out.println(t7);
     }
 }

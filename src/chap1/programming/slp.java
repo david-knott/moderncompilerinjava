@@ -1,3 +1,5 @@
+package chap1.programming;
+
 abstract class Stm {}
 
 class CompoundStm extends Stm {

@@ -1,3 +1,5 @@
+package chap1.programming;
+
 class Table {
   String id; int value; Table tail;
   Table(String i, int v, Table t) { 
