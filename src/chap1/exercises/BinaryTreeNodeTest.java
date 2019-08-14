@@ -7,9 +7,9 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-class TreeVisitorTest {
+class BinaryTreeNodeTest {
 
-	public Tree getTree() {
+	public BinaryTreeNode getTree() {
 		/*
         var tree = new Tree(null, "d", null);
         tree = Tree.insert("a", tree);
@@ -19,7 +19,7 @@ class TreeVisitorTest {
         
         return tree;
         */
-         	return new Tree(null, "d", null)
+         	return new BinaryTreeNode(null, "d", null)
         		.insert("a")
         		.insert("v")
         		.insert("i")
@@ -39,7 +39,7 @@ class TreeVisitorTest {
         	//what level of recursion are we at ?
         	int level = 0;
 			@Override
-			public void visit(Tree tree) {
+			public void visit(BinaryTreeNode tree) {
 				var currentNodeValue = tree.key;
 				//if present, insert left node value at level n + 1
 				var leftNodeValue = tree.left != null ? tree.left.key : null;
