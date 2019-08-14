@@ -10,24 +10,27 @@ import org.junit.jupiter.api.Test;
 class BinaryTreeNodeTest {
 
 	public BinaryTreeNode getTree() {
-		/*
-        var tree = new Tree(null, "d", null);
-        tree = Tree.insert("a", tree);
-        tree = Tree.insert("v", tree);
-        tree = Tree.insert("i", tree);
-        tree = Tree.insert("k", tree);
-        
-        return tree;
-        */
-         	return new BinaryTreeNode(null, "d", null)
-        		.insert("a")
-        		.insert("v")
-        		.insert("i")
-        		.insert("k")
-        		.insert("n")
-        		.insert("o")
-        		.insert("t");
+     	return new BinaryTreeNode(null, "d", null)
+    		.insert("a")
+    		.insert("v")
+    		.insert("i")
+    		.insert("k")
+    		.insert("n")
+    		.insert("o")
+    		.insert("t");
 	}	
+	
+	@Test
+	void test_getWidthLevel1() {
+		var t7 = getTree();
+		assertEquals(t7.getWidth(1), 1);		
+	}
+
+	@Test
+	void test_getWidthLevelN() {
+		var t7 = getTree();
+		assertEquals(t7.getWidth(3), 1);		
+	}
 
 	@Test
 	void test() {
@@ -66,16 +69,9 @@ class BinaryTreeNodeTest {
 	}
 	
 	@Test
-	void testWidth() {
+	void test_getMinDepth() {
 		var t7 = getTree();
-		System.out.println(t7);
-		System.out.println(t7.getMinDepth());
-		//starting at the root node t7, get its  left and right items
-		//var left = t7.left;
-		//var right = t7.right;
-		
-		//so at this level we have 2 items
-	
+		assertEquals(t7.getMinDepth(), 2);
 	}
 
 }

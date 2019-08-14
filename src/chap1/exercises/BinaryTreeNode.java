@@ -61,10 +61,18 @@ public class BinaryTreeNode {
         }
     }
     
+    public int getWidth(int level) {
+        return BinaryTreeNode.getWidth(this, level);
+    }
+    
     public static int getWidth(BinaryTreeNode tree, int level) {
+    	if(tree == null)
+    		return 0;
+    	if(level == 1) //at root node level, only one
+    		return 1;
     	//recurse to level and sum all the things
-    	int l = 1 + getWidth(tree.left, level);
-    	int r = 1 + getWidth(tree.right, level);
+    	int l = 1 + getWidth(tree.left, level - 1);
+    	int r = 1 + getWidth(tree.right, level - 1);
     	return l + r;
     }
     
