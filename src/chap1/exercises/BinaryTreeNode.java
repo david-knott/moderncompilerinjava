@@ -65,19 +65,41 @@ public class BinaryTreeNode {
         return BinaryTreeNode.getWidth(this, level);
     }
     
+    public int getMaxWidth(int level) {
+        return BinaryTreeNode.getMaxWidth(this);
+    }
+    
+    /**
+     * The function works by recursing down to the level we are interested in and suming its nodes
+     * Say we want level 3 of a tree with 3 or more levels, it starts at root
+     * -> recurse to next level ( level local var now equal to 2 ),
+     * -> recurse to next level ( level var now equal to 1 )
+     * -> function returns 1 if node exists, or zero if null	
+     * We are using level in our function call, but in decreases as the actual
+     * tree level increases. 
+     * By doing it this way we only collapse the recursion tree if we are at the
+     * level we are interested in.
+     * @param tree
+     * @param level - this is used as a terminating condition and isn't the level we are at in the tree
+     * @return
+     */
     public static int getWidth(BinaryTreeNode tree, int level) {
     	if(tree == null)
     		return 0;
     	if(level == 1) //at root node level, only one
     		return 1;
     	//recurse to level and sum all the things
-    	int l = 1 + getWidth(tree.left, level - 1);
-    	int r = 1 + getWidth(tree.right, level - 1);
+    	int l = getWidth(tree.left, level - 1);
+    	int r = getWidth(tree.right, level - 1);
     	return l + r;
     }
     
     public static int getMaxWidth(BinaryTreeNode tree) {
-    	return 0;
+    	var res = 0;
+    	for(int i = 1; i < BinaryTreeNode.getMaxDepth(tree); i++) {
+    		res = Math.max(res, BinaryTreeNode.getWidth(tree, i));
+    	}
+    	return res;
     }
     
     /**
@@ -102,12 +124,12 @@ public class BinaryTreeNode {
      * @param tree
      * @return
      */
-	public int getMaxDepth(BinaryTreeNode tree) {
+	public static int getMaxDepth(BinaryTreeNode tree) {
 		if(tree == null)
 			return 0;
-		int l = 1 + getMaxDepth(tree.left);
-		int r = 1 + getMaxDepth(tree.right);
-		return Math.max(l, r);
+		int l = getMaxDepth(tree.left);
+		int r = getMaxDepth(tree.right);
+		return 1 + Math.max(l, r);
 	}
 
 
@@ -120,9 +142,9 @@ public class BinaryTreeNode {
 	public int getMinDepth(BinaryTreeNode tree) {
 		if(tree == null)
 			return 0;
-		int l = 1 + getMaxDepth(tree.left);
-		int r = 1 + getMaxDepth(tree.right);
-		return Math.min(l, r);
+		int l = getMaxDepth(tree.left);
+		int r = getMaxDepth(tree.right);
+		return 1 + Math.min(l, r);
 	}
 
     public String toString(){

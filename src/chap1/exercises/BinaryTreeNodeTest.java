@@ -11,9 +11,9 @@ class BinaryTreeNodeTest {
 
 	public BinaryTreeNode getTree() {
      	return new BinaryTreeNode(null, "d", null)
-    		.insert("a")
-    		.insert("v")
-    		.insert("i")
+    		.insert("a") 
+    		.insert("v") 
+    		.insert("i") 
     		.insert("k")
     		.insert("n")
     		.insert("o")
@@ -30,6 +30,17 @@ class BinaryTreeNodeTest {
 	void test_getWidthLevelN() {
 		var t7 = getTree();
 		assertEquals(t7.getWidth(3), 1);		
+	}
+
+	@Test
+	void test_getMaxWidth() {
+		var t7 = getTree();
+		var maxDepth = t7.getMaxDepth();
+		for(var i = 1 ; i <= maxDepth; i++) {
+			System.out.println(t7.getWidth(i));
+		}
+		
+	//	assertEquals(t7.getWidth(3), 1);		
 	}
 
 	@Test
