@@ -1,5 +1,4 @@
-package Parse;
-import ErrorMsg.ErrorMsg;
+package chap2.programming;
 
 %% 
 
@@ -25,9 +24,9 @@ private java_cup.runtime.Symbol tok(int kind, Object value) {
     return new java_cup.runtime.Symbol(kind, yychar, yychar+yylength(), value);
 }
 
-private ErrorMsg.ErrorMsg errorMsg;
+private ErrorMsg errorMsg;
 
-Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
+Yylex(java.io.InputStream s, ErrorMsg e) {
   this(s);
   errorMsg=e;
 }
@@ -45,5 +44,4 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 " "	{}
 \n	{newline();}
 ","	{return tok(sym.COMMA, null);}
-
 

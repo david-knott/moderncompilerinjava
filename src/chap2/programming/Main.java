@@ -3,8 +3,15 @@ import JLex.*;
 
 public class Main {
 
+	/**
+	 * Run  java JLex.Main chap2/programming/Tiger.lex in /d/Workspace/moderncompilerinjava/src
+	 * This will create the Yylex file
+	 * @param argv
+	 * @throws java.io.IOException
+	 */
 	  public static void maintest(String argv[]) throws java.io.IOException {
 	      String filename = argv[0];
+	      
 	      ErrorMsg errorMsg = new ErrorMsg(filename);
 	      java.io.InputStream inp=new java.io.FileInputStream(filename);
 	      Lexer lexer = new Yylex(inp,errorMsg);
