@@ -9,20 +9,28 @@ public class Main {
 	 * @param argv
 	 * @throws java.io.IOException
 	 */
-	  public static void maintest(String argv[]) throws java.io.IOException {
+	  public static void maintest(String argv[])  {
 	      String filename = argv[0];
-	      
 	      ErrorMsg errorMsg = new ErrorMsg(filename);
-	      java.io.InputStream inp=new java.io.FileInputStream(filename);
-	      Lexer lexer = new Yylex(inp,errorMsg);
-	      java_cup.runtime.Symbol tok;
+	      java.io.InputStream inp = null;
+	      
+	      try {	    	  
+	    	  inp = new java.io.FileInputStream(filename);
+	    	  Lexer lexer = new Yylex(inp,errorMsg);
+		      java_cup.runtime.Symbol tok;
+		      System.out.println("test");
+		      do { 
+		         tok=lexer.nextToken();
+		         System.out.println(symnames[tok.sym] + " " + tok.left);
+		      } while (tok.sym != sym.EOF);
+		      
+		      inp.close();
 
-	      do { 
-	         tok=lexer.nextToken();
-		 System.out.println(symnames[tok.sym] + " " + tok.left);
-	      } while (tok.sym != sym.EOF);
+	      } catch(Exception ex) {
+	    	  System.out.println("Error while lexing");
+	    	  System.out.print(ex.getMessage());
+	      }
 
-	      inp.close();
 	  }
 
 	  static String symnames[] = new String[100];

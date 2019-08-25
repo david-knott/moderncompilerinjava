@@ -42,6 +42,9 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
 
 %%
 " "	{}
-\n	{newline();}
+\r\n	{newline();}
 ","	{return tok(sym.COMMA, null);}
+"let"	{return tok(sym.LET, null);}
+"in"	{return tok(sym.IN, null);}
+"end"	{return tok(sym.END, null);}
 

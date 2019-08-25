@@ -216,16 +216,26 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
 		/* 1 */ YY_NO_ANCHOR,
 		/* 2 */ YY_NO_ANCHOR,
 		/* 3 */ YY_NO_ANCHOR,
-		/* 4 */ YY_NO_ANCHOR
+		/* 4 */ YY_NO_ANCHOR,
+		/* 5 */ YY_NO_ANCHOR,
+		/* 6 */ YY_NO_ANCHOR,
+		/* 7 */ YY_NO_ANCHOR,
+		/* 8 */ YY_NOT_ACCEPT,
+		/* 9 */ YY_NOT_ACCEPT,
+		/* 10 */ YY_NOT_ACCEPT,
+		/* 11 */ YY_NOT_ACCEPT,
+		/* 12 */ YY_NOT_ACCEPT,
+		/* 13 */ YY_NOT_ACCEPT
 	};
 	private int yy_cmap[] = unpackFromString(1,130,
-"0:10,2,0:21,1,0:11,3,0:83,4:2")[0];
+"0:10,3,0:2,2,0:18,1,0:11,4,0:55,10,6,0:3,8,0:2,5,0,9,0:5,7,0:11,11:2")[0];
 
-	private int yy_rmap[] = unpackFromString(1,5,
-"0,1:4")[0];
+	private int yy_rmap[] = unpackFromString(1,14,
+"0,1:7,2,3,4,5,6,7")[0];
 
-	private int yy_nxt[][] = unpackFromString(2,5,
-"-1,1,2,3,4,-1:5");
+	private int yy_nxt[][] = unpackFromString(8,12,
+"-1,1,8,-1,2,9,10,-1,11,-1:2,3,-1:15,4,-1:14,12,-1:14,13,-1:11,5,-1:9,6,-1:1" +
+"4,7,-1");
 
 	public java_cup.runtime.Symbol nextToken ()
 		throws java.io.IOException {
@@ -279,16 +289,28 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
 					case -2:
 						break;
 					case 2:
-						{newline();}
+						{return tok(sym.COMMA, null);}
 					case -3:
 						break;
 					case 3:
-						{return tok(sym.COMMA, null);}
+						
 					case -4:
 						break;
 					case 4:
-						
+						{newline();}
 					case -5:
+						break;
+					case 5:
+						{return tok(sym.IN, null);}
+					case -6:
+						break;
+					case 6:
+						{return tok(sym.LET, null);}
+					case -7:
+						break;
+					case 7:
+						{return tok(sym.END, null);}
+					case -8:
 						break;
 					default:
 						yy_error(YY_E_INTERNAL,false);
