@@ -45,6 +45,12 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
 \r\n	{newline();}
 ","	{return tok(sym.COMMA, null);}
 "let"	{return tok(sym.LET, null);}
+"type"	{return tok(sym.TYPE, null);}
+"array"	{return tok(sym.ARRAY, null);}
+"of"	{return tok(sym.OF, null);}
 "in"	{return tok(sym.IN, null);}
+"int"	{return tok(sym.INT, null);}
 "end"	{return tok(sym.END, null);}
+"var"	{return tok(sym.VAR, null);}
+":"	{return tok(sym.COLON, null);}
 

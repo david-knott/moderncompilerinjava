@@ -220,22 +220,39 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
 		/* 5 */ YY_NO_ANCHOR,
 		/* 6 */ YY_NO_ANCHOR,
 		/* 7 */ YY_NO_ANCHOR,
-		/* 8 */ YY_NOT_ACCEPT,
-		/* 9 */ YY_NOT_ACCEPT,
-		/* 10 */ YY_NOT_ACCEPT,
-		/* 11 */ YY_NOT_ACCEPT,
-		/* 12 */ YY_NOT_ACCEPT,
-		/* 13 */ YY_NOT_ACCEPT
+		/* 8 */ YY_NO_ANCHOR,
+		/* 9 */ YY_NO_ANCHOR,
+		/* 10 */ YY_NO_ANCHOR,
+		/* 11 */ YY_NO_ANCHOR,
+		/* 12 */ YY_NO_ANCHOR,
+		/* 13 */ YY_NOT_ACCEPT,
+		/* 14 */ YY_NOT_ACCEPT,
+		/* 15 */ YY_NOT_ACCEPT,
+		/* 16 */ YY_NOT_ACCEPT,
+		/* 17 */ YY_NOT_ACCEPT,
+		/* 18 */ YY_NOT_ACCEPT,
+		/* 19 */ YY_NOT_ACCEPT,
+		/* 20 */ YY_NOT_ACCEPT,
+		/* 21 */ YY_NOT_ACCEPT,
+		/* 22 */ YY_NOT_ACCEPT,
+		/* 23 */ YY_NOT_ACCEPT,
+		/* 24 */ YY_NOT_ACCEPT,
+		/* 25 */ YY_NOT_ACCEPT,
+		/* 26 */ YY_NOT_ACCEPT,
+		/* 27 */ YY_NOT_ACCEPT,
+		/* 28 */ YY_NOT_ACCEPT
 	};
 	private int yy_cmap[] = unpackFromString(1,130,
-"0:10,3,0:2,2,0:18,1,0:11,4,0:55,10,6,0:3,8,0:2,5,0,9,0:5,7,0:11,11:2")[0];
+"0:10,3,0:2,2,0:18,1,0:11,4,0:52,10,0:2,16,6,13,0:2,14,0:2,5,0,15,12,9,0,11," +
+"0,7,0,17,0:2,8,0:6,18:2")[0];
 
-	private int yy_rmap[] = unpackFromString(1,14,
-"0,1:7,2,3,4,5,6,7")[0];
+	private int yy_rmap[] = unpackFromString(1,29,
+"0,1:5,2,1:6,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18")[0];
 
-	private int yy_nxt[][] = unpackFromString(8,12,
-"-1,1,8,-1,2,9,10,-1,11,-1:2,3,-1:15,4,-1:14,12,-1:14,13,-1:11,5,-1:9,6,-1:1" +
-"4,7,-1");
+	private int yy_nxt[][] = unpackFromString(19,19,
+"-1,1,13,-1,2,14,15,16,-1:2,17,-1,18,-1,19,-1:2,20,3,-1:26,9,-1:14,4,-1:21,2" +
+"1,-1:27,22,-1:11,23,-1:21,28,-1:20,5,-1:20,6,-1:13,24,-1:15,7,-1:27,8,-1:11" +
+",25,-1:20,10,-1:13,11,-1:22,27,-1:16,12,-1:21,26,-1:7");
 
 	public java_cup.runtime.Symbol nextToken ()
 		throws java.io.IOException {
@@ -301,16 +318,36 @@ Yylex(java.io.InputStream s, ErrorMsg e) {
 					case -5:
 						break;
 					case 5:
-						{return tok(sym.IN, null);}
+						{return tok(sym.OF, null);}
 					case -6:
 						break;
 					case 6:
-						{return tok(sym.LET, null);}
+						{return tok(sym.IN, null);}
 					case -7:
 						break;
 					case 7:
-						{return tok(sym.END, null);}
+						{return tok(sym.LET, null);}
 					case -8:
+						break;
+					case 8:
+						{return tok(sym.END, null);}
+					case -9:
+						break;
+					case 9:
+						{return tok(sym.INT, null);}
+					case -10:
+						break;
+					case 10:
+						{return tok(sym.VAR, null);}
+					case -11:
+						break;
+					case 11:
+						{return tok(sym.TYPE, null);}
+					case -12:
+						break;
+					case 12:
+						{return tok(sym.ARRAY, null);}
+					case -13:
 						break;
 					default:
 						yy_error(YY_E_INTERNAL,false);
