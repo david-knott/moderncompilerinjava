@@ -11,10 +11,12 @@ class MainTest {
 	@Test
 	void test() throws IOException {
 		
-	//	Process process = Runtime.getRuntime().exec("cmd /c start \"\" D:\\Workspace\\moderncompilerinjava\\src\\chap2\\programming\\test.bat");
-		var myIntArray = new String[]{"D:\\Workspace\\moderncompilerinjava\\reference\\tiger\\testcases\\test1.tig"};
-		Main.maintest(myIntArray);
+		for(int i = 1; i < 50; i++) {
+			var myIntArray = new String[]{"D:\\Workspace\\moderncompilerinjava\\reference\\tiger\\testcases\\test" + i + ".tig"};
+			Main.maintest(myIntArray);			
+		}
 		
 	}
 
+	
 }

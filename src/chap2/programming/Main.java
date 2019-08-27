@@ -18,10 +18,9 @@ public class Main {
 	    	  inp = new java.io.FileInputStream(filename);
 	    	  Lexer lexer = new Yylex(inp,errorMsg);
 		      java_cup.runtime.Symbol tok;
-		      System.out.println("test");
 		      do { 
 		         tok=lexer.nextToken();
-		         System.out.println(symnames[tok.sym] + " " + tok.left);
+		      //   System.out.println(symnames[tok.sym] + " " + tok.left);
 		      } while (tok.sym != sym.EOF);
 		      
 		      inp.close();
