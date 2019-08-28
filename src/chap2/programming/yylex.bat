@@ -1,4 +1,3 @@
-echo "test"
 cd d:\Workspace\moderncompilerinjava\src\JLex
 javac Main.java
 cd d:\Workspace\moderncompilerinjava\src\
