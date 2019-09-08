@@ -8,13 +8,16 @@ let grammar = [
 ];
 
 var nullableSet = {};
+var firstSets = {};
+
 
 /**
- * 
+ * Function to calculate nullable symbols in a context free
+ * grammar
  * @param {The grammar to generate a nullable set for} grammar 
  * @param {The nullable set} nullableSet 
  */
-let nullable2 = function(grammar, nullableSet){
+let nullable = function(grammar, nullableSet){
 	let hasChanged = false;
 	do {
 		for(let i = 0; i < grammar.length; i++){
@@ -38,7 +41,7 @@ let nullable2 = function(grammar, nullableSet){
 					allNull = false;
 				}
 			}
-			//check all items are empty, then lsymbol is empty
+			//check if all items are empty, then lsymbol is empty, therefor lsymbol is a nullable
 			if(allNull) {
 				nullableSet[lsymbol] = true;
 			}
@@ -48,4 +51,21 @@ let nullable2 = function(grammar, nullableSet){
 	return nullableSet;
 }
 
-console.log(nullable2(grammar, nullableSet));
+let first = function(grammar, nullableSet, firstSets){
+	let hasChanged = false;
+	for(var i = 0; i < grammar.length; i++){
+		let lsymbol = grammar[i].l;
+		firstSets[lsymbol] = [];
+	}
+	do {
+		for(let i = 0; i < grammar.length; i++){
+			let lsymbol = grammar[i].l;
+			let rsymbols = grammar[i].r;
+	
+		}
+	}
+	while(hasChanged);
+	return firstSets;
+}
+console.log(nullable(grammar, nullableSet));
+console.log(first(grammar, nullableSet, firstSets));
