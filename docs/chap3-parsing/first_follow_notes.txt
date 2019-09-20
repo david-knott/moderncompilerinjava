@@ -1,0 +1,242 @@
+Start Grammar
+
+E -> TX
+X -> +T X
+X -> #
+T -> F Y
+Y -> *F Y 
+Y -> #
+F -> (E) 
+F -> i
+
+
+epilson = {}
+firstSets = {
+	E : {  }
+	F : {  },
+	X : { },
+	T : {  },
+	Y : {  },
+	+ : { + },
+	# : { # },
+	* : { * },
+	( : { ( }
+	) : { ) }
+	i : { i }
+}
+
+
+//we basically use the firstsets for the algorithm and loop until there
+are no further modifications on the first sets and follow sets.
+
+followSets = {}
+
+in grammar g, for each production p
+	
+	let leftsymbol be ls
+	
+	let updateEpsilon be false
+
+	in p, for each right symbol rs
+		
+		is updated ? firstSets[ls] = firstSets[rs] U firstSets[ls]
+
+		if rs is not in epsilon ( means we have our first set item ) then set updateEpsilon to true and break out of loop
+
+		if updateEpsilon is true, it means that their was an epsilon symbol in the previous loop
+	
+
+	let aux be followsSets[ls]
+
+	in reversed p, for each right symbol rs
+		
+		
+
+	
+	end loop
+
+end loop
+		 
+
+
+
+
+
+
+-------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//First Iteration
+
+
+Check the first character of each RHS  production. If terminal ( includes epsilons ) add to first set for LHS
+All productions with a first set terminal will be found after this iteration
+
+Check each productions first character
+E->T
+X->+ 
+X->#
+T->F
+Y->*
+Y->#
+F->(
+F->i
+
+This produces the following firstSets 
+
+X -> { + # }
+Y -> { * # }
+F -> { ( i }
+
+
+//Next Iteration
+
+for any items that do not have a first set from previous setup, repeat using previous step first sets
+
+E -> T  
+T -> F 
+
+T -> F has a firstSet
+
+
+
+
+ 
+
+Where # is null
+
+First Iteration First Set
+
+E ->  ?
+X -> { +, # }
+T ->  ?
+Y -> { *, # }
+F -> { (, id } 
+
+
+Second Iteration First Set
+
+E -> ?
+X -> { +, # }
+T ->  First(F) Y -> { (, id) }
+Y -> { *, # }
+F -> { (, id } 
+
+
+Third Iteration First Set
+
+E -> First(T) -> First(F) -> { (, id) }
+X -> { +, # }
+T ->  First(F) Y -> { (, id) }
+Y -> { *, # }
+F -> { (, id } 
+
+
+
+
+
+
+function printTable(firstSet){
+  console.log('-------------------');
+  for(var k in firstSet){
+    if(k.match(/[A-Z]+/) !== null) {
+      console.log('FirstSet(' + k + ') = { ' + firstSet[k] + ' }');
+    }
+  }
+  console.log('-------------------');
+}
+
+function first(grammar) {
+console.log(grammar)
+firstSet = {};
+  //Initialise our firstsets
+  for(let i = 0; i < grammar.length; i++){
+    var leftSymbol, rightSymbols;
+    var production = grammar[i];
+    [leftSymbol, rightSymbols] = production.split('->', 2);
+    for(let j = 0; j < rightSymbols.length; j++){
+       var cSymbol = rightSymbols[j];
+       var isTerminal = cSymbol.match(/[A-Z]+/) == null;
+       if(isTerminal){
+         firstSet[cSymbol] = [cSymbol];
+       } else {
+         firstSet[cSymbol] = [];
+       }
+    }
+  }
+
+  var changed = false;
+  do {
+    //for each production
+    for(let i = 0; i < grammar.length; i++){
+      changed = false;
+      var leftSymbol, rightSymbols;
+      var production = grammar[i];
+      [leftSymbol, rightSymbols] = production.split('->', 2);
+      //check the jth character
+      for(let j = 0; j < rightSymbols.length; j++){
+        var cSymbol = rightSymbols[j];
+        var isTerminal = cSymbol.match(/[A-Z]+/) == null;
+        var isEpsilon = cSymbol.match(/#/) !== null;
+        //if character is epsilon ignore it and continue to j + 1
+        if(isEpsilon){
+          continue;
+        } else if(!isTerminal){//character is non terminal
+     
+          if(firstSet[cSymbol].length > 0) {
+            var lu = firstSet[cSymbol];
+            firstSet[leftSymbol] = firstSet[leftSymbol].concat(firstSet[cSymbol]);
+            changed = true;
+          }
+          break;
+        } else {
+          //terminal symbol found, don't need to check this item again.
+          if(firstSet[leftSymbol].indexOf(cSymbol) === -1){
+            firstSet[leftSymbol].push(cSymbol);
+            changed = true;
+            break;
+          }
+        }  
+      }
+    }
+    printTable(firstSet);
+
+  } while(changed);
+
+}
+
+const grammar = [
+'E->TX',
+'X->+TX',
+'X->#',
+'T->FY',
+'Y->*FY',
+'Y->#',
+'F->(E)', 
+'F->i',
+];
+
+
+first(grammar);
+
+
