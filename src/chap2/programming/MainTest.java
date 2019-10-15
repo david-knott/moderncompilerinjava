@@ -13,7 +13,7 @@ class MainTest {
 		
 		for(int i = 1; i < 50; i++) {
 			var myIntArray = new String[]{"D:\\Workspace\\moderncompilerinjava\\reference\\tiger\\testcases\\test" + i + ".tig"};
-			Main.maintest(myIntArray);			
+			Main.main(myIntArray);			
 		}
 		
 	}

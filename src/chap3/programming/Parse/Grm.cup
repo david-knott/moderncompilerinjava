@@ -11,7 +11,7 @@ parser code  {:
   Lexer lexer;
 
   public void syntax_error(java_cup.runtime.Symbol current) {
-   report_error("Syntax error (" + current.sym + ")", current);
+   report_error("Syntax error found (" + current.sym + ")", current);
   }
 
  ErrorMsg errorMsg;
@@ -29,7 +29,7 @@ parser code  {:
   }
 :};
 
-scan with {: return lexer.nextToken(); :};
+scan with {: Symbol token = lexer.nextToken();System.out.println("token:" + token);return token; :};
 
 terminal String ID, STRING;
 terminal Integer INT;
@@ -40,8 +40,10 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
 non terminal program;
+non terminal expr_list, expr;
 
 start with program;
-
-program ::= ID  
-         ;
+expr_list ::= expr_list expr:e {: System.out.println(e);:}
+;
+program ::= ID
+;

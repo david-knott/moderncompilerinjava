@@ -49,6 +49,7 @@ Building parse tables...
   Building state machine...
   Filling in tables...
   Checking for non-reduced productions...
+*** Production "expr_list ::= expr_list expr " never reduced
 Writing parser...
 ===== Terminals =====
 [0]EOF [1]error [2]ID [3]STRING [4]INT 
@@ -63,11 +64,12 @@ Writing parser...
 
 
 ===== Non terminals =====
-[0]$START [1]program 
+[0]$START [1]program [2]expr_list [3]expr 
 
 ===== Productions =====
 [0] $START ::= program EOF 
-[1] program ::= ID 
+[1] expr_list ::= expr_list expr 
+[2] program ::= ID 
 
 ===== Viable Prefix Recognizer =====
 START lalr_state [0]: {
@@ -96,8 +98,8 @@ lalr_state [3]: {
 -------------------
 Closing files...
 ------- CUP v0.10k Parser Generation Summary -------
-  0 errors and 42 warnings
-  45 terminals, 2 non-terminals, and 2 productions declared, 
+  0 errors and 43 warnings
+  45 terminals, 4 non-terminals, and 3 productions declared, 
   producing 4 unique parse states.
   42 terminals declared but not used.
   0 non-terminals declared but not used.

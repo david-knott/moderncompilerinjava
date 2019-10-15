@@ -6,7 +6,6 @@ public class Main {
       String filename = argv[0];
       new Parse(filename);
   }
-
 }
 
 
