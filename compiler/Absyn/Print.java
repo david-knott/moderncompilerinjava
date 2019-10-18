@@ -155,7 +155,7 @@ public class Print {
   }
 
   /* Print Exp class types. Indent d spaces. */
-  public void prExp(Absyn.Exp e, int d) {
+  public void prExp(Exp e, int d) {
     indent(d);
     if (e instanceof OpExp) prExp((OpExp)e, d);
     else if (e instanceof VarExp) prExp((VarExp) e, d);

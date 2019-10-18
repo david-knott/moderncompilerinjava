@@ -1,5 +1,12 @@
 /* arr1 is valid since expression 0 is int = myint */
 let
+/* Comment
+   /* Nested 
+   
+   /* Nested comment */
+   comment */
+   Comment */
+
 	type myint = int
 	type  arrtype = array of myint
 

@@ -37,9 +37,19 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	ASSIGN, ARRAY, IF, THEN, ELSE, WHILE, FOR, TO, DO, 
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
-non terminal program;
+non terminal program, stmtlist, stmt, declist, dec;
 
 start with program;
 
-program ::= ID  
-         ;
+program ::= declist stmtlist
+;
+stmtlist ::= stmtlist stmt:s {: System.out.println(">>>> stmtlist"); :}
+| /* empty */
+;
+declist ::= declist dec:d {: System.out.println(">>>> declist"); :}
+| /* empty */
+;
+dec ::= TYPE ID:v1 EQ ARRAY OF ID:v2
+| TYPE {: System.out.println(">>> type"); :}
+| TYPE ID:v1 EQ ARRAY OF  {: System.out.println(">>>> type declaration " + v1); :}
+;
