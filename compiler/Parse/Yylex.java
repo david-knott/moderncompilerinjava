@@ -407,7 +407,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -4:
 						break;
 					case 4:
-						{return tok(sym.ASSIGN, null);}
+						{return tok(sym.COLON, null);}
 					case -5:
 						break;
 					case 5:
@@ -523,7 +523,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -33:
 						break;
 					case 33:
-						{return tok(sym.EQ, null);}
+						{return tok(sym.ASSIGN, null);}
 					case -34:
 						break;
 					case 34:

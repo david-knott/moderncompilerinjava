@@ -65,8 +65,8 @@ digits=[0-9]+
 <YYINITIAL>"var"	{return tok(sym.VAR, null);}
 <YYINITIAL>"["	{return tok(sym.LBRACK, null);}
 <YYINITIAL>"]"	{return tok(sym.RBRACK, null);}
-<YYINITIAL>":="	{return tok(sym.EQ, null);}
-<YYINITIAL>":"	{return tok(sym.ASSIGN, null);}
+<YYINITIAL>":="	{return tok(sym.ASSIGN, null);}
+<YYINITIAL>":"	{return tok(sym.COLON, null);}
 <YYINITIAL>","	{return tok(sym.COMMA, null);}
 <YYINITIAL>";"	{return tok(sym.SEMICOLON, null);}
 <YYINITIAL>"("	{return tok(sym.LPAREN, null);}

@@ -41,7 +41,7 @@ non terminal program, stmtlist, stmt, declist, dec;
 
 start with program;
 
-program ::= declist stmtlist
+program ::= LET declist IN stmtlist END
 ;
 stmtlist ::= stmtlist stmt:s {: System.out.println(">>>> stmtlist"); :}
 | /* empty */
@@ -49,7 +49,8 @@ stmtlist ::= stmtlist stmt:s {: System.out.println(">>>> stmtlist"); :}
 declist ::= declist dec:d {: System.out.println(">>>> declist"); :}
 | /* empty */
 ;
-dec ::= TYPE ID:v1 EQ ARRAY OF ID:v2
-| TYPE {: System.out.println(">>> type"); :}
-| TYPE ID:v1 EQ ARRAY OF  {: System.out.println(">>>> type declaration " + v1); :}
+dec ::= TYPE ID:v1 EQ ARRAY OF INT {: System.out.println(">>> type 0"); :}
+| VAR ID:lhs_var COLON ID:lhs_type ASSIGN ID:rhs_type LBRACK INT:rank RBRACK OF INT:rank1 {: System.out.println(">>> type 2"); :}
+;
+stmt ::= ID:v1
 ;
