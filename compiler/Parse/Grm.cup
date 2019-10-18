@@ -37,20 +37,39 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	ASSIGN, ARRAY, IF, THEN, ELSE, WHILE, FOR, TO, DO, 
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
-non terminal program, stmtlist, stmt, declist, dec;
+non terminal program, exp, letexp, stmtlist, stmt, declist, dec, var_dec, type_dec, func_dec;
 
 start with program;
 
-program ::= LET declist IN stmtlist END
+program ::= exp;
+
+exp ::= letexp
+| stmtlist
 ;
-stmtlist ::= stmtlist stmt:s {: System.out.println(">>>> stmtlist"); :}
+
+letexp ::= LET declist IN stmtlist END
 | /* empty */
 ;
-declist ::= declist dec:d {: System.out.println(">>>> declist"); :}
+
+stmtlist ::= stmtlist stmt:s {: System.out.println(">>> stmtlist:" + s); :}
 | /* empty */
 ;
-dec ::= TYPE ID:v1 EQ ARRAY OF INT {: System.out.println(">>> type 0"); :}
-| VAR ID:lhs_var COLON ID:lhs_type ASSIGN ID:rhs_type LBRACK INT:rank RBRACK OF INT:rank1 {: System.out.println(">>> type 2"); :}
+
+declist ::= declist dec:d {: System.out.println(">>> declist " + d); :}
+| /* empty */
 ;
-stmt ::= ID:v1
+
+var_dec ::=  VAR ID:lhs_var COLON ID:lhs_type ASSIGN ID:rhs_type LBRACK INT:rank RBRACK OF INT:rank1 {: System.out.println(">>> var_dec"); :}
+;
+
+type_dec ::= TYPE ID:v1 EQ ARRAY OF INT {: System.out.println(">>> type_dec"); :}
+| TYPE ID:v1 EQ INT
+| TYPE ID:v1 EQ ARRAY OF ID:v2
+| TYPE ID:v1 EQ LBRACE ID:v2 COLON STRING COMMA ID:v3 COLON INT RBRACE
+;
+
+dec ::= var_dec | type_dec
+;
+
+stmt ::= ID:v1 {: System.out.println(">>> stmt " + v1); :}
 ;

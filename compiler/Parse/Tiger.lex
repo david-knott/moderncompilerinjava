@@ -60,6 +60,7 @@ digits=[0-9]+
 <YYINITIAL>"then"	{return tok(sym.THEN, null);}
 <YYINITIAL>"else"	{return tok(sym.ELSE, null);}
 <YYINITIAL>"int"	{return tok(sym.INT, null);}
+<YYINITIAL>"string"	{return tok(sym.STRING, null);}
 <YYINITIAL>"end"	{return tok(sym.END, null);}
 <YYINITIAL>"function"	{return tok(sym.FUNCTION, null);}
 <YYINITIAL>"var"	{return tok(sym.VAR, null);}
@@ -92,9 +93,9 @@ digits=[0-9]+
 <YYINITIAL>"\""	{yybegin(STRING);}
 <STRING>"\""	{yybegin(YYINITIAL);return tok(sym.STRING, new String(yytext()));}
 <STRING>. {}
-<YYINITIAL>"/*"	{ yybegin(COMMENT); }
-<COMMENT>"/*"	{ commentDepth++; }
-<COMMENT>"*/"   { if(commentDepth-- == 0) yybegin(YYINITIAL);}
+<YYINITIAL>"/*"	{ yybegin(COMMENT); } 
+<COMMENT>"/*"	{ commentDepth++;}
+<COMMENT>"*/"   { if(commentDepth == 0){ yybegin(YYINITIAL); } else {commentDepth--;};}
 <COMMENT>\n { /* notice the new line for linux */}
 <COMMENT>. {}
 <YYINITIAL>" "	{}

@@ -1,11 +1,9 @@
 /* arr1 is valid since expression 0 is int = myint */
+
+/* var rec1:rectype /* comment /* comment level 3 */  somethig */ := rectype {name="Nobody", age=1000} */
+
+/* arr1 is valid since expression 0 is int = myint */
 let
-/* Comment
-   /* Nested 
-   
-   /* Nested comment */
-   comment */
-   Comment */
 
 	type myint = int
 	type  arrtype = array of myint

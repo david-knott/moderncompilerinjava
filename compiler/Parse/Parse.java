@@ -4,7 +4,6 @@ public class Parse {
 
   public ErrorMsg.ErrorMsg errorMsg;
 
-  /*
 static String symnames[] = new String[100];
 	  static {
 	     
@@ -55,7 +54,7 @@ static String symnames[] = new String[100];
 	     symnames[sym.EQ] = "EQ";
 	   }
 
-  public Parse(String filename)  {
+  public static void Lex(String filename)  {
 	      ErrorMsg.ErrorMsg errorMsg = new ErrorMsg.ErrorMsg(filename);
 	      java.io.InputStream inp = null;	      
 	      try {	    	  
@@ -75,7 +74,7 @@ static String symnames[] = new String[100];
 	      }
 
 	  }
-*/
+
 
   public Parse(String filename) {
     errorMsg = new ErrorMsg.ErrorMsg(filename);
@@ -87,7 +86,7 @@ static String symnames[] = new String[100];
     }
     Grm parser = new Grm(new Yylex(inp, errorMsg), errorMsg);
     try {
-      parser.debug_parse();
+      parser./*debug_*/parse();
     } catch (Throwable e) {
       e.printStackTrace();
       throw new Error(e.toString());
