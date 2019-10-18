@@ -9,18 +9,17 @@ public class Main {
 	 * @param argv
 	 * @throws java.io.IOException
 	 */
-	  public static void maintest(String argv[])  {
+	  public static void main(String argv[])  {
 	      String filename = argv[0];
 	      ErrorMsg errorMsg = new ErrorMsg(filename);
-	      java.io.InputStream inp = null;
-	      
+	      java.io.InputStream inp = null;	      
 	      try {	    	  
 	    	  inp = new java.io.FileInputStream(filename);
 	    	  Lexer lexer = new Yylex(inp,errorMsg);
 		      java_cup.runtime.Symbol tok;
 		      do { 
 		         tok=lexer.nextToken();
-		      //   System.out.println(symnames[tok.sym] + " " + tok.left);
+		         System.out.println(symnames[tok.sym] + " " + tok.left);
 		      } while (tok.sym != sym.EOF);
 		      
 		      inp.close();

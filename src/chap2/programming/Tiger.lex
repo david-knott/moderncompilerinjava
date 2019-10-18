@@ -25,6 +25,7 @@ private java_cup.runtime.Symbol tok(int kind, Object value) {
 }
 
 private ErrorMsg errorMsg;
+private int commentDepth = 0;
 
 Yylex(java.io.InputStream s, ErrorMsg e) {
   this(s);
@@ -91,8 +92,9 @@ digits=[0-9]+
 <YYINITIAL>"\""	{yybegin(STRING);}
 <STRING>"\""	{yybegin(YYINITIAL);return tok(sym.STRING, new String(yytext()));}
 <STRING>. {}
-<YYINITIAL>"/*"	{yybegin(COMMENT);}
-<COMMENT>"*/" {yybegin(YYINITIAL);}
+<YYINITIAL>"/*"	{ yybegin(COMMENT); }
+<COMMENT>"/*"	{ commentDepth++; }
+<COMMENT>"*/"   { if(commentDepth-- == 0) yybegin(YYINITIAL);}
 <COMMENT>\r\n {}
 <COMMENT>. {}
 <YYINITIAL>" "	{}

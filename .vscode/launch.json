@@ -1,0 +1,63 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug (Launch) - Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<moderncompilerinjava>",
+            "request": "launch",
+            "mainClass": "JLex.Main",
+            "projectName": "moderncompilerinjava"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-SparseBitSet<moderncompilerinjava>",
+            "request": "launch",
+            "mainClass": "JLex.SparseBitSet",
+            "projectName": "moderncompilerinjava"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-interp<moderncompilerinjava>",
+            "request": "launch",
+            "mainClass": "chap1.programming.interp",
+            "projectName": "moderncompilerinjava"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<moderncompilerinjava>(1)",
+            "request": "launch",
+            "mainClass": "chap2.programming.Main",
+            "projectName": "moderncompilerinjava"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<moderncompilerinjava>(2)",
+            "request": "launch",
+            "mainClass": "chap3.programming.Parse.Main",
+            "projectName": "moderncompilerinjava"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<moderncompilerinjava>(3)",
+            "request": "launch",
+            "mainClass": "java_cup.Main",
+            "projectName": "moderncompilerinjava"
+        },
+        {
+            "type": "java",
+            "name": "Debug (Launch)-Main<moderncompilerinjava>(4)",
+            "request": "launch",
+            "mainClass": "java_cup.simple_calc.Main",
+            "projectName": "moderncompilerinjava"
+        }
+    ]
+}
