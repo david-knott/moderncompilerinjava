@@ -38,7 +38,7 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
 non terminal program, exp, letexp, stmtlist, stmt, declist, dec, var_dec, type_dec, func_dec;
-
+non terminal typ, type_fields, type_field;
 start with program;
 
 program ::= exp;
@@ -47,7 +47,7 @@ exp ::= letexp
 | stmtlist
 ;
 
-letexp ::= LET declist IN stmtlist END
+letexp ::= LET declist IN stmtlist END {: System.out.println("let"); :}
 | /* empty */
 ;
 
@@ -61,11 +61,22 @@ declist ::= declist dec:d {: System.out.println(">>> declist " + d); :}
 
 var_dec ::=  VAR ID:lhs_var COLON ID:lhs_type ASSIGN ID:rhs_type LBRACK INT:rank RBRACK OF INT:rank1 {: System.out.println(">>> var_dec"); :}
 ;
+ 
+typ ::= ID:v2
+| INT {: System.out.println("type INT"); :}
+| STRING
+| LBRACE type_fields RBRACE
+| ARRAY OF ID:v2 {: System.out.println("typ array of " + v2); :}
+;
 
-type_dec ::= TYPE ID:v1 EQ ARRAY OF INT {: System.out.println(">>> type_dec"); :}
-| TYPE ID:v1 EQ INT
-| TYPE ID:v1 EQ ARRAY OF ID:v2
-| TYPE ID:v1 EQ LBRACE ID:v2 COLON STRING COMMA ID:v3 COLON INT RBRACE
+type_fields ::= type_fields COMMA type_field
+| /* empty */
+;
+
+type_field ::= ID:v2 COLON ID:v3 {: System.out.println("type field " + v2 + " " + v3); :}
+;
+
+type_dec ::= TYPE ID:v1 EQ typ {: System.out.println("type_dec " + v1); :}
 ;
 
 dec ::= var_dec | type_dec

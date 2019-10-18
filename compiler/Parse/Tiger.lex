@@ -97,9 +97,11 @@ digits=[0-9]+
 <COMMENT>"/*"	{ commentDepth++;}
 <COMMENT>"*/"   { if(commentDepth == 0){ yybegin(YYINITIAL); } else {commentDepth--;};}
 <COMMENT>\n { /* notice the new line for linux */}
+<COMMENT>\r\n { /* notice the new line for linux */}
 <COMMENT>. {}
 <YYINITIAL>" "	{}
 <YYINITIAL>\t	{}
 <YYINITIAL>\n	{newline(); /* notice that the new line for linux */}
+<YYINITIAL>\r\n	{newline(); /* notice that the new line for linux */}
 <YYINITIAL>","	{return tok(sym.COMMA, null);}
 <YYINITIAL>.	{errorMsg.error(yychar, "illegal character");}
