@@ -39,7 +39,7 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 
 non terminal program, exp, expList, letExp, decList, dec, tyDec, funcDec;
 non terminal ty, tyField, tyFieldList, varDecList, varDec;
-non terminal lValue;
+non terminal lValue, iFieldList, iField, iRec;
 start with program;
 
 program ::= expList
@@ -49,6 +49,8 @@ expList ::= exp expList
 ;
 exp ::= letExp
 | lValue
+| iRec
+| STRING
 ;
 letExp ::= LET decList IN expList END
 ;
@@ -61,6 +63,7 @@ dec ::= varDec | tyDec
 varDec ::= VAR ID ASSIGN exp
 | VAR ID COLON ty ASSIGN exp
 ;
+
 tyDec ::= TYPE ID EQ ty
 ;
 ty ::= ID
@@ -79,4 +82,12 @@ tyField ::= ID COLON ty
 lValue ::= ID:v1
 | lValue DOT ID:v1
 | lValue LBRACK expList RBRACK
+;
+
+iRec ::= ty LBRACE iFieldList RBRACE
+;
+iFieldList ::= iField COMMA iFieldList 
+| iField
+;
+iField ::= ID EQ exp
 ;

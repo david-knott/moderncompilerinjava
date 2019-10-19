@@ -54,4 +54,4 @@ then
 fi
 
 javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java
-java -cp bin Parse.Main ../reference/tiger/testcases/test2.tig
+java -cp bin Parse.Main ../reference/tiger/testcases/test3.tig
