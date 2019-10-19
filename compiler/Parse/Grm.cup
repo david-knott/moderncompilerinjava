@@ -37,50 +37,46 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	ASSIGN, ARRAY, IF, THEN, ELSE, WHILE, FOR, TO, DO, 
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
-non terminal program, exp, letexp, stmtlist, stmt, declist, dec, var_dec, type_dec, func_dec;
-non terminal typ, type_fields, type_field;
+non terminal program, exp, expList, letExp, decList, dec, tyDec, funcDec;
+non terminal ty, tyField, tyFieldList, varDecList, varDec;
+non terminal lValue;
 start with program;
 
-program ::= exp;
-
-exp ::= letexp
-| stmtlist
+program ::= expList
 ;
-
-letexp ::= LET declist IN stmtlist END {: System.out.println("let"); :}
+expList ::= exp expList
 | /* empty */
 ;
+exp ::= letExp
+| lValue
+;
+letExp ::= LET decList IN expList END
+;
 
-stmtlist ::= stmtlist stmt:s {: System.out.println(">>> stmtlist:" + s); :}
+decList ::= decList dec
 | /* empty */
 ;
-
-declist ::= declist dec:d {: System.out.println(">>> declist " + d); :}
-| /* empty */
+dec ::= varDec | tyDec
 ;
-
-var_dec ::=  VAR ID:lhs_var COLON ID:lhs_type ASSIGN ID:rhs_type LBRACK INT:rank RBRACK OF INT:rank1 {: System.out.println(">>> var_dec"); :}
+varDec ::= VAR ID ASSIGN exp
+| VAR ID COLON ty ASSIGN exp
 ;
- 
-typ ::= ID:v2
-| INT {: System.out.println("type INT"); :}
+tyDec ::= TYPE ID EQ ty
+;
+ty ::= ID
+| INT
 | STRING
-| LBRACE type_fields RBRACE
-| ARRAY OF ID:v2 {: System.out.println("typ array of " + v2); :}
+| LBRACE tyFieldList RBRACE
+| ARRAY OF ID
 ;
-
-type_fields ::= type_fields COMMA type_field
+tyFieldList ::= tyFieldList COMMA tyField
+| tyField
 | /* empty */
 ;
-
-type_field ::= ID:v2 COLON ID:v3 {: System.out.println("type field " + v2 + " " + v3); :}
+tyField ::= ID COLON ty
 ;
 
-type_dec ::= TYPE ID:v1 EQ typ {: System.out.println("type_dec " + v1); :}
-;
-
-dec ::= var_dec | type_dec
-;
-
-stmt ::= ID:v1 {: System.out.println(">>> stmt " + v1); :}
+lValue ::= ID:v1
+| lValue DOT ID:v1
+| lValue LBRACK expList RBRACK
 ;
