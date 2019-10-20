@@ -1,0 +1,728 @@
+Opening files...
+Parsing specification from standard input...
+Checking specification...
+Warning: Terminal "DIVIDE" was declared but never used
+Warning: Terminal "FUNCTION" was declared but never used
+Warning: Terminal "GE" was declared but never used
+Warning: Terminal "LPAREN" was declared but never used
+Warning: Terminal "FOR" was declared but never used
+Warning: Terminal "MINUS" was declared but never used
+Warning: Terminal "RPAREN" was declared but never used
+Warning: Terminal "SEMICOLON" was declared but never used
+Warning: Terminal "AND" was declared but never used
+Warning: Terminal "LT" was declared but never used
+Warning: Terminal "NIL" was declared but never used
+Warning: Terminal "OR" was declared but never used
+Warning: Terminal "PLUS" was declared but never used
+Warning: Terminal "IF" was declared but never used
+Warning: Terminal "LE" was declared but never used
+Warning: Terminal "NEQ" was declared but never used
+Warning: Terminal "BREAK" was declared but never used
+Warning: Terminal "TIMES" was declared but never used
+Warning: Terminal "ELSE" was declared but never used
+Warning: Terminal "TO" was declared but never used
+Warning: Terminal "WHILE" was declared but never used
+Warning: Terminal "THEN" was declared but never used
+Warning: Terminal "GT" was declared but never used
+Warning: Terminal "DO" was declared but never used
+Warning: Non terminal "funcDec" was declared but never used
+Warning: Non terminal "varDecList" was declared but never used
+Building parse tables...
+  Computing non-terminal nullability...
+  Computing first sets...
+  Building state machine...
+  Filling in tables...
+*** Reduce/Reduce conflict found in state #9
+  between ty ::= ID (*) 
+  and     lValueAux ::= (*) 
+  under symbols: {LBRACE}
+  Resolved in favor of the first production.
+
+*** Shift/Reduce conflict found in state #9
+  between ty ::= ID (*) 
+  under symbol LBRACE
+  Resolved in favor of shifting.
+
+*** Shift/Reduce conflict found in state #9
+  between lValueAux ::= (*) 
+  under symbol LBRACE
+  Resolved in favor of shifting.
+
+  Checking for non-reduced productions...
+*** Production "assignExp ::= lValue ASSIGN expList " never reduced
+Writing parser...
+===== Terminals =====
+[0]EOF [1]error [2]ID [3]STRING [4]INT 
+[5]COMMA [6]COLON [7]SEMICOLON [8]LPAREN [9]RPAREN 
+[10]LBRACK [11]RBRACK [12]LBRACE [13]RBRACE [14]DOT 
+[15]PLUS [16]MINUS [17]TIMES [18]DIVIDE [19]EQ 
+[20]NEQ [21]LT [22]LE [23]GT [24]GE 
+[25]AND [26]OR [27]ASSIGN [28]ARRAY [29]IF 
+[30]THEN [31]ELSE [32]WHILE [33]FOR [34]TO 
+[35]DO [36]LET [37]IN [38]END [39]OF 
+[40]BREAK [41]NIL [42]FUNCTION [43]VAR [44]TYPE 
+
+
+===== Non terminals =====
+[0]$START [1]program [2]exp [3]expList [4]letExp 
+[5]decList [6]dec [7]tyDec [8]funcDec [9]ty 
+[10]tyField [11]tyFieldList [12]tyFieldListAux [13]varDecList [14]varDec 
+[15]lValue [16]iFieldList [17]iFieldListAux [18]iField [19]iRec 
+[20]assignExp [21]lValueAux 
+
+===== Productions =====
+[0] $START ::= program EOF 
+[1] program ::= expList 
+[2] expList ::= exp expList 
+[3] expList ::= 
+[4] exp ::= letExp 
+[5] exp ::= STRING 
+[6] exp ::= INT 
+[7] exp ::= iRec 
+[8] exp ::= lValue 
+[9] assignExp ::= lValue ASSIGN expList 
+[10] letExp ::= LET decList IN expList END 
+[11] decList ::= dec decList 
+[12] decList ::= 
+[13] dec ::= varDec 
+[14] dec ::= tyDec 
+[15] varDec ::= VAR ID ASSIGN exp 
+[16] varDec ::= VAR ID COLON ty ASSIGN exp 
+[17] tyDec ::= TYPE ID EQ ty 
+[18] ty ::= ID 
+[19] ty ::= LBRACE tyFieldList RBRACE 
+[20] ty ::= ARRAY OF ID 
+[21] tyFieldList ::= tyField tyFieldListAux 
+[22] tyFieldList ::= 
+[23] tyFieldListAux ::= COMMA tyField tyFieldListAux 
+[24] tyFieldListAux ::= 
+[25] tyField ::= ID COLON ty 
+[26] lValue ::= ID lValueAux 
+[27] lValueAux ::= DOT ID 
+[28] lValueAux ::= LBRACK expList RBRACK 
+[29] lValueAux ::= 
+[30] iRec ::= ty LBRACE iFieldList RBRACE 
+[31] iFieldList ::= iField iFieldListAux 
+[32] iFieldList ::= 
+[33] iFieldListAux ::= COMMA iField iFieldListAux 
+[34] iFieldListAux ::= 
+[35] iField ::= ID EQ exp 
+
+===== Viable Prefix Recognizer =====
+START lalr_state [0]: {
+  [ty ::= (*) ARRAY OF ID , {LBRACE }]
+  [exp ::= (*) lValue , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [exp ::= (*) STRING , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [expList ::= (*) exp expList , {EOF }]
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {LBRACE }]
+  [letExp ::= (*) LET decList IN expList END , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [iRec ::= (*) ty LBRACE iFieldList RBRACE , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [exp ::= (*) iRec , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [exp ::= (*) letExp , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [program ::= (*) expList , {EOF }]
+  [ty ::= (*) ID , {LBRACE }]
+  [exp ::= (*) INT , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [lValue ::= (*) ID lValueAux , {EOF ID STRING INT LBRACE ARRAY LET }]
+  [expList ::= (*) , {EOF }]
+  [$START ::= (*) program EOF , {EOF }]
+}
+transition on iRec to state [13]
+transition on LET to state [12]
+transition on expList to state [11]
+transition on lValue to state [10]
+transition on ID to state [9]
+transition on STRING to state [8]
+transition on letExp to state [7]
+transition on program to state [6]
+transition on ty to state [5]
+transition on exp to state [4]
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on INT to state [1]
+
+-------------------
+lalr_state [1]: {
+  [exp ::= INT (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [2]: {
+  [tyFieldList ::= (*) tyField tyFieldListAux , {RBRACE }]
+  [tyField ::= (*) ID COLON ty , {COMMA RBRACE }]
+  [tyFieldList ::= (*) , {RBRACE }]
+  [ty ::= LBRACE (*) tyFieldList RBRACE , {COMMA LBRACE RBRACE ASSIGN IN VAR TYPE }]
+}
+transition on tyFieldList to state [58]
+transition on tyField to state [57]
+transition on ID to state [56]
+
+-------------------
+lalr_state [3]: {
+  [ty ::= ARRAY (*) OF ID , {COMMA LBRACE RBRACE ASSIGN IN VAR TYPE }]
+}
+transition on OF to state [54]
+
+-------------------
+lalr_state [4]: {
+  [ty ::= (*) ARRAY OF ID , {LBRACE }]
+  [exp ::= (*) lValue , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [expList ::= exp (*) expList , {EOF RBRACK END }]
+  [exp ::= (*) STRING , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [expList ::= (*) exp expList , {EOF RBRACK END }]
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {LBRACE }]
+  [letExp ::= (*) LET decList IN expList END , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [iRec ::= (*) ty LBRACE iFieldList RBRACE , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [exp ::= (*) iRec , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [exp ::= (*) letExp , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [ty ::= (*) ID , {LBRACE }]
+  [exp ::= (*) INT , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [lValue ::= (*) ID lValueAux , {EOF ID STRING INT RBRACK LBRACE ARRAY LET END }]
+  [expList ::= (*) , {EOF RBRACK END }]
+}
+transition on iRec to state [13]
+transition on LET to state [12]
+transition on expList to state [53]
+transition on lValue to state [10]
+transition on ID to state [9]
+transition on STRING to state [8]
+transition on letExp to state [7]
+transition on ty to state [5]
+transition on exp to state [4]
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on INT to state [1]
+
+-------------------
+lalr_state [5]: {
+  [iRec ::= ty (*) LBRACE iFieldList RBRACE , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on LBRACE to state [42]
+
+-------------------
+lalr_state [6]: {
+  [$START ::= program (*) EOF , {EOF }]
+}
+transition on EOF to state [41]
+
+-------------------
+lalr_state [7]: {
+  [exp ::= letExp (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [8]: {
+  [exp ::= STRING (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [9]: {
+  [lValueAux ::= (*) DOT ID , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [ty ::= ID (*) , {LBRACE }]
+  [lValueAux ::= (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [lValue ::= ID (*) lValueAux , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [lValueAux ::= (*) LBRACK expList RBRACK , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on DOT to state [37]
+transition on lValueAux to state [36]
+transition on LBRACK to state [35]
+
+-------------------
+lalr_state [10]: {
+  [exp ::= lValue (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [11]: {
+  [program ::= expList (*) , {EOF }]
+}
+
+-------------------
+lalr_state [12]: {
+  [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN VAR TYPE }]
+  [dec ::= (*) varDec , {IN VAR TYPE }]
+  [letExp ::= LET (*) decList IN expList END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [varDec ::= (*) VAR ID ASSIGN exp , {IN VAR TYPE }]
+  [decList ::= (*) , {IN }]
+  [tyDec ::= (*) TYPE ID EQ ty , {IN VAR TYPE }]
+  [dec ::= (*) tyDec , {IN VAR TYPE }]
+  [decList ::= (*) dec decList , {IN }]
+}
+transition on TYPE to state [19]
+transition on dec to state [18]
+transition on varDec to state [17]
+transition on tyDec to state [16]
+transition on VAR to state [15]
+transition on decList to state [14]
+
+-------------------
+lalr_state [13]: {
+  [exp ::= iRec (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [14]: {
+  [letExp ::= LET decList (*) IN expList END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on IN to state [32]
+
+-------------------
+lalr_state [15]: {
+  [varDec ::= VAR (*) ID COLON ty ASSIGN exp , {IN VAR TYPE }]
+  [varDec ::= VAR (*) ID ASSIGN exp , {IN VAR TYPE }]
+}
+transition on ID to state [25]
+
+-------------------
+lalr_state [16]: {
+  [dec ::= tyDec (*) , {IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [17]: {
+  [dec ::= varDec (*) , {IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [18]: {
+  [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN VAR TYPE }]
+  [dec ::= (*) varDec , {IN VAR TYPE }]
+  [varDec ::= (*) VAR ID ASSIGN exp , {IN VAR TYPE }]
+  [decList ::= (*) , {IN }]
+  [tyDec ::= (*) TYPE ID EQ ty , {IN VAR TYPE }]
+  [dec ::= (*) tyDec , {IN VAR TYPE }]
+  [decList ::= dec (*) decList , {IN }]
+  [decList ::= (*) dec decList , {IN }]
+}
+transition on TYPE to state [19]
+transition on dec to state [18]
+transition on varDec to state [17]
+transition on tyDec to state [16]
+transition on VAR to state [15]
+transition on decList to state [24]
+
+-------------------
+lalr_state [19]: {
+  [tyDec ::= TYPE (*) ID EQ ty , {IN VAR TYPE }]
+}
+transition on ID to state [20]
+
+-------------------
+lalr_state [20]: {
+  [tyDec ::= TYPE ID (*) EQ ty , {IN VAR TYPE }]
+}
+transition on EQ to state [21]
+
+-------------------
+lalr_state [21]: {
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {IN VAR TYPE }]
+  [ty ::= (*) ID , {IN VAR TYPE }]
+  [tyDec ::= TYPE ID EQ (*) ty , {IN VAR TYPE }]
+  [ty ::= (*) ARRAY OF ID , {IN VAR TYPE }]
+}
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on ID to state [23]
+transition on ty to state [22]
+
+-------------------
+lalr_state [22]: {
+  [tyDec ::= TYPE ID EQ ty (*) , {IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [23]: {
+  [ty ::= ID (*) , {COMMA RBRACE ASSIGN IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [24]: {
+  [decList ::= dec decList (*) , {IN }]
+}
+
+-------------------
+lalr_state [25]: {
+  [varDec ::= VAR ID (*) ASSIGN exp , {IN VAR TYPE }]
+  [varDec ::= VAR ID (*) COLON ty ASSIGN exp , {IN VAR TYPE }]
+}
+transition on ASSIGN to state [27]
+transition on COLON to state [26]
+
+-------------------
+lalr_state [26]: {
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {ASSIGN }]
+  [ty ::= (*) ID , {ASSIGN }]
+  [ty ::= (*) ARRAY OF ID , {ASSIGN }]
+  [varDec ::= VAR ID COLON (*) ty ASSIGN exp , {IN VAR TYPE }]
+}
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on ID to state [23]
+transition on ty to state [29]
+
+-------------------
+lalr_state [27]: {
+  [ty ::= (*) ARRAY OF ID , {LBRACE }]
+  [exp ::= (*) lValue , {IN VAR TYPE }]
+  [exp ::= (*) STRING , {IN VAR TYPE }]
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {LBRACE }]
+  [letExp ::= (*) LET decList IN expList END , {IN VAR TYPE }]
+  [exp ::= (*) iRec , {IN VAR TYPE }]
+  [iRec ::= (*) ty LBRACE iFieldList RBRACE , {IN VAR TYPE }]
+  [exp ::= (*) letExp , {IN VAR TYPE }]
+  [varDec ::= VAR ID ASSIGN (*) exp , {IN VAR TYPE }]
+  [ty ::= (*) ID , {LBRACE }]
+  [exp ::= (*) INT , {IN VAR TYPE }]
+  [lValue ::= (*) ID lValueAux , {IN VAR TYPE }]
+}
+transition on iRec to state [13]
+transition on LET to state [12]
+transition on lValue to state [10]
+transition on ID to state [9]
+transition on STRING to state [8]
+transition on letExp to state [7]
+transition on ty to state [5]
+transition on exp to state [28]
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on INT to state [1]
+
+-------------------
+lalr_state [28]: {
+  [varDec ::= VAR ID ASSIGN exp (*) , {IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [29]: {
+  [varDec ::= VAR ID COLON ty (*) ASSIGN exp , {IN VAR TYPE }]
+}
+transition on ASSIGN to state [30]
+
+-------------------
+lalr_state [30]: {
+  [ty ::= (*) ARRAY OF ID , {LBRACE }]
+  [varDec ::= VAR ID COLON ty ASSIGN (*) exp , {IN VAR TYPE }]
+  [exp ::= (*) lValue , {IN VAR TYPE }]
+  [exp ::= (*) STRING , {IN VAR TYPE }]
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {LBRACE }]
+  [letExp ::= (*) LET decList IN expList END , {IN VAR TYPE }]
+  [exp ::= (*) iRec , {IN VAR TYPE }]
+  [iRec ::= (*) ty LBRACE iFieldList RBRACE , {IN VAR TYPE }]
+  [exp ::= (*) letExp , {IN VAR TYPE }]
+  [ty ::= (*) ID , {LBRACE }]
+  [exp ::= (*) INT , {IN VAR TYPE }]
+  [lValue ::= (*) ID lValueAux , {IN VAR TYPE }]
+}
+transition on iRec to state [13]
+transition on LET to state [12]
+transition on lValue to state [10]
+transition on ID to state [9]
+transition on STRING to state [8]
+transition on letExp to state [7]
+transition on ty to state [5]
+transition on exp to state [31]
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on INT to state [1]
+
+-------------------
+lalr_state [31]: {
+  [varDec ::= VAR ID COLON ty ASSIGN exp (*) , {IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [32]: {
+  [ty ::= (*) ARRAY OF ID , {LBRACE }]
+  [exp ::= (*) lValue , {ID STRING INT LBRACE ARRAY LET END }]
+  [exp ::= (*) STRING , {ID STRING INT LBRACE ARRAY LET END }]
+  [expList ::= (*) exp expList , {END }]
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {LBRACE }]
+  [letExp ::= LET decList IN (*) expList END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {ID STRING INT LBRACE ARRAY LET END }]
+  [iRec ::= (*) ty LBRACE iFieldList RBRACE , {ID STRING INT LBRACE ARRAY LET END }]
+  [exp ::= (*) iRec , {ID STRING INT LBRACE ARRAY LET END }]
+  [exp ::= (*) letExp , {ID STRING INT LBRACE ARRAY LET END }]
+  [ty ::= (*) ID , {LBRACE }]
+  [exp ::= (*) INT , {ID STRING INT LBRACE ARRAY LET END }]
+  [lValue ::= (*) ID lValueAux , {ID STRING INT LBRACE ARRAY LET END }]
+  [expList ::= (*) , {END }]
+}
+transition on iRec to state [13]
+transition on LET to state [12]
+transition on expList to state [33]
+transition on lValue to state [10]
+transition on ID to state [9]
+transition on STRING to state [8]
+transition on letExp to state [7]
+transition on ty to state [5]
+transition on exp to state [4]
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on INT to state [1]
+
+-------------------
+lalr_state [33]: {
+  [letExp ::= LET decList IN expList (*) END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on END to state [34]
+
+-------------------
+lalr_state [34]: {
+  [letExp ::= LET decList IN expList END (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [35]: {
+  [ty ::= (*) ARRAY OF ID , {LBRACE }]
+  [lValueAux ::= LBRACK (*) expList RBRACK , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [exp ::= (*) lValue , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [exp ::= (*) STRING , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [expList ::= (*) exp expList , {RBRACK }]
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {LBRACE }]
+  [letExp ::= (*) LET decList IN expList END , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [iRec ::= (*) ty LBRACE iFieldList RBRACE , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [exp ::= (*) iRec , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [exp ::= (*) letExp , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [ty ::= (*) ID , {LBRACE }]
+  [exp ::= (*) INT , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [lValue ::= (*) ID lValueAux , {ID STRING INT RBRACK LBRACE ARRAY LET }]
+  [expList ::= (*) , {RBRACK }]
+}
+transition on iRec to state [13]
+transition on LET to state [12]
+transition on expList to state [39]
+transition on lValue to state [10]
+transition on ID to state [9]
+transition on STRING to state [8]
+transition on letExp to state [7]
+transition on ty to state [5]
+transition on exp to state [4]
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on INT to state [1]
+
+-------------------
+lalr_state [36]: {
+  [lValue ::= ID lValueAux (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [37]: {
+  [lValueAux ::= DOT (*) ID , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on ID to state [38]
+
+-------------------
+lalr_state [38]: {
+  [lValueAux ::= DOT ID (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [39]: {
+  [lValueAux ::= LBRACK expList (*) RBRACK , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on RBRACK to state [40]
+
+-------------------
+lalr_state [40]: {
+  [lValueAux ::= LBRACK expList RBRACK (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [41]: {
+  [$START ::= program EOF (*) , {EOF }]
+}
+
+-------------------
+lalr_state [42]: {
+  [iField ::= (*) ID EQ exp , {COMMA RBRACE }]
+  [iFieldList ::= (*) , {RBRACE }]
+  [iFieldList ::= (*) iField iFieldListAux , {RBRACE }]
+  [iRec ::= ty LBRACE (*) iFieldList RBRACE , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on iField to state [45]
+transition on ID to state [44]
+transition on iFieldList to state [43]
+
+-------------------
+lalr_state [43]: {
+  [iRec ::= ty LBRACE iFieldList (*) RBRACE , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+transition on RBRACE to state [52]
+
+-------------------
+lalr_state [44]: {
+  [iField ::= ID (*) EQ exp , {COMMA RBRACE }]
+}
+transition on EQ to state [50]
+
+-------------------
+lalr_state [45]: {
+  [iFieldListAux ::= (*) , {RBRACE }]
+  [iFieldList ::= iField (*) iFieldListAux , {RBRACE }]
+  [iFieldListAux ::= (*) COMMA iField iFieldListAux , {RBRACE }]
+}
+transition on iFieldListAux to state [47]
+transition on COMMA to state [46]
+
+-------------------
+lalr_state [46]: {
+  [iField ::= (*) ID EQ exp , {COMMA RBRACE }]
+  [iFieldListAux ::= COMMA (*) iField iFieldListAux , {RBRACE }]
+}
+transition on iField to state [48]
+transition on ID to state [44]
+
+-------------------
+lalr_state [47]: {
+  [iFieldList ::= iField iFieldListAux (*) , {RBRACE }]
+}
+
+-------------------
+lalr_state [48]: {
+  [iFieldListAux ::= (*) , {RBRACE }]
+  [iFieldListAux ::= COMMA iField (*) iFieldListAux , {RBRACE }]
+  [iFieldListAux ::= (*) COMMA iField iFieldListAux , {RBRACE }]
+}
+transition on iFieldListAux to state [49]
+transition on COMMA to state [46]
+
+-------------------
+lalr_state [49]: {
+  [iFieldListAux ::= COMMA iField iFieldListAux (*) , {RBRACE }]
+}
+
+-------------------
+lalr_state [50]: {
+  [ty ::= (*) ARRAY OF ID , {LBRACE }]
+  [exp ::= (*) lValue , {COMMA RBRACE }]
+  [exp ::= (*) STRING , {COMMA RBRACE }]
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {LBRACE }]
+  [letExp ::= (*) LET decList IN expList END , {COMMA RBRACE }]
+  [exp ::= (*) iRec , {COMMA RBRACE }]
+  [iRec ::= (*) ty LBRACE iFieldList RBRACE , {COMMA RBRACE }]
+  [exp ::= (*) letExp , {COMMA RBRACE }]
+  [ty ::= (*) ID , {LBRACE }]
+  [iField ::= ID EQ (*) exp , {COMMA RBRACE }]
+  [exp ::= (*) INT , {COMMA RBRACE }]
+  [lValue ::= (*) ID lValueAux , {COMMA RBRACE }]
+}
+transition on iRec to state [13]
+transition on LET to state [12]
+transition on lValue to state [10]
+transition on ID to state [9]
+transition on STRING to state [8]
+transition on letExp to state [7]
+transition on ty to state [5]
+transition on exp to state [51]
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on INT to state [1]
+
+-------------------
+lalr_state [51]: {
+  [iField ::= ID EQ exp (*) , {COMMA RBRACE }]
+}
+
+-------------------
+lalr_state [52]: {
+  [iRec ::= ty LBRACE iFieldList RBRACE (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [53]: {
+  [expList ::= exp expList (*) , {EOF RBRACK END }]
+}
+
+-------------------
+lalr_state [54]: {
+  [ty ::= ARRAY OF (*) ID , {COMMA LBRACE RBRACE ASSIGN IN VAR TYPE }]
+}
+transition on ID to state [55]
+
+-------------------
+lalr_state [55]: {
+  [ty ::= ARRAY OF ID (*) , {COMMA LBRACE RBRACE ASSIGN IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [56]: {
+  [tyField ::= ID (*) COLON ty , {COMMA RBRACE }]
+}
+transition on COLON to state [64]
+
+-------------------
+lalr_state [57]: {
+  [tyFieldListAux ::= (*) , {RBRACE }]
+  [tyFieldList ::= tyField (*) tyFieldListAux , {RBRACE }]
+  [tyFieldListAux ::= (*) COMMA tyField tyFieldListAux , {RBRACE }]
+}
+transition on tyFieldListAux to state [61]
+transition on COMMA to state [60]
+
+-------------------
+lalr_state [58]: {
+  [ty ::= LBRACE tyFieldList (*) RBRACE , {COMMA LBRACE RBRACE ASSIGN IN VAR TYPE }]
+}
+transition on RBRACE to state [59]
+
+-------------------
+lalr_state [59]: {
+  [ty ::= LBRACE tyFieldList RBRACE (*) , {COMMA LBRACE RBRACE ASSIGN IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [60]: {
+  [tyFieldListAux ::= COMMA (*) tyField tyFieldListAux , {RBRACE }]
+  [tyField ::= (*) ID COLON ty , {COMMA RBRACE }]
+}
+transition on tyField to state [62]
+transition on ID to state [56]
+
+-------------------
+lalr_state [61]: {
+  [tyFieldList ::= tyField tyFieldListAux (*) , {RBRACE }]
+}
+
+-------------------
+lalr_state [62]: {
+  [tyFieldListAux ::= (*) , {RBRACE }]
+  [tyFieldListAux ::= COMMA tyField (*) tyFieldListAux , {RBRACE }]
+  [tyFieldListAux ::= (*) COMMA tyField tyFieldListAux , {RBRACE }]
+}
+transition on tyFieldListAux to state [63]
+transition on COMMA to state [60]
+
+-------------------
+lalr_state [63]: {
+  [tyFieldListAux ::= COMMA tyField tyFieldListAux (*) , {RBRACE }]
+}
+
+-------------------
+lalr_state [64]: {
+  [ty ::= (*) LBRACE tyFieldList RBRACE , {COMMA RBRACE }]
+  [ty ::= (*) ID , {COMMA RBRACE }]
+  [ty ::= (*) ARRAY OF ID , {COMMA RBRACE }]
+  [tyField ::= ID COLON (*) ty , {COMMA RBRACE }]
+}
+transition on ARRAY to state [3]
+transition on LBRACE to state [2]
+transition on ID to state [23]
+transition on ty to state [65]
+
+-------------------
+lalr_state [65]: {
+  [tyField ::= ID COLON ty (*) , {COMMA RBRACE }]
+}
+
+-------------------
+Closing files...
+------- CUP v0.10k Parser Generation Summary -------
+  0 errors and 30 warnings
+  45 terminals, 22 non-terminals, and 36 productions declared, 
+  producing 66 unique parse states.
+  26 terminals declared but not used.
+  0 non-terminals declared but not used.
+  0 productions never reduced.
+  3 conflicts detected (3 expected).
+  Code written to "Grm.java", and "sym.java".
+---------------------------------------------------- (v0.10k)

@@ -59,8 +59,6 @@ digits=[0-9]+
 <YYINITIAL>"if"	{return tok(sym.IF, null);}
 <YYINITIAL>"then"	{return tok(sym.THEN, null);}
 <YYINITIAL>"else"	{return tok(sym.ELSE, null);}
-<YYINITIAL>"int"	{return tok(sym.INT, null);}
-<YYINITIAL>"string"	{return tok(sym.STRING, null);}
 <YYINITIAL>"end"	{return tok(sym.END, null);}
 <YYINITIAL>"function"	{return tok(sym.FUNCTION, null);}
 <YYINITIAL>"var"	{return tok(sym.VAR, null);}

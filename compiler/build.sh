@@ -47,11 +47,17 @@ fi
 if [ -n "$PARSER" ]
 then
   echo ">>> Running CUP"
+  rm Parse/Grm.out
+  rm Parse/Grm.err
   javac -d bin java_cup/*.java java_cup/runtime/*.java
-  java -cp bin java_cup.Main -parser Grm -expect 3 -dump_grammar -dump_states Parse/Grm.cup
+  java -cp bin java_cup.Main -parser Grm -expect 3 -dump_grammar -dump_states Parse/Grm.cup >Parse/Grm.out 2>Parse/Grm.err
+  if [ ! -f "Grm.java" ]; then
+    echo "Error in CUP"
+    exit;
+  fi
   mv Grm.java Parse
   mv sym.java Parse
 fi
 
 javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java
-java -cp bin Parse.Main ../reference/tiger/testcases/test3.tig
+java -cp bin Parse.Main ../reference/tiger/testcases/simple.tig
