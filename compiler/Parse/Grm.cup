@@ -69,7 +69,7 @@ fieldDec ::= ID COLON ty;
 varDec ::= VAR ID ASSIGN exp
 | VAR ID COLON ty ASSIGN exp;
 
-lValue ::= ID:id
+lValue ::= ID:id /* conflict */
 | subscript
 | fieldExp;
 
@@ -95,9 +95,9 @@ letExp ::= LET decList IN expList END;
 decList ::= dec decList 
 | /* empty */;
 
-arrCreate ::= ty LBRACK exp RBRACK OF exp;
+arrCreate ::= ID LBRACK exp RBRACK OF exp;
 
-recCreate ::= ty LBRACE fieldCreateList RBRACE;
+recCreate ::= ID LBRACE fieldCreateList RBRACE;
 
 fieldCreateList ::= fieldCreate fieldCreateListAux
 | /* empty */;

@@ -33,35 +33,15 @@ Building parse tables...
   Computing first sets...
   Building state machine...
   Filling in tables...
-*** Reduce/Reduce conflict found in state #12
-  between ty ::= ID (*) 
-  and     lValue ::= ID (*) 
-  under symbols: {LBRACK, LBRACE}
-  Resolved in favor of the first production.
-
-*** Shift/Reduce conflict found in state #12
-  between ty ::= ID (*) 
-  under symbol LBRACK
-  Resolved in favor of shifting.
-
-*** Shift/Reduce conflict found in state #12
-  between ty ::= ID (*) 
-  under symbol LBRACE
-  Resolved in favor of shifting.
-
-*** Shift/Reduce conflict found in state #12
+*** Shift/Reduce conflict found in state #8
   between lValue ::= ID (*) 
+  and     arrCreate ::= ID (*) LBRACK exp RBRACK OF exp 
   under symbol LBRACK
-  Resolved in favor of shifting.
-
-*** Shift/Reduce conflict found in state #12
-  between lValue ::= ID (*) 
-  under symbol LBRACE
   Resolved in favor of shifting.
 
   Checking for non-reduced productions...
 *** Production "assignment ::= lValue ASSIGN exp " never reduced
-*** More conflicts encountered than expected -- parser generation aborted
+Writing parser...
 ===== Terminals =====
 [0]EOF [1]error [2]ID [3]STRING [4]INT 
 [5]COMMA [6]COLON [7]SEMICOLON [8]LPAREN [9]RPAREN 
@@ -117,8 +97,8 @@ Building parse tables...
 [31] letExp ::= LET decList IN expList END 
 [32] decList ::= dec decList 
 [33] decList ::= 
-[34] arrCreate ::= ty LBRACK exp RBRACK OF exp 
-[35] recCreate ::= ty LBRACE fieldCreateList RBRACE 
+[34] arrCreate ::= ID LBRACK exp RBRACK OF exp 
+[35] recCreate ::= ID LBRACE fieldCreateList RBRACE 
 [36] fieldCreateList ::= fieldCreate fieldCreateListAux 
 [37] fieldCreateList ::= 
 [38] fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux 
@@ -127,191 +107,149 @@ Building parse tables...
 
 ===== Viable Prefix Recognizer =====
 START lalr_state [0]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
   [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF LBRACK DOT }]
-  [exp ::= (*) recCreate , {EOF }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {EOF }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {EOF LBRACK DOT }]
-  [exp ::= (*) INT , {EOF }]
-  [program ::= (*) exp , {EOF }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {EOF LBRACK DOT }]
-  [exp ::= (*) letExp , {EOF }]
-  [letExp ::= (*) LET decList IN expList END , {EOF }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {EOF LBRACK DOT }]
-  [exp ::= (*) STRING , {EOF }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {EOF }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
   [lValue ::= (*) ID , {EOF LBRACK DOT }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF }]
+  [letExp ::= (*) LET decList IN expList END , {EOF }]
+  [exp ::= (*) recCreate , {EOF }]
   [exp ::= (*) lValue , {EOF }]
+  [lValue ::= (*) fieldExp , {EOF LBRACK DOT }]
   [exp ::= (*) arrCreate , {EOF }]
+  [program ::= (*) exp , {EOF }]
+  [exp ::= (*) STRING , {EOF }]
+  [fieldExp ::= (*) lValue DOT ID , {EOF LBRACK DOT }]
+  [lValue ::= (*) subscript , {EOF LBRACK DOT }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF }]
+  [exp ::= (*) letExp , {EOF }]
   [$START ::= (*) program EOF , {EOF }]
+  [exp ::= (*) INT , {EOF }]
 }
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on program to state [8]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [5]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
+transition on LET to state [12]
+transition on arrCreate to state [11]
+transition on lValue to state [10]
+transition on subscript to state [9]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on program to state [4]
+transition on recCreate to state [3]
+transition on exp to state [2]
+transition on INT to state [1]
 
 -------------------
 lalr_state [1]: {
-  [fieldDecList ::= (*) fieldDec fieldDecListAux , {RBRACE }]
-  [recTy ::= LBRACE (*) fieldDecList RBRACE , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
-  [fieldDec ::= (*) ID COLON ty , {COMMA RBRACE }]
-  [fieldDecList ::= (*) , {RBRACE }]
+  [exp ::= INT (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
 }
-transition on fieldDec to state [67]
-transition on fieldDecList to state [66]
-transition on ID to state [65]
 
 -------------------
 lalr_state [2]: {
-  [exp ::= INT (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [3]: {
-  [ty ::= arrTy (*) , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
-}
-
--------------------
-lalr_state [4]: {
-  [arrTy ::= ARRAY (*) OF ID , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
-}
-transition on OF to state [63]
-
--------------------
-lalr_state [5]: {
   [program ::= exp (*) , {EOF }]
 }
 
 -------------------
+lalr_state [3]: {
+  [exp ::= recCreate (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [4]: {
+  [$START ::= program (*) EOF , {EOF }]
+}
+transition on EOF to state [73]
+
+-------------------
+lalr_state [5]: {
+  [exp ::= letExp (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+
+-------------------
 lalr_state [6]: {
-  [exp ::= recCreate (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [exp ::= STRING (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
 }
 
 -------------------
 lalr_state [7]: {
-  [recCreate ::= ty (*) LBRACE fieldCreateList RBRACE , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [arrCreate ::= ty (*) LBRACK exp RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [lValue ::= fieldExp (*) , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
 }
-transition on LBRACK to state [48]
-transition on LBRACE to state [47]
 
 -------------------
 lalr_state [8]: {
-  [$START ::= program (*) EOF , {EOF }]
+  [recCreate ::= ID (*) LBRACE fieldCreateList RBRACE , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [arrCreate ::= ID (*) LBRACK exp RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [lValue ::= ID (*) , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
 }
-transition on EOF to state [46]
+transition on LBRACK to state [58]
+transition on LBRACE to state [57]
 
 -------------------
 lalr_state [9]: {
-  [exp ::= STRING (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [lValue ::= subscript (*) , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
 }
 
 -------------------
 lalr_state [10]: {
-  [exp ::= letExp (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [fieldExp ::= lValue (*) DOT ID , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [subscript ::= lValue (*) LBRACK exp RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [exp ::= lValue (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
 }
+transition on DOT to state [53]
+transition on LBRACK to state [52]
 
 -------------------
 lalr_state [11]: {
-  [lValue ::= fieldExp (*) , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
+  [exp ::= arrCreate (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
 }
 
 -------------------
 lalr_state [12]: {
-  [ty ::= ID (*) , {LBRACK LBRACE }]
-  [lValue ::= ID (*) , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [13]: {
-  [fieldExp ::= lValue (*) DOT ID , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [subscript ::= lValue (*) LBRACK exp RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [exp ::= lValue (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-transition on DOT to state [42]
-transition on LBRACK to state [41]
-
--------------------
-lalr_state [14]: {
-  [lValue ::= subscript (*) , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [15]: {
-  [ty ::= recTy (*) , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
-}
-
--------------------
-lalr_state [16]: {
-  [exp ::= arrCreate (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [17]: {
   [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN VAR TYPE }]
   [dec ::= (*) varDec , {IN VAR TYPE }]
   [decList ::= (*) dec decList , {IN }]
   [tyDec ::= (*) TYPE ID EQ ty , {IN VAR TYPE }]
   [varDec ::= (*) VAR ID ASSIGN exp , {IN VAR TYPE }]
-  [letExp ::= LET (*) decList IN expList END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+  [letExp ::= LET (*) decList IN expList END , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
   [dec ::= (*) tyDec , {IN VAR TYPE }]
   [decList ::= (*) , {IN }]
 }
-transition on dec to state [23]
-transition on TYPE to state [22]
-transition on varDec to state [21]
-transition on tyDec to state [20]
-transition on VAR to state [19]
-transition on decList to state [18]
+transition on dec to state [18]
+transition on TYPE to state [17]
+transition on varDec to state [16]
+transition on tyDec to state [15]
+transition on VAR to state [14]
+transition on decList to state [13]
 
 -------------------
-lalr_state [18]: {
-  [letExp ::= LET decList (*) IN expList END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
+lalr_state [13]: {
+  [letExp ::= LET decList (*) IN expList END , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
 }
-transition on IN to state [36]
+transition on IN to state [47]
 
 -------------------
-lalr_state [19]: {
+lalr_state [14]: {
   [varDec ::= VAR (*) ID COLON ty ASSIGN exp , {IN VAR TYPE }]
   [varDec ::= VAR (*) ID ASSIGN exp , {IN VAR TYPE }]
 }
-transition on ID to state [29]
+transition on ID to state [40]
 
 -------------------
-lalr_state [20]: {
+lalr_state [15]: {
   [dec ::= tyDec (*) , {IN VAR TYPE }]
 }
 
 -------------------
-lalr_state [21]: {
+lalr_state [16]: {
   [dec ::= varDec (*) , {IN VAR TYPE }]
 }
 
 -------------------
-lalr_state [22]: {
+lalr_state [17]: {
   [tyDec ::= TYPE (*) ID EQ ty , {IN VAR TYPE }]
 }
-transition on ID to state [25]
+transition on ID to state [20]
 
 -------------------
-lalr_state [23]: {
+lalr_state [18]: {
   [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN VAR TYPE }]
   [dec ::= (*) varDec , {IN VAR TYPE }]
   [decList ::= dec (*) decList , {IN }]
@@ -321,26 +259,26 @@ lalr_state [23]: {
   [dec ::= (*) tyDec , {IN VAR TYPE }]
   [decList ::= (*) , {IN }]
 }
-transition on dec to state [23]
-transition on TYPE to state [22]
-transition on varDec to state [21]
-transition on tyDec to state [20]
-transition on VAR to state [19]
-transition on decList to state [24]
+transition on dec to state [18]
+transition on TYPE to state [17]
+transition on varDec to state [16]
+transition on tyDec to state [15]
+transition on VAR to state [14]
+transition on decList to state [19]
 
 -------------------
-lalr_state [24]: {
+lalr_state [19]: {
   [decList ::= dec decList (*) , {IN }]
 }
 
 -------------------
-lalr_state [25]: {
+lalr_state [20]: {
   [tyDec ::= TYPE ID (*) EQ ty , {IN VAR TYPE }]
 }
-transition on EQ to state [26]
+transition on EQ to state [21]
 
 -------------------
-lalr_state [26]: {
+lalr_state [21]: {
   [arrTy ::= (*) ARRAY OF ID , {IN VAR TYPE }]
   [ty ::= (*) ID , {IN VAR TYPE }]
   [tyDec ::= TYPE ID EQ (*) ty , {IN VAR TYPE }]
@@ -348,584 +286,116 @@ lalr_state [26]: {
   [recTy ::= (*) LBRACE fieldDecList RBRACE , {IN VAR TYPE }]
   [ty ::= (*) recTy , {IN VAR TYPE }]
 }
-transition on ARRAY to state [4]
-transition on recTy to state [15]
-transition on arrTy to state [3]
-transition on LBRACE to state [1]
-transition on ID to state [28]
-transition on ty to state [27]
+transition on ARRAY to state [27]
+transition on recTy to state [26]
+transition on arrTy to state [25]
+transition on LBRACE to state [24]
+transition on ID to state [23]
+transition on ty to state [22]
 
 -------------------
-lalr_state [27]: {
+lalr_state [22]: {
   [tyDec ::= TYPE ID EQ ty (*) , {IN VAR TYPE }]
 }
 
 -------------------
-lalr_state [28]: {
+lalr_state [23]: {
   [ty ::= ID (*) , {COMMA RBRACE ASSIGN IN VAR TYPE }]
 }
 
 -------------------
-lalr_state [29]: {
-  [varDec ::= VAR ID (*) ASSIGN exp , {IN VAR TYPE }]
-  [varDec ::= VAR ID (*) COLON ty ASSIGN exp , {IN VAR TYPE }]
+lalr_state [24]: {
+  [fieldDecList ::= (*) fieldDec fieldDecListAux , {RBRACE }]
+  [recTy ::= LBRACE (*) fieldDecList RBRACE , {COMMA RBRACE ASSIGN IN VAR TYPE }]
+  [fieldDec ::= (*) ID COLON ty , {COMMA RBRACE }]
+  [fieldDecList ::= (*) , {RBRACE }]
 }
-transition on ASSIGN to state [31]
-transition on COLON to state [30]
+transition on fieldDec to state [32]
+transition on fieldDecList to state [31]
+transition on ID to state [30]
+
+-------------------
+lalr_state [25]: {
+  [ty ::= arrTy (*) , {COMMA RBRACE ASSIGN IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [26]: {
+  [ty ::= recTy (*) , {COMMA RBRACE ASSIGN IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [27]: {
+  [arrTy ::= ARRAY (*) OF ID , {COMMA RBRACE ASSIGN IN VAR TYPE }]
+}
+transition on OF to state [28]
+
+-------------------
+lalr_state [28]: {
+  [arrTy ::= ARRAY OF (*) ID , {COMMA RBRACE ASSIGN IN VAR TYPE }]
+}
+transition on ID to state [29]
+
+-------------------
+lalr_state [29]: {
+  [arrTy ::= ARRAY OF ID (*) , {COMMA RBRACE ASSIGN IN VAR TYPE }]
+}
 
 -------------------
 lalr_state [30]: {
-  [arrTy ::= (*) ARRAY OF ID , {ASSIGN }]
-  [ty ::= (*) ID , {ASSIGN }]
-  [ty ::= (*) arrTy , {ASSIGN }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {ASSIGN }]
-  [ty ::= (*) recTy , {ASSIGN }]
-  [varDec ::= VAR ID COLON (*) ty ASSIGN exp , {IN VAR TYPE }]
+  [fieldDec ::= ID (*) COLON ty , {COMMA RBRACE }]
 }
-transition on ARRAY to state [4]
-transition on recTy to state [15]
-transition on arrTy to state [3]
-transition on LBRACE to state [1]
-transition on ID to state [28]
-transition on ty to state [33]
+transition on COLON to state [38]
 
 -------------------
 lalr_state [31]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) recCreate , {IN VAR TYPE }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {IN VAR TYPE }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) INT , {IN VAR TYPE }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) letExp , {IN VAR TYPE }]
-  [letExp ::= (*) LET decList IN expList END , {IN VAR TYPE }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) STRING , {IN VAR TYPE }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {IN VAR TYPE }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) lValue , {IN VAR TYPE }]
-  [exp ::= (*) arrCreate , {IN VAR TYPE }]
-  [varDec ::= VAR ID ASSIGN (*) exp , {IN VAR TYPE }]
+  [recTy ::= LBRACE fieldDecList (*) RBRACE , {COMMA RBRACE ASSIGN IN VAR TYPE }]
 }
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [32]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
+transition on RBRACE to state [37]
 
 -------------------
 lalr_state [32]: {
-  [varDec ::= VAR ID ASSIGN exp (*) , {IN VAR TYPE }]
-}
-
--------------------
-lalr_state [33]: {
-  [varDec ::= VAR ID COLON ty (*) ASSIGN exp , {IN VAR TYPE }]
-}
-transition on ASSIGN to state [34]
-
--------------------
-lalr_state [34]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) recCreate , {IN VAR TYPE }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {IN VAR TYPE }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) INT , {IN VAR TYPE }]
-  [varDec ::= VAR ID COLON ty ASSIGN (*) exp , {IN VAR TYPE }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) letExp , {IN VAR TYPE }]
-  [letExp ::= (*) LET decList IN expList END , {IN VAR TYPE }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) STRING , {IN VAR TYPE }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {IN VAR TYPE }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {LBRACK DOT IN VAR TYPE }]
-  [exp ::= (*) lValue , {IN VAR TYPE }]
-  [exp ::= (*) arrCreate , {IN VAR TYPE }]
-}
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [35]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
-
--------------------
-lalr_state [35]: {
-  [varDec ::= VAR ID COLON ty ASSIGN exp (*) , {IN VAR TYPE }]
-}
-
--------------------
-lalr_state [36]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) recCreate , {ID STRING INT LBRACE ARRAY LET END }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {ID STRING INT LBRACE ARRAY LET END }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) INT , {ID STRING INT LBRACE ARRAY LET END }]
-  [expList ::= (*) exp expList , {END }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [letExp ::= LET decList IN (*) expList END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) letExp , {ID STRING INT LBRACE ARRAY LET END }]
-  [letExp ::= (*) LET decList IN expList END , {ID STRING INT LBRACE ARRAY LET END }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) STRING , {ID STRING INT LBRACE ARRAY LET END }]
-  [expList ::= (*) , {END }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {ID STRING INT LBRACE ARRAY LET END }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) lValue , {ID STRING INT LBRACE ARRAY LET END }]
-  [exp ::= (*) arrCreate , {ID STRING INT LBRACE ARRAY LET END }]
-}
-transition on expList to state [38]
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [37]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
-
--------------------
-lalr_state [37]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) recCreate , {ID STRING INT LBRACE ARRAY LET END }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {ID STRING INT LBRACE ARRAY LET END }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) INT , {ID STRING INT LBRACE ARRAY LET END }]
-  [expList ::= exp (*) expList , {END }]
-  [expList ::= (*) exp expList , {END }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) letExp , {ID STRING INT LBRACE ARRAY LET END }]
-  [letExp ::= (*) LET decList IN expList END , {ID STRING INT LBRACE ARRAY LET END }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) STRING , {ID STRING INT LBRACE ARRAY LET END }]
-  [expList ::= (*) , {END }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {ID STRING INT LBRACE ARRAY LET END }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {ID STRING INT LBRACK LBRACE DOT ARRAY LET END }]
-  [exp ::= (*) lValue , {ID STRING INT LBRACE ARRAY LET END }]
-  [exp ::= (*) arrCreate , {ID STRING INT LBRACE ARRAY LET END }]
-}
-transition on expList to state [40]
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [37]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
-
--------------------
-lalr_state [38]: {
-  [letExp ::= LET decList IN expList (*) END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-transition on END to state [39]
-
--------------------
-lalr_state [39]: {
-  [letExp ::= LET decList IN expList END (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [40]: {
-  [expList ::= exp expList (*) , {END }]
-}
-
--------------------
-lalr_state [41]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= lValue LBRACK (*) exp RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT }]
-  [exp ::= (*) recCreate , {RBRACK }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {RBRACK }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {LBRACK RBRACK DOT }]
-  [exp ::= (*) INT , {RBRACK }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT }]
-  [exp ::= (*) letExp , {RBRACK }]
-  [letExp ::= (*) LET decList IN expList END , {RBRACK }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT }]
-  [exp ::= (*) STRING , {RBRACK }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {RBRACK }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {LBRACK RBRACK DOT }]
-  [exp ::= (*) lValue , {RBRACK }]
-  [exp ::= (*) arrCreate , {RBRACK }]
-}
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [44]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
-
--------------------
-lalr_state [42]: {
-  [fieldExp ::= lValue DOT (*) ID , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-}
-transition on ID to state [43]
-
--------------------
-lalr_state [43]: {
-  [fieldExp ::= lValue DOT ID (*) , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [44]: {
-  [subscript ::= lValue LBRACK exp (*) RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-}
-transition on RBRACK to state [45]
-
--------------------
-lalr_state [45]: {
-  [subscript ::= lValue LBRACK exp RBRACK (*) , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [46]: {
-  [$START ::= program EOF (*) , {EOF }]
-}
-
--------------------
-lalr_state [47]: {
-  [recCreate ::= ty LBRACE (*) fieldCreateList RBRACE , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
-  [fieldCreateList ::= (*) , {RBRACE }]
-  [fieldCreateList ::= (*) fieldCreate fieldCreateListAux , {RBRACE }]
-}
-transition on fieldCreate to state [55]
-transition on fieldCreateList to state [54]
-transition on ID to state [53]
-
--------------------
-lalr_state [48]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT }]
-  [exp ::= (*) recCreate , {RBRACK }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {RBRACK }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {LBRACK RBRACK DOT }]
-  [exp ::= (*) INT , {RBRACK }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT }]
-  [exp ::= (*) letExp , {RBRACK }]
-  [letExp ::= (*) LET decList IN expList END , {RBRACK }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT }]
-  [exp ::= (*) STRING , {RBRACK }]
-  [arrCreate ::= ty LBRACK (*) exp RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {RBRACK }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {LBRACK RBRACK DOT }]
-  [exp ::= (*) lValue , {RBRACK }]
-  [exp ::= (*) arrCreate , {RBRACK }]
-}
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [49]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
-
--------------------
-lalr_state [49]: {
-  [arrCreate ::= ty LBRACK exp (*) RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-transition on RBRACK to state [50]
-
--------------------
-lalr_state [50]: {
-  [arrCreate ::= ty LBRACK exp RBRACK (*) OF exp , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-transition on OF to state [51]
-
--------------------
-lalr_state [51]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [exp ::= (*) recCreate , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [exp ::= (*) INT , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [exp ::= (*) letExp , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [letExp ::= (*) LET decList IN expList END , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [arrCreate ::= ty LBRACK exp RBRACK OF (*) exp , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [exp ::= (*) STRING , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {EOF ID STRING INT COMMA LBRACK RBRACK LBRACE RBRACE DOT ARRAY LET IN END VAR TYPE }]
-  [exp ::= (*) lValue , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-  [exp ::= (*) arrCreate , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [52]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
-
--------------------
-lalr_state [52]: {
-  [arrCreate ::= ty LBRACK exp RBRACK OF exp (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [53]: {
-  [fieldCreate ::= ID (*) EQ exp , {COMMA RBRACE }]
-}
-transition on EQ to state [61]
-
--------------------
-lalr_state [54]: {
-  [recCreate ::= ty LBRACE fieldCreateList (*) RBRACE , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-transition on RBRACE to state [60]
-
--------------------
-lalr_state [55]: {
-  [fieldCreateListAux ::= (*) COMMA fieldCreate fieldCreateListAux , {RBRACE }]
-  [fieldCreateListAux ::= (*) , {RBRACE }]
-  [fieldCreateList ::= fieldCreate (*) fieldCreateListAux , {RBRACE }]
-}
-transition on fieldCreateListAux to state [57]
-transition on COMMA to state [56]
-
--------------------
-lalr_state [56]: {
-  [fieldCreateListAux ::= COMMA (*) fieldCreate fieldCreateListAux , {RBRACE }]
-  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
-}
-transition on fieldCreate to state [58]
-transition on ID to state [53]
-
--------------------
-lalr_state [57]: {
-  [fieldCreateList ::= fieldCreate fieldCreateListAux (*) , {RBRACE }]
-}
-
--------------------
-lalr_state [58]: {
-  [fieldCreateListAux ::= (*) COMMA fieldCreate fieldCreateListAux , {RBRACE }]
-  [fieldCreateListAux ::= (*) , {RBRACE }]
-  [fieldCreateListAux ::= COMMA fieldCreate (*) fieldCreateListAux , {RBRACE }]
-}
-transition on fieldCreateListAux to state [59]
-transition on COMMA to state [56]
-
--------------------
-lalr_state [59]: {
-  [fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux (*) , {RBRACE }]
-}
-
--------------------
-lalr_state [60]: {
-  [recCreate ::= ty LBRACE fieldCreateList RBRACE (*) , {EOF ID STRING INT COMMA RBRACK LBRACE RBRACE ARRAY LET IN END VAR TYPE }]
-}
-
--------------------
-lalr_state [61]: {
-  [ty ::= (*) ID , {LBRACK LBRACE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {COMMA LBRACK RBRACE DOT }]
-  [exp ::= (*) recCreate , {COMMA RBRACE }]
-  [fieldCreate ::= ID EQ (*) exp , {COMMA RBRACE }]
-  [recCreate ::= (*) ty LBRACE fieldCreateList RBRACE , {COMMA RBRACE }]
-  [arrTy ::= (*) ARRAY OF ID , {LBRACK LBRACE }]
-  [lValue ::= (*) subscript , {COMMA LBRACK RBRACE DOT }]
-  [exp ::= (*) INT , {COMMA RBRACE }]
-  [ty ::= (*) recTy , {LBRACK LBRACE }]
-  [fieldExp ::= (*) lValue DOT ID , {COMMA LBRACK RBRACE DOT }]
-  [exp ::= (*) letExp , {COMMA RBRACE }]
-  [letExp ::= (*) LET decList IN expList END , {COMMA RBRACE }]
-  [recTy ::= (*) LBRACE fieldDecList RBRACE , {LBRACK LBRACE }]
-  [lValue ::= (*) fieldExp , {COMMA LBRACK RBRACE DOT }]
-  [exp ::= (*) STRING , {COMMA RBRACE }]
-  [arrCreate ::= (*) ty LBRACK exp RBRACK OF exp , {COMMA RBRACE }]
-  [ty ::= (*) arrTy , {LBRACK LBRACE }]
-  [lValue ::= (*) ID , {COMMA LBRACK RBRACE DOT }]
-  [exp ::= (*) lValue , {COMMA RBRACE }]
-  [exp ::= (*) arrCreate , {COMMA RBRACE }]
-}
-transition on LET to state [17]
-transition on arrCreate to state [16]
-transition on recTy to state [15]
-transition on subscript to state [14]
-transition on lValue to state [13]
-transition on ID to state [12]
-transition on fieldExp to state [11]
-transition on letExp to state [10]
-transition on STRING to state [9]
-transition on ty to state [7]
-transition on recCreate to state [6]
-transition on exp to state [62]
-transition on ARRAY to state [4]
-transition on arrTy to state [3]
-transition on INT to state [2]
-transition on LBRACE to state [1]
-
--------------------
-lalr_state [62]: {
-  [fieldCreate ::= ID EQ exp (*) , {COMMA RBRACE }]
-}
-
--------------------
-lalr_state [63]: {
-  [arrTy ::= ARRAY OF (*) ID , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
-}
-transition on ID to state [64]
-
--------------------
-lalr_state [64]: {
-  [arrTy ::= ARRAY OF ID (*) , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
-}
-
--------------------
-lalr_state [65]: {
-  [fieldDec ::= ID (*) COLON ty , {COMMA RBRACE }]
-}
-transition on COLON to state [73]
-
--------------------
-lalr_state [66]: {
-  [recTy ::= LBRACE fieldDecList (*) RBRACE , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
-}
-transition on RBRACE to state [72]
-
--------------------
-lalr_state [67]: {
   [fieldDecListAux ::= (*) , {RBRACE }]
   [fieldDecList ::= fieldDec (*) fieldDecListAux , {RBRACE }]
   [fieldDecListAux ::= (*) COMMA fieldDec fieldDecListAux , {RBRACE }]
 }
-transition on fieldDecListAux to state [69]
-transition on COMMA to state [68]
+transition on fieldDecListAux to state [34]
+transition on COMMA to state [33]
 
 -------------------
-lalr_state [68]: {
+lalr_state [33]: {
   [fieldDecListAux ::= COMMA (*) fieldDec fieldDecListAux , {RBRACE }]
   [fieldDec ::= (*) ID COLON ty , {COMMA RBRACE }]
 }
-transition on fieldDec to state [70]
-transition on ID to state [65]
+transition on fieldDec to state [35]
+transition on ID to state [30]
 
 -------------------
-lalr_state [69]: {
+lalr_state [34]: {
   [fieldDecList ::= fieldDec fieldDecListAux (*) , {RBRACE }]
 }
 
 -------------------
-lalr_state [70]: {
+lalr_state [35]: {
   [fieldDecListAux ::= (*) , {RBRACE }]
   [fieldDecListAux ::= COMMA fieldDec (*) fieldDecListAux , {RBRACE }]
   [fieldDecListAux ::= (*) COMMA fieldDec fieldDecListAux , {RBRACE }]
 }
-transition on fieldDecListAux to state [71]
-transition on COMMA to state [68]
+transition on fieldDecListAux to state [36]
+transition on COMMA to state [33]
 
 -------------------
-lalr_state [71]: {
+lalr_state [36]: {
   [fieldDecListAux ::= COMMA fieldDec fieldDecListAux (*) , {RBRACE }]
 }
 
 -------------------
-lalr_state [72]: {
-  [recTy ::= LBRACE fieldDecList RBRACE (*) , {COMMA LBRACK LBRACE RBRACE ASSIGN IN VAR TYPE }]
+lalr_state [37]: {
+  [recTy ::= LBRACE fieldDecList RBRACE (*) , {COMMA RBRACE ASSIGN IN VAR TYPE }]
 }
 
 -------------------
-lalr_state [73]: {
+lalr_state [38]: {
   [arrTy ::= (*) ARRAY OF ID , {COMMA RBRACE }]
   [ty ::= (*) ID , {COMMA RBRACE }]
   [ty ::= (*) arrTy , {COMMA RBRACE }]
@@ -933,27 +403,442 @@ lalr_state [73]: {
   [fieldDec ::= ID COLON (*) ty , {COMMA RBRACE }]
   [ty ::= (*) recTy , {COMMA RBRACE }]
 }
-transition on ARRAY to state [4]
-transition on recTy to state [15]
-transition on arrTy to state [3]
-transition on LBRACE to state [1]
-transition on ID to state [28]
-transition on ty to state [74]
+transition on ARRAY to state [27]
+transition on recTy to state [26]
+transition on arrTy to state [25]
+transition on LBRACE to state [24]
+transition on ID to state [23]
+transition on ty to state [39]
 
 -------------------
-lalr_state [74]: {
+lalr_state [39]: {
   [fieldDec ::= ID COLON ty (*) , {COMMA RBRACE }]
+}
+
+-------------------
+lalr_state [40]: {
+  [varDec ::= VAR ID (*) ASSIGN exp , {IN VAR TYPE }]
+  [varDec ::= VAR ID (*) COLON ty ASSIGN exp , {IN VAR TYPE }]
+}
+transition on ASSIGN to state [42]
+transition on COLON to state [41]
+
+-------------------
+lalr_state [41]: {
+  [arrTy ::= (*) ARRAY OF ID , {ASSIGN }]
+  [ty ::= (*) ID , {ASSIGN }]
+  [ty ::= (*) arrTy , {ASSIGN }]
+  [recTy ::= (*) LBRACE fieldDecList RBRACE , {ASSIGN }]
+  [ty ::= (*) recTy , {ASSIGN }]
+  [varDec ::= VAR ID COLON (*) ty ASSIGN exp , {IN VAR TYPE }]
+}
+transition on ARRAY to state [27]
+transition on recTy to state [26]
+transition on arrTy to state [25]
+transition on LBRACE to state [24]
+transition on ID to state [23]
+transition on ty to state [44]
+
+-------------------
+lalr_state [42]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT IN VAR TYPE }]
+  [lValue ::= (*) ID , {LBRACK DOT IN VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {IN VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {IN VAR TYPE }]
+  [exp ::= (*) recCreate , {IN VAR TYPE }]
+  [exp ::= (*) lValue , {IN VAR TYPE }]
+  [lValue ::= (*) fieldExp , {LBRACK DOT IN VAR TYPE }]
+  [exp ::= (*) arrCreate , {IN VAR TYPE }]
+  [varDec ::= VAR ID ASSIGN (*) exp , {IN VAR TYPE }]
+  [exp ::= (*) STRING , {IN VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT IN VAR TYPE }]
+  [lValue ::= (*) subscript , {LBRACK DOT IN VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {IN VAR TYPE }]
+  [exp ::= (*) letExp , {IN VAR TYPE }]
+  [exp ::= (*) INT , {IN VAR TYPE }]
+}
+transition on LET to state [12]
+transition on arrCreate to state [11]
+transition on lValue to state [10]
+transition on subscript to state [9]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [43]
+transition on INT to state [1]
+
+-------------------
+lalr_state [43]: {
+  [varDec ::= VAR ID ASSIGN exp (*) , {IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [44]: {
+  [varDec ::= VAR ID COLON ty (*) ASSIGN exp , {IN VAR TYPE }]
+}
+transition on ASSIGN to state [45]
+
+-------------------
+lalr_state [45]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT IN VAR TYPE }]
+  [lValue ::= (*) ID , {LBRACK DOT IN VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {IN VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {IN VAR TYPE }]
+  [varDec ::= VAR ID COLON ty ASSIGN (*) exp , {IN VAR TYPE }]
+  [exp ::= (*) recCreate , {IN VAR TYPE }]
+  [exp ::= (*) lValue , {IN VAR TYPE }]
+  [lValue ::= (*) fieldExp , {LBRACK DOT IN VAR TYPE }]
+  [exp ::= (*) arrCreate , {IN VAR TYPE }]
+  [exp ::= (*) STRING , {IN VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT IN VAR TYPE }]
+  [lValue ::= (*) subscript , {LBRACK DOT IN VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {IN VAR TYPE }]
+  [exp ::= (*) letExp , {IN VAR TYPE }]
+  [exp ::= (*) INT , {IN VAR TYPE }]
+}
+transition on LET to state [12]
+transition on arrCreate to state [11]
+transition on lValue to state [10]
+transition on subscript to state [9]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [46]
+transition on INT to state [1]
+
+-------------------
+lalr_state [46]: {
+  [varDec ::= VAR ID COLON ty ASSIGN exp (*) , {IN VAR TYPE }]
+}
+
+-------------------
+lalr_state [47]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {ID STRING INT LBRACK DOT LET END }]
+  [lValue ::= (*) ID , {ID STRING INT LBRACK DOT LET END }]
+  [letExp ::= LET decList IN (*) expList END , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {ID STRING INT LET END }]
+  [letExp ::= (*) LET decList IN expList END , {ID STRING INT LET END }]
+  [expList ::= (*) exp expList , {END }]
+  [exp ::= (*) recCreate , {ID STRING INT LET END }]
+  [exp ::= (*) lValue , {ID STRING INT LET END }]
+  [lValue ::= (*) fieldExp , {ID STRING INT LBRACK DOT LET END }]
+  [exp ::= (*) arrCreate , {ID STRING INT LET END }]
+  [exp ::= (*) STRING , {ID STRING INT LET END }]
+  [fieldExp ::= (*) lValue DOT ID , {ID STRING INT LBRACK DOT LET END }]
+  [lValue ::= (*) subscript , {ID STRING INT LBRACK DOT LET END }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {ID STRING INT LET END }]
+  [expList ::= (*) , {END }]
+  [exp ::= (*) letExp , {ID STRING INT LET END }]
+  [exp ::= (*) INT , {ID STRING INT LET END }]
+}
+transition on LET to state [12]
+transition on expList to state [49]
+transition on arrCreate to state [11]
+transition on lValue to state [10]
+transition on subscript to state [9]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [48]
+transition on INT to state [1]
+
+-------------------
+lalr_state [48]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {ID STRING INT LBRACK DOT LET END }]
+  [lValue ::= (*) ID , {ID STRING INT LBRACK DOT LET END }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {ID STRING INT LET END }]
+  [letExp ::= (*) LET decList IN expList END , {ID STRING INT LET END }]
+  [expList ::= exp (*) expList , {END }]
+  [expList ::= (*) exp expList , {END }]
+  [exp ::= (*) recCreate , {ID STRING INT LET END }]
+  [exp ::= (*) lValue , {ID STRING INT LET END }]
+  [lValue ::= (*) fieldExp , {ID STRING INT LBRACK DOT LET END }]
+  [exp ::= (*) arrCreate , {ID STRING INT LET END }]
+  [exp ::= (*) STRING , {ID STRING INT LET END }]
+  [fieldExp ::= (*) lValue DOT ID , {ID STRING INT LBRACK DOT LET END }]
+  [lValue ::= (*) subscript , {ID STRING INT LBRACK DOT LET END }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {ID STRING INT LET END }]
+  [expList ::= (*) , {END }]
+  [exp ::= (*) letExp , {ID STRING INT LET END }]
+  [exp ::= (*) INT , {ID STRING INT LET END }]
+}
+transition on LET to state [12]
+transition on expList to state [51]
+transition on arrCreate to state [11]
+transition on lValue to state [10]
+transition on subscript to state [9]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [48]
+transition on INT to state [1]
+
+-------------------
+lalr_state [49]: {
+  [letExp ::= LET decList IN expList (*) END , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+transition on END to state [50]
+
+-------------------
+lalr_state [50]: {
+  [letExp ::= LET decList IN expList END (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [51]: {
+  [expList ::= exp expList (*) , {END }]
+}
+
+-------------------
+lalr_state [52]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT }]
+  [lValue ::= (*) ID , {LBRACK RBRACK DOT }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {RBRACK }]
+  [letExp ::= (*) LET decList IN expList END , {RBRACK }]
+  [exp ::= (*) recCreate , {RBRACK }]
+  [exp ::= (*) lValue , {RBRACK }]
+  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT }]
+  [exp ::= (*) arrCreate , {RBRACK }]
+  [exp ::= (*) STRING , {RBRACK }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT }]
+  [lValue ::= (*) subscript , {LBRACK RBRACK DOT }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {RBRACK }]
+  [subscript ::= lValue LBRACK (*) exp RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [exp ::= (*) letExp , {RBRACK }]
+  [exp ::= (*) INT , {RBRACK }]
+}
+transition on LET to state [12]
+transition on arrCreate to state [11]
+transition on subscript to state [9]
+transition on lValue to state [10]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [55]
+transition on INT to state [1]
+
+-------------------
+lalr_state [53]: {
+  [fieldExp ::= lValue DOT (*) ID , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+}
+transition on ID to state [54]
+
+-------------------
+lalr_state [54]: {
+  [fieldExp ::= lValue DOT ID (*) , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [55]: {
+  [subscript ::= lValue LBRACK exp (*) RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+}
+transition on RBRACK to state [56]
+
+-------------------
+lalr_state [56]: {
+  [subscript ::= lValue LBRACK exp RBRACK (*) , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [57]: {
+  [recCreate ::= ID LBRACE (*) fieldCreateList RBRACE , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
+  [fieldCreateList ::= (*) , {RBRACE }]
+  [fieldCreateList ::= (*) fieldCreate fieldCreateListAux , {RBRACE }]
+}
+transition on fieldCreate to state [65]
+transition on fieldCreateList to state [64]
+transition on ID to state [63]
+
+-------------------
+lalr_state [58]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT }]
+  [lValue ::= (*) ID , {LBRACK RBRACK DOT }]
+  [arrCreate ::= ID LBRACK (*) exp RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {RBRACK }]
+  [letExp ::= (*) LET decList IN expList END , {RBRACK }]
+  [exp ::= (*) recCreate , {RBRACK }]
+  [exp ::= (*) lValue , {RBRACK }]
+  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT }]
+  [exp ::= (*) arrCreate , {RBRACK }]
+  [exp ::= (*) STRING , {RBRACK }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT }]
+  [lValue ::= (*) subscript , {LBRACK RBRACK DOT }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {RBRACK }]
+  [exp ::= (*) letExp , {RBRACK }]
+  [exp ::= (*) INT , {RBRACK }]
+}
+transition on LET to state [12]
+transition on arrCreate to state [11]
+transition on lValue to state [10]
+transition on subscript to state [9]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [59]
+transition on INT to state [1]
+
+-------------------
+lalr_state [59]: {
+  [arrCreate ::= ID LBRACK exp (*) RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+transition on RBRACK to state [60]
+
+-------------------
+lalr_state [60]: {
+  [arrCreate ::= ID LBRACK exp RBRACK (*) OF exp , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+transition on OF to state [61]
+
+-------------------
+lalr_state [61]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [lValue ::= (*) ID , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [exp ::= (*) recCreate , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [exp ::= (*) lValue , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [lValue ::= (*) fieldExp , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [exp ::= (*) arrCreate , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [exp ::= (*) STRING , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [lValue ::= (*) subscript , {EOF ID STRING INT COMMA LBRACK RBRACK RBRACE DOT LET IN END VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [exp ::= (*) letExp , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [arrCreate ::= ID LBRACK exp RBRACK OF (*) exp , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+  [exp ::= (*) INT , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+transition on LET to state [12]
+transition on arrCreate to state [11]
+transition on subscript to state [9]
+transition on lValue to state [10]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [62]
+transition on INT to state [1]
+
+-------------------
+lalr_state [62]: {
+  [arrCreate ::= ID LBRACK exp RBRACK OF exp (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [63]: {
+  [fieldCreate ::= ID (*) EQ exp , {COMMA RBRACE }]
+}
+transition on EQ to state [71]
+
+-------------------
+lalr_state [64]: {
+  [recCreate ::= ID LBRACE fieldCreateList (*) RBRACE , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+transition on RBRACE to state [70]
+
+-------------------
+lalr_state [65]: {
+  [fieldCreateListAux ::= (*) COMMA fieldCreate fieldCreateListAux , {RBRACE }]
+  [fieldCreateListAux ::= (*) , {RBRACE }]
+  [fieldCreateList ::= fieldCreate (*) fieldCreateListAux , {RBRACE }]
+}
+transition on fieldCreateListAux to state [67]
+transition on COMMA to state [66]
+
+-------------------
+lalr_state [66]: {
+  [fieldCreateListAux ::= COMMA (*) fieldCreate fieldCreateListAux , {RBRACE }]
+  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
+}
+transition on fieldCreate to state [68]
+transition on ID to state [63]
+
+-------------------
+lalr_state [67]: {
+  [fieldCreateList ::= fieldCreate fieldCreateListAux (*) , {RBRACE }]
+}
+
+-------------------
+lalr_state [68]: {
+  [fieldCreateListAux ::= (*) COMMA fieldCreate fieldCreateListAux , {RBRACE }]
+  [fieldCreateListAux ::= (*) , {RBRACE }]
+  [fieldCreateListAux ::= COMMA fieldCreate (*) fieldCreateListAux , {RBRACE }]
+}
+transition on fieldCreateListAux to state [69]
+transition on COMMA to state [66]
+
+-------------------
+lalr_state [69]: {
+  [fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux (*) , {RBRACE }]
+}
+
+-------------------
+lalr_state [70]: {
+  [recCreate ::= ID LBRACE fieldCreateList RBRACE (*) , {EOF ID STRING INT COMMA RBRACK RBRACE LET IN END VAR TYPE }]
+}
+
+-------------------
+lalr_state [71]: {
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {COMMA LBRACK RBRACE DOT }]
+  [lValue ::= (*) ID , {COMMA LBRACK RBRACE DOT }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {COMMA RBRACE }]
+  [letExp ::= (*) LET decList IN expList END , {COMMA RBRACE }]
+  [exp ::= (*) recCreate , {COMMA RBRACE }]
+  [exp ::= (*) lValue , {COMMA RBRACE }]
+  [lValue ::= (*) fieldExp , {COMMA LBRACK RBRACE DOT }]
+  [exp ::= (*) arrCreate , {COMMA RBRACE }]
+  [exp ::= (*) STRING , {COMMA RBRACE }]
+  [fieldExp ::= (*) lValue DOT ID , {COMMA LBRACK RBRACE DOT }]
+  [lValue ::= (*) subscript , {COMMA LBRACK RBRACE DOT }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {COMMA RBRACE }]
+  [exp ::= (*) letExp , {COMMA RBRACE }]
+  [exp ::= (*) INT , {COMMA RBRACE }]
+  [fieldCreate ::= ID EQ (*) exp , {COMMA RBRACE }]
+}
+transition on LET to state [12]
+transition on arrCreate to state [11]
+transition on subscript to state [9]
+transition on lValue to state [10]
+transition on ID to state [8]
+transition on fieldExp to state [7]
+transition on STRING to state [6]
+transition on letExp to state [5]
+transition on recCreate to state [3]
+transition on exp to state [72]
+transition on INT to state [1]
+
+-------------------
+lalr_state [72]: {
+  [fieldCreate ::= ID EQ exp (*) , {COMMA RBRACE }]
+}
+
+-------------------
+lalr_state [73]: {
+  [$START ::= program EOF (*) , {EOF }]
 }
 
 -------------------
 Closing files...
 ------- CUP v0.10k Parser Generation Summary -------
-  1 error and 33 warnings
+  0 errors and 29 warnings
   45 terminals, 27 non-terminals, and 41 productions declared, 
-  producing 75 unique parse states.
+  producing 74 unique parse states.
   27 terminals declared but not used.
   0 non-terminals declared but not used.
   0 productions never reduced.
-  5 conflicts detected (3 expected).
-  No code produced.
+  1 conflict detected (3 expected).
+  Code written to "Grm.java", and "sym.java".
 ---------------------------------------------------- (v0.10k)
