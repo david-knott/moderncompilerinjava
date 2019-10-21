@@ -86,7 +86,7 @@ digits=[0-9]+
 <YYINITIAL>"&"	{return tok(sym.AND, null);}
 <YYINITIAL>"|"	{return tok(sym.OR, null);}
 
-<YYINITIAL>[a-z_]+[a-z0-9_]*	{return tok(sym.ID, yytext());}
+<YYINITIAL>[a-zA-Z_]+[a-zA-Z0-9_]*	{return tok(sym.ID, yytext());}
 <YYINITIAL>{digits} {return tok(sym.INT, new Integer(yytext()));}
 <YYINITIAL>"\""	{yybegin(STRING);}
 <STRING>"\""	{yybegin(YYINITIAL);return tok(sym.STRING, new String(yytext()));}

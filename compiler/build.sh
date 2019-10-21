@@ -15,12 +15,12 @@ while test $# -gt 0; do
       ;;
     -l)
       shift # shift moves positional parameters to the left to allow while loop the exit
-      echo "lexer"
+      echo "generating lexer"
         export LEXER='set'
       ;;
     -p)
       shift
-      echo "parser"
+        echo "generating parser"
         export PARSER='set'
       ;;
     *)
@@ -33,8 +33,6 @@ done
 # compile jlex and build lexer
 if [ -n "$LEXER" ]
 then
-
-echo ">>> JLEX"
     cd ./JLex
     javac -d ../bin Main.java
     cd ..
@@ -42,11 +40,9 @@ echo ">>> JLEX"
     mv Parse/Tiger.lex.java Parse/Yylex.java
 fi
 
-
 # compile java cup and create grammar parser
 if [ -n "$PARSER" ]
 then
-  echo ">>> Running CUP"
   rm Parse/Grm.out
   rm Parse/Grm.err
   javac -d bin java_cup/*.java java_cup/runtime/*.java
@@ -60,4 +56,10 @@ then
 fi
 
 javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java
-java -cp bin Parse.Main ../reference/tiger/testcases/simple.tig
+# java -cp bin Parse.Main ../reference/tiger/testcases/simple.tig
+
+cd ..
+javac -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar ./test/*.java
+java -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar:./lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore test.Chap1Test test.Chap3Test 
+
+cd compiler

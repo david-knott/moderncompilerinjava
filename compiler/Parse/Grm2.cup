@@ -43,48 +43,18 @@ non terminal lValue, iFieldList, iFieldListAux, iField, iRec, assignExp;
 non terminal lValueAux;
 start with program;
 
-program ::= exp;
-
-dec ::= varDec 
-| tyDec;
-
-
-exp ::= letExp
-| STRING
-| INT
-| iRec
-| lValue;
-
-tyDec ::= TYPE ID EQ ty;
-
-ty ::= ID
-| LBRACE tyFieldList RBRACE
-| ARRAY OF ID;
-
-arrTy ::= ARRAY OF ID;
-
-recTy ::= LBRACE tyFieldList RBRACE;
-
-tyFieldList ::= tyField tyFieldListAux
-| /* empty */ ;
-
-tyFieldListAux ::= COMMA tyField tyFieldListAux
-| /* empty */;
-
-tyField ::= ID COLON ty;
-
-lValue ::= ID:id lValueAux;
-
-lValueAux ::= DOT ID:id
-| LBRACK expList:e RBRACK
-|
+program ::= expList
 ;
-
 
 expList ::= exp expList
 | /* empty */
 ;
-
+exp ::= letExp
+| STRING
+| INT
+| iRec
+| lValue
+;
 
 assignExp ::= lValue ASSIGN expList
 ;
@@ -95,12 +65,33 @@ letExp ::= LET decList IN expList END
 decList ::= dec decList 
 | /* empty */
 ;
-
+dec ::= varDec | tyDec
+;
 varDec ::= VAR ID ASSIGN exp
 | VAR ID COLON ty ASSIGN exp
 ;
 
+tyDec ::= TYPE ID EQ ty
+;
+ty ::= ID
+| LBRACE tyFieldList RBRACE
+| ARRAY OF ID
+;
+tyFieldList ::= tyField tyFieldListAux
+| /* empty */
+;
+tyFieldListAux ::= COMMA tyField tyFieldListAux
+| /* empty */
+;
+tyField ::= ID COLON ty
+;
 
+lValue ::= ID:id lValueAux
+;
+lValueAux ::= DOT ID:id
+| LBRACK expList:e RBRACK
+|
+;
 
 iRec ::= ty LBRACE iFieldList RBRACE
 ;
