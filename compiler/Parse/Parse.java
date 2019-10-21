@@ -63,7 +63,7 @@ static String symnames[] = new String[100];
 		      java_cup.runtime.Symbol tok;
 		      do { 
 		         tok=lexer.nextToken();
-		         System.out.println(symnames[tok.sym] + " " + tok.left);
+		      //   System.out.println(symnames[tok.sym] + " " + tok.left);
 		      } while (tok.sym != sym.EOF);
 		      
 		      inp.close();
@@ -86,7 +86,7 @@ static String symnames[] = new String[100];
     }
     Grm parser = new Grm(new Yylex(inp, errorMsg), errorMsg);
     try {
-      parser./*debug_*/parse();
+      parser.debug_parse();
     } catch (Throwable e) {
       e.printStackTrace();
       throw new Error(e.toString());

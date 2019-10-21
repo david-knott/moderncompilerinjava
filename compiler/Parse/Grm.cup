@@ -38,9 +38,9 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
 non terminal program, exp, expList, letExp, decList, dec, tyDec, funcDec;
-non terminal ty, tyField, tyFieldList, tyFieldListAux, varDecList, varDec;
-non terminal lValue, iFieldList, iFieldListAux, iField, iRec, assignExp;
-non terminal lValueAux;
+non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDecList, varDec;
+non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
+non terminal lValueAux, arrTy, recTy, arrCreate, subscript, fieldExp;
 start with program;
 
 program ::= exp;
@@ -48,67 +48,61 @@ program ::= exp;
 dec ::= varDec 
 | tyDec;
 
-
-exp ::= letExp
-| STRING
-| INT
-| iRec
-| lValue;
-
 tyDec ::= TYPE ID EQ ty;
 
-ty ::= ID
-| LBRACE tyFieldList RBRACE
-| ARRAY OF ID;
+ty ::= ID /* conflict */
+| recTy
+| arrTy;
 
 arrTy ::= ARRAY OF ID;
 
-recTy ::= LBRACE tyFieldList RBRACE;
+recTy ::= LBRACE fieldDecList RBRACE;
 
-tyFieldList ::= tyField tyFieldListAux
+fieldDecList ::= fieldDec fieldDecListAux
 | /* empty */ ;
 
-tyFieldListAux ::= COMMA tyField tyFieldListAux
+fieldDecListAux ::= COMMA fieldDec fieldDecListAux
 | /* empty */;
 
-tyField ::= ID COLON ty;
-
-lValue ::= ID:id lValueAux;
-
-lValueAux ::= DOT ID:id
-| LBRACK expList:e RBRACK
-|
-;
-
-
-expList ::= exp expList
-| /* empty */
-;
-
-
-assignExp ::= lValue ASSIGN expList
-;
-
-letExp ::= LET decList IN expList END
-;
-
-decList ::= dec decList 
-| /* empty */
-;
+fieldDec ::= ID COLON ty;
 
 varDec ::= VAR ID ASSIGN exp
-| VAR ID COLON ty ASSIGN exp
+| VAR ID COLON ty ASSIGN exp;
+
+lValue ::= ID:id
+| subscript
+| fieldExp;
+
+subscript ::= lValue LBRACK exp RBRACK;
+
+fieldExp ::= lValue DOT ID;
+
+exp ::= lValue
+| INT
+| STRING
+| recCreate
+| letExp
+| arrCreate
 ;
 
+expList ::= exp expList
+| /* empty */;
 
+assignment ::= lValue ASSIGN exp;
 
-iRec ::= ty LBRACE iFieldList RBRACE
-;
-iFieldList ::= iField iFieldListAux
-| /* empty */
-;
-iFieldListAux ::= COMMA iField iFieldListAux 
-| /* empty */
-;
-iField ::= ID EQ exp
-;
+letExp ::= LET decList IN expList END;
+
+decList ::= dec decList 
+| /* empty */;
+
+arrCreate ::= ty LBRACK exp RBRACK OF exp;
+
+recCreate ::= ty LBRACE fieldCreateList RBRACE;
+
+fieldCreateList ::= fieldCreate fieldCreateListAux
+| /* empty */;
+
+fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux 
+| /* empty */;
+
+fieldCreate ::= ID EQ exp;
