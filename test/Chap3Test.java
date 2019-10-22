@@ -28,5 +28,34 @@ public class Chap3Test {
       new Parse(filename);
   }
   
+  @Test
+  public void letTest5() {
+      String filename = "./test/fixtures/let_dec4.tig";
+      new Parse(filename);
+  }
+  
+  @Test
+  public void letTest6() {
+      String filename = "./test/fixtures/let_dec5.tig";
+      new Parse(filename);
+  }
+  
 
+  @Test
+  public void letTest7() {
+      String filename = "./test/fixtures/let_dec6.tig";
+      new Parse(filename);
+  }
+  
+  @Test
+  public void letDecSeqExp1() {
+      String filename = "./test/fixtures/let_dec_seq_exp.tig";
+      new Parse(filename);
+  }
+  
+  @Test
+  public void letDecSeqExp2() {
+      String filename = "./test/fixtures/let_dec_seq_exp2.tig";
+      new Parse(filename);
+  }
 }
