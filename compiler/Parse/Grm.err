@@ -27,14 +27,13 @@ Building parse tables...
   Computing first sets...
   Building state machine...
   Filling in tables...
-*** Shift/Reduce conflict found in state #11
+*** Shift/Reduce conflict found in state #12
   between lValue ::= ID (*) 
   and     arrCreate ::= ID (*) LBRACK exp RBRACK OF exp 
   under symbol LBRACK
   Resolved in favor of shifting.
 
   Checking for non-reduced productions...
-*** Production "assignment ::= lValue ASSIGN exp " never reduced
 Writing parser...
 ===== Terminals =====
 [0]EOF [1]error [2]ID [3]STRING [4]INT 
@@ -89,73 +88,77 @@ Writing parser...
 [28] exp ::= callExp 
 [29] exp ::= infixExp 
 [30] exp ::= recCreate 
-[31] exp ::= letExp 
-[32] exp ::= arrCreate 
-[33] infixExp ::= INT 
-[34] infixExp ::= exp PLUS exp 
-[35] infixExp ::= exp MINUS exp 
-[36] seqExp ::= LPAREN RPAREN 
-[37] seqExp ::= LPAREN exp seqExpAux RPAREN 
-[38] seqExpAux ::= SEMICOLON exp seqExpAux 
-[39] seqExpAux ::= 
-[40] callExp ::= ID LPAREN expList RPAREN 
-[41] expList ::= exp expListAux 
-[42] expList ::= 
-[43] expListAux ::= SEMICOLON exp expListAux 
-[44] expListAux ::= 
-[45] assignment ::= lValue ASSIGN exp 
-[46] letExp ::= LET decList IN expList END 
-[47] decList ::= dec decList 
-[48] decList ::= 
-[49] arrCreate ::= ID LBRACK exp RBRACK OF exp 
-[50] recCreate ::= ID LBRACE fieldCreateList RBRACE 
-[51] fieldCreateList ::= fieldCreate fieldCreateListAux 
-[52] fieldCreateList ::= 
-[53] fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux 
-[54] fieldCreateListAux ::= 
-[55] fieldCreate ::= ID EQ exp 
+[31] exp ::= assignment 
+[32] exp ::= letExp 
+[33] exp ::= arrCreate 
+[34] infixExp ::= INT 
+[35] infixExp ::= exp PLUS exp 
+[36] infixExp ::= exp MINUS exp 
+[37] seqExp ::= LPAREN RPAREN 
+[38] seqExp ::= LPAREN exp seqExpAux RPAREN 
+[39] seqExpAux ::= SEMICOLON exp seqExpAux 
+[40] seqExpAux ::= 
+[41] callExp ::= ID LPAREN expList RPAREN 
+[42] expList ::= exp expListAux 
+[43] expList ::= 
+[44] expListAux ::= SEMICOLON exp expListAux 
+[45] expListAux ::= 
+[46] assignment ::= lValue ASSIGN exp 
+[47] letExp ::= LET decList IN expList END 
+[48] decList ::= dec decList 
+[49] decList ::= 
+[50] arrCreate ::= ID LBRACK exp RBRACK OF exp 
+[51] recCreate ::= ID LBRACE fieldCreateList RBRACE 
+[52] fieldCreateList ::= fieldCreate fieldCreateListAux 
+[53] fieldCreateList ::= 
+[54] fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux 
+[55] fieldCreateListAux ::= 
+[56] fieldCreate ::= ID EQ exp 
 
 ===== Viable Prefix Recognizer =====
 START lalr_state [0]: {
-  [lValue ::= (*) ID , {EOF LBRACK DOT PLUS MINUS }]
+  [lValue ::= (*) ID , {EOF LBRACK DOT PLUS MINUS ASSIGN }]
   [exp ::= (*) lValue , {EOF PLUS MINUS }]
   [exp ::= (*) recCreate , {EOF PLUS MINUS }]
+  [infixExp ::= (*) exp PLUS exp , {EOF PLUS MINUS }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF PLUS MINUS }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) callExp , {EOF PLUS MINUS }]
+  [exp ::= (*) arrCreate , {EOF PLUS MINUS }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF PLUS MINUS }]
+  [program ::= (*) exp , {EOF }]
+  [lValue ::= (*) subscript , {EOF LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) STRING , {EOF PLUS MINUS }]
+  [exp ::= (*) assignment , {EOF PLUS MINUS }]
   [infixExp ::= (*) exp MINUS exp , {EOF PLUS MINUS }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {EOF PLUS MINUS }]
+  [assignment ::= (*) lValue ASSIGN exp , {EOF PLUS MINUS }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF PLUS MINUS }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) callExp , {EOF PLUS MINUS }]
+  [fieldExp ::= (*) lValue DOT ID , {EOF LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) infixExp , {EOF PLUS MINUS }]
   [infixExp ::= (*) INT , {EOF PLUS MINUS }]
-  [program ::= (*) exp , {EOF }]
-  [lValue ::= (*) subscript , {EOF LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) STRING , {EOF PLUS MINUS }]
+  [lValue ::= (*) fieldExp , {EOF LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) seqExp , {EOF PLUS MINUS }]
   [exp ::= (*) letExp , {EOF PLUS MINUS }]
   [seqExp ::= (*) LPAREN RPAREN , {EOF PLUS MINUS }]
   [letExp ::= (*) LET decList IN expList END , {EOF PLUS MINUS }]
-  [fieldExp ::= (*) lValue DOT ID , {EOF LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) infixExp , {EOF PLUS MINUS }]
-  [infixExp ::= (*) exp PLUS exp , {EOF PLUS MINUS }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF PLUS MINUS }]
-  [lValue ::= (*) fieldExp , {EOF LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) seqExp , {EOF PLUS MINUS }]
-  [exp ::= (*) arrCreate , {EOF PLUS MINUS }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF PLUS MINUS }]
   [$START ::= (*) program EOF , {EOF }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on program to state [7]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [3]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on program to state [8]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [4]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
@@ -171,409 +174,428 @@ lalr_state [2]: {
 
 -------------------
 lalr_state [3]: {
-  [infixExp ::= exp (*) MINUS exp , {EOF PLUS MINUS }]
-  [infixExp ::= exp (*) PLUS exp , {EOF PLUS MINUS }]
-  [program ::= exp (*) , {EOF }]
+  [exp ::= assignment (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
 
 -------------------
 lalr_state [4]: {
+  [infixExp ::= exp (*) PLUS exp , {EOF PLUS MINUS }]
+  [program ::= exp (*) , {EOF }]
+  [infixExp ::= exp (*) MINUS exp , {EOF PLUS MINUS }]
+}
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+
+-------------------
+lalr_state [5]: {
   [exp ::= callExp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [5]: {
+lalr_state [6]: {
   [exp ::= seqExp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [6]: {
+lalr_state [7]: {
   [exp ::= recCreate (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [7]: {
+lalr_state [8]: {
   [$START ::= program (*) EOF , {EOF }]
 }
-transition on EOF to state [106]
+transition on EOF to state [109]
 
 -------------------
-lalr_state [8]: {
+lalr_state [9]: {
   [exp ::= letExp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [9]: {
+lalr_state [10]: {
   [exp ::= STRING (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [10]: {
-  [lValue ::= fieldExp (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-}
-
--------------------
 lalr_state [11]: {
-  [arrCreate ::= ID (*) LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [callExp ::= ID (*) LPAREN expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [lValue ::= ID (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [recCreate ::= ID (*) LBRACE fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= fieldExp (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
 }
-transition on LPAREN to state [89]
-transition on LBRACK to state [88]
-transition on LBRACE to state [87]
 
 -------------------
 lalr_state [12]: {
-  [fieldExp ::= lValue (*) DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [subscript ::= lValue (*) LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= lValue (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [recCreate ::= ID (*) LBRACE fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= ID (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [arrCreate ::= ID (*) LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [callExp ::= ID (*) LPAREN expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on DOT to state [83]
-transition on LBRACK to state [82]
+transition on LPAREN to state [92]
+transition on LBRACK to state [91]
+transition on LBRACE to state [90]
 
 -------------------
 lalr_state [13]: {
-  [lValue ::= subscript (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [fieldExp ::= lValue (*) DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [assignment ::= lValue (*) ASSIGN exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [subscript ::= lValue (*) LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= lValue (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
+transition on DOT to state [85]
+transition on ASSIGN to state [84]
+transition on LBRACK to state [83]
 
 -------------------
 lalr_state [14]: {
-  [exp ::= arrCreate (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= subscript (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
 lalr_state [15]: {
-  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
-  [tyDec ::= (*) TYPE ID EQ ty , {IN FUNCTION VAR TYPE }]
-  [decList ::= (*) , {IN }]
-  [dec ::= (*) varDec , {IN FUNCTION VAR TYPE }]
-  [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
-  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
-  [dec ::= (*) funcDec , {IN FUNCTION VAR TYPE }]
-  [decList ::= (*) dec decList , {IN }]
-  [varDec ::= (*) VAR ID ASSIGN exp , {IN FUNCTION VAR TYPE }]
-  [dec ::= (*) tyDec , {IN FUNCTION VAR TYPE }]
-  [letExp ::= LET (*) decList IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= arrCreate (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on TYPE to state [35]
-transition on dec to state [34]
-transition on FUNCTION to state [33]
-transition on varDec to state [32]
-transition on tyDec to state [31]
-transition on funcDec to state [30]
-transition on VAR to state [29]
-transition on decList to state [28]
 
 -------------------
 lalr_state [16]: {
-  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
+  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
+  [tyDec ::= (*) TYPE ID EQ ty , {IN FUNCTION VAR TYPE }]
+  [decList ::= (*) dec decList , {IN }]
+  [dec ::= (*) varDec , {IN FUNCTION VAR TYPE }]
+  [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
+  [letExp ::= LET (*) decList IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [dec ::= (*) funcDec , {IN FUNCTION VAR TYPE }]
+  [varDec ::= (*) VAR ID ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [dec ::= (*) tyDec , {IN FUNCTION VAR TYPE }]
+  [decList ::= (*) , {IN }]
+}
+transition on TYPE to state [36]
+transition on dec to state [35]
+transition on FUNCTION to state [34]
+transition on varDec to state [33]
+transition on tyDec to state [32]
+transition on funcDec to state [31]
+transition on VAR to state [30]
+transition on decList to state [29]
+
+-------------------
+lalr_state [17]: {
+  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
   [exp ::= (*) lValue , {SEMICOLON RPAREN PLUS MINUS }]
   [exp ::= (*) recCreate , {SEMICOLON RPAREN PLUS MINUS }]
-  [infixExp ::= (*) exp MINUS exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [callExp ::= (*) ID LPAREN expList RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
-  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {SEMICOLON RPAREN PLUS MINUS }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS }]
-  [infixExp ::= (*) INT , {SEMICOLON RPAREN PLUS MINUS }]
-  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS }]
-  [seqExp ::= LPAREN (*) RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) letExp , {SEMICOLON RPAREN PLUS MINUS }]
-  [seqExp ::= (*) LPAREN RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
-  [letExp ::= (*) LET decList IN expList END , {SEMICOLON RPAREN PLUS MINUS }]
-  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS }]
   [infixExp ::= (*) exp PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
   [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS }]
-  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS }]
   [seqExp ::= LPAREN (*) exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS }]
   [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
+  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS }]
+  [exp ::= (*) assignment , {SEMICOLON RPAREN PLUS MINUS }]
+  [infixExp ::= (*) exp MINUS exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
+  [assignment ::= (*) lValue ASSIGN exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {SEMICOLON RPAREN PLUS MINUS }]
+  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS }]
+  [infixExp ::= (*) INT , {SEMICOLON RPAREN PLUS MINUS }]
+  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS }]
+  [exp ::= (*) letExp , {SEMICOLON RPAREN PLUS MINUS }]
+  [seqExp ::= LPAREN (*) RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
+  [letExp ::= (*) LET decList IN expList END , {SEMICOLON RPAREN PLUS MINUS }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on RPAREN to state [18]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [17]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on RPAREN to state [19]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [18]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [17]: {
+lalr_state [18]: {
+  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [seqExpAux ::= (*) , {RPAREN }]
   [seqExpAux ::= (*) SEMICOLON exp seqExpAux , {RPAREN }]
   [infixExp ::= exp (*) MINUS exp , {SEMICOLON RPAREN PLUS MINUS }]
   [seqExp ::= LPAREN exp (*) seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [seqExpAux ::= (*) , {RPAREN }]
 }
-transition on seqExpAux to state [22]
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-transition on SEMICOLON to state [19]
+transition on seqExpAux to state [23]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+transition on SEMICOLON to state [20]
 
 -------------------
-lalr_state [18]: {
+lalr_state [19]: {
   [seqExp ::= LPAREN RPAREN (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [19]: {
-  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
+lalr_state [20]: {
+  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
   [exp ::= (*) lValue , {SEMICOLON RPAREN PLUS MINUS }]
   [exp ::= (*) recCreate , {SEMICOLON RPAREN PLUS MINUS }]
+  [infixExp ::= (*) exp PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS }]
+  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
+  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS }]
+  [exp ::= (*) assignment , {SEMICOLON RPAREN PLUS MINUS }]
   [infixExp ::= (*) exp MINUS exp , {SEMICOLON RPAREN PLUS MINUS }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
+  [assignment ::= (*) lValue ASSIGN exp , {SEMICOLON RPAREN PLUS MINUS }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {SEMICOLON RPAREN PLUS MINUS }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS }]
+  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS }]
   [infixExp ::= (*) INT , {SEMICOLON RPAREN PLUS MINUS }]
   [seqExpAux ::= SEMICOLON (*) exp seqExpAux , {RPAREN }]
-  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS }]
+  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS }]
   [exp ::= (*) letExp , {SEMICOLON RPAREN PLUS MINUS }]
   [seqExp ::= (*) LPAREN RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
   [letExp ::= (*) LET decList IN expList END , {SEMICOLON RPAREN PLUS MINUS }]
-  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS }]
-  [infixExp ::= (*) exp PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS }]
-  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [26]
-transition on infixExp to state [2]
-transition on INT to state [1]
-
--------------------
-lalr_state [20]: {
-  [lValue ::= (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) lValue , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) recCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [callExp ::= (*) ID LPAREN expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) callExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= (*) INT , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [lValue ::= (*) subscript , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) STRING , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) letExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [letExp ::= (*) LET decList IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= exp PLUS (*) exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) infixExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [lValue ::= (*) fieldExp , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) seqExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) arrCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-}
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [25]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [27]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
 lalr_state [21]: {
-  [lValue ::= (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= exp MINUS (*) exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp PLUS (*) exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [exp ::= (*) lValue , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [exp ::= (*) recCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [infixExp ::= (*) exp MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) callExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [infixExp ::= (*) INT , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [lValue ::= (*) subscript , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) STRING , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [exp ::= (*) letExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [seqExp ::= (*) LPAREN RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [letExp ::= (*) LET decList IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) infixExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [lValue ::= (*) fieldExp , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) seqExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) arrCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [24]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [26]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
 lalr_state [22]: {
-  [seqExp ::= LPAREN exp seqExpAux (*) RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) lValue , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) recCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp MINUS (*) exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) INT , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) letExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on RPAREN to state [23]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [25]
+transition on assignment to state [3]
+transition on infixExp to state [2]
+transition on INT to state [1]
 
 -------------------
 lalr_state [23]: {
+  [seqExp ::= LPAREN exp seqExpAux (*) RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+}
+transition on RPAREN to state [24]
+
+-------------------
+lalr_state [24]: {
   [seqExp ::= LPAREN exp seqExpAux RPAREN (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [24]: {
-  [infixExp ::= exp (*) MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+lalr_state [25]: {
   [infixExp ::= exp (*) PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [infixExp ::= exp MINUS exp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-}
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-
--------------------
-lalr_state [25]: {
   [infixExp ::= exp (*) MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= exp PLUS exp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= exp (*) PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
 lalr_state [26]: {
-  [seqExpAux ::= (*) SEMICOLON exp seqExpAux , {RPAREN }]
-  [infixExp ::= exp (*) MINUS exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [seqExpAux ::= (*) , {RPAREN }]
-  [seqExpAux ::= SEMICOLON exp (*) seqExpAux , {RPAREN }]
+  [infixExp ::= exp (*) PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp PLUS exp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on seqExpAux to state [27]
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-transition on SEMICOLON to state [19]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
 lalr_state [27]: {
+  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [seqExpAux ::= (*) , {RPAREN }]
+  [seqExpAux ::= SEMICOLON exp (*) seqExpAux , {RPAREN }]
+  [seqExpAux ::= (*) SEMICOLON exp seqExpAux , {RPAREN }]
+  [infixExp ::= exp (*) MINUS exp , {SEMICOLON RPAREN PLUS MINUS }]
+}
+transition on seqExpAux to state [28]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+transition on SEMICOLON to state [20]
+
+-------------------
+lalr_state [28]: {
   [seqExpAux ::= SEMICOLON exp seqExpAux (*) , {RPAREN }]
 }
 
 -------------------
-lalr_state [28]: {
+lalr_state [29]: {
   [letExp ::= LET decList (*) IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on IN to state [74]
-
--------------------
-lalr_state [29]: {
-  [varDec ::= VAR (*) ID ASSIGN exp , {IN FUNCTION VAR TYPE }]
-  [varDec ::= VAR (*) ID COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
-}
-transition on ID to state [67]
+transition on IN to state [75]
 
 -------------------
 lalr_state [30]: {
+  [varDec ::= VAR (*) ID ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [varDec ::= VAR (*) ID COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
+}
+transition on ID to state [68]
+
+-------------------
+lalr_state [31]: {
   [dec ::= funcDec (*) , {IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [31]: {
+lalr_state [32]: {
   [dec ::= tyDec (*) , {IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [32]: {
+lalr_state [33]: {
   [dec ::= varDec (*) , {IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [33]: {
+lalr_state [34]: {
   [funcDec ::= FUNCTION (*) ID LPAREN fieldDecList RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
   [funcDec ::= FUNCTION (*) ID LPAREN fieldDecList RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
 }
-transition on ID to state [57]
-
--------------------
-lalr_state [34]: {
-  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
-  [tyDec ::= (*) TYPE ID EQ ty , {IN FUNCTION VAR TYPE }]
-  [decList ::= (*) , {IN }]
-  [dec ::= (*) varDec , {IN FUNCTION VAR TYPE }]
-  [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
-  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
-  [decList ::= dec (*) decList , {IN }]
-  [dec ::= (*) funcDec , {IN FUNCTION VAR TYPE }]
-  [decList ::= (*) dec decList , {IN }]
-  [varDec ::= (*) VAR ID ASSIGN exp , {IN FUNCTION VAR TYPE }]
-  [dec ::= (*) tyDec , {IN FUNCTION VAR TYPE }]
-}
-transition on TYPE to state [35]
-transition on dec to state [34]
-transition on FUNCTION to state [33]
-transition on varDec to state [32]
-transition on tyDec to state [31]
-transition on funcDec to state [30]
-transition on VAR to state [29]
-transition on decList to state [56]
+transition on ID to state [58]
 
 -------------------
 lalr_state [35]: {
-  [tyDec ::= TYPE (*) ID EQ ty , {IN FUNCTION VAR TYPE }]
+  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
+  [tyDec ::= (*) TYPE ID EQ ty , {IN FUNCTION VAR TYPE }]
+  [decList ::= dec (*) decList , {IN }]
+  [decList ::= (*) dec decList , {IN }]
+  [dec ::= (*) varDec , {IN FUNCTION VAR TYPE }]
+  [varDec ::= (*) VAR ID COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [funcDec ::= (*) FUNCTION ID LPAREN fieldDecList RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
+  [dec ::= (*) funcDec , {IN FUNCTION VAR TYPE }]
+  [varDec ::= (*) VAR ID ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [dec ::= (*) tyDec , {IN FUNCTION VAR TYPE }]
+  [decList ::= (*) , {IN }]
 }
-transition on ID to state [36]
+transition on TYPE to state [36]
+transition on dec to state [35]
+transition on FUNCTION to state [34]
+transition on varDec to state [33]
+transition on tyDec to state [32]
+transition on funcDec to state [31]
+transition on decList to state [57]
+transition on VAR to state [30]
 
 -------------------
 lalr_state [36]: {
-  [tyDec ::= TYPE ID (*) EQ ty , {IN FUNCTION VAR TYPE }]
+  [tyDec ::= TYPE (*) ID EQ ty , {IN FUNCTION VAR TYPE }]
 }
-transition on EQ to state [37]
+transition on ID to state [37]
 
 -------------------
 lalr_state [37]: {
+  [tyDec ::= TYPE ID (*) EQ ty , {IN FUNCTION VAR TYPE }]
+}
+transition on EQ to state [38]
+
+-------------------
+lalr_state [38]: {
   [ty ::= (*) arrTy , {IN FUNCTION VAR TYPE }]
   [recTy ::= (*) LBRACE fieldDecList RBRACE , {IN FUNCTION VAR TYPE }]
   [ty ::= (*) recTy , {IN FUNCTION VAR TYPE }]
@@ -581,116 +603,116 @@ lalr_state [37]: {
   [ty ::= (*) ID , {IN FUNCTION VAR TYPE }]
   [tyDec ::= TYPE ID EQ (*) ty , {IN FUNCTION VAR TYPE }]
 }
-transition on ARRAY to state [43]
-transition on recTy to state [42]
-transition on arrTy to state [41]
-transition on LBRACE to state [40]
-transition on ID to state [39]
-transition on ty to state [38]
+transition on ARRAY to state [44]
+transition on recTy to state [43]
+transition on arrTy to state [42]
+transition on LBRACE to state [41]
+transition on ID to state [40]
+transition on ty to state [39]
 
 -------------------
-lalr_state [38]: {
+lalr_state [39]: {
   [tyDec ::= TYPE ID EQ ty (*) , {IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [39]: {
+lalr_state [40]: {
   [ty ::= ID (*) , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [40]: {
+lalr_state [41]: {
   [recTy ::= LBRACE (*) fieldDecList RBRACE , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
   [fieldDec ::= (*) ID COLON ty , {COMMA RBRACE }]
   [fieldDecList ::= (*) , {RBRACE }]
   [fieldDecList ::= (*) fieldDec fieldDecListAux , {RBRACE }]
 }
-transition on fieldDec to state [48]
-transition on fieldDecList to state [47]
-transition on ID to state [46]
+transition on fieldDec to state [49]
+transition on fieldDecList to state [48]
+transition on ID to state [47]
 
 -------------------
-lalr_state [41]: {
+lalr_state [42]: {
   [ty ::= arrTy (*) , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [42]: {
+lalr_state [43]: {
   [ty ::= recTy (*) , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [43]: {
+lalr_state [44]: {
   [arrTy ::= ARRAY (*) OF ID , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
 }
-transition on OF to state [44]
-
--------------------
-lalr_state [44]: {
-  [arrTy ::= ARRAY OF (*) ID , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
-}
-transition on ID to state [45]
+transition on OF to state [45]
 
 -------------------
 lalr_state [45]: {
+  [arrTy ::= ARRAY OF (*) ID , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
+}
+transition on ID to state [46]
+
+-------------------
+lalr_state [46]: {
   [arrTy ::= ARRAY OF ID (*) , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [46]: {
+lalr_state [47]: {
   [fieldDec ::= ID (*) COLON ty , {COMMA RPAREN RBRACE }]
 }
-transition on COLON to state [54]
-
--------------------
-lalr_state [47]: {
-  [recTy ::= LBRACE fieldDecList (*) RBRACE , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
-}
-transition on RBRACE to state [53]
+transition on COLON to state [55]
 
 -------------------
 lalr_state [48]: {
+  [recTy ::= LBRACE fieldDecList (*) RBRACE , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
+}
+transition on RBRACE to state [54]
+
+-------------------
+lalr_state [49]: {
   [fieldDecListAux ::= (*) COMMA fieldDec fieldDecListAux , {RPAREN RBRACE }]
   [fieldDecListAux ::= (*) , {RPAREN RBRACE }]
   [fieldDecList ::= fieldDec (*) fieldDecListAux , {RPAREN RBRACE }]
 }
-transition on fieldDecListAux to state [50]
-transition on COMMA to state [49]
-
--------------------
-lalr_state [49]: {
-  [fieldDecListAux ::= COMMA (*) fieldDec fieldDecListAux , {RPAREN RBRACE }]
-  [fieldDec ::= (*) ID COLON ty , {COMMA RPAREN RBRACE }]
-}
-transition on fieldDec to state [51]
-transition on ID to state [46]
+transition on fieldDecListAux to state [51]
+transition on COMMA to state [50]
 
 -------------------
 lalr_state [50]: {
+  [fieldDecListAux ::= COMMA (*) fieldDec fieldDecListAux , {RPAREN RBRACE }]
+  [fieldDec ::= (*) ID COLON ty , {COMMA RPAREN RBRACE }]
+}
+transition on fieldDec to state [52]
+transition on ID to state [47]
+
+-------------------
+lalr_state [51]: {
   [fieldDecList ::= fieldDec fieldDecListAux (*) , {RPAREN RBRACE }]
 }
 
 -------------------
-lalr_state [51]: {
+lalr_state [52]: {
   [fieldDecListAux ::= COMMA fieldDec (*) fieldDecListAux , {RPAREN RBRACE }]
   [fieldDecListAux ::= (*) COMMA fieldDec fieldDecListAux , {RPAREN RBRACE }]
   [fieldDecListAux ::= (*) , {RPAREN RBRACE }]
 }
-transition on fieldDecListAux to state [52]
-transition on COMMA to state [49]
+transition on fieldDecListAux to state [53]
+transition on COMMA to state [50]
 
 -------------------
-lalr_state [52]: {
+lalr_state [53]: {
   [fieldDecListAux ::= COMMA fieldDec fieldDecListAux (*) , {RPAREN RBRACE }]
 }
 
 -------------------
-lalr_state [53]: {
+lalr_state [54]: {
   [recTy ::= LBRACE fieldDecList RBRACE (*) , {COMMA RPAREN RBRACE ASSIGN IN FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [54]: {
+lalr_state [55]: {
   [ty ::= (*) arrTy , {COMMA RPAREN RBRACE }]
   [recTy ::= (*) LBRACE fieldDecList RBRACE , {COMMA RPAREN RBRACE }]
   [fieldDec ::= ID COLON (*) ty , {COMMA RPAREN RBRACE }]
@@ -698,181 +720,187 @@ lalr_state [54]: {
   [arrTy ::= (*) ARRAY OF ID , {COMMA RPAREN RBRACE }]
   [ty ::= (*) ID , {COMMA RPAREN RBRACE }]
 }
-transition on ARRAY to state [43]
-transition on recTy to state [42]
-transition on arrTy to state [41]
-transition on LBRACE to state [40]
-transition on ty to state [55]
-transition on ID to state [39]
+transition on ARRAY to state [44]
+transition on recTy to state [43]
+transition on arrTy to state [42]
+transition on LBRACE to state [41]
+transition on ty to state [56]
+transition on ID to state [40]
 
 -------------------
-lalr_state [55]: {
+lalr_state [56]: {
   [fieldDec ::= ID COLON ty (*) , {COMMA RPAREN RBRACE }]
 }
 
 -------------------
-lalr_state [56]: {
+lalr_state [57]: {
   [decList ::= dec decList (*) , {IN }]
 }
 
 -------------------
-lalr_state [57]: {
+lalr_state [58]: {
   [funcDec ::= FUNCTION ID (*) LPAREN fieldDecList RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
   [funcDec ::= FUNCTION ID (*) LPAREN fieldDecList RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
 }
-transition on LPAREN to state [58]
+transition on LPAREN to state [59]
 
 -------------------
-lalr_state [58]: {
+lalr_state [59]: {
   [fieldDec ::= (*) ID COLON ty , {COMMA RPAREN }]
   [funcDec ::= FUNCTION ID LPAREN (*) fieldDecList RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
   [fieldDecList ::= (*) , {RPAREN }]
   [funcDec ::= FUNCTION ID LPAREN (*) fieldDecList RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
   [fieldDecList ::= (*) fieldDec fieldDecListAux , {RPAREN }]
 }
-transition on fieldDec to state [48]
-transition on fieldDecList to state [59]
-transition on ID to state [46]
-
--------------------
-lalr_state [59]: {
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList (*) RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList (*) RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
-}
-transition on RPAREN to state [60]
+transition on fieldDec to state [49]
+transition on fieldDecList to state [60]
+transition on ID to state [47]
 
 -------------------
 lalr_state [60]: {
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN (*) COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN (*) EQ exp , {IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList (*) RPAREN COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList (*) RPAREN EQ exp , {IN FUNCTION VAR TYPE }]
 }
-transition on COLON to state [62]
-transition on EQ to state [61]
+transition on RPAREN to state [61]
 
 -------------------
 lalr_state [61]: {
-  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) lValue , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) recCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [callExp ::= (*) ID LPAREN expList RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) INT , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ (*) exp , {IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) letExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [letExp ::= (*) LET decList IN expList END , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN (*) COLON ID EQ exp , {IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN (*) EQ exp , {IN FUNCTION VAR TYPE }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [66]
-transition on infixExp to state [2]
-transition on INT to state [1]
+transition on COLON to state [63]
+transition on EQ to state [62]
 
 -------------------
 lalr_state [62]: {
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON (*) ID EQ exp , {IN FUNCTION VAR TYPE }]
-}
-transition on ID to state [63]
-
--------------------
-lalr_state [63]: {
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON ID (*) EQ exp , {IN FUNCTION VAR TYPE }]
-}
-transition on EQ to state [64]
-
--------------------
-lalr_state [64]: {
-  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
   [exp ::= (*) lValue , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [exp ::= (*) recCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ (*) exp , {IN FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [infixExp ::= (*) exp MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [infixExp ::= (*) INT , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [exp ::= (*) letExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [seqExp ::= (*) LPAREN RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [letExp ::= (*) LET decList IN expList END , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ (*) exp , {IN FUNCTION VAR TYPE }]
-  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [65]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [67]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [65]: {
-  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= exp (*) PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp (*) , {IN FUNCTION VAR TYPE }]
+lalr_state [63]: {
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON (*) ID EQ exp , {IN FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
+transition on ID to state [64]
+
+-------------------
+lalr_state [64]: {
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON ID (*) EQ exp , {IN FUNCTION VAR TYPE }]
+}
+transition on EQ to state [65]
+
+-------------------
+lalr_state [65]: {
+  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) lValue , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) recCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ (*) exp , {IN FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) INT , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) letExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {PLUS MINUS IN FUNCTION VAR TYPE }]
+}
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [66]
+transition on assignment to state [3]
+transition on infixExp to state [2]
+transition on INT to state [1]
 
 -------------------
 lalr_state [66]: {
-  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
   [infixExp ::= exp (*) PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ exp (*) , {IN FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp (*) , {IN FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
 lalr_state [67]: {
-  [varDec ::= VAR ID (*) ASSIGN exp , {IN FUNCTION VAR TYPE }]
-  [varDec ::= VAR ID (*) COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ exp (*) , {IN FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
 }
-transition on ASSIGN to state [69]
-transition on COLON to state [68]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
 lalr_state [68]: {
+  [varDec ::= VAR ID (*) ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [varDec ::= VAR ID (*) COLON ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
+}
+transition on ASSIGN to state [70]
+transition on COLON to state [69]
+
+-------------------
+lalr_state [69]: {
   [ty ::= (*) arrTy , {ASSIGN }]
   [recTy ::= (*) LBRACE fieldDecList RBRACE , {ASSIGN }]
   [ty ::= (*) recTy , {ASSIGN }]
@@ -880,614 +908,695 @@ lalr_state [68]: {
   [ty ::= (*) ID , {ASSIGN }]
   [varDec ::= VAR ID COLON (*) ty ASSIGN exp , {IN FUNCTION VAR TYPE }]
 }
-transition on ARRAY to state [43]
-transition on recTy to state [42]
-transition on arrTy to state [41]
-transition on LBRACE to state [40]
-transition on ID to state [39]
-transition on ty to state [71]
-
--------------------
-lalr_state [69]: {
-  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) lValue , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) recCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [callExp ::= (*) ID LPAREN expList RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [varDec ::= VAR ID ASSIGN (*) exp , {IN FUNCTION VAR TYPE }]
-  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) INT , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) letExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [letExp ::= (*) LET decList IN expList END , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
-}
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [70]
-transition on infixExp to state [2]
-transition on INT to state [1]
+transition on ARRAY to state [44]
+transition on recTy to state [43]
+transition on arrTy to state [42]
+transition on LBRACE to state [41]
+transition on ID to state [40]
+transition on ty to state [72]
 
 -------------------
 lalr_state [70]: {
-  [varDec ::= VAR ID ASSIGN exp (*) , {IN FUNCTION VAR TYPE }]
-  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= exp (*) PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) lValue , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) recCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [varDec ::= VAR ID ASSIGN (*) exp , {IN FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) INT , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) letExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {PLUS MINUS IN FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [71]
+transition on assignment to state [3]
+transition on infixExp to state [2]
+transition on INT to state [1]
 
 -------------------
 lalr_state [71]: {
-  [varDec ::= VAR ID COLON ty (*) ASSIGN exp , {IN FUNCTION VAR TYPE }]
+  [varDec ::= VAR ID ASSIGN exp (*) , {IN FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
 }
-transition on ASSIGN to state [72]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
 lalr_state [72]: {
-  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) lValue , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) recCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [callExp ::= (*) ID LPAREN expList RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) INT , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) letExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [varDec ::= VAR ID COLON ty ASSIGN (*) exp , {IN FUNCTION VAR TYPE }]
-  [letExp ::= (*) LET decList IN expList END , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [varDec ::= VAR ID COLON ty (*) ASSIGN exp , {IN FUNCTION VAR TYPE }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [73]
-transition on infixExp to state [2]
-transition on INT to state [1]
+transition on ASSIGN to state [73]
 
 -------------------
 lalr_state [73]: {
-  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [infixExp ::= exp (*) PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
-  [varDec ::= VAR ID COLON ty ASSIGN exp (*) , {IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) lValue , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) recCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [varDec ::= VAR ID COLON ty ASSIGN (*) exp , {IN FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [infixExp ::= (*) INT , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {LBRACK DOT PLUS MINUS ASSIGN IN FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [exp ::= (*) letExp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN RPAREN , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {PLUS MINUS IN FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-
--------------------
-lalr_state [74]: {
-  [lValue ::= (*) ID , {SEMICOLON LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) lValue , {SEMICOLON PLUS MINUS END }]
-  [exp ::= (*) recCreate , {SEMICOLON PLUS MINUS END }]
-  [infixExp ::= (*) exp MINUS exp , {SEMICOLON PLUS MINUS END }]
-  [callExp ::= (*) ID LPAREN expList RPAREN , {SEMICOLON PLUS MINUS END }]
-  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {SEMICOLON PLUS MINUS END }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) callExp , {SEMICOLON PLUS MINUS END }]
-  [infixExp ::= (*) INT , {SEMICOLON PLUS MINUS END }]
-  [lValue ::= (*) subscript , {SEMICOLON LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) STRING , {SEMICOLON PLUS MINUS END }]
-  [letExp ::= LET decList IN (*) expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) letExp , {SEMICOLON PLUS MINUS END }]
-  [seqExp ::= (*) LPAREN RPAREN , {SEMICOLON PLUS MINUS END }]
-  [expList ::= (*) exp expListAux , {END }]
-  [letExp ::= (*) LET decList IN expList END , {SEMICOLON PLUS MINUS END }]
-  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) infixExp , {SEMICOLON PLUS MINUS END }]
-  [infixExp ::= (*) exp PLUS exp , {SEMICOLON PLUS MINUS END }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON PLUS MINUS END }]
-  [lValue ::= (*) fieldExp , {SEMICOLON LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) seqExp , {SEMICOLON PLUS MINUS END }]
-  [exp ::= (*) arrCreate , {SEMICOLON PLUS MINUS END }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON PLUS MINUS END }]
-  [expList ::= (*) , {END }]
-}
-transition on LPAREN to state [16]
-transition on expList to state [76]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [75]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [74]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [75]: {
-  [infixExp ::= exp (*) MINUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
-  [expListAux ::= (*) SEMICOLON exp expListAux , {RPAREN END }]
-  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
-  [expListAux ::= (*) , {RPAREN END }]
-  [expList ::= exp (*) expListAux , {RPAREN END }]
+lalr_state [74]: {
+  [infixExp ::= exp (*) PLUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
+  [varDec ::= VAR ID COLON ty ASSIGN exp (*) , {IN FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {PLUS MINUS IN FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-transition on SEMICOLON to state [79]
-transition on expListAux to state [78]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+
+-------------------
+lalr_state [75]: {
+  [lValue ::= (*) ID , {SEMICOLON LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) lValue , {SEMICOLON PLUS MINUS END }]
+  [exp ::= (*) recCreate , {SEMICOLON PLUS MINUS END }]
+  [infixExp ::= (*) exp PLUS exp , {SEMICOLON PLUS MINUS END }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON PLUS MINUS END }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) callExp , {SEMICOLON PLUS MINUS END }]
+  [exp ::= (*) arrCreate , {SEMICOLON PLUS MINUS END }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON PLUS MINUS END }]
+  [expList ::= (*) , {END }]
+  [lValue ::= (*) subscript , {SEMICOLON LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) STRING , {SEMICOLON PLUS MINUS END }]
+  [exp ::= (*) assignment , {SEMICOLON PLUS MINUS END }]
+  [infixExp ::= (*) exp MINUS exp , {SEMICOLON PLUS MINUS END }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {SEMICOLON PLUS MINUS END }]
+  [assignment ::= (*) lValue ASSIGN exp , {SEMICOLON PLUS MINUS END }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {SEMICOLON PLUS MINUS END }]
+  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) infixExp , {SEMICOLON PLUS MINUS END }]
+  [infixExp ::= (*) INT , {SEMICOLON PLUS MINUS END }]
+  [lValue ::= (*) fieldExp , {SEMICOLON LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) seqExp , {SEMICOLON PLUS MINUS END }]
+  [exp ::= (*) letExp , {SEMICOLON PLUS MINUS END }]
+  [letExp ::= LET decList IN (*) expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN RPAREN , {SEMICOLON PLUS MINUS END }]
+  [expList ::= (*) exp expListAux , {END }]
+  [letExp ::= (*) LET decList IN expList END , {SEMICOLON PLUS MINUS END }]
+}
+transition on LPAREN to state [17]
+transition on expList to state [77]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [76]
+transition on assignment to state [3]
+transition on infixExp to state [2]
+transition on INT to state [1]
 
 -------------------
 lalr_state [76]: {
-  [letExp ::= LET decList IN expList (*) END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
+  [expListAux ::= (*) , {RPAREN END }]
+  [expList ::= exp (*) expListAux , {RPAREN END }]
+  [infixExp ::= exp (*) MINUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
+  [expListAux ::= (*) SEMICOLON exp expListAux , {RPAREN END }]
 }
-transition on END to state [77]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+transition on SEMICOLON to state [80]
+transition on expListAux to state [79]
 
 -------------------
 lalr_state [77]: {
+  [letExp ::= LET decList IN expList (*) END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+}
+transition on END to state [78]
+
+-------------------
+lalr_state [78]: {
   [letExp ::= LET decList IN expList END (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [78]: {
+lalr_state [79]: {
   [expList ::= exp expListAux (*) , {RPAREN END }]
 }
 
 -------------------
-lalr_state [79]: {
-  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS END }]
+lalr_state [80]: {
+  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN END }]
   [exp ::= (*) lValue , {SEMICOLON RPAREN PLUS MINUS END }]
   [exp ::= (*) recCreate , {SEMICOLON RPAREN PLUS MINUS END }]
+  [infixExp ::= (*) exp PLUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON RPAREN PLUS MINUS END }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS END }]
+  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS END }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON RPAREN PLUS MINUS END }]
+  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS END }]
+  [exp ::= (*) assignment , {SEMICOLON RPAREN PLUS MINUS END }]
   [infixExp ::= (*) exp MINUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {SEMICOLON RPAREN PLUS MINUS END }]
+  [assignment ::= (*) lValue ASSIGN exp , {SEMICOLON RPAREN PLUS MINUS END }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {SEMICOLON RPAREN PLUS MINUS END }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS END }]
+  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS END }]
   [infixExp ::= (*) INT , {SEMICOLON RPAREN PLUS MINUS END }]
   [expListAux ::= SEMICOLON (*) exp expListAux , {RPAREN END }]
-  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS END }]
+  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN END }]
+  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS END }]
   [exp ::= (*) letExp , {SEMICOLON RPAREN PLUS MINUS END }]
   [seqExp ::= (*) LPAREN RPAREN , {SEMICOLON RPAREN PLUS MINUS END }]
   [letExp ::= (*) LET decList IN expList END , {SEMICOLON RPAREN PLUS MINUS END }]
-  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS END }]
-  [infixExp ::= (*) exp PLUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON RPAREN PLUS MINUS END }]
-  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS END }]
-  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS END }]
-  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS END }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON RPAREN PLUS MINUS END }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [80]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [81]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [80]: {
+lalr_state [81]: {
+  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
+  [expListAux ::= (*) , {RPAREN END }]
   [expListAux ::= SEMICOLON exp (*) expListAux , {RPAREN END }]
   [infixExp ::= exp (*) MINUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
   [expListAux ::= (*) SEMICOLON exp expListAux , {RPAREN END }]
-  [infixExp ::= exp (*) PLUS exp , {SEMICOLON RPAREN PLUS MINUS END }]
-  [expListAux ::= (*) , {RPAREN END }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-transition on SEMICOLON to state [79]
-transition on expListAux to state [81]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+transition on SEMICOLON to state [80]
+transition on expListAux to state [82]
 
 -------------------
-lalr_state [81]: {
+lalr_state [82]: {
   [expListAux ::= SEMICOLON exp expListAux (*) , {RPAREN END }]
 }
 
 -------------------
-lalr_state [82]: {
-  [lValue ::= (*) ID , {LBRACK RBRACK DOT PLUS MINUS }]
+lalr_state [83]: {
+  [lValue ::= (*) ID , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
   [exp ::= (*) lValue , {RBRACK PLUS MINUS }]
   [exp ::= (*) recCreate , {RBRACK PLUS MINUS }]
+  [infixExp ::= (*) exp PLUS exp , {RBRACK PLUS MINUS }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {RBRACK PLUS MINUS }]
+  [subscript ::= lValue LBRACK (*) exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) callExp , {RBRACK PLUS MINUS }]
+  [exp ::= (*) arrCreate , {RBRACK PLUS MINUS }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {RBRACK PLUS MINUS }]
+  [lValue ::= (*) subscript , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) STRING , {RBRACK PLUS MINUS }]
+  [exp ::= (*) assignment , {RBRACK PLUS MINUS }]
   [infixExp ::= (*) exp MINUS exp , {RBRACK PLUS MINUS }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {RBRACK PLUS MINUS }]
+  [assignment ::= (*) lValue ASSIGN exp , {RBRACK PLUS MINUS }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {RBRACK PLUS MINUS }]
-  [subscript ::= lValue LBRACK (*) exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) callExp , {RBRACK PLUS MINUS }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) infixExp , {RBRACK PLUS MINUS }]
   [infixExp ::= (*) INT , {RBRACK PLUS MINUS }]
-  [lValue ::= (*) subscript , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) STRING , {RBRACK PLUS MINUS }]
+  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) seqExp , {RBRACK PLUS MINUS }]
   [exp ::= (*) letExp , {RBRACK PLUS MINUS }]
   [seqExp ::= (*) LPAREN RPAREN , {RBRACK PLUS MINUS }]
   [letExp ::= (*) LET decList IN expList END , {RBRACK PLUS MINUS }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) infixExp , {RBRACK PLUS MINUS }]
-  [infixExp ::= (*) exp PLUS exp , {RBRACK PLUS MINUS }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {RBRACK PLUS MINUS }]
-  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) seqExp , {RBRACK PLUS MINUS }]
-  [exp ::= (*) arrCreate , {RBRACK PLUS MINUS }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {RBRACK PLUS MINUS }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [85]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [88]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [83]: {
-  [fieldExp ::= lValue DOT (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-}
-transition on ID to state [84]
-
--------------------
 lalr_state [84]: {
-  [fieldExp ::= lValue DOT ID (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) lValue , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) recCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [assignment ::= lValue ASSIGN (*) exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) INT , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) letExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [letExp ::= (*) LET decList IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [87]
+transition on assignment to state [3]
+transition on infixExp to state [2]
+transition on INT to state [1]
 
 -------------------
 lalr_state [85]: {
-  [infixExp ::= exp (*) MINUS exp , {RBRACK PLUS MINUS }]
-  [subscript ::= lValue LBRACK exp (*) RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= exp (*) PLUS exp , {RBRACK PLUS MINUS }]
+  [fieldExp ::= lValue DOT (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-transition on RBRACK to state [86]
+transition on ID to state [86]
 
 -------------------
 lalr_state [86]: {
-  [subscript ::= lValue LBRACK exp RBRACK (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [fieldExp ::= lValue DOT ID (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
 lalr_state [87]: {
-  [fieldCreateList ::= (*) , {RBRACE }]
-  [fieldCreateList ::= (*) fieldCreate fieldCreateListAux , {RBRACE }]
-  [recCreate ::= ID LBRACE (*) fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
+  [infixExp ::= exp (*) PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [assignment ::= lValue ASSIGN exp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on fieldCreate to state [98]
-transition on fieldCreateList to state [97]
-transition on ID to state [96]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
 lalr_state [88]: {
-  [lValue ::= (*) ID , {LBRACK RBRACK DOT PLUS MINUS }]
+  [infixExp ::= exp (*) PLUS exp , {RBRACK PLUS MINUS }]
+  [subscript ::= lValue LBRACK exp (*) RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {RBRACK PLUS MINUS }]
+}
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+transition on RBRACK to state [89]
+
+-------------------
+lalr_state [89]: {
+  [subscript ::= lValue LBRACK exp RBRACK (*) , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+}
+
+-------------------
+lalr_state [90]: {
+  [fieldCreateList ::= (*) fieldCreate fieldCreateListAux , {RBRACE }]
+  [recCreate ::= ID LBRACE (*) fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
+  [fieldCreateList ::= (*) , {RBRACE }]
+}
+transition on fieldCreate to state [101]
+transition on fieldCreateList to state [100]
+transition on ID to state [99]
+
+-------------------
+lalr_state [91]: {
+  [lValue ::= (*) ID , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
   [exp ::= (*) lValue , {RBRACK PLUS MINUS }]
   [exp ::= (*) recCreate , {RBRACK PLUS MINUS }]
-  [infixExp ::= (*) exp MINUS exp , {RBRACK PLUS MINUS }]
-  [callExp ::= (*) ID LPAREN expList RPAREN , {RBRACK PLUS MINUS }]
-  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {RBRACK PLUS MINUS }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) callExp , {RBRACK PLUS MINUS }]
-  [infixExp ::= (*) INT , {RBRACK PLUS MINUS }]
-  [lValue ::= (*) subscript , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) STRING , {RBRACK PLUS MINUS }]
-  [exp ::= (*) letExp , {RBRACK PLUS MINUS }]
-  [seqExp ::= (*) LPAREN RPAREN , {RBRACK PLUS MINUS }]
-  [letExp ::= (*) LET decList IN expList END , {RBRACK PLUS MINUS }]
-  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) infixExp , {RBRACK PLUS MINUS }]
   [infixExp ::= (*) exp PLUS exp , {RBRACK PLUS MINUS }]
   [arrCreate ::= ID LBRACK (*) exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {RBRACK PLUS MINUS }]
-  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT PLUS MINUS }]
-  [exp ::= (*) seqExp , {RBRACK PLUS MINUS }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) callExp , {RBRACK PLUS MINUS }]
   [exp ::= (*) arrCreate , {RBRACK PLUS MINUS }]
   [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {RBRACK PLUS MINUS }]
+  [lValue ::= (*) subscript , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) STRING , {RBRACK PLUS MINUS }]
+  [exp ::= (*) assignment , {RBRACK PLUS MINUS }]
+  [infixExp ::= (*) exp MINUS exp , {RBRACK PLUS MINUS }]
+  [callExp ::= (*) ID LPAREN expList RPAREN , {RBRACK PLUS MINUS }]
+  [assignment ::= (*) lValue ASSIGN exp , {RBRACK PLUS MINUS }]
+  [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {RBRACK PLUS MINUS }]
+  [fieldExp ::= (*) lValue DOT ID , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) infixExp , {RBRACK PLUS MINUS }]
+  [infixExp ::= (*) INT , {RBRACK PLUS MINUS }]
+  [lValue ::= (*) fieldExp , {LBRACK RBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) seqExp , {RBRACK PLUS MINUS }]
+  [exp ::= (*) letExp , {RBRACK PLUS MINUS }]
+  [seqExp ::= (*) LPAREN RPAREN , {RBRACK PLUS MINUS }]
+  [letExp ::= (*) LET decList IN expList END , {RBRACK PLUS MINUS }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [92]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [95]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [89]: {
-  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
+lalr_state [92]: {
+  [lValue ::= (*) ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
   [exp ::= (*) lValue , {SEMICOLON RPAREN PLUS MINUS }]
-  [callExp ::= ID LPAREN (*) expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [exp ::= (*) recCreate , {SEMICOLON RPAREN PLUS MINUS }]
+  [infixExp ::= (*) exp PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON RPAREN PLUS MINUS }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS }]
+  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
+  [expList ::= (*) , {RPAREN }]
+  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS }]
+  [callExp ::= ID LPAREN (*) expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {SEMICOLON RPAREN PLUS MINUS }]
   [infixExp ::= (*) exp MINUS exp , {SEMICOLON RPAREN PLUS MINUS }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
+  [assignment ::= (*) lValue ASSIGN exp , {SEMICOLON RPAREN PLUS MINUS }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {SEMICOLON RPAREN PLUS MINUS }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) callExp , {SEMICOLON RPAREN PLUS MINUS }]
+  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS }]
   [infixExp ::= (*) INT , {SEMICOLON RPAREN PLUS MINUS }]
-  [lValue ::= (*) subscript , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) STRING , {SEMICOLON RPAREN PLUS MINUS }]
+  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS }]
   [exp ::= (*) letExp , {SEMICOLON RPAREN PLUS MINUS }]
   [seqExp ::= (*) LPAREN RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
   [expList ::= (*) exp expListAux , {RPAREN }]
   [letExp ::= (*) LET decList IN expList END , {SEMICOLON RPAREN PLUS MINUS }]
-  [fieldExp ::= (*) lValue DOT ID , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) infixExp , {SEMICOLON RPAREN PLUS MINUS }]
-  [infixExp ::= (*) exp PLUS exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {SEMICOLON RPAREN PLUS MINUS }]
-  [lValue ::= (*) fieldExp , {SEMICOLON RPAREN LBRACK DOT PLUS MINUS }]
-  [exp ::= (*) seqExp , {SEMICOLON RPAREN PLUS MINUS }]
-  [exp ::= (*) arrCreate , {SEMICOLON RPAREN PLUS MINUS }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {SEMICOLON RPAREN PLUS MINUS }]
-  [expList ::= (*) , {RPAREN }]
 }
-transition on LPAREN to state [16]
-transition on expList to state [90]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [75]
+transition on LPAREN to state [17]
+transition on expList to state [93]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [76]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [90]: {
+lalr_state [93]: {
   [callExp ::= ID LPAREN expList (*) RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on RPAREN to state [91]
+transition on RPAREN to state [94]
 
 -------------------
-lalr_state [91]: {
+lalr_state [94]: {
   [callExp ::= ID LPAREN expList RPAREN (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [92]: {
-  [infixExp ::= exp (*) MINUS exp , {RBRACK PLUS MINUS }]
+lalr_state [95]: {
   [infixExp ::= exp (*) PLUS exp , {RBRACK PLUS MINUS }]
   [arrCreate ::= ID LBRACK exp (*) RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {RBRACK PLUS MINUS }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-transition on RBRACK to state [93]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
+transition on RBRACK to state [96]
 
 -------------------
-lalr_state [93]: {
+lalr_state [96]: {
   [arrCreate ::= ID LBRACK exp RBRACK (*) OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on OF to state [94]
+transition on OF to state [97]
 
 -------------------
-lalr_state [94]: {
-  [lValue ::= (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
+lalr_state [97]: {
+  [lValue ::= (*) ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [arrCreate ::= ID LBRACK exp RBRACK OF (*) exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [exp ::= (*) lValue , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [exp ::= (*) recCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= (*) exp PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) callExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) arrCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) subscript , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) STRING , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) assignment , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [infixExp ::= (*) exp MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [assignment ::= (*) lValue ASSIGN exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) callExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [fieldExp ::= (*) lValue DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) infixExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [infixExp ::= (*) INT , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [lValue ::= (*) subscript , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) STRING , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [lValue ::= (*) fieldExp , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS ASSIGN IN END FUNCTION VAR TYPE }]
+  [exp ::= (*) seqExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [exp ::= (*) letExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [seqExp ::= (*) LPAREN RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [letExp ::= (*) LET decList IN expList END , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [fieldExp ::= (*) lValue DOT ID , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [arrCreate ::= ID LBRACK exp RBRACK OF (*) exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) infixExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [infixExp ::= (*) exp PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [lValue ::= (*) fieldExp , {EOF COMMA SEMICOLON RPAREN LBRACK RBRACK RBRACE DOT PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) seqExp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [exp ::= (*) arrCreate , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [95]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [98]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [95]: {
-  [infixExp ::= exp (*) MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+lalr_state [98]: {
   [infixExp ::= exp (*) PLUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
   [arrCreate ::= ID LBRACK exp RBRACK OF exp (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+  [infixExp ::= exp (*) MINUS exp , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
-
--------------------
-lalr_state [96]: {
-  [fieldCreate ::= ID (*) EQ exp , {COMMA RBRACE }]
-}
-transition on EQ to state [104]
-
--------------------
-lalr_state [97]: {
-  [recCreate ::= ID LBRACE fieldCreateList (*) RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
-}
-transition on RBRACE to state [103]
-
--------------------
-lalr_state [98]: {
-  [fieldCreateListAux ::= (*) , {RBRACE }]
-  [fieldCreateList ::= fieldCreate (*) fieldCreateListAux , {RBRACE }]
-  [fieldCreateListAux ::= (*) COMMA fieldCreate fieldCreateListAux , {RBRACE }]
-}
-transition on fieldCreateListAux to state [100]
-transition on COMMA to state [99]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
 lalr_state [99]: {
-  [fieldCreateListAux ::= COMMA (*) fieldCreate fieldCreateListAux , {RBRACE }]
-  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
+  [fieldCreate ::= ID (*) EQ exp , {COMMA RBRACE }]
 }
-transition on fieldCreate to state [101]
-transition on ID to state [96]
+transition on EQ to state [107]
 
 -------------------
 lalr_state [100]: {
+  [recCreate ::= ID LBRACE fieldCreateList (*) RBRACE , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
+}
+transition on RBRACE to state [106]
+
+-------------------
+lalr_state [101]: {
+  [fieldCreateListAux ::= (*) COMMA fieldCreate fieldCreateListAux , {RBRACE }]
+  [fieldCreateListAux ::= (*) , {RBRACE }]
+  [fieldCreateList ::= fieldCreate (*) fieldCreateListAux , {RBRACE }]
+}
+transition on fieldCreateListAux to state [103]
+transition on COMMA to state [102]
+
+-------------------
+lalr_state [102]: {
+  [fieldCreateListAux ::= COMMA (*) fieldCreate fieldCreateListAux , {RBRACE }]
+  [fieldCreate ::= (*) ID EQ exp , {COMMA RBRACE }]
+}
+transition on fieldCreate to state [104]
+transition on ID to state [99]
+
+-------------------
+lalr_state [103]: {
   [fieldCreateList ::= fieldCreate fieldCreateListAux (*) , {RBRACE }]
 }
 
 -------------------
-lalr_state [101]: {
-  [fieldCreateListAux ::= (*) , {RBRACE }]
+lalr_state [104]: {
   [fieldCreateListAux ::= COMMA fieldCreate (*) fieldCreateListAux , {RBRACE }]
   [fieldCreateListAux ::= (*) COMMA fieldCreate fieldCreateListAux , {RBRACE }]
+  [fieldCreateListAux ::= (*) , {RBRACE }]
 }
-transition on fieldCreateListAux to state [102]
-transition on COMMA to state [99]
+transition on fieldCreateListAux to state [105]
+transition on COMMA to state [102]
 
 -------------------
-lalr_state [102]: {
+lalr_state [105]: {
   [fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux (*) , {RBRACE }]
 }
 
 -------------------
-lalr_state [103]: {
+lalr_state [106]: {
   [recCreate ::= ID LBRACE fieldCreateList RBRACE (*) , {EOF COMMA SEMICOLON RPAREN RBRACK RBRACE PLUS MINUS IN END FUNCTION VAR TYPE }]
 }
 
 -------------------
-lalr_state [104]: {
-  [lValue ::= (*) ID , {COMMA LBRACK RBRACE DOT PLUS MINUS }]
+lalr_state [107]: {
+  [lValue ::= (*) ID , {COMMA LBRACK RBRACE DOT PLUS MINUS ASSIGN }]
   [exp ::= (*) lValue , {COMMA RBRACE PLUS MINUS }]
   [exp ::= (*) recCreate , {COMMA RBRACE PLUS MINUS }]
+  [infixExp ::= (*) exp PLUS exp , {COMMA RBRACE PLUS MINUS }]
+  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {COMMA RBRACE PLUS MINUS }]
+  [subscript ::= (*) lValue LBRACK exp RBRACK , {COMMA LBRACK RBRACE DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) callExp , {COMMA RBRACE PLUS MINUS }]
+  [exp ::= (*) arrCreate , {COMMA RBRACE PLUS MINUS }]
+  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {COMMA RBRACE PLUS MINUS }]
+  [lValue ::= (*) subscript , {COMMA LBRACK RBRACE DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) STRING , {COMMA RBRACE PLUS MINUS }]
+  [exp ::= (*) assignment , {COMMA RBRACE PLUS MINUS }]
   [infixExp ::= (*) exp MINUS exp , {COMMA RBRACE PLUS MINUS }]
   [callExp ::= (*) ID LPAREN expList RPAREN , {COMMA RBRACE PLUS MINUS }]
+  [assignment ::= (*) lValue ASSIGN exp , {COMMA RBRACE PLUS MINUS }]
   [fieldCreate ::= ID EQ (*) exp , {COMMA RBRACE }]
   [recCreate ::= (*) ID LBRACE fieldCreateList RBRACE , {COMMA RBRACE PLUS MINUS }]
-  [subscript ::= (*) lValue LBRACK exp RBRACK , {COMMA LBRACK RBRACE DOT PLUS MINUS }]
-  [exp ::= (*) callExp , {COMMA RBRACE PLUS MINUS }]
+  [fieldExp ::= (*) lValue DOT ID , {COMMA LBRACK RBRACE DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) infixExp , {COMMA RBRACE PLUS MINUS }]
   [infixExp ::= (*) INT , {COMMA RBRACE PLUS MINUS }]
-  [lValue ::= (*) subscript , {COMMA LBRACK RBRACE DOT PLUS MINUS }]
-  [exp ::= (*) STRING , {COMMA RBRACE PLUS MINUS }]
+  [lValue ::= (*) fieldExp , {COMMA LBRACK RBRACE DOT PLUS MINUS ASSIGN }]
+  [exp ::= (*) seqExp , {COMMA RBRACE PLUS MINUS }]
   [exp ::= (*) letExp , {COMMA RBRACE PLUS MINUS }]
   [seqExp ::= (*) LPAREN RPAREN , {COMMA RBRACE PLUS MINUS }]
   [letExp ::= (*) LET decList IN expList END , {COMMA RBRACE PLUS MINUS }]
-  [fieldExp ::= (*) lValue DOT ID , {COMMA LBRACK RBRACE DOT PLUS MINUS }]
-  [exp ::= (*) infixExp , {COMMA RBRACE PLUS MINUS }]
-  [infixExp ::= (*) exp PLUS exp , {COMMA RBRACE PLUS MINUS }]
-  [arrCreate ::= (*) ID LBRACK exp RBRACK OF exp , {COMMA RBRACE PLUS MINUS }]
-  [lValue ::= (*) fieldExp , {COMMA LBRACK RBRACE DOT PLUS MINUS }]
-  [exp ::= (*) seqExp , {COMMA RBRACE PLUS MINUS }]
-  [exp ::= (*) arrCreate , {COMMA RBRACE PLUS MINUS }]
-  [seqExp ::= (*) LPAREN exp seqExpAux RPAREN , {COMMA RBRACE PLUS MINUS }]
 }
-transition on LPAREN to state [16]
-transition on LET to state [15]
-transition on arrCreate to state [14]
-transition on subscript to state [13]
-transition on lValue to state [12]
-transition on ID to state [11]
-transition on fieldExp to state [10]
-transition on STRING to state [9]
-transition on letExp to state [8]
-transition on recCreate to state [6]
-transition on seqExp to state [5]
-transition on callExp to state [4]
-transition on exp to state [105]
+transition on LPAREN to state [17]
+transition on LET to state [16]
+transition on arrCreate to state [15]
+transition on subscript to state [14]
+transition on lValue to state [13]
+transition on ID to state [12]
+transition on fieldExp to state [11]
+transition on STRING to state [10]
+transition on letExp to state [9]
+transition on recCreate to state [7]
+transition on seqExp to state [6]
+transition on callExp to state [5]
+transition on exp to state [108]
+transition on assignment to state [3]
 transition on infixExp to state [2]
 transition on INT to state [1]
 
 -------------------
-lalr_state [105]: {
-  [infixExp ::= exp (*) MINUS exp , {COMMA RBRACE PLUS MINUS }]
+lalr_state [108]: {
   [infixExp ::= exp (*) PLUS exp , {COMMA RBRACE PLUS MINUS }]
   [fieldCreate ::= ID EQ exp (*) , {COMMA RBRACE }]
+  [infixExp ::= exp (*) MINUS exp , {COMMA RBRACE PLUS MINUS }]
 }
-transition on MINUS to state [21]
-transition on PLUS to state [20]
+transition on MINUS to state [22]
+transition on PLUS to state [21]
 
 -------------------
-lalr_state [106]: {
+lalr_state [109]: {
   [$START ::= program EOF (*) , {EOF }]
 }
 
 -------------------
 Closing files...
 ------- CUP v0.10k Parser Generation Summary -------
-  0 errors and 23 warnings
-  45 terminals, 33 non-terminals, and 56 productions declared, 
-  producing 107 unique parse states.
+  0 errors and 22 warnings
+  45 terminals, 33 non-terminals, and 57 productions declared, 
+  producing 110 unique parse states.
   21 terminals declared but not used.
   0 non-terminals declared but not used.
   0 productions never reduced.

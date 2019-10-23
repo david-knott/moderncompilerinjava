@@ -70,4 +70,10 @@ public class Chap3Test {
       String filename = "./test/fixtures/let_dec_call_function.tig";
       new Parse(filename);
   }
+
+  @Test
+  public void assignment() {
+      String filename = "./test/fixtures/assignment.tig";
+      new Parse(filename);
+  }
 }

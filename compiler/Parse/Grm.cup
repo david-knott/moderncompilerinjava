@@ -91,6 +91,7 @@ exp ::= lValue
 | callExp 
 | infixExp
 | recCreate
+| assignment
 | letExp
 | arrCreate
 ;
