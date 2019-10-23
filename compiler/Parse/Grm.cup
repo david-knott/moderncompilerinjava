@@ -40,8 +40,8 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 non terminal program, exp, expList, expListAux, letExp, decList, dec, tyDec, funcDec;
 non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDecList, varDec;
 non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
-non terminal lValueAux, arrTy, recTy, arrCreate, subscript, fieldExp, infixOp, infixExp, seqExp, seqExpAux;
-non terminal callExp;
+non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
+non terminal callExp, ifThen, ifThenElse;
 
 precedence left PLUS, MINUS;
 
@@ -92,6 +92,8 @@ exp ::= lValue
 | infixExp
 | recCreate
 | assignment
+| ifThen
+| ifThenElse
 | letExp
 | arrCreate
 ;
@@ -115,6 +117,10 @@ expListAux ::= SEMICOLON exp expListAux
 | /* empty */;
 
 assignment ::= lValue ASSIGN exp;
+
+ifThenElse ::= IF exp THEN exp ELSE exp;
+
+ifThen ::= IF exp THEN exp;
 
 letExp ::= LET decList IN expList END;
 

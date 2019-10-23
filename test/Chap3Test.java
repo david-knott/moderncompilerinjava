@@ -76,4 +76,19 @@ public class Chap3Test {
       String filename = "./test/fixtures/assignment.tig";
       new Parse(filename);
   }
+
+  @Test
+  public void ifThen() {
+      String filename = "./test/fixtures/ifThen.tig";
+      new Parse(filename);
+  }
+
+  @Test
+  public void ifThenElse() {
+      String filename = "./test/fixtures/ifThenElse.tig";
+      new Parse(filename);
+  }
+
+
+
 }
