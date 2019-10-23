@@ -58,4 +58,16 @@ public class Chap3Test {
       String filename = "./test/fixtures/let_dec_seq_exp2.tig";
       new Parse(filename);
   }
+
+  @Test
+  public void letDecCall1() {
+      String filename = "./test/fixtures/let_dec_call1.tig";
+      new Parse(filename);
+  }
+
+  @Test
+  public void letDecCallFunction() {
+      String filename = "./test/fixtures/let_dec_call_function.tig";
+      new Parse(filename);
+  }
 }

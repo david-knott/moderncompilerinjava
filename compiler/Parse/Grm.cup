@@ -41,6 +41,8 @@ non terminal program, exp, expList, expListAux, letExp, decList, dec, tyDec, fun
 non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDecList, varDec;
 non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
 non terminal lValueAux, arrTy, recTy, arrCreate, subscript, fieldExp, infixOp, infixExp, seqExp, seqExpAux;
+non terminal callExp;
+
 precedence left PLUS, MINUS;
 
 start with program;
@@ -48,7 +50,8 @@ start with program;
 program ::= exp;
 
 dec ::= varDec 
-| tyDec;
+| tyDec
+| funcDec;
 
 tyDec ::= TYPE ID EQ ty;
 
@@ -68,6 +71,9 @@ fieldDecListAux ::= COMMA fieldDec fieldDecListAux
 
 fieldDec ::= ID COLON ty;
 
+funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ exp
+| FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp;
+
 varDec ::= VAR ID ASSIGN exp
 | VAR ID COLON ty ASSIGN exp;
 
@@ -82,6 +88,7 @@ fieldExp ::= lValue DOT ID;
 exp ::= lValue
 | STRING
 | seqExp
+| callExp 
 | infixExp
 | recCreate
 | letExp
@@ -97,6 +104,8 @@ seqExp ::= LPAREN RPAREN
 
 seqExpAux ::= SEMICOLON exp seqExpAux
 | /* empty */;
+
+callExp ::= ID LPAREN expList RPAREN;
 
 expList ::= exp expListAux
 | /* empty */;

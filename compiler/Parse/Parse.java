@@ -86,7 +86,7 @@ static String symnames[] = new String[100];
     }
     Grm parser = new Grm(new Yylex(inp, errorMsg), errorMsg);
     try {
-      parser.debug_parse();
+      parser.parse();
     } catch (Throwable e) {
       e.printStackTrace();
       throw new Error(e.toString());
