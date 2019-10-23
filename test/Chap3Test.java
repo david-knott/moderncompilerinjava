@@ -89,6 +89,19 @@ public class Chap3Test {
       new Parse(filename);
   }
 
+  @Test
+  public void whileL() {
+      String filename = "./test/fixtures/while.tig";
+      new Parse(filename);
+  }
+
+  @Test
+  public void forL() {
+      String filename = "./test/fixtures/for.tig";
+      new Parse(filename);
+  }
+
+
 
 
 }

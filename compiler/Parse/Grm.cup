@@ -41,7 +41,7 @@ non terminal program, exp, expList, expListAux, letExp, decList, dec, tyDec, fun
 non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDecList, varDec;
 non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
 non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
-non terminal callExp, ifThen, ifThenElse;
+non terminal callExp, ifThen, ifThenElse, whileExp, forExp;
 
 precedence left PLUS, MINUS;
 
@@ -94,6 +94,8 @@ exp ::= lValue
 | assignment
 | ifThen
 | ifThenElse
+| whileExp
+| forExp
 | letExp
 | arrCreate
 ;
@@ -118,9 +120,13 @@ expListAux ::= SEMICOLON exp expListAux
 
 assignment ::= lValue ASSIGN exp;
 
+ifThen ::= IF exp THEN exp;
+
 ifThenElse ::= IF exp THEN exp ELSE exp;
 
-ifThen ::= IF exp THEN exp;
+whileExp ::= WHILE exp DO exp;
+
+forExp ::= FOR ID ASSIGN exp TO exp DO exp;
 
 letExp ::= LET decList IN expList END;
 
