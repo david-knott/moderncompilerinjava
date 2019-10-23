@@ -1,0 +1,6 @@
+let
+function somefuntion() = print("Hello David")
+in
+somefuntion()
+end
+
