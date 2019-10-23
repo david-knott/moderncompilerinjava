@@ -1,0 +1,133 @@
+package Parse;
+
+action code {: static Symbol.Symbol sym(String s) {
+	         return Symbol.Symbol.symbol(s);
+	        }
+	    :};
+
+parser code  {: 
+  //public Absyn.Exp parseResult;
+  Lexer lexer;
+
+  public void syntax_error(java_cup.runtime.Symbol current) {
+   report_error("Syntax error (" + current.sym + ")", current);
+  }
+
+  ErrorMsg.ErrorMsg errorMsg;
+
+  public void report_error(String message, 
+			   java_cup.runtime.Symbol info) {
+      errorMsg.error(info.left, message);
+  }
+
+  public Grm(Lexer l, ErrorMsg.ErrorMsg err) {
+    this();
+    errorMsg=err;
+    lexer=l;
+  }
+:};
+
+scan with {: return lexer.nextToken(); :};
+
+terminal String ID, STRING;
+terminal Integer INT;
+terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN, 
+	LBRACK, RBRACK, LBRACE, RBRACE, DOT, PLUS, MINUS, 
+	TIMES, DIVIDE, EQ, NEQ, LT, LE, GT, GE, AND, OR, 
+	ASSIGN, ARRAY, IF, THEN, ELSE, WHILE, FOR, TO, DO, 
+	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
+
+non terminal program, exp, expList, expListAux, letExp, decList, dec, tyDec, funcDec;
+non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDecList, varDec;
+non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
+non terminal lValueAux, arrTy, recTy, arrCreate, subscript, fieldExp, infixOp, infixExp, seqExp, seqExpAux;
+non terminal callExp;
+
+precedence left PLUS, MINUS;
+
+start with program;
+
+program ::= exp;
+
+dec ::= varDec 
+| tyDec;
+
+tyDec ::= TYPE ID EQ ty;
+
+ty ::= ID /* conflict */
+| recTy
+| arrTy;
+
+arrTy ::= ARRAY OF ID;
+
+recTy ::= LBRACE fieldDecList RBRACE;
+
+fieldDecList ::= fieldDec fieldDecListAux
+| /* empty */ ;
+
+fieldDecListAux ::= COMMA fieldDec fieldDecListAux
+| /* empty */;
+
+fieldDec ::= ID COLON ty;
+
+funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ exp
+| FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp;
+
+
+varDec ::= VAR ID ASSIGN exp
+| VAR ID COLON ty ASSIGN exp;
+
+lValue ::= ID:id /* conflict */
+| subscript
+| fieldExp;
+
+subscript ::= lValue LBRACK exp RBRACK;
+
+fieldExp ::= lValue DOT ID;
+
+exp ::= lValue
+| STRING
+| seqExp
+| callExp
+| infixExp
+| recCreate
+| letExp
+| arrCreate
+;
+
+seqExp ::= LPAREN RPAREN
+| LPAREN exp seqExpAux RPAREN;
+
+seqExpAux ::= SEMICOLON exp seqExpAux
+| /* empty */;
+
+infixExp ::= INT 
+| exp PLUS exp
+| exp MINUS exp;
+
+callExp ::= ID LPAREN expList RPAREN;
+
+expList ::= exp expListAux
+| /* empty */;
+
+expListAux ::= SEMICOLON exp expListAux
+| /* empty */;
+
+assignment ::= lValue ASSIGN exp;
+
+letExp ::= LET decList IN expList END;
+
+decList ::= dec decList 
+| /* empty */;
+
+arrCreate ::= ID LBRACK exp RBRACK OF exp;
+
+recCreate ::= ID LBRACE fieldCreateList RBRACE;
+
+fieldCreateList ::= fieldCreate fieldCreateListAux
+| /* empty */;
+
+fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux 
+| /* empty */;
+
+fieldCreate ::= ID EQ exp;
