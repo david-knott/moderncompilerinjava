@@ -87,6 +87,7 @@ fieldExp ::= lValue DOT ID;
 
 exp ::= lValue
 | NIL 
+| INT
 | STRING
 | seqExp
 | callExp 
@@ -102,8 +103,7 @@ exp ::= lValue
 | letExp
 ;
 
-infixExp ::= INT 
-| exp PLUS exp
+infixExp ::= exp PLUS exp
 | exp MINUS exp
 /*
 | exp TIMES exp
