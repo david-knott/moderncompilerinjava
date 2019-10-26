@@ -5,6 +5,7 @@ import org.junit.Test;
 import Parse.*;
 
 public class Chap3Test {
+
     @Test
     public void letTest1() {
         String filename = "./test/fixtures/let.tig";
@@ -110,6 +111,12 @@ public class Chap3Test {
     @Test
     public void divide() {
         String filename = "./test/fixtures/divide.tig";
+        new Parse(filename);
+    }
+
+    @Test
+    public void braket() {
+        String filename = "./test/fixtures/bracket.tig";
         new Parse(filename);
     }
 
