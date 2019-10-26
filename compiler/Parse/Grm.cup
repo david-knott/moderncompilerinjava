@@ -44,6 +44,7 @@ non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seq
 non terminal callExp, ifThen, ifThenElse, whileExp, forExp;
 
 precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
 
 start with program;
 
@@ -105,6 +106,8 @@ exp ::= lValue
 
 infixExp ::= exp PLUS exp
 | exp MINUS exp
+| exp TIMES exp
+| exp DIVIDE exp
 /*
 | exp TIMES exp
 | exp DIVIDE exp
