@@ -46,7 +46,7 @@ then
   rm Parse/Grm.out
   rm Parse/Grm.err
   javac -d bin java_cup/*.java java_cup/runtime/*.java
-  java -cp bin java_cup.Main -parser Grm -expect 3 -dump_grammar -dump_states Parse/Grm.cup >Parse/Grm.out 2>Parse/Grm.err
+  java -cp bin java_cup.Main -parser Grm -expect 3 -dump Parse/Grm.cup >Parse/Grm.out 2>Parse/Grm.err
   if [ ! -f "Grm.java" ]; then
     echo "Error in CUP"
     exit;

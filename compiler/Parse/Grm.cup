@@ -42,6 +42,7 @@ non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDec;
 non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
 non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
 non terminal callExp, ifThen, ifThenElse, whileExp, forExp;
+non terminal binaryExp;
 
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE;
@@ -119,6 +120,14 @@ infixExp ::= exp PLUS exp
 | exp OR exp
 | exp NEQ exp
 */
+;
+
+binaryExp ::= exp LT exp
+| exp GT exp
+| exp LE exp
+| exp GE exp
+| exp AND exp
+| exp OR exp
 ;
 
 seqExp ::= LPAREN RPAREN
