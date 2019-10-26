@@ -112,4 +112,10 @@ public class Chap3Test {
         String filename = "./test/fixtures/divide.tig";
         new Parse(filename);
     }
+
+    @Test
+    public void queens() {
+        String filename = "./test/fixtures/queens.tig";
+        new Parse(filename);
+    }
 }
