@@ -38,7 +38,7 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
 non terminal program, exp, expList, expListAux, letExp, decList, dec, tyDec, funcDec;
-non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDecList, varDec;
+non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDec;
 non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
 non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
 non terminal callExp, ifThen, ifThenElse, whileExp, forExp;
@@ -86,23 +86,37 @@ subscript ::= lValue LBRACK exp RBRACK;
 fieldExp ::= lValue DOT ID;
 
 exp ::= lValue
+| NIL 
 | STRING
 | seqExp
 | callExp 
 | infixExp
+| arrCreate
 | recCreate
 | assignment
-| ifThen
 | ifThenElse
+| ifThen
 | whileExp
 | forExp
+| BREAK 
 | letExp
-| arrCreate
 ;
 
 infixExp ::= INT 
 | exp PLUS exp
-| exp MINUS exp;
+| exp MINUS exp
+/*
+| exp TIMES exp
+| exp DIVIDE exp
+| exp LT exp
+| exp GT exp
+| exp LE exp
+| exp GE exp
+| exp AND exp
+| exp OR exp
+| exp NEQ exp
+*/
+;
 
 seqExp ::= LPAREN RPAREN
 | LPAREN exp seqExpAux RPAREN;
