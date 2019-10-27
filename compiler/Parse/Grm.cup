@@ -50,10 +50,17 @@ non terminal Absyn.TypeDec tyDec;
 non terminal Absyn.Ty ty;
 non terminal Absyn.ArrayTy arrTy;
 non terminal Absyn.RecordTy recTy;
-non terminal fieldDec, fieldDecList, fieldDecListAux;
-non terminal fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
-non terminal Absyn.SimpleVar lValue;
-non terminal arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
+non terminal Absyn.FieldList fieldDec, fieldDecList, fieldDecListAux;
+non terminal Absyn.RecordExp recCreate;
+non terminal Absyn.AssignExp assignment;
+non terminal Absyn.FieldExpList fieldCreate;
+non terminal Absyn.FieldExpList fieldCreateList;
+non terminal Absyn.FieldExpList fieldCreateListAux;
+non terminal Absyn.Var lValue;
+non terminal arrCreate, subscript;
+non terminal Absyn.FieldVar fieldExp;
+non terminal infixExp;
+non terminal Absyn.ExpList seqExp, seqExpAux; 
 non terminal callExp, ifThen, ifThenElse, whileExp, forExp, negation; 
 
 precedence left TIMES, DIVIDE;
@@ -79,15 +86,15 @@ ty ::= ID:i {: RESULT = new Absyn.NameTy(ileft, Symbol.Symbol.symbol(i)); :}
 
 arrTy ::= ARRAY OF ID:i {: RESULT = new Absyn.ArrayTy(ileft, Symbol.Symbol.symbol(i)); :};
 
-recTy ::= LBRACE fieldDecList RBRACE;
+recTy ::= LBRACE fieldDecList:fl RBRACE {:  RESULT = new Absyn.RecordTy(flleft, fl); :};
 
-fieldDecList ::= fieldDec fieldDecListAux
+fieldDecList ::= fieldDec:fd fieldDecListAux:fdla {: RESULT = new Absyn.FieldList(fdleft, fd.name, fd.typ, fdla); :}
 | /* empty */ ;
 
-fieldDecListAux ::= COMMA fieldDec fieldDecListAux
+fieldDecListAux ::= COMMA fieldDec:fd fieldDecListAux:fdla {: RESULT = new Absyn.FieldList(fdleft, fd.name, fd.typ, fdla); :}
 | /* empty */;
 
-fieldDec ::= ID COLON ty;
+fieldDec ::= ID:i COLON ID:ty {: RESULT = new Absyn.FieldList(ileft, Symbol.Symbol.symbol(i), Symbol.Symbol.symbol(ty), null); :};
 
 funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ exp
 | FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp;
@@ -98,22 +105,22 @@ varDec ::= VAR ID:i ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symb
 
 lValue ::= ID:id  {: RESULT = new Absyn.SimpleVar(idleft, Symbol.Symbol.symbol(id)); :}
 | subscript
-| fieldExp;
+| fieldExp:fe {: RESULT = fe; :};
 
 subscript ::= lValue LBRACK exp RBRACK; //NOT SURE ABOUT THIS you could have a subscript of a subscript etc....
 
-fieldExp ::= lValue DOT ID;
+fieldExp ::= lValue:lv DOT ID:i {: RESULT = new Absyn.FieldVar(lvleft, lv, Symbol.Symbol.symbol(i)); :};
 
 exp ::= lValue:lv {: RESULT = new Absyn.VarExp(lvleft, lv); :}
 | NIL:n {: RESULT = new Absyn.NilExp(nleft); :} 
 | INT:i {: RESULT = new Absyn.IntExp(ileft, i); :}
 | STRING:s {: RESULT = new Absyn.StringExp(sleft, s); :} 
-| seqExp
+| seqExp:se {: RESULT = new Absyn.SeqExp(seleft, se); :}
 | callExp 
 | infixExp
 | arrCreate
-| recCreate
-| assignment
+| recCreate:rc {: RESULT = rc; :}
+| assignment:a {: RESULT = a; :}
 | negation 
 | ifThenElse
 | ifThen
@@ -140,9 +147,9 @@ infixExp ::= exp PLUS exp
 ;
 
 seqExp ::= LPAREN RPAREN
-| LPAREN exp seqExpAux RPAREN;
+| LPAREN exp:e seqExpAux:sea RPAREN {: RESULT = new Absyn.ExpList(e, sea); :};
 
-seqExpAux ::= SEMICOLON exp seqExpAux
+seqExpAux ::= SEMICOLON exp:e seqExpAux:sea {: RESULT = new Absyn.ExpList(e, sea); :}
 | /* empty */;
 
 callExp ::= ID LPAREN expList RPAREN;
@@ -153,7 +160,7 @@ expList ::= exp:e expListAux:a {: RESULT = new Absyn.ExpList(e, a); :}
 expListAux ::= SEMICOLON exp:e expListAux:a {: RESULT = new Absyn.ExpList(e, a); :}
 | /* empty */;
 
-assignment ::= lValue ASSIGN exp;
+assignment ::= lValue:l ASSIGN exp:e {: RESULT = new Absyn.AssignExp(lleft, l, e); :};
 
 ifThen ::= IF exp THEN exp;
 
@@ -170,12 +177,12 @@ decList ::= dec:d decList:dl {: RESULT = new Absyn.DecList(d, dl); :}
 
 arrCreate ::= subscript OF exp; //POSSIBLY WRONG
 
-recCreate ::= ID LBRACE fieldCreateList RBRACE;
+recCreate ::= ID:i LBRACE fieldCreateList:fcl RBRACE {: RESULT = new Absyn.RecordExp(ileft, Symbol.Symbol.symbol(i), fcl); :};
 
-fieldCreateList ::= fieldCreate fieldCreateListAux
+fieldCreateList ::= fieldCreate:fc fieldCreateListAux:fcla {: RESULT = new Absyn.FieldExpList(fcleft, fc.name, fc.init, fcla); :}
 | /* empty */;
 
-fieldCreateListAux ::= COMMA fieldCreate fieldCreateListAux 
+fieldCreateListAux ::= COMMA fieldCreate:fc fieldCreateListAux:fcla {: RESULT = new Absyn.FieldExpList(fcleft, fc.name, fc.init, fcla); :}
 | /* empty */;
 
-fieldCreate ::= ID EQ exp;
+fieldCreate ::= ID:i EQ exp:e {: RESULT = new Absyn.FieldExpList(ileft, Symbol.Symbol.symbol(i), e, null); :};

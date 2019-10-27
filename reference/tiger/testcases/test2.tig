@@ -6,7 +6,7 @@ let
 	type myint = int
 	type  arrtype = array of myint
 
-/* var rec1:rectype /* comment /* comment level 3 */  somethig */ := rectype {name="Nobody", age=1000} */
+/* var rec1:rectype /* comment /* comment level 4 */  somethig */ := rectype {name="Nobody", age=1000} */
 /*	var arr1:arrtype := arrtype [10] of 0 */
 in
 	arr1

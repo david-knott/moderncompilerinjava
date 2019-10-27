@@ -629,7 +629,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -57:
 						break;
 					case 57:
-						{yybegin(YYINITIAL);return tok(sym.STRING, buffer);}
+						{yybegin(YYINITIAL);String ret = buffer; buffer = ""; return tok(sym.STRING, ret);}
 					case -58:
 						break;
 					case 59:
