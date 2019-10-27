@@ -6,6 +6,8 @@ action code {: static Symbol.Symbol sym(String s) {
 	    :};
 
 parser code  {: 
+
+  public Absyn.Exp parseResult;
   Lexer lexer;
 
   public void syntax_error(token current) {

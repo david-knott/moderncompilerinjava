@@ -6,7 +6,7 @@ action code {: static Symbol.Symbol sym(String s) {
 	    :};
 
 parser code  {: 
-  //public Absyn.Exp parseResult;
+  public Absyn.Exp parseResult;
   Lexer lexer;
 
   public void syntax_error(java_cup.runtime.Symbol current) {
@@ -37,7 +37,8 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	ASSIGN, ARRAY, IF, THEN, ELSE, WHILE, FOR, TO, DO, 
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
-non terminal program, exp, expList, expListAux, letExp, decList, dec, tyDec, funcDec;
+non terminal Absyn.Exp program;
+non terminal exp, expList, expListAux, letExp, decList, dec, tyDec, funcDec;
 non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDec;
 non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
 non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
@@ -52,7 +53,7 @@ precedence left AND, OR;
 
 start with program;
 
-program ::= exp;
+program ::= exp:e {: RESULT = (Absyn.Exp)e; :};
 
 dec ::= varDec 
 | tyDec
@@ -91,9 +92,10 @@ subscript ::= lValue LBRACK exp RBRACK; //NOT SURE ABOUT THIS
 fieldExp ::= lValue DOT ID;
 
 exp ::= lValue
-| NIL 
-| INT
-| STRING
+| NIL {: RESULT = new Absyn.NilExp(0); :} 
+//| INT:i {: RESULT = new Absyn.IntExp(0, i); :}
+| INT:i {: System.out.println(i); :}
+| STRING:s {: RESULT = new Absyn.StringExp(0, s); :} 
 | seqExp
 | callExp 
 | infixExp
@@ -103,7 +105,7 @@ exp ::= lValue
 | negation 
 | ifThenElse
 | ifThen
-| whileExp
+| whileExp 
 | forExp
 | BREAK 
 | letExp
@@ -145,11 +147,11 @@ ifThen ::= IF exp THEN exp;
 
 ifThenElse ::= IF exp THEN exp ELSE exp;
 
-whileExp ::= WHILE exp DO exp;
+whileExp ::= WHILE exp:e1 DO exp:e2 {: RESULT = new Absyn.WhileExp(0, (Absyn.Exp)e1, (Absyn.Exp)e2); :};
 
 forExp ::= FOR ID ASSIGN exp TO exp DO exp;
 
-letExp ::= LET decList IN expList END;
+letExp ::= LET decList:e1 IN expList:e2 END {: RESULT = new Absyn.LetExp(0, (Absyn.DecList)e1, (Absyn.Exp)e2); :};
 
 decList ::= dec decList 
 | /* empty */;
