@@ -172,7 +172,7 @@ public class Print {
     else if (e instanceof BreakExp) prExp((BreakExp) e, d);
     else if (e instanceof LetExp) prExp((LetExp) e, d);
     else if (e instanceof ArrayExp) prExp((ArrayExp) e, d);
-    else throw new Error("Print.prExp");
+    else throw new Error("Print.prExp " + e);
   }
 
   void prDec(FunctionDec d, int i) {

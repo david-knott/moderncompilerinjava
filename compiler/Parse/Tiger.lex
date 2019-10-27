@@ -26,6 +26,7 @@ private java_cup.runtime.Symbol tok(int kind, Object value) {
 
 private ErrorMsg.ErrorMsg errorMsg;
 private int commentDepth = 0;
+private String buffer = "";
 
 Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
   this(s);
@@ -50,6 +51,7 @@ digits=[0-9]+
 <YYINITIAL>"for"	{return tok(sym.FOR, null);}
 <YYINITIAL>"to"	{return tok(sym.TO, null);}
 <YYINITIAL>"break"	{return tok(sym.BREAK, null);}
+<YYINITIAL>"nil"	{return tok(sym.NIL, null);}
 <YYINITIAL>"let"	{return tok(sym.LET, null);}
 <YYINITIAL>"type"	{return tok(sym.TYPE, null);}
 <YYINITIAL>"array"	{return tok(sym.ARRAY, null);}
@@ -88,9 +90,9 @@ digits=[0-9]+
 
 <YYINITIAL>[a-zA-Z_]+[a-zA-Z0-9_]*	{return tok(sym.ID, yytext());}
 <YYINITIAL>{digits} {return tok(sym.INT, new Integer(yytext()));}
-<YYINITIAL>"\""	{yybegin(STRING);}
-<STRING>"\""	{yybegin(YYINITIAL);return tok(sym.STRING, new String(yytext()));}
-<STRING>. {}
+<YYINITIAL>"\""	{yybegin(STRING); System.out.println(yytext()); buffer+= new String(yytext()); }
+<STRING>"\""	{yybegin(YYINITIAL);return tok(sym.STRING, buffer);}
+<STRING>. { buffer+= yytext(); }
 <YYINITIAL>"/*"	{ yybegin(COMMENT); } 
 <COMMENT>"/*"	{ commentDepth++;}
 <COMMENT>"*/"   { if(commentDepth == 0){ yybegin(YYINITIAL); } else {commentDepth--;};}
@@ -100,6 +102,6 @@ digits=[0-9]+
 <YYINITIAL>" "	{}
 <YYINITIAL>\t	{}
 <YYINITIAL>\n	{newline(); /* notice that the new line for linux */}
-<YYINITIAL>\r\n	{newline(); /* notice that the new line for linux */}
+<YYINITIAL>\r\n	{newline(); /* notice that the new line for windows */}
 <YYINITIAL>","	{return tok(sym.COMMA, null);}
 <YYINITIAL>.	{errorMsg.error(yychar, "illegal character");}

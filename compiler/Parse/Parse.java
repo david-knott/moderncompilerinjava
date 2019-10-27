@@ -4,7 +4,6 @@ public class Parse {
 
 	public ErrorMsg.ErrorMsg errorMsg;
 
-	public Absyn.Exp absyn;
 
 	static String symnames[] = new String[100];
 	static {
@@ -87,7 +86,10 @@ public class Parse {
 		}
 		Grm parser = new Grm(new Yylex(inp, errorMsg), errorMsg);
 		try {
-			parser.parse();
+			java_cup.runtime.Symbol rootSymbol = parser.parse();
+			Program root = (Program)rootSymbol.value; 
+			System.out.println(root);
+			new Absyn.Print(System.out).prExp(root.absyn, 0);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new Error(e.toString());
@@ -97,8 +99,6 @@ public class Parse {
 			} catch (java.io.IOException e) {
 			}
 		}
-		absyn = parser.parseResult;
-		System.out.println(absyn);
 	}
 
 }

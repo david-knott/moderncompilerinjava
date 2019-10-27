@@ -37,8 +37,9 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	ASSIGN, ARRAY, IF, THEN, ELSE, WHILE, FOR, TO, DO, 
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE;
 
-non terminal Absyn.Exp program;
-non terminal exp, expList, expListAux, letExp, decList, dec, tyDec, funcDec;
+non terminal Program program;
+non terminal Absyn.Exp exp;
+non terminal expList, expListAux, letExp, decList, dec, tyDec, funcDec;
 non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDec;
 non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
 non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
@@ -53,7 +54,7 @@ precedence left AND, OR;
 
 start with program;
 
-program ::= exp:e {: RESULT = (Absyn.Exp)e; :};
+program ::= exp:e {: RESULT = new Program(e); :};
 
 dec ::= varDec 
 | tyDec
@@ -61,7 +62,7 @@ dec ::= varDec
 
 tyDec ::= TYPE ID EQ ty;
 
-ty ::= ID /* conflict */
+ty ::= ID
 | recTy
 | arrTy;
 
@@ -83,18 +84,17 @@ funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ exp
 varDec ::= VAR ID ASSIGN exp
 | VAR ID COLON ty ASSIGN exp;
 
-lValue ::= ID:id
+lValue ::= ID:id 
 | subscript
 | fieldExp;
 
-subscript ::= lValue LBRACK exp RBRACK; //NOT SURE ABOUT THIS
+subscript ::= lValue LBRACK exp RBRACK; //NOT SURE ABOUT THIS you could have a subscript of a subscript etc....
 
 fieldExp ::= lValue DOT ID;
 
 exp ::= lValue
 | NIL {: RESULT = new Absyn.NilExp(0); :} 
-//| INT:i {: RESULT = new Absyn.IntExp(0, i); :}
-| INT:i {: System.out.println(i); :}
+| INT:i {: RESULT = new Absyn.IntExp(0, i); :}
 | STRING:s {: RESULT = new Absyn.StringExp(0, s); :} 
 | seqExp
 | callExp 
@@ -156,7 +156,7 @@ letExp ::= LET decList:e1 IN expList:e2 END {: RESULT = new Absyn.LetExp(0, (Abs
 decList ::= dec decList 
 | /* empty */;
 
-arrCreate ::= subscript OF exp; //AND THIS
+arrCreate ::= subscript OF exp; //POSSIBLY WRONG
 
 recCreate ::= ID LBRACE fieldCreateList RBRACE;
 

@@ -26,6 +26,7 @@ private java_cup.runtime.Symbol tok(int kind, Object value) {
 }
 private ErrorMsg.ErrorMsg errorMsg;
 private int commentDepth = 0;
+private String buffer = "";
 Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
   this(s);
   errorMsg=e;
@@ -73,8 +74,8 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 	private final int COMMENT = 1;
 	private final int yy_state_dtrans[] = {
 		0,
-		60,
-		65
+		61,
+		66
 	};
 	private void yybegin (int state) {
 		yy_lexical_state = state;
@@ -274,16 +275,16 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 		/* 54 */ YY_NO_ANCHOR,
 		/* 55 */ YY_NO_ANCHOR,
 		/* 56 */ YY_NO_ANCHOR,
-		/* 57 */ YY_NOT_ACCEPT,
-		/* 58 */ YY_NO_ANCHOR,
+		/* 57 */ YY_NO_ANCHOR,
+		/* 58 */ YY_NOT_ACCEPT,
 		/* 59 */ YY_NO_ANCHOR,
-		/* 60 */ YY_NOT_ACCEPT,
-		/* 61 */ YY_NO_ANCHOR,
+		/* 60 */ YY_NO_ANCHOR,
+		/* 61 */ YY_NOT_ACCEPT,
 		/* 62 */ YY_NO_ANCHOR,
-		/* 63 */ YY_NOT_ACCEPT,
-		/* 64 */ YY_NO_ANCHOR,
-		/* 65 */ YY_NOT_ACCEPT,
-		/* 66 */ YY_NO_ANCHOR,
+		/* 63 */ YY_NO_ANCHOR,
+		/* 64 */ YY_NOT_ACCEPT,
+		/* 65 */ YY_NO_ANCHOR,
+		/* 66 */ YY_NOT_ACCEPT,
 		/* 67 */ YY_NO_ANCHOR,
 		/* 68 */ YY_NO_ANCHOR,
 		/* 69 */ YY_NO_ANCHOR,
@@ -316,39 +317,45 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 		/* 96 */ YY_NO_ANCHOR,
 		/* 97 */ YY_NO_ANCHOR,
 		/* 98 */ YY_NO_ANCHOR,
-		/* 99 */ YY_NO_ANCHOR
+		/* 99 */ YY_NO_ANCHOR,
+		/* 100 */ YY_NO_ANCHOR,
+		/* 101 */ YY_NO_ANCHOR,
+		/* 102 */ YY_NO_ANCHOR
 	};
 	private int yy_cmap[] = unpackFromString(1,130,
 "43:9,47,44,43:2,45,43:18,46,43,42,43:3,38,43,27,28,34,32,25,33,31,35,41:10," +
-"23,26,36,24,37,43:2,40:26,21,43,22,43,40,43,11,10,19,15,5,6,40,2,3,40,12,4," +
-"40,16,7,14,40,8,17,9,18,20,1,40,13,40,29,39,30,43:2,0:2")[0];
+"23,26,36,24,37,43:2,40:26,21,43,22,43,40,43,11,10,19,16,5,6,40,2,3,40,12,4," +
+"40,13,7,15,40,8,17,9,18,20,1,40,14,40,29,39,30,43:2,0:2")[0];
 
-	private int yy_rmap[] = unpackFromString(1,100,
-"0,1,2,1:2,3,1:11,4,5,6,1:2,7,1:5,8:5,1:6,8:11,1:7,9,10,11,12,13,14,15,16,17" +
+	private int yy_rmap[] = unpackFromString(1,103,
+"0,1,2,1:2,3,1:11,4,5,6,1:2,7,1:5,8:5,1:6,8:12,1:7,9,10,11,12,13,14,15,16,17" +
 ",18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42" +
-",43,44,45,46,47,48,8,49,50")[0];
+",43,44,45,46,47,48,49,50,8,51,52")[0];
 
-	private int yy_nxt[][] = unpackFromString(51,48,
-"1,2,97,58,78,79,80,61,97,64,98,99,97:3,66,97:4,81,3,4,5,6,7,8,9,10,11,12,13" +
-",14,15,16,17,18,19,20,21,97,22,23,24,25,57,26,27,-1:49,97,89,97:18,-1:19,97" +
-",90,-1:30,33,-1:57,34,-1:37,35,-1:12,36,-1:34,37,-1:64,22,-1:7,97:20,-1:19," +
-"97,90,-1:50,38,-1:4,97:5,28,97:9,29,97:4,-1:19,97,90,-1:41,52,-1:12,1,50:33" +
-",59,62,50:8,51,63,50:2,-1,97:5,30,97:14,-1:19,97,90,-1:40,53,-1:57,54,-1:4," +
-"97,83,97:4,31,97:5,84,97:7,-1:19,97,90,-1:6,1,55:41,56,55,-1:2,55:2,-1,97:6" +
-",32,97:13,-1:19,97,90,-1:7,97:8,39,97:11,-1:19,97,90,-1:7,97:14,40,97:5,-1:" +
-"19,97,90,-1:7,97:7,41,97:12,-1:19,97,90,-1:7,97:7,42,97:12,-1:19,97,90,-1:7" +
-",97:4,43,97:15,-1:19,97,90,-1:7,97:15,44,97:4,-1:19,97,90,-1:7,97:4,45,97:1" +
-"5,-1:19,97,90,-1:7,97:4,46,97:15,-1:19,97,90,-1:7,97:11,47,97:8,-1:19,97,90" +
-",-1:7,97:12,48,97:7,-1:19,97,90,-1:7,97:15,49,97:4,-1:19,97,90,-1:7,97:4,67" +
-",97:15,-1:19,97,90,-1:7,97:3,82,97:11,68,97:4,-1:19,97,90,-1:7,97:6,69,97:1" +
-"0,91,97:2,-1:19,97,90,-1:7,97:10,70,97:9,-1:19,97,90,-1:7,97:16,71,97:3,-1:" +
-"19,97,90,-1:7,97:4,72,97:15,-1:19,97,90,-1:7,97:13,73,97:6,-1:19,97,90,-1:7" +
-",97:3,74,97:16,-1:19,97,90,-1:7,97:10,75,97:9,-1:19,97,90,-1:7,97:10,76,97:" +
-"9,-1:19,97,90,-1:7,97:6,77,97:13,-1:19,97,90,-1:7,97:2,85,97:17,-1:19,97,90" +
-",-1:7,90:20,-1:19,90:2,-1:7,97:15,94,97:4,-1:19,97,90,-1:7,97:4,86,97:15,-1" +
-":19,97,90,-1:7,97:7,87,97:12,-1:19,97,90,-1:7,97:18,95,97,-1:19,97,90,-1:7," +
-"97:8,96,97:11,-1:19,97,90,-1:7,97:2,88,97:17,-1:19,97,90,-1:7,97:7,92,97:12" +
-",-1:19,97,90,-1:7,97:7,93,97:12,-1:19,97,90,-1:6");
+	private int yy_nxt[][] = unpackFromString(53,48,
+"1,2,100,59,80,81,82,62,100,65,101,102,100,83,100:2,67,100:3,84,3,4,5,6,7,8," +
+"9,10,11,12,13,14,15,16,17,18,19,20,21,100,22,23,24,25,58,26,27,-1:49,100,92" +
+",100:18,-1:19,100,93,-1:30,33,-1:57,34,-1:37,35,-1:12,36,-1:34,37,-1:64,22," +
+"-1:7,100:20,-1:19,100,93,-1:50,38,-1:4,100:5,28,100:6,29,100:7,-1:19,100,93" +
+",-1:41,53,-1:12,1,51:33,60,63,51:8,52,64,51:2,-1,100:5,30,100:14,-1:19,100," +
+"93,-1:40,54,-1:57,55,-1:4,100,86,100:4,31,100:6,87,100:6,-1:19,100,93,-1:6," +
+"1,56:41,57,56,-1:2,56:2,-1,100:6,32,100:13,-1:19,100,93,-1:7,100:8,39,100:1" +
+"1,-1:19,100,93,-1:7,100:15,40,100:4,-1:19,100,93,-1:7,100:7,41,100:12,-1:19" +
+",100,93,-1:7,100:3,42,100:16,-1:19,100,93,-1:7,100:7,43,100:12,-1:19,100,93" +
+",-1:7,100:4,44,100:15,-1:19,100,93,-1:7,100:12,45,100:7,-1:19,100,93,-1:7,1" +
+"00:4,46,100:15,-1:19,100,93,-1:7,100:4,47,100:15,-1:19,100,93,-1:7,100:11,4" +
+"8,100:8,-1:19,100,93,-1:7,100:13,49,100:6,-1:19,100,93,-1:7,100:12,50,100:7" +
+",-1:19,100,93,-1:7,100:4,68,100:15,-1:19,100,93,-1:7,100:3,85,100:8,69,100:" +
+"7,-1:19,100,93,-1:7,100:6,70,100:10,94,100:2,-1:19,100,93,-1:7,100:2,71,100" +
+":17,-1:19,100,93,-1:7,100:10,72,100:9,-1:19,100,93,-1:7,100:16,73,100:3,-1:" +
+"19,100,93,-1:7,100:4,74,100:15,-1:19,100,93,-1:7,100:14,75,100:5,-1:19,100," +
+"93,-1:7,100:3,76,100:16,-1:19,100,93,-1:7,100:10,77,100:9,-1:19,100,93,-1:7" +
+",100:10,78,100:9,-1:19,100,93,-1:7,100:6,79,100:13,-1:19,100,93,-1:7,100:2," +
+"88,100:17,-1:19,100,93,-1:7,93:20,-1:19,93:2,-1:7,100:12,97,100:7,-1:19,100" +
+",93,-1:7,100:4,89,100:15,-1:19,100,93,-1:7,100:7,90,100:12,-1:19,100,93,-1:" +
+"7,100:18,98,100,-1:19,100,93,-1:7,100:8,99,100:11,-1:19,100,93,-1:7,100:2,9" +
+"1,100:17,-1:19,100,93,-1:7,100:7,95,100:12,-1:19,100,93,-1:7,100:7,96,100:1" +
+"2,-1:19,100,93,-1:6");
 
 	public java_cup.runtime.Symbol nextToken ()
 		throws java.io.IOException {
@@ -486,7 +493,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -23:
 						break;
 					case 23:
-						{yybegin(STRING);}
+						{yybegin(STRING); System.out.println(yytext()); buffer+= new String(yytext()); }
 					case -24:
 						break;
 					case 24:
@@ -546,7 +553,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -38:
 						break;
 					case 38:
-						{newline(); /* notice that the new line for linux */}
+						{newline(); /* notice that the new line for windows */}
 					case -39:
 						break;
 					case 39:
@@ -562,86 +569,86 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -42:
 						break;
 					case 42:
-						{return tok(sym.VAR, null);}
+						{return tok(sym.NIL, null);}
 					case -43:
 						break;
 					case 43:
-						{return tok(sym.ELSE, null);}
+						{return tok(sym.VAR, null);}
 					case -44:
 						break;
 					case 44:
-						{return tok(sym.THEN, null);}
+						{return tok(sym.ELSE, null);}
 					case -45:
 						break;
 					case 45:
-						{return tok(sym.TYPE, null);}
+						{return tok(sym.THEN, null);}
 					case -46:
 						break;
 					case 46:
-						{return tok(sym.WHILE, null);}
+						{return tok(sym.TYPE, null);}
 					case -47:
 						break;
 					case 47:
-						{return tok(sym.BREAK, null);}
+						{return tok(sym.WHILE, null);}
 					case -48:
 						break;
 					case 48:
-						{return tok(sym.ARRAY, null);}
+						{return tok(sym.BREAK, null);}
 					case -49:
 						break;
 					case 49:
-						{return tok(sym.FUNCTION, null);}
+						{return tok(sym.ARRAY, null);}
 					case -50:
 						break;
 					case 50:
-						{}
+						{return tok(sym.FUNCTION, null);}
 					case -51:
 						break;
 					case 51:
-						{ /* notice the new line for linux */}
+						{}
 					case -52:
 						break;
 					case 52:
-						{ if(commentDepth == 0){ yybegin(YYINITIAL); } else {commentDepth--;};}
+						{ /* notice the new line for linux */}
 					case -53:
 						break;
 					case 53:
-						{ commentDepth++;}
+						{ if(commentDepth == 0){ yybegin(YYINITIAL); } else {commentDepth--;};}
 					case -54:
 						break;
 					case 54:
-						{ /* notice the new line for linux */}
+						{ commentDepth++;}
 					case -55:
 						break;
 					case 55:
-						{}
+						{ /* notice the new line for linux */}
 					case -56:
 						break;
 					case 56:
-						{yybegin(YYINITIAL);return tok(sym.STRING, new String(yytext()));}
+						{ buffer+= yytext(); }
 					case -57:
 						break;
-					case 58:
-						{return tok(sym.ID, yytext());}
+					case 57:
+						{yybegin(YYINITIAL);return tok(sym.STRING, buffer);}
 					case -58:
 						break;
 					case 59:
-						{}
+						{return tok(sym.ID, yytext());}
 					case -59:
 						break;
-					case 61:
-						{return tok(sym.ID, yytext());}
+					case 60:
+						{}
 					case -60:
 						break;
 					case 62:
-						{}
+						{return tok(sym.ID, yytext());}
 					case -61:
 						break;
-					case 64:
-						{return tok(sym.ID, yytext());}
+					case 63:
+						{}
 					case -62:
 						break;
-					case 66:
+					case 65:
 						{return tok(sym.ID, yytext());}
 					case -63:
 						break;
@@ -776,6 +783,18 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case 99:
 						{return tok(sym.ID, yytext());}
 					case -96:
+						break;
+					case 100:
+						{return tok(sym.ID, yytext());}
+					case -97:
+						break;
+					case 101:
+						{return tok(sym.ID, yytext());}
+					case -98:
+						break;
+					case 102:
+						{return tok(sym.ID, yytext());}
+					case -99:
 						break;
 					default:
 						yy_error(YY_E_INTERNAL,false);
