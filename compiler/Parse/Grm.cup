@@ -93,9 +93,9 @@ subscript ::= lValue LBRACK exp RBRACK; //NOT SURE ABOUT THIS you could have a s
 fieldExp ::= lValue DOT ID;
 
 exp ::= lValue
-| NIL {: RESULT = new Absyn.NilExp(0); :} 
-| INT:i {: RESULT = new Absyn.IntExp(0, i); :}
-| STRING:s {: RESULT = new Absyn.StringExp(0, s); :} 
+| NIL:n {: RESULT = new Absyn.NilExp(nleft); :} 
+| INT:i {: RESULT = new Absyn.IntExp(ileft, i); :}
+| STRING:s {: RESULT = new Absyn.StringExp(sleft, s); :} 
 | seqExp
 | callExp 
 | infixExp
@@ -106,8 +106,8 @@ exp ::= lValue
 | ifThenElse
 | ifThen
 | whileExp 
-| forExp
-| BREAK 
+| forExp 
+| BREAK {: RESULT = new Absyn.BreakExp(0):}
 | letExp
 ;
 
