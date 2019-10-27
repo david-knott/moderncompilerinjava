@@ -88,7 +88,7 @@ public class Parse {
 		try {
 			java_cup.runtime.Symbol rootSymbol = parser.parse();
 			Program root = (Program)rootSymbol.value; 
-			System.out.println(root);
+			System.out.println(root.absyn);
 			new Absyn.Print(System.out).prExp(root.absyn, 0);
 		} catch (Throwable e) {
 			e.printStackTrace();

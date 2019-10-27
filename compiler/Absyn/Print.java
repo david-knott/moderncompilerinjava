@@ -172,7 +172,7 @@ public class Print {
     else if (e instanceof BreakExp) prExp((BreakExp) e, d);
     else if (e instanceof LetExp) prExp((LetExp) e, d);
     else if (e instanceof ArrayExp) prExp((ArrayExp) e, d);
-    else throw new Error("Print.prExp " + e);
+    else throw new Error("Print.prExp expression = " + e);
   }
 
   void prDec(FunctionDec d, int i) {
@@ -214,7 +214,7 @@ public class Print {
     if (d instanceof FunctionDec) prDec((FunctionDec) d, i);
     else if (d instanceof VarDec) prDec((VarDec) d, i);
     else if (d instanceof TypeDec) prDec((TypeDec) d, i);
-    else throw new Error("Print.prDec");
+    else throw new Error("Print.prDec " + d);
   }
 
   void prTy(NameTy t, int i) {

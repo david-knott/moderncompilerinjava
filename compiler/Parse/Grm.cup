@@ -39,10 +39,21 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 
 non terminal Program program;
 non terminal Absyn.Exp exp;
-non terminal expList, expListAux, letExp, decList, dec, tyDec, funcDec;
-non terminal ty, fieldDec, fieldDecList, fieldDecListAux, varDec;
-non terminal lValue, fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
-non terminal arrTy, recTy, arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
+non terminal Absyn.ExpList expList;
+non terminal Absyn.ExpList expListAux;
+non terminal Absyn.Exp letExp;
+non terminal Absyn.DecList decList;
+non terminal Absyn.Dec dec;
+non terminal Absyn.VarDec varDec;
+non terminal funcDec;
+non terminal Absyn.TypeDec tyDec;
+non terminal Absyn.Ty ty;
+non terminal Absyn.ArrayTy arrTy;
+non terminal Absyn.RecordTy recTy;
+non terminal fieldDec, fieldDecList, fieldDecListAux;
+non terminal fieldCreateList, fieldCreateListAux, fieldCreate, recCreate, assignment;
+non terminal Absyn.SimpleVar lValue;
+non terminal arrCreate, subscript, fieldExp, infixExp, seqExp, seqExpAux;
 non terminal callExp, ifThen, ifThenElse, whileExp, forExp, negation; 
 
 precedence left TIMES, DIVIDE;
@@ -56,17 +67,17 @@ start with program;
 
 program ::= exp:e {: RESULT = new Program(e); :};
 
-dec ::= varDec 
-| tyDec
+dec ::= varDec:vd {: RESULT = vd; :}
+| tyDec:td {: RESULT = td; :}
 | funcDec;
 
-tyDec ::= TYPE ID EQ ty;
+tyDec ::= TYPE ID:i EQ ty:t {: RESULT = new Absyn.TypeDec(ileft, Symbol.Symbol.symbol(i), t, null); :};
 
-ty ::= ID
-| recTy
-| arrTy;
+ty ::= ID:i {: RESULT = new Absyn.NameTy(ileft, Symbol.Symbol.symbol(i)); :}
+| recTy:rt {: RESULT = rt; :}
+| arrTy:ar {: RESULT = ar; :};
 
-arrTy ::= ARRAY OF ID;
+arrTy ::= ARRAY OF ID:i {: RESULT = new Absyn.ArrayTy(ileft, Symbol.Symbol.symbol(i)); :};
 
 recTy ::= LBRACE fieldDecList RBRACE;
 
@@ -81,10 +92,11 @@ fieldDec ::= ID COLON ty;
 funcDec ::= FUNCTION ID LPAREN fieldDecList RPAREN EQ exp
 | FUNCTION ID LPAREN fieldDecList RPAREN COLON ID EQ exp;
 
-varDec ::= VAR ID ASSIGN exp
-| VAR ID COLON ty ASSIGN exp;
+varDec ::= VAR ID:i ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symbol.symbol(i), null, e); :}
+| VAR ID:i COLON ty:t ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symbol.symbol(i), (Absyn.NameTy)t, e); :}
+;
 
-lValue ::= ID:id 
+lValue ::= ID:id  {: RESULT = new Absyn.SimpleVar(idleft, Symbol.Symbol.symbol(id)); :}
 | subscript
 | fieldExp;
 
@@ -92,7 +104,7 @@ subscript ::= lValue LBRACK exp RBRACK; //NOT SURE ABOUT THIS you could have a s
 
 fieldExp ::= lValue DOT ID;
 
-exp ::= lValue
+exp ::= lValue:lv {: RESULT = new Absyn.VarExp(lvleft, lv); :}
 | NIL:n {: RESULT = new Absyn.NilExp(nleft); :} 
 | INT:i {: RESULT = new Absyn.IntExp(ileft, i); :}
 | STRING:s {: RESULT = new Absyn.StringExp(sleft, s); :} 
@@ -107,8 +119,8 @@ exp ::= lValue
 | ifThen
 | whileExp 
 | forExp 
-| BREAK {: RESULT = new Absyn.BreakExp(0):}
-| letExp
+| BREAK:b {: RESULT = new Absyn.BreakExp(bleft); :}
+| letExp:le {: RESULT = le; :}
 ;
 
 negation ::= MINUS exp;
@@ -135,10 +147,10 @@ seqExpAux ::= SEMICOLON exp seqExpAux
 
 callExp ::= ID LPAREN expList RPAREN;
 
-expList ::= exp expListAux
+expList ::= exp:e expListAux:a {: RESULT = new Absyn.ExpList(e, a); :}
 | /* empty */;
 
-expListAux ::= SEMICOLON exp expListAux
+expListAux ::= SEMICOLON exp:e expListAux:a {: RESULT = new Absyn.ExpList(e, a); :}
 | /* empty */;
 
 assignment ::= lValue ASSIGN exp;
@@ -147,14 +159,14 @@ ifThen ::= IF exp THEN exp;
 
 ifThenElse ::= IF exp THEN exp ELSE exp;
 
-whileExp ::= WHILE exp:e1 DO exp:e2 {: RESULT = new Absyn.WhileExp(0, (Absyn.Exp)e1, (Absyn.Exp)e2); :};
+whileExp ::= WHILE exp:e1 DO exp:e2 {: RESULT = new Absyn.WhileExp(e1left, (Absyn.Exp)e1, (Absyn.Exp)e2); :};
 
 forExp ::= FOR ID ASSIGN exp TO exp DO exp;
 
-letExp ::= LET decList:e1 IN expList:e2 END {: RESULT = new Absyn.LetExp(0, (Absyn.DecList)e1, (Absyn.Exp)e2); :};
+letExp ::= LET decList:e1 IN exp:e2 END {: RESULT = new Absyn.LetExp(e1left, (Absyn.DecList)e1, (Absyn.Exp)e2); :};
 
-decList ::= dec decList 
-| /* empty */;
+decList ::= dec:d decList:dl {: RESULT = new Absyn.DecList(d, dl); :} 
+| /* empty */ ;
 
 arrCreate ::= subscript OF exp; //POSSIBLY WRONG
 

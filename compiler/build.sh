@@ -56,7 +56,7 @@ then
 fi
 
 javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java
-java -cp bin Parse.Main ../reference/tiger/testcases/simple.tig
+java -cp bin Parse.Main ../reference/tiger/testcases/test1.tig
 
 #cd ..
 #javac -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar ./test/*.java
