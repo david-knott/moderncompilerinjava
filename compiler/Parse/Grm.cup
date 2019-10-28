@@ -104,16 +104,13 @@ varDec ::= VAR ID:i ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symb
 | VAR ID:i COLON ty:t ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symbol.symbol(i), (Absyn.NameTy)t, e); :}
 ;
 
-helper ::= LBRACK exp RBRACK;
-
+//https://stackoverflow.com/questions/26968665/bison-shift-reduce-conflict-tiger-compiler
 lValue ::= ID:id  {: RESULT = new Absyn.SimpleVar(idleft, Symbol.Symbol.symbol(id)); :}
-| subscript
-| fieldExp:fe {: RESULT = fe; :};
+| lValue:lv DOT ID:i {: RESULT = new Absyn.FieldVar(lvleft, lv, Symbol.Symbol.symbol(i)); :} 
+| lValue LBRACK exp RBRACK 
+| ID LBRACK exp RBRACK 
+;
 
-
-subscript ::= lValue LBRACK exp RBRACK; //NOT SURE ABOUT THIS you could have a subscript of a subscript etc....
-
-fieldExp ::= lValue:lv DOT ID:i {: RESULT = new Absyn.FieldVar(lvleft, lv, Symbol.Symbol.symbol(i)); :};
 
 exp ::= lValue:lv {: RESULT = new Absyn.VarExp(lvleft, lv); :}
 | NIL:n {: RESULT = new Absyn.NilExp(nleft); :} 
@@ -179,8 +176,7 @@ letExp ::= LET decList:e1 IN expList:e2 END {: RESULT = new Absyn.LetExp(e1left,
 decList ::= dec:d decList:dl {: RESULT = new Absyn.DecList(d, dl); :} 
 | /* empty */ ;
 
-
-arrCreate ::= subscript OF exp; //POSSIBLY WRONG
+arrCreate ::= ID LBRACK exp RBRACK OF exp;
 
 recCreate ::= ID:i LBRACE fieldCreateList:fcl RBRACE {: RESULT = new Absyn.RecordExp(ileft, Symbol.Symbol.symbol(i), fcl); :};
 

@@ -4,7 +4,6 @@ public class Parse {
 
 	public ErrorMsg.ErrorMsg errorMsg;
 
-
 	static String symnames[] = new String[100];
 	static {
 
@@ -66,14 +65,11 @@ public class Parse {
 				tok = lexer.nextToken();
 				// System.out.println(symnames[tok.sym] + " " + tok.left);
 			} while (tok.sym != sym.EOF);
-
 			inp.close();
-
 		} catch (Exception ex) {
 			System.out.println("Error while lexing");
 			System.out.print(ex.getMessage());
 		}
-
 	}
 
 	public Parse(String filename) {
@@ -87,8 +83,8 @@ public class Parse {
 		Grm parser = new Grm(new Yylex(inp, errorMsg), errorMsg);
 		try {
 			java_cup.runtime.Symbol rootSymbol = parser.parse();
-			Program root = (Program)rootSymbol.value; 
-			//new Absyn.Print(System.out).prExp(root.absyn, 0);
+			Program root = (Program) rootSymbol.value;
+			// new Absyn.Print(System.out).prExp(root.absyn, 0);
 		} catch (Throwable e) {
 			e.printStackTrace();
 			throw new Error(e.toString());
