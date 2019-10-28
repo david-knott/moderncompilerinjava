@@ -177,10 +177,8 @@ letExp ::= LET decList:e1 IN exp:e2 END {: RESULT = new Absyn.LetExp(e1left, (Ab
 decList ::= dec:d decList:dl {: RESULT = new Absyn.DecList(d, dl); :} 
 | /* empty */ ;
 
-typeId ::= ID:i; //extra rule added to correct conflict between arrCreate and lValue
 
-//arrCreate ::= subscript OF exp; //POSSIBLY WRONG
-arrCreate ::= typeId OF exp; 
+arrCreate ::= subscript OF exp; //POSSIBLY WRONG
 
 recCreate ::= ID:i LBRACE fieldCreateList:fcl RBRACE {: RESULT = new Absyn.RecordExp(ileft, Symbol.Symbol.symbol(i), fcl); :};
 
