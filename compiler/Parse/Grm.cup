@@ -62,6 +62,7 @@ non terminal Absyn.FieldVar fieldExp;
 non terminal infixExp;
 non terminal Absyn.ExpList seqExp, seqExpAux; 
 non terminal callExp, ifThen, ifThenElse, whileExp, forExp, negation; 
+non terminal helper;
 
 precedence left TIMES, DIVIDE;
 precedence left PLUS, MINUS;
@@ -103,6 +104,7 @@ varDec ::= VAR ID:i ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symb
 | VAR ID:i COLON ty:t ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symbol.symbol(i), (Absyn.NameTy)t, e); :}
 ;
 
+helper ::= LBRACK exp RBRACK;
 
 lValue ::= ID:id  {: RESULT = new Absyn.SimpleVar(idleft, Symbol.Symbol.symbol(id)); :}
 | subscript
