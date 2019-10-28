@@ -56,10 +56,9 @@ then
 fi
 
 javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java
-java -cp bin Parse.Main ../reference/tiger/testcases/test3.tig
+#java -cp bin Parse.Main ../reference/tiger/testcases/test3.tig
 
-#cd ..
-#javac -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar ./test/*.java
-#java -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar:./lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore test.Chap1Test test.Chap3Test 
-
-#cd compiler
+cd ..
+javac -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar ./test/*.java
+java -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar:./lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore test.Chap1Test test.Chap3Test 
+cd compiler

@@ -9,6 +9,5 @@ let
     var diag2 := intArray [N+N-10] of 0
 
 in
-	arr1;
-    something
+	arr1
 end

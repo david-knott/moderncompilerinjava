@@ -174,7 +174,7 @@ whileExp ::= WHILE exp:e1 DO exp:e2 {: RESULT = new Absyn.WhileExp(e1left, (Absy
 
 forExp ::= FOR ID ASSIGN exp TO exp DO exp;
 
-letExp ::= LET decList:e1 IN exp:e2 END {: RESULT = new Absyn.LetExp(e1left, (Absyn.DecList)e1, (Absyn.Exp)e2); :};
+letExp ::= LET decList:e1 IN expList:e2 END {: RESULT = new Absyn.LetExp(e1left, (Absyn.DecList)e1, (Absyn.Exp)new Absyn.SeqExp(e1left, e2)); :};
 
 decList ::= dec:d decList:dl {: RESULT = new Absyn.DecList(d, dl); :} 
 | /* empty */ ;
