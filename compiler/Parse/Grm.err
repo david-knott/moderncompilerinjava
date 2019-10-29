@@ -39,8 +39,8 @@ Writing parser...
 
 ===== Non terminals =====
 [0]$START [1]program [2]exp [3]expList [4]expListAux 
-[5]letExp [6]decList [7]dec [8]varDec [9]funcDec 
-[10]typeId [11]tyDec [12]ty [13]arrTy [14]recTy 
+[5]letExp [6]decList [7]dec [8]varDec [9]typeId 
+[10]funcDec [11]tyDec [12]ty [13]arrTy [14]recTy 
 [15]fieldDec [16]fieldDecList [17]fieldDecListAux [18]recCreate [19]assignment 
 [20]fieldCreate [21]fieldCreateList [22]fieldCreateListAux [23]lValue [24]arrCreate 
 [25]subscript [26]fieldExp [27]infixExp [28]seqExp [29]seqExpAux 
@@ -5707,7 +5707,7 @@ From state #21
  [non term 34->state 17] [non term 35->state 4]
 From state #22
  [non term 6->state 59] [non term 7->state 64] [non term 8->state 62]
- [non term 9->state 60] [non term 11->state 61]
+ [non term 10->state 60] [non term 11->state 61]
 From state #23
 From state #24
 From state #25
@@ -5826,7 +5826,7 @@ From state #62
 From state #63
 From state #64
  [non term 6->state 86] [non term 7->state 64] [non term 8->state 62]
- [non term 9->state 60] [non term 11->state 61]
+ [non term 10->state 60] [non term 11->state 61]
 From state #65
 From state #66
 From state #67
