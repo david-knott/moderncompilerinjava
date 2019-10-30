@@ -493,7 +493,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -23:
 						break;
 					case 23:
-						{yybegin(STRING); System.out.println(yytext()); buffer+= new String(yytext()); }
+						{buffer = ""; yybegin(STRING); }
 					case -24:
 						break;
 					case 24:

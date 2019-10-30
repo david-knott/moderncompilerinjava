@@ -90,9 +90,11 @@ digits=[0-9]+
 
 <YYINITIAL>[a-zA-Z_]+[a-zA-Z0-9_]*	{return tok(sym.ID, yytext());}
 <YYINITIAL>{digits} {return tok(sym.INT, new Integer(yytext()));}
-<YYINITIAL>"\""	{yybegin(STRING); System.out.println(yytext()); buffer+= new String(yytext()); }
-<STRING>"\""	{yybegin(YYINITIAL);String ret = buffer; buffer = ""; return tok(sym.STRING, ret);}
+
+<YYINITIAL>\"	{buffer = ""; yybegin(STRING); }
+<STRING>\"	{yybegin(YYINITIAL);String ret = buffer; buffer = ""; return tok(sym.STRING, ret);}
 <STRING>. { buffer+= yytext(); }
+
 <YYINITIAL>"/*"	{ yybegin(COMMENT); } 
 <COMMENT>"/*"	{ commentDepth++;}
 <COMMENT>"*/"   { if(commentDepth == 0){ yybegin(YYINITIAL); } else {commentDepth--;};}
