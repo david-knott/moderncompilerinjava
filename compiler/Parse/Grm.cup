@@ -68,7 +68,6 @@ non terminal Absyn.IfExp ifThen, ifThenElse;
 non terminal Absyn.WhileExp whileExp; 
 non terminal Absyn.ForExp forExp; 
 non terminal negation; 
-non terminal helper;
 
 precedence left TIMES, DIVIDE;
 precedence left PLUS, MINUS;
