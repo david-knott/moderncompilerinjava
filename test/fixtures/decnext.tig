@@ -1,5 +1,8 @@
 let
-function somefuntion() = print("Hello David how are you...")
+function somefuntion(a: int, b: int) = print("Hello David how are you...")
 function somefuntion2() = print("Hello David how are you...")
 in
+somefuntion(a, b);
+somefuntion2(q,w,e,r);
+somefuntion2(6,7,8,9)
 end

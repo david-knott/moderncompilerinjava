@@ -55,7 +55,7 @@ then
   mv sym.java Parse
 fi
 
-javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java
+javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java Types/*.java
 #java -cp bin Parse.Main ../reference/tiger/testcases/test3.tig
 
 cd ..

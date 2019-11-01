@@ -40,7 +40,7 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 non terminal Program program;
 non terminal Absyn.Exp exp;
 non terminal Absyn.ExpList expList;
-non terminal Absyn.ExpList expListAux;
+non terminal Absyn.ExpList expListAux, paramList, paramListAux;
 non terminal Absyn.Exp letExp;
 non terminal Absyn.DecList decList;
 non terminal Absyn.Dec dec;
@@ -160,7 +160,14 @@ seqExp ::= LPAREN RPAREN
 seqExpAux ::= SEMICOLON exp:e seqExpAux:sea {: RESULT = new Absyn.ExpList(e, sea); :}
 | /* empty */;
 
-callExp ::= ID:i LPAREN expList:el RPAREN {: RESULT = new Absyn.CallExp(ileft, Symbol.Symbol.symbol(i), el); :};
+callExp ::= ID:i LPAREN paramList:el RPAREN {: RESULT = new Absyn.CallExp(ileft, Symbol.Symbol.symbol(i), el); :};
+
+paramList ::= exp:e paramListAux:a {: RESULT = new Absyn.ExpList(e, a); :}
+| /* empty */;
+
+paramListAux ::= COMMA exp:e paramListAux:a {: RESULT = new Absyn.ExpList(e, a); :}
+| /* empty */;
+
 
 expList ::= exp:e expListAux:a {: RESULT = new Absyn.ExpList(e, a); :}
 | /* empty */;
