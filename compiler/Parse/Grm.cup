@@ -72,9 +72,9 @@ non terminal helper;
 
 precedence left TIMES, DIVIDE;
 precedence left PLUS, MINUS;
-precedence left EQ, NEQ;
-precedence left GT, LT;
-precedence left GE, LE;
+precedence nonassoc EQ, NEQ;
+precedence nonassoc GT, LT;
+precedence nonassoc GE, LE;
 precedence left AND, OR;
 
 start with program;
