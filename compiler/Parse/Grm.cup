@@ -69,12 +69,10 @@ non terminal Absyn.WhileExp whileExp;
 non terminal Absyn.ForExp forExp; 
 non terminal negation; 
 
-precedence left TIMES, DIVIDE;
-precedence left PLUS, MINUS;
-precedence nonassoc EQ, NEQ;
-precedence nonassoc GT, LT;
-precedence nonassoc GE, LE;
 precedence left AND, OR;
+precedence nonassoc EQ, NEQ, GT, LT, GE, LE;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
 
 start with program;
 
