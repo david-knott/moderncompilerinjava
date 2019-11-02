@@ -135,7 +135,7 @@ exp ::= lValue:lv {: RESULT = new Absyn.VarExp(lvleft, lv); :}
 | forExp:fe {: RESULT = fe; :} 
 | BREAK:b {: RESULT = new Absyn.BreakExp(bleft); :}
 | letExp:le {: RESULT = le; :}
-| error:e {: parser.report_error("Syntax error, skip rest",e); :} 
+//| error:e {: parser.report_error("Syntax error, skip rest",e); :} 
 ;
 
 negation ::= MINUS exp;
