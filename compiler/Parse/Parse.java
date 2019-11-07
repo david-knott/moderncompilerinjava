@@ -72,6 +72,26 @@ public class Parse {
 		}
 	}
 
+	public Parse(final String name, final java.io.InputStream inp) {
+		errorMsg = new ErrorMsg.ErrorMsg(name);
+		Grm parser = new Grm(new Yylex(inp, errorMsg), errorMsg);
+		try {
+			java_cup.runtime.Symbol rootSymbol = parser.parse();
+			Program root = (Program) rootSymbol.value;
+			//new Absyn.Print(System.out).prExp(root.absyn, 0);
+			new Semant.Semant(errorMsg).transExp(root.absyn);
+		} catch (Throwable e) {
+			e.printStackTrace();
+			//throw new Error("Unable to translate");r
+		} finally {
+			try {
+				inp.close();
+			} catch (java.io.IOException e) {
+				throw new Error(e.toString());
+			}
+		}
+	}
+
 	public Parse(String filename) {
 		errorMsg = new ErrorMsg.ErrorMsg(filename);
 		java.io.InputStream inp;
@@ -85,7 +105,7 @@ public class Parse {
 			java_cup.runtime.Symbol rootSymbol = parser.parse();
 			Program root = (Program) rootSymbol.value;
 			//new Absyn.Print(System.out).prExp(root.absyn, 0);
-			new Semant.Semant(errorMsg).transProg(root.absyn);
+			new Semant.Semant(errorMsg).transExp(root.absyn);
 		} catch (Throwable e) {
 		//	e.printStackTrace();
 			throw new Error(e.toString());
