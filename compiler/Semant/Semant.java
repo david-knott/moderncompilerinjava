@@ -42,6 +42,7 @@ class FunEntry extends Entry {
 public class Semant {
     private final Env env;
     private final Types.Type INT = new Types.INT();
+    private final Types.Type STRING = new Types.STRING();
 
     private void error(int pos, String message) {
         env.errorMsg.error(pos, message);
@@ -62,7 +63,29 @@ public class Semant {
         env = e;
     }
 
+
+    Types.Type transTy(Absyn.RecordTy t){
+        //give a type t, transate it into
+        return null;
+    }
+
+
+    Types.Type transTy(Absyn.ArrayTy t){
+        //give a type t, transate it into
+        return null;
+    }
+
+    Types.Type transTy(Absyn.NameTy t){
+        //give a type t, transate it into
+        return null;
+    }
+
+
+
+
+
     Types.Type transTy(Absyn.Ty t){
+        //give a type t, transate it into
         return null;
     }
 
@@ -140,6 +163,10 @@ public class Semant {
             return new ExpTy(null, INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);
+    }
+
+    ExpTy transExp(Absyn.StringExp stringExp) {
+        return new ExpTy(null, STRING);
     }
 
     ExpTy transExp(Absyn.IntExp intExp) {
