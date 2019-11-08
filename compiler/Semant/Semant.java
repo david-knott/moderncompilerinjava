@@ -63,29 +63,36 @@ public class Semant {
         env = e;
     }
 
-
-    Types.Type transTy(Absyn.RecordTy t){
-        //give a type t, transate it into
-        return null;
+    /**
+     * Translates an abstract syntax record type into a semantic type
+     * TBC - check if this should lookup symbol table for field list types
+     * @param t
+     * @return
+     */
+    Types.Type transTy(Absyn.RecordTy t) {
+        Types.RECORD r = null;
+        for(Absyn.FieldList l = t.fields; l != null; l = l.tail){
+            r = new Types.RECORD(l.name, new Types.NAME(l.typ), r);
+        }
+        return r;
     }
 
-
-    Types.Type transTy(Absyn.ArrayTy t){
-        //give a type t, transate it into
-        return null;
+    /**
+     * Translates an abstract syntax array type into a semantic type
+     * TBC - check if this should lookup symbol table for element type 
+     * @param t
+     * @return
+     */
+    Types.Type transTy(Absyn.ArrayTy t) {
+        return new Types.ARRAY(new Types.NAME(t.typ));
     }
 
-    Types.Type transTy(Absyn.NameTy t){
-        //give a type t, transate it into
-        return null;
+    Types.Type transTy(Absyn.NameTy t) {
+        return new Types.NAME(t.name);
     }
 
-
-
-
-
-    Types.Type transTy(Absyn.Ty t){
-        //give a type t, transate it into
+    Types.Type transTy(Absyn.Ty t) {
+        // give a type t, transate it into
         return null;
     }
 
@@ -102,18 +109,18 @@ public class Semant {
             VarEntry ent = (VarEntry) x;
             return new ExpTy(null, ent.ty);
         } else {
-            error(e.pos, "Undefined variable");
+            error(e.pos, "Undefined variable: " + e.name);
             return new ExpTy(null, INT);
         }
     }
 
-    Exp transDec(Absyn.TypeDec e){
-       // Symbol e.name
-       // Ty ty
-       // TypeDec next
+    Exp transDec(Absyn.TypeDec e) {
+        // Symbol e.name
+        // Ty ty
+        // TypeDec next
 
         env.venv.put(e.name, transTy(e.ty));
-       return null;
+        return null;
     }
 
     Exp transDec(Absyn.VarDec e) {
@@ -124,8 +131,8 @@ public class Semant {
         ExpTy initExpTy = transExp(e.init);
         Types.Type type = initExpTy.ty;
         if (e.typ != null) {
-            if(transTy(e.typ) != type){
-                error(e.pos, "Undefined variable");
+            if (transTy(e.typ) != type) {
+                error(e.pos, "Undefined variable: " + e.name);
             }
         }
         env.venv.put(e.name, new VarEntry(type));
