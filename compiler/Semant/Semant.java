@@ -5,40 +5,6 @@ import java_cup.runtime.Symbol;
 import Translate.Exp;
 import Symbol.Table;
 
-class Env {
-    Table venv;
-    Table tenv;
-    ErrorMsg.ErrorMsg errorMsg;
-
-    Env(ErrorMsg.ErrorMsg err) {
-        errorMsg = err;
-        venv = new Table();
-        tenv = new Table();
-    }
-}
-
-abstract class Entry {
-
-}
-
-class VarEntry extends Entry {
-    Types.Type ty;
-
-    VarEntry(Types.Type t) {
-        ty = t;
-    }
-}
-
-class FunEntry extends Entry {
-    Types.RECORD formals;
-    Types.Type result;
-
-    public FunEntry(Types.RECORD f, Types.Type r) {
-        formals = f;
-        result = r;
-    }
-}
-
 public class Semant {
     private final Env env;
     private final Types.Type INT = new Types.INT();
@@ -70,7 +36,7 @@ public class Semant {
      * @return
      */
     Types.Type transTy(Absyn.RecordTy t) {
-        System.out.println("Found type record type " + t);
+        System.out.println("translate record type " + t);
         Types.RECORD r = null;
         for(Absyn.FieldList l = t.fields; l != null; l = l.tail){
             r = new Types.RECORD(l.name, new Types.NAME(l.typ), r);
@@ -85,7 +51,7 @@ public class Semant {
      * @return
      */
     Types.Type transTy(Absyn.ArrayTy t) {
-        System.out.println("Found array name type " + t);
+        System.out.println("translate array type " + t);
         return new Types.ARRAY(new Types.NAME(t.typ));
     }
 
@@ -95,10 +61,22 @@ public class Semant {
      * @return
      */
     Types.Type transTy(Absyn.NameTy t) {
-        System.out.println("Found name type " + t);
-        return new Types.NAME(t.name);
+        if(t.name.toString().equals("int")) {
+            return INT;
+        }
+         if(t.name.toString().equals("string"))
+            return STRING;
+        Types.Type cached = (Types.Type)env.tenv.get(t.name);
+        if(cached == null) {
+            cached = new Types.NAME(t.name);
+            env.tenv.put(t.name, cached);
+        }
+        return cached;
     }
 
+    /**
+     * Dispatcher function for types
+     */
     Types.Type transTy(Absyn.Ty t) {
         if(t instanceof Absyn.NameTy)
             return transTy((Absyn.NameTy)t);
@@ -117,6 +95,7 @@ public class Semant {
     }
 
     ExpTy transVar(Absyn.SimpleVar e) {
+        System.out.println("Found simple var " + e);
         Entry x = (Entry) (env.venv.get(e.name));
         if (x instanceof VarEntry) {
             VarEntry ent = (VarEntry) x;
@@ -128,19 +107,20 @@ public class Semant {
     }
 
     Exp transDec(Absyn.TypeDec e) {
-        System.out.println("translate declaration");
+        System.out.println("translate type declaration");
         env.venv.put(e.name, transTy(e.ty));
         return null;
     }
 
     Exp transDec(Absyn.VarDec e) {
+        System.out.println("translate variable declaration " + e.name);
         // var varname:vartype = expression 
         ExpTy initExpTy = transExp(e.init);
         Types.Type type = initExpTy.ty;
-        assert type != null : "Expression Type is null";
         if (e.typ != null) {
-            if (transTy(e.typ) != type) {
-                error(e.pos, "Undefined variable: " + e.name);
+            Types.Type otherType = transTy(e.typ);
+            if(otherType != type) {
+                error(e.pos, "Types do not match, type of (" + e + " translates to " + otherType + " is not of declared type " + type + ")");
             }
         }
         env.venv.put(e.name, new VarEntry(type));
@@ -182,22 +162,27 @@ public class Semant {
     }
 
     ExpTy transExp(Absyn.StringExp stringExp) {
+        System.out.println("checking string expression");
         return new ExpTy(null, STRING);
     }
 
     ExpTy transExp(Absyn.IntExp intExp) {
+        System.out.println("checking int expression");
         return new ExpTy(null, INT);
     }
 
     ExpTy transExp(Absyn.CallExp callExp) {
+        System.out.println("checking call expression");
         return new ExpTy(null, null);
     }
 
     ExpTy transExp(Absyn.ArrayExp arrayExp) {
+        System.out.println("checking array expression");
         return new ExpTy(null, null);
     }
 
     ExpTy transExp(Absyn.SeqExp seqExp) {
+        System.out.println("checking sequence expression");
         return new ExpTy(null, null);
     }
 
@@ -206,6 +191,8 @@ public class Semant {
             return transExp((Absyn.VarExp) e);
         else if (e instanceof Absyn.IntExp)
             return transExp((Absyn.IntExp) e);
+        else if (e instanceof Absyn.StringExp)
+            return transExp((Absyn.StringExp) e);
         else if (e instanceof Absyn.CallExp)
             return transExp((Absyn.CallExp) e);
         else if (e instanceof Absyn.LetExp)

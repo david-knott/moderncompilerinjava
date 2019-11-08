@@ -1,7 +1,7 @@
 package Parse;
 
 
-class Yylex implements Lexer {
+public class Yylex implements Lexer {
 	private final int YY_BUFFER_SIZE = 512;
 	private final int YY_F = -1;
 	private final int YY_NO_STATE = -1;
@@ -27,7 +27,7 @@ private java_cup.runtime.Symbol tok(int kind, Object value) {
 private ErrorMsg.ErrorMsg errorMsg;
 private int commentDepth = 0;
 private String buffer = "";
-Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
+public Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
   this(s);
   errorMsg=e;
 }
@@ -41,7 +41,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 	private boolean yy_at_bol;
 	private int yy_lexical_state;
 
-	Yylex (java.io.Reader reader) {
+	public Yylex (java.io.Reader reader) {
 		this ();
 		if (null == reader) {
 			throw (new Error("Error: Bad input stream initializer."));
@@ -49,7 +49,7 @@ Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 		yy_reader = new java.io.BufferedReader(reader);
 	}
 
-	Yylex (java.io.InputStream instream) {
+	public Yylex (java.io.InputStream instream) {
 		this ();
 		if (null == instream) {
 			throw (new Error("Error: Bad input stream initializer."));

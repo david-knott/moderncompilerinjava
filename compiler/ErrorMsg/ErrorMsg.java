@@ -1,13 +1,17 @@
 package ErrorMsg;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ErrorMsg {
     private LineList linePos = new LineList(-1, null);
     private int lineNum = 1;
     private String filename;
     public boolean anyErrors;
+    public List<String> errors;
 
     public ErrorMsg(String f) {
         filename = f;
+        errors = new ArrayList<String>();
     }
 
     public void newline(int pos) {
@@ -19,9 +23,7 @@ public class ErrorMsg {
         int n = lineNum;
         LineList p = linePos;
         String sayPos = "0.0";
-
         anyErrors = true;
-
         while (p != null) {
             if (p.head < pos) {
                 sayPos = ":" + String.valueOf(n) + "." + String.valueOf(pos - p.head);
@@ -30,7 +32,7 @@ public class ErrorMsg {
             p = p.tail;
             n--;
         }
-
+        errors.add(filename + ":" + sayPos + ": " + msg);
         System.out.println(filename + ":" + sayPos + ": " + msg);
     }
 }
