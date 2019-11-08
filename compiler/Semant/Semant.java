@@ -70,6 +70,7 @@ public class Semant {
      * @return
      */
     Types.Type transTy(Absyn.RecordTy t) {
+        System.out.println("Found type record type " + t);
         Types.RECORD r = null;
         for(Absyn.FieldList l = t.fields; l != null; l = l.tail){
             r = new Types.RECORD(l.name, new Types.NAME(l.typ), r);
@@ -84,16 +85,28 @@ public class Semant {
      * @return
      */
     Types.Type transTy(Absyn.ArrayTy t) {
+        System.out.println("Found array name type " + t);
         return new Types.ARRAY(new Types.NAME(t.typ));
     }
 
+    /**
+     * Translates a type t into its equivalent semantic type
+     * @param t
+     * @return
+     */
     Types.Type transTy(Absyn.NameTy t) {
+        System.out.println("Found name type " + t);
         return new Types.NAME(t.name);
     }
 
     Types.Type transTy(Absyn.Ty t) {
-        // give a type t, transate it into
-        return null;
+        if(t instanceof Absyn.NameTy)
+            return transTy((Absyn.NameTy)t);
+        if(t instanceof Absyn.RecordTy)
+            return transTy((Absyn.RecordTy)t);
+        if(t instanceof Absyn.ArrayTy)
+            return transTy((Absyn.ArrayTy)t);
+        throw new Error("Not Implemented " + t.getClass().getName());
     }
 
     ExpTy transVar(Absyn.Var e) {
@@ -115,9 +128,7 @@ public class Semant {
     }
 
     Exp transDec(Absyn.TypeDec e) {
-        // Symbol e.name
-        // Ty ty
-        // TypeDec next
+        System.out.println("translate declaration");
         env.venv.put(e.name, transTy(e.ty));
         return null;
     }
@@ -151,6 +162,7 @@ public class Semant {
     ExpTy transExp(Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
+        System.out.println("checking let expression");
         for (Absyn.DecList p = e.decs; p != null; p = p.tail)
             transDec(p.head);
         ExpTy et = transExp(e.body);
