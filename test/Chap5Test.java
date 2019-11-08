@@ -37,7 +37,7 @@ public class Chap5Test {
 
     @Test
     public void type_var_dec_custom_type() {
-        String tigerCode = "let type t1 = int var v1:t1 := 1 in () end";
+        String tigerCode = "let type t1 = int var v1:int := 1 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.buildAst();

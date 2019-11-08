@@ -37,6 +37,7 @@ public class Semant {
      */
     Types.Type transTy(Absyn.RecordTy t) {
         System.out.println("translate record type " + t);
+        //go through each the fields in this record type
         Types.RECORD r = null;
         for(Absyn.FieldList l = t.fields; l != null; l = l.tail){
             r = new Types.RECORD(l.name, new Types.NAME(l.typ), r);
@@ -61,11 +62,14 @@ public class Semant {
      * @return
      */
     Types.Type transTy(Absyn.NameTy t) {
+        
+        //is this needed ??
         if(t.name.toString().equals("int")) {
             return INT;
         }
          if(t.name.toString().equals("string"))
             return STRING;
+        //lookup the type by its symbol name in the type cache
         Types.Type cached = (Types.Type)env.tenv.get(t.name);
         if(cached == null) {
             cached = new Types.NAME(t.name);
@@ -106,8 +110,21 @@ public class Semant {
         }
     }
 
+    Exp transDec(Absyn.FunctionDec e) {
+        System.out.println("translate function declaration");
+        //if typedec has next its got recuring type, with are recursive
+        if(e.next != null){
+            throw new Error("Recursive types not implemented.");
+        }
+       // env.venv.put(e.name, transTy(e.ty));
+        return null;
+    }
     Exp transDec(Absyn.TypeDec e) {
         System.out.println("translate type declaration");
+        //if typedec has next its got recuring type, with are recursive
+        if(e.next != null){
+            throw new Error("Recursive types not implemented.");
+        }
         env.venv.put(e.name, transTy(e.ty));
         return null;
     }
@@ -132,7 +149,10 @@ public class Semant {
             return transDec((Absyn.VarDec) e);
         else if (e instanceof Absyn.TypeDec)
             return transDec((Absyn.TypeDec) e);
-        throw new Error("Not Implemented " + e.getClass().getName());
+        else if (e instanceof Absyn.FunctionDec)
+            return transDec((Absyn.FunctionDec) e);
+        else
+            throw new Error("Not Implemented " + e.getClass().getName());
     }
 
     ExpTy transExp(Absyn.VarExp e) {
