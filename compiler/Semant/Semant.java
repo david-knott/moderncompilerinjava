@@ -118,18 +118,15 @@ public class Semant {
         // Symbol e.name
         // Ty ty
         // TypeDec next
-
         env.venv.put(e.name, transTy(e.ty));
         return null;
     }
 
     Exp transDec(Absyn.VarDec e) {
-        // a variable declaration,
-        // Symbol s= e.name
-        // add symbol name and exp type into venv
-        // if e.typ is defined and doesn't equal the type of exp, its an error
+        // var varname:vartype = expression 
         ExpTy initExpTy = transExp(e.init);
         Types.Type type = initExpTy.ty;
+        assert type != null : "Expression Type is null";
         if (e.typ != null) {
             if (transTy(e.typ) != type) {
                 error(e.pos, "Undefined variable: " + e.name);
