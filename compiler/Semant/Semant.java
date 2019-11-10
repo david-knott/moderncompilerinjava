@@ -60,7 +60,6 @@ public class Semant {
     /**
      * Translates an abstract syntax array type into a semantic type TBC - check if
      * this should lookup symbol table for element type
-     * 
      * @param t
      * @return
      */
@@ -80,7 +79,6 @@ public class Semant {
 
     /**
      * Translates a type t into its equivalent semantic type
-     * 
      * @param t
      * @return
      */
@@ -116,6 +114,12 @@ public class Semant {
         if (e instanceof Absyn.SimpleVar) {
             return transVar((Absyn.SimpleVar) e);
         }
+        if (e instanceof Absyn.FieldVar) {
+            return transVar((Absyn.FieldVar) e);
+        }
+        if (e instanceof Absyn.SubscriptVar) {
+            return transVar((Absyn.SubscriptVar) e);
+        }
         throw new Error("Not Implemented " + e.getClass().getName());
     }
 
@@ -129,6 +133,10 @@ public class Semant {
             error(e.pos, "Undefined variable: " + e.name);
             return new ExpTy(null, INT);
         }
+    }
+
+    ExpTy transVar(Absyn.FieldVar e) {
+        throw new Error("Not Implemented " + e.getClass().getName());
     }
 
     Exp transDec(Absyn.FunctionDec e) {
@@ -160,9 +168,9 @@ public class Semant {
         // var varname:vartype = expression
         System.out.println("transDec: translate variable declaration " + e.name);
         ExpTy initExpTy = transExp(e.init);
-        //get the expression type
+        // get the expression type
         Types.Type type = initExpTy.ty;
-        //if the expression type is not null
+        // if the expression type is not null
         System.out.println(">>>> expression type " + type + " " + e.init);
         if (e.typ != null) {
             Types.Type otherType = transTy(e.typ);
@@ -208,6 +216,18 @@ public class Semant {
             checkInt(transExp(e.left), e.left.pos);
             checkInt(transExp(e.right), e.right.pos);
             return new ExpTy(null, INT);
+        case Absyn.OpExp.MINUS:
+            checkInt(transExp(e.left), e.left.pos);
+            checkInt(transExp(e.right), e.right.pos);
+            return new ExpTy(null, INT);
+        case Absyn.OpExp.MUL:
+            checkInt(transExp(e.left), e.left.pos);
+            checkInt(transExp(e.right), e.right.pos);
+            return new ExpTy(null, INT);
+        case Absyn.OpExp.DIV:
+            checkInt(transExp(e.left), e.left.pos);
+            checkInt(transExp(e.right), e.right.pos);
+            return new ExpTy(null, INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);
     }
@@ -238,38 +258,39 @@ public class Semant {
     }
 
     /**
-     * Translate a record expression.
-     * example rectype {name=\"Nobody\", age=\"Nobody\"}
-     * A record expression contains a symbol for the type
-     * and one or more name value pairs that are a symbol and
-     * a initialising expression.
-     * Type validation checks
-     * 1) Check the type is valid 'rectype'
-     * 2) Check the fields are the correct type
-     * Notes & Questions
-     * Do we need to consider nested record types ?
-     * How do we handle array properties
-     * Is the order of the field exp list important ?
-     * Are are fields mandatory ?
+     * Translate a record expression. example rectype {name=\"Nobody\", age=12345} A
+     * record expression contains a symbol for the type and one or more name value
+     * pairs that are a symbol and a initialising expression. Type validation checks
+     * 1) Check the type is valid 'rectype' 2) Check the fields are the correct type
+     * Notes & Questions Do we need to consider nested record types ? How do we
+     * handle array properties Is the order of the field exp list important ? Are
+     * are fields mandatory ?
      * @param recordExp
      * @return
      */
     ExpTy transExp(Absyn.RecordExp recordExp) {
         var expressionTypeSymbol = recordExp.typ;
-        var cached = (Types.Type)env.tenv.get(expressionTypeSymbol);
-        if(cached == null){
+        var tigerType = (Types.Type) env.tenv.get(expressionTypeSymbol);
+        if (tigerType == null) {
             error(recordExp.pos, "Unknown type " + expressionTypeSymbol);
         }
-        System.out.println("checking record expression:" + expressionTypeSymbol + " => " + cached);
-        //Loop through fieldExpLists rec{field1=value, field2=value2}
-        for(var fel = recordExp.fields; fel != null; fel = fel.tail){
-            var symbolName = fel.name;
-            //lookup type of symbolname (eg field1 ) for this record type
-            var initExp = fel.init;
-            //check if the type of symbolname is same as initExp
-            var tigerTranslatedType = transExp(initExp);
+        System.out.println("checking record expression:" + expressionTypeSymbol + " => " + tigerType);
+        // Loop through fieldExpLists rec{field1=value, field2=value2}
+        for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
+            var fieldExpTy = transExp(fel);
         }
-        return new ExpTy(null, cached);
+        return new ExpTy(null, tigerType);
+    }
+
+    public ExpTy transExp(Absyn.FieldExpList fel) {
+        // get type of field for this record type
+        var fieldType = fel.name;
+        //get  initialising expression
+        var initExp = fel.init;
+        //get tiger type of initialising expression
+        var tigerTranslatedType = transExp(initExp);
+        //return exp and type
+        return new ExpTy(null, null);
     }
 
     public ExpTy transExp(Absyn.Exp e) {
