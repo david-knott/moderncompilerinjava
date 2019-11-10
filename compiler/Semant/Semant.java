@@ -7,8 +7,8 @@ import Symbol.Table;
 
 public class Semant {
     private final Env env;
-    private final Types.Type INT = new Types.INT();
-    private final Types.Type STRING = new Types.STRING();
+    public static final Types.Type INT = new Types.INT();
+    public static final Types.Type STRING = new Types.STRING();
 
     private void error(int pos, String message) {
         env.errorMsg.error(pos, message);
@@ -30,50 +30,71 @@ public class Semant {
     }
 
     /**
-     * Translates an abstract syntax record type into a semantic type
-     * TBC - check if this should lookup symbol table for field list types
+     * Translates an abstract syntax record type into a semantic type TBC - check if
+     * this should lookup symbol table for field list types
+     * 
      * @param t
      * @return
      */
     Types.Type transTy(Absyn.RecordTy t) {
         System.out.println("translate record type " + t);
-        //go through each the fields in this record type
+        // go through each the fields in this record type
         Types.RECORD r = null;
-        for(Absyn.FieldList l = t.fields; l != null; l = l.tail){
+        for (Absyn.FieldList l = t.fields; l != null; l = l.tail) {
+            System.out.println("record type field " + l);
+            var cached = env.tenv.get(l.typ);
+            if (cached == null) {
+                cached = new Types.NAME(l.typ);
+                System.out.println("created new name type " + cached + " to tenv (" + l + ")");
+                env.tenv.put(l.typ, cached);
+
+            } else {
+                System.out.println("found " + l.typ + " => " + cached + " tenv");
+            }
+
             r = new Types.RECORD(l.name, new Types.NAME(l.typ), r);
         }
         return r;
     }
 
     /**
-     * Translates an abstract syntax array type into a semantic type
-     * TBC - check if this should lookup symbol table for element type 
+     * Translates an abstract syntax array type into a semantic type TBC - check if
+     * this should lookup symbol table for element type
+     * 
      * @param t
      * @return
      */
     Types.Type transTy(Absyn.ArrayTy t) {
         System.out.println("translate array type " + t);
-        return new Types.ARRAY(new Types.NAME(t.typ));
+        // lookup type of array ( intArray = array of int )
+        Types.Type cached = (Types.Type) env.tenv.get(t.typ);
+        if (cached == null) {
+            cached = new Types.NAME(t.typ);
+            System.out.println("created new name type " + cached + " to tenv (" + t + ")");
+            env.tenv.put(t.typ, cached);
+        } else {
+            System.out.println("found " + t + "=>" + cached + " tenv");
+        }
+        return new Types.ARRAY(cached);
     }
 
     /**
      * Translates a type t into its equivalent semantic type
+     * 
      * @param t
      * @return
      */
     Types.Type transTy(Absyn.NameTy t) {
-        
-        //is this needed ??
-        if(t.name.toString().equals("int")) {
-            return INT;
-        }
-         if(t.name.toString().equals("string"))
-            return STRING;
-        //lookup the type by its symbol name in the type cache
-        Types.Type cached = (Types.Type)env.tenv.get(t.name);
-        if(cached == null) {
+        // lookup the type by its symbol name in the type cache
+        Types.Type cached = (Types.Type) env.tenv.get(t.name);
+        System.out.println("transTy(" + t + ")");
+        // type for symbol t.name has not been seen, lets add it to our cache
+        if (cached == null) {
             cached = new Types.NAME(t.name);
+            System.out.println("created new name type " + cached + " to tenv (" + t + ")");
             env.tenv.put(t.name, cached);
+        } else {
+            System.out.println("found " + t + "=>" + cached + " tenv");
         }
         return cached;
     }
@@ -82,12 +103,12 @@ public class Semant {
      * Dispatcher function for types
      */
     Types.Type transTy(Absyn.Ty t) {
-        if(t instanceof Absyn.NameTy)
-            return transTy((Absyn.NameTy)t);
-        if(t instanceof Absyn.RecordTy)
-            return transTy((Absyn.RecordTy)t);
-        if(t instanceof Absyn.ArrayTy)
-            return transTy((Absyn.ArrayTy)t);
+        if (t instanceof Absyn.NameTy)
+            return transTy((Absyn.NameTy) t);
+        if (t instanceof Absyn.RecordTy)
+            return transTy((Absyn.RecordTy) t);
+        if (t instanceof Absyn.ArrayTy)
+            return transTy((Absyn.ArrayTy) t);
         throw new Error("Not Implemented " + t.getClass().getName());
     }
 
@@ -112,32 +133,42 @@ public class Semant {
 
     Exp transDec(Absyn.FunctionDec e) {
         System.out.println("translate function declaration");
-        //if typedec has next its got recuring type, with are recursive
-        if(e.next != null){
+        // if typedec has next its got recuring type, with are recursive
+        if (e.next != null) {
             throw new Error("Recursive types not implemented.");
         }
-       // env.venv.put(e.name, transTy(e.ty));
         return null;
     }
+
     Exp transDec(Absyn.TypeDec e) {
-        System.out.println("translate type declaration");
-        //if typedec has next its got recuring type, with are recursive
-        if(e.next != null){
+        System.out.println("tranDec: translate type declaration");
+        // if typedec has next its got recuring type, with are recursive
+        if (e.next != null) {
             throw new Error("Recursive types not implemented.");
         }
-        env.venv.put(e.name, transTy(e.ty));
+        // type dec attributes are a symbol name and its type ty
+        // we translate ty into its type
+        // we add a mapping for type name to its type
+        var mappedType = transTy(e.ty);
+        System.out.println("transDec: adding type mapping for " + e + " => " + mappedType);
+        // add mapping from type name to native tiger type
+        env.tenv.put(e.name, mappedType);
         return null;
     }
 
     Exp transDec(Absyn.VarDec e) {
-        System.out.println("translate variable declaration " + e.name);
-        // var varname:vartype = expression 
+        // var varname:vartype = expression
+        System.out.println("transDec: translate variable declaration " + e.name);
         ExpTy initExpTy = transExp(e.init);
+        //get the expression type
         Types.Type type = initExpTy.ty;
+        //if the expression type is not null
+        System.out.println(">>>> expression type " + type + " " + e.init);
         if (e.typ != null) {
             Types.Type otherType = transTy(e.typ);
-            if(otherType != type) {
-                error(e.pos, "Types do not match, type of (" + e + " translates to " + otherType + " is not of declared type " + type + ")");
+            if (otherType != type) {
+                error(e.pos, "Types do not match, type of (" + e + " translates to " + otherType
+                        + " is not of declared type " + type + ")");
             }
         }
         env.venv.put(e.name, new VarEntry(type));
@@ -197,13 +228,48 @@ public class Semant {
     }
 
     ExpTy transExp(Absyn.ArrayExp arrayExp) {
-        System.out.println("checking array expression");
+        System.out.println("checking array expression " + arrayExp);
         return new ExpTy(null, null);
     }
 
     ExpTy transExp(Absyn.SeqExp seqExp) {
         System.out.println("checking sequence expression");
         return new ExpTy(null, null);
+    }
+
+    /**
+     * Translate a record expression.
+     * example rectype {name=\"Nobody\", age=\"Nobody\"}
+     * A record expression contains a symbol for the type
+     * and one or more name value pairs that are a symbol and
+     * a initialising expression.
+     * Type validation checks
+     * 1) Check the type is valid 'rectype'
+     * 2) Check the fields are the correct type
+     * Notes & Questions
+     * Do we need to consider nested record types ?
+     * How do we handle array properties
+     * Is the order of the field exp list important ?
+     * Are are fields mandatory ?
+     * @param recordExp
+     * @return
+     */
+    ExpTy transExp(Absyn.RecordExp recordExp) {
+        var expressionTypeSymbol = recordExp.typ;
+        var cached = (Types.Type)env.tenv.get(expressionTypeSymbol);
+        if(cached == null){
+            error(recordExp.pos, "Unknown type " + expressionTypeSymbol);
+        }
+        System.out.println("checking record expression:" + expressionTypeSymbol + " => " + cached);
+        //Loop through fieldExpLists rec{field1=value, field2=value2}
+        for(var fel = recordExp.fields; fel != null; fel = fel.tail){
+            var symbolName = fel.name;
+            //lookup type of symbolname (eg field1 ) for this record type
+            var initExp = fel.init;
+            //check if the type of symbolname is same as initExp
+            var tigerTranslatedType = transExp(initExp);
+        }
+        return new ExpTy(null, cached);
     }
 
     public ExpTy transExp(Absyn.Exp e) {
@@ -223,6 +289,8 @@ public class Semant {
             return transExp((Absyn.SeqExp) e);
         else if (e instanceof Absyn.ArrayExp)
             return transExp((Absyn.ArrayExp) e);
+        else if (e instanceof Absyn.RecordExp)
+            return transExp((Absyn.RecordExp) e);
         else
             throw new Error("Cannot handle " + e.getClass().getName());
     }
