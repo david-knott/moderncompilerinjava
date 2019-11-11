@@ -49,6 +49,9 @@ public class Semant {
             Types.RECORD current = new Types.RECORD(l.name, cached, null);
             if (head == null)
                 head = current;
+            //set the previous items tail to the current item
+            //if we dont do this, the list will be reversed when
+            //used by the recordexp transExp
             if (prev != null)
                 prev.tail = current;
             prev = current;
@@ -221,12 +224,10 @@ public class Semant {
     }
 
     ExpTy transExp(Absyn.StringExp stringExp) {
-        System.out.println("checking string expression");
         return new ExpTy(null, STRING);
     }
 
     ExpTy transExp(Absyn.IntExp intExp) {
-        System.out.println("checking int expression");
         return new ExpTy(null, INT);
     }
 
@@ -235,14 +236,39 @@ public class Semant {
         return new ExpTy(null, null);
     }
 
-    ExpTy transExp(Absyn.ArrayExp arrayExp) {
-        System.out.println("checking array expression " + arrayExp);
-        return new ExpTy(null, null);
-    }
-
     ExpTy transExp(Absyn.SeqExp seqExp) {
         System.out.println("checking sequence expression");
         return new ExpTy(null, null);
+    }
+
+
+    /**
+     * Translate an array expresion, eg arrtype1 [10] of 0,
+     * where arrtype is the type of the array, 10 is the size expression
+     * and 0 is the item initialiser expression.
+     * The type of size must be an int
+     * The type of initialiser must be the same as the array type ( arrtyp1 )
+     * 
+     * @param arrayExp
+     * @return
+     */
+    ExpTy transExp(Absyn.ArrayExp arrayExp) {
+        var typeSymbol = arrayExp.typ;
+        var sizeExp = arrayExp.size;
+        var initExp = arrayExp.init;
+        //check that the type of size is an int
+        if(transExp(sizeExp).ty != INT){
+            error(arrayExp.pos, "Type mismatch: array size expression is not an int");
+        }
+        var tt = (Types.ARRAY)env.tenv.get(typeSymbol);
+        if(tt == null){
+            error(arrayExp.pos, "Type not found:" + typeSymbol);
+        } else {
+            if (transExp(initExp).ty != tt.element) {
+                error(arrayExp.pos, "Type mismatch: array init expression is not of type " + tt);
+            }
+        }
+        return new ExpTy(null, tt);
     }
 
     /**

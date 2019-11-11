@@ -77,7 +77,6 @@ Main m = new Main("chap5", inputStream);
         assertFalse(m.hasErrors());
     }
 
-*/
     @Test
     public void type_var_dec_rec_invalid() {
         String tigerCode = "let type rectype = {name:string, age:int} var rec1:rectype := rectype {name=\"Nobody\", age=\"Nobody\"}   in () end";
@@ -97,6 +96,31 @@ Main m = new Main("chap5", inputStream);
         m.typeCheck();
         assertFalse(m.hasErrors());
     }
+
+*/
+
+    @Test
+    public void type_var_dec_array_valid() {
+        String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [10] of 0 in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
+
+
+    @Test
+    public void type_var_dec_array_invalid() {
+        String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [10] of \"x\" in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
+
+
 
 
 
