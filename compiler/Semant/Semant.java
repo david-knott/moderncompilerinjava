@@ -31,27 +31,25 @@ public class Semant {
 
     /**
      * Translates an abstract syntax record type into a tiger type
+     * 
      * @param t
      * @return
      */
     Types.Type transTy(Absyn.RecordTy t) {
-        System.out.println("translate record type " + t);
         // go through each the fields in this record type
-        // last added record
         Types.RECORD head = null;
         Types.RECORD prev = null;
         for (Absyn.FieldList l = t.fields; l != null; l = l.tail) {
-            System.out.println("record type field " + l);
-            var cached = (Types.Type)env.tenv.get(l.typ);
+            var cached = (Types.Type) env.tenv.get(l.typ);
             if (cached == null) {
                 error(t.pos, "Undefined type " + t);
                 continue;
             }
-            //create record for current item
+            // create record for current item
             Types.RECORD current = new Types.RECORD(l.name, cached, null);
-            if(head == null)
+            if (head == null)
                 head = current;
-            if(prev != null)
+            if (prev != null)
                 prev.tail = current;
             prev = current;
         }
@@ -60,6 +58,7 @@ public class Semant {
 
     /**
      * Translates an abstract syntax array type into a tiger type
+     * 
      * @param t
      * @return
      */
@@ -70,16 +69,13 @@ public class Semant {
         if (cached == null) {
             error(t.pos, "Undefined type " + t);
             return null;
-            /*
-            cached = new Types.NAME(t.typ);
-            System.out.println("created new name type " + cached + " to tenv (" + t + ")");
-            env.tenv.put(t.typ, cached);*/
         }
         return new Types.ARRAY(cached);
     }
 
     /**
      * Translates a type t into a tiger type
+     * 
      * @param t
      * @return
      */
@@ -90,10 +86,6 @@ public class Semant {
         if (cached == null) {
             error(t.pos, "Undefined type " + t);
             return null;
-            /*
-            cached = new Types.NAME(t.name);
-            System.out.println("created new name type " + cached + " to tenv (" + t + ")");
-            env.tenv.put(t.name, cached);*/
         }
         return cached;
     }
@@ -143,7 +135,6 @@ public class Semant {
     ExpTy transVar(Absyn.SubscriptVar e) {
         throw new Error("Not Implemented " + e.getClass().getName());
     }
-
 
     Exp transDec(Absyn.FunctionDec e) {
         System.out.println("translate function declaration");
@@ -259,9 +250,9 @@ public class Semant {
      * record expression contains a symbol for the type and one or more name value
      * pairs that are a symbol and a initialising expression. Type validation checks
      * 1) Check the type is valid 'rectype' 2) Check the fields are the correct type
-     * Notes & Questions Do we need to consider nested record types ? How do we
-     * handle array properties Is the order of the field exp list important ? Are
-     * are fields mandatory ?
+     * Notes & Questions 1) Do we need to consider nested record types ? 2) How do
+     * we handle array properties 3) Is the order of the field exp list important ?
+     * 4) Are all fields mandatory ? YES
      * 
      * @param recordExp
      * @return
@@ -272,42 +263,41 @@ public class Semant {
         if (tigerType == null) {
             error(recordExp.pos, "Unknown type " + expressionTypeSymbol);
         }
-      //  System.out.println("checking record expression:" + expressionTypeSymbol + " => " + tigerType);
         // Loop through fieldExpLists rec{field1=value, field2=value2.....}
         var temp = tigerType;
         for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
             var fieldExpTy = transExp(fel, temp);
+            // advance to next tiger type
             temp = tigerType.tail;
         }
         return new ExpTy(null, tigerType);
     }
 
     /**
-     * Translates a fieldExpList to its tiger type
-     * A fieldExpList is of form property1=expression1
-     * Typechecker should check that the type of property1 is the same as
-     * the type of expression1
+     * Translates a fieldExpList to its tiger type A fieldExpList is of form
+     * property1=expression1 Typechecker should check that the type of property1 is
+     * the same as the type of expression1
+     * 
      * @param fel
      * @return
      */
     ExpTy transExp(Absyn.FieldExpList fel, Types.RECORD recordType) {
-        if(recordType == null){
+        if (recordType == null) {
             error(fel.pos, "Unknown symbol: " + fel.name);
             return new ExpTy(null, null);
         }
         // get type of field for this record type
         var fieldType = recordType.fieldType;
         var fieldName = recordType.fieldName;
-        if(fel.name != fieldName){
-            error(fel.pos, "Unexpected symbol: " + fel.name + 
-            ", expecting " + fieldName );
+        if (fel.name != fieldName) {
+            error(fel.pos, "Unexpected symbol: " + fel.name + ", expecting " + fieldName);
         }
         // get initialising expression
         var initExp = fel.init;
         // get transExp of initialising expression
         var transExp = transExp(initExp);
         // compare type of field with type of expression
-        if(fieldType != transExp.ty){
+        if (fieldType != transExp.ty) {
             error(fel.pos, "Type mismatch: " + fieldType + " != " + transExp.ty);
         }
         // return exp and type
