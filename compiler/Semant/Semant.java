@@ -1,14 +1,15 @@
 package Semant;
 
 import Translate.ExpTy;
-import java_cup.runtime.Symbol;
+import Absyn.NilExp;
 import Translate.Exp;
-import Symbol.Table;
 
 public class Semant {
     private final Env env;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
+    public static final Types.Type VOID = new Types.VOID();
+    public static final Types.Type NIL = new Types.NIL();
 
     private void error(int pos, String message) {
         env.errorMsg.error(pos, message);
@@ -198,6 +199,11 @@ public class Semant {
         return new ExpTy(null, null);
     }
 
+    /**
+     * Returns a let expression  
+     * @param e
+     * @return
+     */
     ExpTy transExp(Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
@@ -210,6 +216,11 @@ public class Semant {
         return new ExpTy(null, et.ty);
     }
 
+    /**
+     * Returns an operator expression
+     * @param e
+     * @return
+     */
     ExpTy transExp(Absyn.OpExp e) {
         switch (e.oper) {
         case Absyn.OpExp.PLUS:
@@ -223,22 +234,62 @@ public class Semant {
         throw new Error("OpExp - Unknown operator " + e.oper);
     }
 
+    /**
+     * Returns a nil expression
+     * @param intExp
+     * @return
+     */
+    ExpTy transExp(Absyn.NilExp nilExp) {
+        return new ExpTy(null, NIL);
+    }
+
+    /**
+     * Returns an string expression
+     * @param intExp
+     * @return
+     */
     ExpTy transExp(Absyn.StringExp stringExp) {
         return new ExpTy(null, STRING);
     }
 
+    /**
+     * Returns an integer expression
+     * @param intExp
+     * @return
+     */
     ExpTy transExp(Absyn.IntExp intExp) {
         return new ExpTy(null, INT);
     }
 
+    /**
+     * Returns a translated call expression
+     * @param callExp
+     * @return
+     */
     ExpTy transExp(Absyn.CallExp callExp) {
         System.out.println("checking call expression");
         return new ExpTy(null, null);
     }
 
+    /**
+     * Returns a translated expression for a sequence
+     * If sequence is empty, return type is void
+     * @param seqExp
+     * @return
+     */
     ExpTy transExp(Absyn.SeqExp seqExp) {
-        System.out.println("checking sequence expression");
-        return new ExpTy(null, null);
+        Types.Type returnType;
+        if(seqExp.list == null) {
+            returnType = VOID;
+        } else {
+            Absyn.ExpList expList = seqExp.list;
+            //skip to end of the sequence
+            while(expList.tail != null)
+                expList = expList.tail;
+            returnType = transExp(expList.head).ty;
+        }
+        System.out.println("sequence exp " + returnType);
+        return new ExpTy(null, returnType);
     }
 
 
@@ -260,10 +311,12 @@ public class Semant {
         if(transExp(sizeExp).ty != INT){
             error(arrayExp.pos, "Type mismatch: array size expression is not an int");
         }
+        //Get type of expression, it should be an array and not null
         var tt = (Types.ARRAY)env.tenv.get(typeSymbol);
         if(tt == null){
             error(arrayExp.pos, "Type not found:" + typeSymbol);
         } else {
+            //check that initialising expression is the same type as the array element type
             if (transExp(initExp).ty != tt.element) {
                 error(arrayExp.pos, "Type mismatch: array init expression is not of type " + tt);
             }
@@ -292,6 +345,7 @@ public class Semant {
         // Loop through fieldExpLists rec{field1=value, field2=value2.....}
         var temp = tigerType;
         for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
+            //translate the field expression, and do what with it ?
             var fieldExpTy = transExp(fel, temp);
             // advance to next tiger type
             temp = tigerType.tail;

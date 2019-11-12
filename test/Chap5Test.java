@@ -97,7 +97,6 @@ Main m = new Main("chap5", inputStream);
         assertFalse(m.hasErrors());
     }
 
-*/
 
     @Test
     public void type_var_dec_array_valid() {
@@ -119,10 +118,45 @@ Main m = new Main("chap5", inputStream);
         m.typeCheck();
         assertFalse(m.hasErrors());
     }
+*/
 
+    @Test
+    public void sequence_empty_string() {
+        String tigerCode = "(1;2;\"dsds\")";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
 
+    @Test
+    public void sequence_empty_void() {
+        String tigerCode = "()";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
 
+    @Test
+    public void let_sequence_string() {
+        String tigerCode = "let in (1;2;\"dsds\") end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
 
-
-
+    @Test
+    public void let_sequence_empty_void() {
+        String tigerCode = "let in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
 }
