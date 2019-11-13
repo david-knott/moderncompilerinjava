@@ -174,7 +174,7 @@ Main m = new Main("chap5", inputStream);
 
     @Test
     public void array_type() {
-        String tigerCode = "let type intArray = array of int var row := intArray [ N ] of 0 in () end";
+        String tigerCode = "let var N := 8 type intArray = array of int var row := intArray [ N ] of 0 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.buildAst();

@@ -2,6 +2,11 @@ package Semant;
 
 import Translate.ExpTy;
 import Types.ARRAY;
+import Types.NAME;
+
+import java.util.ArrayList;
+
+import Absyn.TypeDec;
 import Translate.Exp;
 
 public class Semant {
@@ -212,6 +217,48 @@ public class Semant {
     }
 
     /**
+     * Recursive support for functions
+     * @param e
+     * @return
+     */
+    Exp transDecRec(Absyn.TypeDec e) {
+        //process headers first
+        TypeDec next = e;
+        do {
+            var namedType = new Types.NAME(next.name);
+            // stick it into the type env so that its available for
+            // look ups by the transTy function
+            env.tenv.put(next.name, namedType);
+            next = e.next;
+        } while(next != null);
+        //process bodies of type declarations
+        next = e;
+        do {
+            // set the name types actual type to the
+            //type returned by the the transTy function
+            var mappedType = transTy(next.ty);
+            //get the named type from the env
+            var namedType = (NAME)env.tenv.get(next.name);
+            namedType.bind(mappedType);
+            next = e.next;
+        } while(next != null);
+
+        /*
+        //created a named type for the type definition
+        var namedType = new Types.NAME(e.name);
+        //stick it into the type env so that its available for 
+        //look ups by the transTy function
+        env.tenv.put(e.name, namedType);
+        var mappedType = transTy(e.ty);
+        //set the name types actual type to the
+        //type returned by the the transTy function
+        namedType.bind(mappedType);
+        */
+        return null;
+    }
+
+
+    /**
      * Translates a variable declaration into an intermediate expression and tiger
      * type
      * 
@@ -249,7 +296,8 @@ public class Semant {
     }
 
     ExpTy transExp(Absyn.VarExp e) {
-        return new ExpTy(null, null);
+        var transVar = transVar(e.var);
+        return new ExpTy(null, transVar.ty);
     }
 
     /**
@@ -366,8 +414,9 @@ public class Semant {
         var sizeExp = arrayExp.size;
         var initExp = arrayExp.init;
         // check that the type of size is an int
-        if (transExp(sizeExp).ty != INT) {
-            error(arrayExp.pos, "Type mismatch: array size expression is not an int");
+        var tSizeTy = transExp(sizeExp).ty;
+        if (tSizeTy != INT) {
+            error(arrayExp.pos, "Type mismatch: array size expression is not an int " + tSizeTy);
         }
         // Get type of expression, it should be an array and not null
         var tt = (Types.ARRAY) env.tenv.get(typeSymbol);
@@ -442,6 +491,11 @@ public class Semant {
         return new ExpTy(null, fieldType);
     }
 
+    /**
+     * Main dispatch function for expressions
+     * @param e
+     * @return
+     */
     public ExpTy transExp(Absyn.Exp e) {
         if (e instanceof Absyn.VarExp)
             return transExp((Absyn.VarExp) e);
