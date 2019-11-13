@@ -3,6 +3,7 @@ package Semant;
 import Translate.ExpTy;
 import Types.ARRAY;
 import Types.NAME;
+import Types.RECORD;
 
 import java.util.ArrayList;
 
@@ -63,8 +64,6 @@ public class Semant {
         for (Absyn.FieldList l = t.fields; l != null; l = l.tail) {
             var cached = (Types.Type) env.tenv.get(l.typ);
             if (cached == null) {
-                //this will happen if its a mutually recursive type
-                //how do we handle this ??
                 error(t.pos, "Undefined type " + l.typ);
                 continue;
             }
@@ -88,7 +87,6 @@ public class Semant {
      * @return
      */
     Types.Type transTy(Absyn.ArrayTy t) {
-        System.out.println("translate array type " + t);
         // lookup type of array ( intArray = array of int )
         Types.Type cached = (Types.Type) env.tenv.get(t.typ);
         if (cached == null) {
@@ -206,7 +204,7 @@ public class Semant {
      * @param e
      * @return
      */
-    Exp transDec(Absyn.TypeDec e) {
+    Exp transDecOld(Absyn.TypeDec e) {
         // we translate the abstract syntax type into a tiger type eg RecordTy is
         // translated to RECORD
         var mappedType = transTy(e.ty);
@@ -217,11 +215,11 @@ public class Semant {
     }
 
     /**
-     * Recursive support for functions
+     * Recursive support for declarations 
      * @param e
      * @return
      */
-    Exp transDecRec(Absyn.TypeDec e) {
+    Exp transDec(Absyn.TypeDec e) {
         //process headers first
         TypeDec next = e;
         do {
@@ -267,13 +265,12 @@ public class Semant {
      */
     Exp transDec(Absyn.VarDec e) {
         // var varname:vartype = expression
-        System.out.println("transDec: translate variable declaration " + e.name);
         ExpTy initExpTy = transExp(e.init);
         // get the expression type
-        Types.Type type = initExpTy.ty;
+        Types.Type type = initExpTy.ty.actual();
         // if the expression type is not null
         if (e.typ != null) {
-            Types.Type otherType = transTy(e.typ);
+            Types.Type otherType = transTy(e.typ).actual();
             if (otherType != type) {
                 error(e.pos, "Types do not match, type of (" + e + " translates to " + otherType
                         + " is not of declared type " + type + ")");
@@ -309,7 +306,6 @@ public class Semant {
     ExpTy transExp(Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
-        System.out.println("checking let expression");
         for (Absyn.DecList p = e.decs; p != null; p = p.tail)
             transDec(p.head);
         ExpTy et = transExp(e.body);
@@ -374,7 +370,6 @@ public class Semant {
      * @return
      */
     ExpTy transExp(Absyn.CallExp callExp) {
-        System.out.println("checking call expression");
         return new ExpTy(null, null);
     }
 
@@ -396,7 +391,6 @@ public class Semant {
                 expList = expList.tail;
             returnType = transExp(expList.head).ty;
         }
-        System.out.println("sequence exp " + returnType);
         return new ExpTy(null, returnType);
     }
 
@@ -419,12 +413,12 @@ public class Semant {
             error(arrayExp.pos, "Type mismatch: array size expression is not an int " + tSizeTy);
         }
         // Get type of expression, it should be an array and not null
-        var tt = (Types.ARRAY) env.tenv.get(typeSymbol);
-        if (tt == null) {
+        var tt = (Types.Type) env.tenv.get(typeSymbol);
+        if (tt == null || !(tt.actual() instanceof Types.ARRAY)) {
             error(arrayExp.pos, "Type not found:" + typeSymbol);
         } else {
             // check that initialising expression is the same type as the array element type
-            if (transExp(initExp).ty != tt.element) {
+            if (transExp(initExp).ty != ((Types.ARRAY)tt.actual()).element) {
                 error(arrayExp.pos, "Type mismatch: array init expression is not of type " + tt);
             }
         }
@@ -445,17 +439,17 @@ public class Semant {
      */
     ExpTy transExp(Absyn.RecordExp recordExp) {
         var expressionTypeSymbol = recordExp.typ;
-        var tigerType = (Types.RECORD) env.tenv.get(expressionTypeSymbol);
+        var tigerType = (Types.Type) env.tenv.get(expressionTypeSymbol);
         if (tigerType == null) {
             error(recordExp.pos, "Unknown type " + expressionTypeSymbol);
         }
         // Loop through fieldExpLists rec{field1=value, field2=value2.....}
-        var temp = tigerType;
+        var temp = (RECORD)tigerType.actual();
         for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
             // translate the field expression, and do what with it ?
             var fieldExpTy = transExp(fel, temp);
             // advance to next tiger type
-            temp = tigerType.tail;
+            temp = temp.tail;
         }
         return new ExpTy(null, tigerType);
     }

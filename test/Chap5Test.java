@@ -1,17 +1,17 @@
 
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import Main.*;
-import java.io.BufferedReader;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
+import org.junit.Test;
+
+import Main.Main;
+
 public class Chap5Test {
-/*
+
     @Test
     public void type_var_dec_correct_int() {
         String tigerCode = "let var badVariable:int := 123 in () end";
@@ -67,18 +67,8 @@ Main m = new Main("chap5", inputStream);
     }
 
     @Test
-    public void type_var_dec_array() {
-        String tigerCode = "let type intArray = array of int var row := intArray [ N ] of 0  in () end";
-        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
-        Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
-        assertFalse(m.hasErrors());
-    }
-
-    @Test
     public void type_var_dec_rec_invalid() {
-        String tigerCode = "let type rectype = {name:string, age:int} var rec1:rectype := rectype {name=\"Nobody\", age=\"Nobody\"}   in () end";
+        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=\"Nobody\"} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.buildAst();
@@ -115,7 +105,7 @@ Main m = new Main("chap5", inputStream);
         Main m = new Main("chap5", inputStream);
         m.buildAst();
         m.typeCheck();
-        assertFalse(m.hasErrors());
+        assertTrue(m.hasErrors());
     }
 
     @Test
@@ -157,9 +147,7 @@ Main m = new Main("chap5", inputStream);
         m.typeCheck();
         assertFalse(m.hasErrors());
     }
-*/
 
-/*
    @Test
     public void mutual_rec_type() {
         String tigerCode = "let type list = { first:int, last:list} in () end";
@@ -170,7 +158,7 @@ Main m = new Main("chap5", inputStream);
         //m.getTypeSymbolTable().
         assertFalse(m.hasErrors());
     }
-    */
+
 
     @Test
     public void array_type() {
@@ -182,5 +170,6 @@ Main m = new Main("chap5", inputStream);
         //m.getTypeSymbolTable().
         assertFalse(m.hasErrors());
     }
+
 
 }
