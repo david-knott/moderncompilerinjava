@@ -17,7 +17,6 @@ public class Env {
         tenv = new Table();
         tenv.put(Symbol.symbol("int"), Semant.INT);
         tenv.put(Symbol.symbol("string"), Semant.STRING);
-
     }
 
     public Table getTEnv() {

@@ -141,7 +141,6 @@ public class Semant {
     }
 
     ExpTy transVar(Absyn.SimpleVar e) {
-        System.out.println("Found simple var " + e);
         Entry x = (Entry) (env.venv.get(e.name));
         if (x instanceof VarEntry) {
             VarEntry ent = (VarEntry) x;
@@ -166,6 +165,7 @@ public class Semant {
 
     /**
      * Translate an array subscript item into an intermediate expression and a tiger type
+     * eg anarray[int_variable], anarray is an array of type t, with element of type e
      * Subscript index should evaluate to int
      * @param e
      * @return
@@ -175,6 +175,12 @@ public class Semant {
         if(transExp(indexExp).ty.actual() != INT){
             error(e.pos, "Subscript expression is not of type int: ");
         }
+        var tranlatedArrayVar = transVar(e.var);
+        //tranlatedArrayVar.ty is type of ARRAY
+        
+
+        //Entry entry = (Entry)(env.venv.get(e.));
+
         //var variableExp = transVar(e.var);
         //error(e.pos, "Variable type is not an array");
         

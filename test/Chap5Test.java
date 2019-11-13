@@ -159,9 +159,22 @@ Main m = new Main("chap5", inputStream);
     }
 */
 
+/*
    @Test
     public void mutual_rec_type() {
         String tigerCode = "let type list = { first:int, last:list} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        //m.getTypeSymbolTable().
+        assertFalse(m.hasErrors());
+    }
+    */
+
+    @Test
+    public void array_type() {
+        String tigerCode = "let type intArray = array of int var row := intArray [ N ] of 0 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.buildAst();
