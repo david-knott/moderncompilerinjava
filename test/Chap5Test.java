@@ -1,4 +1,3 @@
-package test;
 
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -118,7 +117,6 @@ Main m = new Main("chap5", inputStream);
         m.typeCheck();
         assertFalse(m.hasErrors());
     }
-*/
 
     @Test
     public void sequence_empty_string() {
@@ -159,4 +157,17 @@ Main m = new Main("chap5", inputStream);
         m.typeCheck();
         assertFalse(m.hasErrors());
     }
+*/
+
+   @Test
+    public void mutual_rec_type() {
+        String tigerCode = "let type list = { first:int, last:list} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        //m.getTypeSymbolTable().
+        assertFalse(m.hasErrors());
+    }
+
 }
