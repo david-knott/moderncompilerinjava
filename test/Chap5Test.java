@@ -167,9 +167,17 @@ Main m = new Main("chap5", inputStream);
         Main m = new Main("chap5", inputStream);
         m.buildAst();
         m.typeCheck();
-        //m.getTypeSymbolTable().
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void array_type_invalid_subscript() {
+        String tigerCode = "let var N := \"string\" type intArray = array of int var row := intArray [ N ] of 0 in ( row[0] ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
 
 }

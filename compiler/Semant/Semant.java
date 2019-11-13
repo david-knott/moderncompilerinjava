@@ -1,14 +1,13 @@
 package Semant;
 
+import Absyn.Ty;
+import Absyn.TypeDec;
+import Symbol.Symbol;
+import Translate.Exp;
 import Translate.ExpTy;
 import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
-
-import java.util.ArrayList;
-
-import Absyn.TypeDec;
-import Translate.Exp;
 
 public class Semant {
     private final Env env;
@@ -21,11 +20,13 @@ public class Semant {
         env.errorMsg.error(pos, message);
     }
 
-    private Exp checkString(ExpTy et, int pos) {
-        if (!(et.ty.actual() instanceof Types.STRING)) {
-            error(pos, "String required");
+    private Types.Type fetchTypeAndReport(final Symbol sym, final int pos) {
+        Types.Type cached = (Types.Type) env.tenv.get(sym);
+        if (cached == null) {
+            error(pos, "No type found for symbol:" + sym);
+            return null;
         }
-        return et.exp;
+        return cached;
     }
 
     private Exp checkInt(ExpTy et, int pos) {
@@ -53,20 +54,19 @@ public class Semant {
     }
 
     /**
-     * Translates an abstract syntax record type into a tiger record type
+     * Translates an abstract syntax record type into a tiger record type this
+     * represents translating a field list {name: string, age: int} into its
+     * corresponding native type.
+     * 
      * @param t
-     * @return
+     * @return a native type
      */
     Types.Type transTy(Absyn.RecordTy t) {
         // go through each the fields in this record type
         Types.RECORD head = null;
         Types.RECORD prev = null;
         for (Absyn.FieldList l = t.fields; l != null; l = l.tail) {
-            var cached = (Types.Type) env.tenv.get(l.typ);
-            if (cached == null) {
-                error(t.pos, "Undefined type " + l.typ);
-                continue;
-            }
+            var cached = fetchTypeAndReport(l.typ, t.pos);
             // create record for current item
             Types.RECORD current = new Types.RECORD(l.name, cached, null);
             if (head == null)
@@ -82,33 +82,24 @@ public class Semant {
     }
 
     /**
-     * Translates an abstract syntax array type into a tiger type
+     * Translates an abstract syntax array type into a native type eg array of int
+     * 
      * @param t
      * @return
      */
     Types.Type transTy(Absyn.ArrayTy t) {
-        // lookup type of array ( intArray = array of int )
-        Types.Type cached = (Types.Type) env.tenv.get(t.typ);
-        if (cached == null) {
-            error(t.pos, "Undefined type " + t);
-            return null;
-        }
+        var cached = fetchTypeAndReport(t.typ, t.pos);
         return new Types.ARRAY(cached);
     }
 
     /**
-     * Translates a type t into a tiger type
+     * Translates a type t into a native type
+     * 
      * @param t
-     * @return
+     * @return return the looked up nametype
      */
     Types.Type transTy(Absyn.NameTy t) {
-        // lookup the type by its symbol name in the type cache
-        Types.Type cached = (Types.Type) env.tenv.get(t.name);
-        // type for symbol t.name has not been seen, lets add it to our cache
-        if (cached == null) {
-            error(t.pos, "Undefined type " + t);
-            return null;
-        }
+        var cached = fetchTypeAndReport(t.name, t.pos);
         return cached;
     }
 
@@ -127,6 +118,7 @@ public class Semant {
 
     /**
      * Dispatcher function for var types
+     * 
      * @param e
      * @return
      */
@@ -155,40 +147,40 @@ public class Semant {
     }
 
     /**
-     * Translates an abstract field variable into a intermediate expression and a tiger type
-     * for example { name = "david knott",....}, field is name and david is variable.
-     * Type checker should ensure that the type of var is the same as the type of the field.
+     * Translates an abstract field variable into a intermediate expression and a
+     * tiger type for example { name = "david knott",....}, field is name and david
+     * is variable. Type checker should ensure that the type of var is the same as
+     * the type of the field.
+     * 
      * @param e
      * @return
      */
     ExpTy transVar(Absyn.FieldVar e) {
-    
+
         throw new Error("Not Implemented " + e.getClass().getName());
     }
 
     /**
-     * Translate an array subscript item into an intermediate expression and a tiger type
-     * eg anarray[int_variable], anarray is an array of type t, with element of type e
-     * Subscript index should evaluate to int
+     * Translate an array subscript item into an intermediate expression and a tiger
+     * type eg anarray[int_variable], anarray is an array of type t, with element of
+     * type e Subscript index should evaluate to int
+     * 
      * @param e
      * @return
      */
     ExpTy transVar(Absyn.SubscriptVar e) {
         var indexExp = e.index;
-        if(transExp(indexExp).ty.actual() != INT){
+        //translate the index expression and check its an INT
+        if (transExp(indexExp).ty.actual() != INT) {
             error(e.pos, "Subscript expression is not of type int: ");
         }
-        var tranlatedArrayVar = transVar(e.var);
-        //tranlatedArrayVar.ty is type of ARRAY
-        
-
-        //Entry entry = (Entry)(env.venv.get(e.));
-
-        //var variableExp = transVar(e.var);
-        //error(e.pos, "Variable type is not an array");
-        
-        //returntype is
-        throw new Error("Not Implemented " + e.getClass().getName());
+        //translate the variable and check its an instance of an ARRAY
+        var translatedArrayVar = transVar(e.var);
+        Types.Type elementType = translatedArrayVar.ty.actual();
+        if(!(elementType instanceof ARRAY)){
+            error(e.pos, "Type of variable is not an array");
+        }
+        return new ExpTy(null, elementType);
     }
 
     Exp transDec(Absyn.FunctionDec e) {
@@ -215,12 +207,15 @@ public class Semant {
     }
 
     /**
-     * Recursive support for declarations 
+     * Recursive support for declarations
+     * 
      * @param e
      * @return
      */
     Exp transDec(Absyn.TypeDec e) {
-        //process headers first
+        // we assume that contiguous declarations may be recursive
+
+        // process headers first to capture a reference to type name
         TypeDec next = e;
         do {
             var namedType = new Types.NAME(next.name);
@@ -228,33 +223,28 @@ public class Semant {
             // look ups by the transTy function
             env.tenv.put(next.name, namedType);
             next = e.next;
-        } while(next != null);
-        //process bodies of type declarations
+        } while (next != null);
+        // process bodies of type declarations, where the type name above
+        // may be used recursively
         next = e;
         do {
             // set the name types actual type to the
-            //type returned by the the transTy function
+            // type returned by the the transTy function
             var mappedType = transTy(next.ty);
-            //get the named type from the env
-            var namedType = (NAME)env.tenv.get(next.name);
+            // get the named type from the env
+            var namedType = (NAME) env.tenv.get(next.name);
             namedType.bind(mappedType);
             next = e.next;
-        } while(next != null);
-
+        } while (next != null);
         /*
-        //created a named type for the type definition
-        var namedType = new Types.NAME(e.name);
-        //stick it into the type env so that its available for 
-        //look ups by the transTy function
-        env.tenv.put(e.name, namedType);
-        var mappedType = transTy(e.ty);
-        //set the name types actual type to the
-        //type returned by the the transTy function
-        namedType.bind(mappedType);
-        */
+         * //created a named type for the type definition var namedType = new
+         * Types.NAME(e.name); //stick it into the type env so that its available for
+         * //look ups by the transTy function env.tenv.put(e.name, namedType); var
+         * mappedType = transTy(e.ty); //set the name types actual type to the //type
+         * returned by the the transTy function namedType.bind(mappedType);
+         */
         return null;
     }
-
 
     /**
      * Translates a variable declaration into an intermediate expression and tiger
@@ -418,7 +408,7 @@ public class Semant {
             error(arrayExp.pos, "Type not found:" + typeSymbol);
         } else {
             // check that initialising expression is the same type as the array element type
-            if (transExp(initExp).ty != ((Types.ARRAY)tt.actual()).element) {
+            if (transExp(initExp).ty != ((Types.ARRAY) tt.actual()).element) {
                 error(arrayExp.pos, "Type mismatch: array init expression is not of type " + tt);
             }
         }
@@ -444,7 +434,7 @@ public class Semant {
             error(recordExp.pos, "Unknown type " + expressionTypeSymbol);
         }
         // Loop through fieldExpLists rec{field1=value, field2=value2.....}
-        var temp = (RECORD)tigerType.actual();
+        var temp = (RECORD) tigerType.actual();
         for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
             // translate the field expression, and do what with it ?
             var fieldExpTy = transExp(fel, temp);
@@ -487,6 +477,7 @@ public class Semant {
 
     /**
      * Main dispatch function for expressions
+     * 
      * @param e
      * @return
      */
