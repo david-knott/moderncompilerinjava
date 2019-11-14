@@ -180,4 +180,16 @@ Main m = new Main("chap5", inputStream);
         assertTrue(m.hasErrors());
     }
 
+    @Test
+    public void non_recursive_function() {
+        String tigerCode = "let function functionname(c:int) = (print(1)) in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
+
+
+
 }

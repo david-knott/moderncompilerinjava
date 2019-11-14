@@ -1,5 +1,6 @@
 package Semant;
 
+import Absyn.FunctionDec;
 import Absyn.Ty;
 import Absyn.TypeDec;
 import Symbol.Symbol;
@@ -69,13 +70,13 @@ public class Semant {
             var cached = fetchTypeAndReport(l.typ, t.pos);
             // create record for current item
             Types.RECORD current = new Types.RECORD(l.name, cached, null);
-            if (head == null)
-                head = current;
             // set the previous items tail to the current item
             // if we dont do this, the list will be reversed when
             // used by the recordexp transExp
-            if (prev != null)
-                prev.tail = current;
+            if (head == null)
+                head = current;
+            else
+                prev.tail = current; //insert the current item at the end of the previous
             prev = current;
         }
         return head;
@@ -183,26 +184,29 @@ public class Semant {
         return new ExpTy(null, elementType);
     }
 
-    Exp transDec(Absyn.FunctionDec e) {
-        throw new Error("Function declarations not implemented.");
-    }
-
     /**
-     * Translates a type declaration into an intermediate expression and tiger type.
-     * for example type atype = {a: int, b: string, c: othertype} Declarations can
-     * be non recursive mutually recursive recursive Recursive type declarations
-     * should be contiguous, we can use the tail field to find them.
-     * 
+     * Translate a function declaration into an intermediate expresion:w
      * @param e
      * @return
      */
-    Exp transDecOld(Absyn.TypeDec e) {
-        // we translate the abstract syntax type into a tiger type eg RecordTy is
-        // translated to RECORD
-        var mappedType = transTy(e.ty);
-        // add type mapping from type name to the native tiger type, so atype maps to
-        // RECORD instance
-        env.tenv.put(e.name, mappedType);
+    Exp transDec(Absyn.FunctionDec e) {
+        //process the function headers first
+     //e.body - function body , type of this is return type of function ;
+            //e.name - name of function
+            //e.next - related recursive function
+            //e.params - formals for the function
+            //e.result - type of result, may be null, should equal e.body
+        
+        FunctionDec next = e;
+        do {
+            var returnType = transExp(e.body).ty;
+           // RECORD formals = null;
+            var formalParams = e.params;
+            //env.venv.put(next.name, new FunEntry(formals, returnType));
+            next = e.next;
+
+        } while(next != null);
+
         return null;
     }
 
@@ -214,7 +218,6 @@ public class Semant {
      */
     Exp transDec(Absyn.TypeDec e) {
         // we assume that contiguous declarations may be recursive
-
         // process headers first to capture a reference to type name
         TypeDec next = e;
         do {
