@@ -16,7 +16,7 @@ public class Chap5Test {
     public void type_var_dec_correct_int() {
         String tigerCode = "let var badVariable:int := 123 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
-Main m = new Main("chap5", inputStream);
+        Main m = new Main("chap5", inputStream);
         m.buildAst();
         m.typeCheck();
         assertFalse(m.hasErrors());
@@ -26,7 +26,7 @@ Main m = new Main("chap5", inputStream);
     public void type_var_dec_correct_string() {
         String tigerCode = "let var badVariable:string := \"string\" in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
-Main m = new Main("chap5", inputStream);
+        Main m = new Main("chap5", inputStream);
         m.buildAst();
         m.typeCheck();
         assertFalse(m.hasErrors());
@@ -36,7 +36,7 @@ Main m = new Main("chap5", inputStream);
     public void type_var_dec_incorrect_int() {
         String tigerCode = "let var badVariable:int := \"string\" in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
-Main m = new Main("chap5", inputStream);
+        Main m = new Main("chap5", inputStream);
         m.buildAst();
         m.typeCheck();
         assertTrue(m.hasErrors());
@@ -54,10 +54,10 @@ Main m = new Main("chap5", inputStream);
 
     @Test
     public void type_var_dec_custom_type1() {
-        //table init - add a type mapping from int -> INT
-        //semant - add type mapping from t1 -> int
-        //semant - check type of v1 is the same as int exp 
-        //semant - add type mapping from t2 -> type of t1 ( int )
+        // table init - add a type mapping from int -> INT
+        // semant - add type mapping from t1 -> int
+        // semant - check type of v1 is the same as int exp
+        // semant - add type mapping from t2 -> type of t1 ( int )
         String tigerCode = "let type t1 = int var v1:t1 := 123 type t2 = t1 var v2:t2 := 345 type t3 = t2 var v3:t3 := 347  in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
@@ -86,7 +86,6 @@ Main m = new Main("chap5", inputStream);
         assertFalse(m.hasErrors());
     }
 
-
     @Test
     public void type_var_dec_array_valid() {
         String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [10] of 0 in () end";
@@ -96,7 +95,6 @@ Main m = new Main("chap5", inputStream);
         m.typeCheck();
         assertFalse(m.hasErrors());
     }
-
 
     @Test
     public void type_var_dec_array_invalid() {
@@ -148,17 +146,16 @@ Main m = new Main("chap5", inputStream);
         assertFalse(m.hasErrors());
     }
 
-   @Test
+    @Test
     public void mutual_rec_type() {
         String tigerCode = "let type list = { first:int, last:list} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.buildAst();
         m.typeCheck();
-        //m.getTypeSymbolTable().
+        // m.getTypeSymbolTable().
         assertFalse(m.hasErrors());
     }
-
 
     @Test
     public void array_type() {
@@ -181,8 +178,19 @@ Main m = new Main("chap5", inputStream);
     }
 
     @Test
-    public void non_recursive_function() {
-        String tigerCode = "let function functionname(c:int) = (print(1)) in () end";
+    public void non_recursive_function_invalid_return_type() {
+        String tigerCode = "let function functionname():string = (1) in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
+
+
+    @Test
+    public void non_recursive_function_valid_return_type() {
+        String tigerCode = "let function functionname():int = (1) in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.buildAst();
@@ -190,6 +198,85 @@ Main m = new Main("chap5", inputStream);
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void call_invalid_function_name() {
+        String tigerCode = "let function test(a:string, b:int):int = (1) in (est()) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
 
+    @Test
+    public void call_invalid_function_no_arguments() {
+        String tigerCode = "let function test(a:string):int = (1) in (test()) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
+ 
+    @Test
+    public void call_invalid_function_to_many_arguments() {
+        String tigerCode = "let function test(a:int, b:int):int = (1) in (test(1,2,3)) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
+  
+    @Test
+    public void call_invalid_function_to_few_arguments() {
+        String tigerCode = "let function test(a:int, b:int):int = (1) in (test(1)) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
+ 
+    @Test
+    public void call_invalid_function_invalid_type_arguments() {
+        String tigerCode = "let function test(a:string, b:int):int = (2) in (test(1, 1)) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
+ 
+    @Test
+    public void call_invalid_function_invalid_order_arguments() {
+        String tigerCode = "let function test(a:string, b:int):int = (2) in (test(1, \"string\")) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertTrue(m.hasErrors());
+    }
+
+@Test
+    public void call_valid_function_two_arguments() {
+        String tigerCode = "let function test(a:int, b:string):int = (2) in (test(1, \"string\")) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
+ 
+@Test
+    public void call_mut_rec_function() {
+        String tigerCode = "let function test(a: int): int = ( test(a) ) in (test(1)) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
+ 
 
 }

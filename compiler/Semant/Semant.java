@@ -1,5 +1,6 @@
 package Semant;
 
+import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.Ty;
 import Absyn.TypeDec;
@@ -9,6 +10,7 @@ import Translate.ExpTy;
 import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
+import Types.Type;
 
 public class Semant {
     private final Env env;
@@ -76,7 +78,7 @@ public class Semant {
             if (head == null)
                 head = current;
             else
-                prev.tail = current; //insert the current item at the end of the previous
+                prev.tail = current; // insert the current item at the end of the previous
             prev = current;
         }
         return head;
@@ -171,41 +173,76 @@ public class Semant {
      */
     ExpTy transVar(Absyn.SubscriptVar e) {
         var indexExp = e.index;
-        //translate the index expression and check its an INT
+        // translate the index expression and check its an INT
         if (transExp(indexExp).ty.actual() != INT) {
             error(e.pos, "Subscript expression is not of type int: ");
         }
-        //translate the variable and check its an instance of an ARRAY
+        // translate the variable and check its an instance of an ARRAY
         var translatedArrayVar = transVar(e.var);
         Types.Type elementType = translatedArrayVar.ty.actual();
-        if(!(elementType instanceof ARRAY)){
+        if (!(elementType instanceof ARRAY)) {
             error(e.pos, "Type of variable is not an array");
         }
         return new ExpTy(null, elementType);
     }
 
+    RECORD transTypeFields(FieldList fields) {
+        Types.RECORD head = null;
+        Types.RECORD prev = null;
+        for (Absyn.FieldList l = fields; l != null; l = l.tail) {
+            var cached = fetchTypeAndReport(l.typ, l.pos);
+            Types.RECORD current = new Types.RECORD(l.name, cached, null);
+            if (head == null)
+                head = current;
+            else
+                prev.tail = current; // insert the current item at the end of the previous
+            prev = current;
+        }
+        return head;
+    }
+
     /**
+     * 
      * Translate a function declaration into an intermediate expresion:w
-     * @param e
+     * 
+     * @param
      * @return
      */
     Exp transDec(Absyn.FunctionDec e) {
-        //process the function headers first
-     //e.body - function body , type of this is return type of function ;
-            //e.name - name of function
-            //e.next - related recursive function
-            //e.params - formals for the function
-            //e.result - type of result, may be null, should equal e.body
-        
+        // process the function headers first
+        // e.body - function body , type of this is return type of function ;
+        // e.name - name of function
+        // e.next - related recursive function
+        // e.params - formals for the function
+        // e.result - type of result, may be null
+        // for a function, what should we type check ?
+        // need to record the types of the formals
+        // need to check that the return type matches the
+        // body return type
         FunctionDec next = e;
         do {
-            var returnType = transExp(e.body).ty;
-           // RECORD formals = null;
-            var formalParams = e.params;
-            //env.venv.put(next.name, new FunEntry(formals, returnType));
-            next = e.next;
 
-        } while(next != null);
+            // add function first
+            env.venv.put(next.name,
+                    new FunEntry(transTypeFields(e.params), e.result != null ? transTy(e.result).actual() : null));
+            env.venv.beginScope();
+            for (var p = e.params; p != null; p = p.tail) {
+                // add formals as vars within function scope
+                env.venv.put(p.name, new VarEntry((Types.Type) env.tenv.get(p.typ)));
+            }
+            var transBody = transExp(e.body);
+            if (e.result != null && transBody.ty.actual() != transTy(e.result)) {
+                error(e.pos, "Return type does not match body type");
+            }
+            env.venv.endScope();
+            next = e.next;
+        } while (next != null);
+        /*
+         * next = e; do { var translatedBody = transExp(next.body);
+         * System.out.println(translatedBody);
+         * 
+         * next = e.next; } while (next != null);
+         */
 
         return null;
     }
@@ -222,12 +259,13 @@ public class Semant {
         TypeDec next = e;
         do {
             var namedType = new Types.NAME(next.name);
-            // stick it into the type env so that its available for
-            // look ups by the transTy function
+            // stick it into the type env with a null type binding
+            // we can use the name type for other declarations that
+            // depend on it, and set its binding type later.
             env.tenv.put(next.name, namedType);
             next = e.next;
         } while (next != null);
-        // process bodies of type declarations, where the type name above
+        // process type declarations expressions, where the type name above
         // may be used recursively
         next = e;
         do {
@@ -363,7 +401,31 @@ public class Semant {
      * @return
      */
     ExpTy transExp(Absyn.CallExp callExp) {
-        return new ExpTy(null, null);
+        Entry x = (Entry) (env.venv.get(callExp.func));
+        if (x instanceof FunEntry) {
+            //evaluate each expression in arg list and check if
+            //correct type
+            var ent = (FunEntry) x;
+            var argExpList = callExp.args;
+            for(RECORD argType = ((FunEntry)x).formals; argType != null; argType = argType.tail){
+                if(argExpList == null){
+                    error(callExp.pos, "Supplied argument list is too short");
+                    break;
+                }
+                var transArg = transExp(argExpList.head);
+                if (transArg.ty.actual() != argType.fieldType.actual()) {
+                    error(callExp.pos, "Incorrect type in function ");
+                }
+                argExpList = argExpList.tail;
+            }
+            if(argExpList != null){
+                error(callExp.pos, "Supplied argument list is too long");
+            }
+            return new ExpTy(null, ent.result);
+        } else {
+            error(callExp.pos, "Undefined function: " + callExp.func);
+            return new ExpTy(null, INT);
+        }
     }
 
     /**
