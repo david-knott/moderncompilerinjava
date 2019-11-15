@@ -1,8 +1,11 @@
 package Semant;
 
+import Absyn.AssignExp;
 import Absyn.FieldList;
+import Absyn.ForExp;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
+import Absyn.WhileExp;
 import Symbol.Symbol;
 import Translate.Exp;
 import Translate.ExpTy;
@@ -100,6 +103,8 @@ public class Semant {
      * @return return the looked up nametype
      */
     Types.Type transTy(final Absyn.NameTy t) {
+        if(t == null)
+            return VOID;
         final var cached = fetchTypeAndReport(t.name, t.pos);
         return cached;
     }
@@ -115,25 +120,6 @@ public class Semant {
         if (t instanceof Absyn.ArrayTy)
             return transTy((Absyn.ArrayTy) t);
         throw new Error("Not Implemented " + t.getClass().getName());
-    }
-
-    /**
-     * Dispatcher function for var types
-     * 
-     * @param e
-     * @return
-     */
-    ExpTy transVar(final Absyn.Var e) {
-        if (e instanceof Absyn.SimpleVar) {
-            return transVar((Absyn.SimpleVar) e);
-        }
-        if (e instanceof Absyn.FieldVar) {
-            return transVar((Absyn.FieldVar) e);
-        }
-        if (e instanceof Absyn.SubscriptVar) {
-            return transVar((Absyn.SubscriptVar) e);
-        }
-        throw new Error("Not Implemented " + e.getClass().getName());
     }
 
     ExpTy transVar(final Absyn.SimpleVar e) {
@@ -157,11 +143,18 @@ public class Semant {
      * @return
      */
     ExpTy transVar(final Absyn.FieldVar e) {
-        if (env.tenv.get(e.field).actual() != transVar(e.var).ty.actual()) {
-            error(e.pos, "Invalid type: " + e.field);
-        }
+        var varType = transVar(e.var).ty.actual();
+        var fieldType = env.tenv.get(e.field);
 
-        throw new Error("Not Implemented " + e.getClass().getName());
+        /*
+         * if (fieldType == null) { error(e.pos, "Undefined field type: " + e.field);
+         * return new ExpTy(null, null); } if(varType == null){ error(e.pos,
+         * "Undefined variable: " + e.var); return new ExpTy(null, null); } if
+         * (env.tenv.get(e.field).actual() != varType) { error(e.pos, "Invalid type: " +
+         * e.field); }
+         */
+        return new ExpTy(null, null);
+
     }
 
     /**
@@ -185,6 +178,25 @@ public class Semant {
             error(e.pos, "Type of variable is not an array");
         }
         return new ExpTy(null, elementType);
+    }
+
+    /**
+     * Dispatcher function for var types
+     * 
+     * @param e
+     * @return
+     */
+    ExpTy transVar(final Absyn.Var e) {
+        if (e instanceof Absyn.SimpleVar) {
+            return transVar((Absyn.SimpleVar) e);
+        }
+        if (e instanceof Absyn.FieldVar) {
+            return transVar((Absyn.FieldVar) e);
+        }
+        if (e instanceof Absyn.SubscriptVar) {
+            return transVar((Absyn.SubscriptVar) e);
+        }
+        throw new Error("Not Implemented " + e.getClass().getName());
     }
 
     RECORD transTypeFields(final FieldList fields) {
@@ -225,7 +237,7 @@ public class Semant {
 
             // add function first
             env.venv.put(current.name, new FunEntry(transTypeFields(current.params),
-                    current.result != null ? transTy(current.result).actual() : null));
+                    current.result != null ? transTy(current.result).actual() : Semant.VOID));
             current = current.next;
         } while (current != null);
         current = e;
@@ -233,17 +245,12 @@ public class Semant {
             env.venv.beginScope();
             for (var p = current.params; p != null; p = p.tail) {
                 // add formals as vars within function scope
-                env.venv.put(p.name, new VarEntry((Types.Type) env.tenv.get(p.typ)));
+                env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
             final var transBody = transExp(current.body);
-            if (transBody.ty == null && current.result != null) {
-                //error(current.pos, "function body should not return void");
-            } else if (transBody.ty != null && current.result == null) {
-                //error(current.pos, "function body should return void");
-            } else {
-                if (transBody.ty.actual() != transTy(current.result).actual()) {
-                    error(current.pos, "Return type does not match body type");
-                }
+            //transTy returns VOID is param is null
+            if (transBody.ty.actual() != transTy(current.result).actual()) {
+                error(current.pos, "Return type does not match body type");
             }
             env.venv.endScope();
             current = current.next;
@@ -324,6 +331,10 @@ public class Semant {
         return null;
     }
 
+    /**
+     * Dispatcher for declaration types. Note that the symbol tables are populated
+     * in these methods
+     */
     Exp transDec(final Absyn.Dec e) {
         if (e instanceof Absyn.VarDec)
             return transDec((Absyn.VarDec) e);
@@ -522,6 +533,27 @@ public class Semant {
     }
 
     /**
+     * Translates an assignment expession into a native type and intermediate code
+     * 
+     * @param assignExp
+     * @return
+     */
+    ExpTy transExp(final Absyn.AssignExp assignExp) {
+
+        return new ExpTy(null, Semant.VOID);
+    }
+
+    ExpTy transExp(final Absyn.ForExp forExp) {
+
+        return new ExpTy(null, Semant.VOID);
+    }
+
+    ExpTy transExp(final Absyn.WhileExp whileExp) {
+
+        return new ExpTy(null, Semant.VOID);
+    }
+
+    /**
      * Translates a fieldExpList to its tiger type A fieldExpList is of form
      * property1=expression1 Typechecker should check that the type of property1 is
      * the same as the type of expression1
@@ -577,6 +609,8 @@ public class Semant {
             return transExp((Absyn.ArrayExp) e);
         else if (e instanceof Absyn.RecordExp)
             return transExp((Absyn.RecordExp) e);
+        else if (e instanceof Absyn.AssignExp)
+            return transExp((Absyn.AssignExp) e);
         else
             throw new Error("Cannot handle " + e.getClass().getName());
     }

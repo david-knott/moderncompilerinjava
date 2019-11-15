@@ -1,15 +1,15 @@
 package Main;
 
-import Parse.*;
-import Semant.Semant;
-import Symbol.SymbolTable;
-import Symbol.Table;
-import Types.Type;
-
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import ErrorMsg.ErrorMsg;
+import Parse.Grm;
+import Parse.Program;
+import Parse.Yylex;
+import Semant.Semant;
+import Symbol.SymbolTable;
+import Types.Type;
 
 public class Main {
 
@@ -29,7 +29,7 @@ public class Main {
             final java_cup.runtime.Symbol rootSymbol = parser.parse();
             this.ast = (Program) rootSymbol.value;
         } catch (final Throwable e) {
-            throw new Error("Unable to translate");
+            throw new Error("Unable to translate", e);
         } finally {
             try {
                 this.inputStream.close();

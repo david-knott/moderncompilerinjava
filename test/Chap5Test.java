@@ -13,12 +13,29 @@ import Main.Main;
 public class Chap5Test {
 
     @Test
+    public void printtest() {
+        String tigerCode = "let in print(\"string\") end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void flush_test() {
+        String tigerCode = "let in flush() end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
     public void type_var_dec_correct_int() {
         String tigerCode = "let var badVariable:int := 123 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
-        var t = m.getTypeSymbolTable();
         assertFalse(m.hasErrors());
     }
 
@@ -170,7 +187,6 @@ public class Chap5Test {
         assertTrue(m.hasErrors());
     }
 
-
     @Test
     public void non_recursive_function_valid_return_type() {
         String tigerCode = "let function functionname():int = (1) in () end";
@@ -197,7 +213,7 @@ public class Chap5Test {
         m.compile();
         assertTrue(m.hasErrors());
     }
- 
+
     @Test
     public void call_invalid_function_to_many_arguments() {
         String tigerCode = "let function test(a:int, b:int):int = (1) in (test(1,2,3)) end";
@@ -206,7 +222,7 @@ public class Chap5Test {
         m.compile();
         assertTrue(m.hasErrors());
     }
-  
+
     @Test
     public void call_invalid_function_to_few_arguments() {
         String tigerCode = "let function test(a:int, b:int):int = (1) in (test(1)) end";
@@ -215,7 +231,7 @@ public class Chap5Test {
         m.compile();
         assertTrue(m.hasErrors());
     }
- 
+
     @Test
     public void call_invalid_function_invalid_type_arguments() {
         String tigerCode = "let function test(a:string, b:int):int = (2) in (test(1, 1)) end";
@@ -224,7 +240,7 @@ public class Chap5Test {
         m.compile();
         assertTrue(m.hasErrors());
     }
- 
+
     @Test
     public void call_invalid_function_invalid_order_arguments() {
         String tigerCode = "let function test(a:string, b:int):int = (2) in (test(1, \"string\")) end";
@@ -234,7 +250,7 @@ public class Chap5Test {
         assertTrue(m.hasErrors());
     }
 
-@Test
+    @Test
     public void call_valid_function_two_arguments() {
         String tigerCode = "let function test(a:int, b:string):int = (2) in (test(1, \"string\")) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
@@ -242,8 +258,8 @@ public class Chap5Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
- 
-@Test
+
+    @Test
     public void call_mut_rec_function() {
         String tigerCode = "let function test(a: int): int = ( test(a) ) in (test(1)) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
@@ -251,10 +267,10 @@ public class Chap5Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
-     
+
     @Test
     public void call_rec_function() {
-        String tigerCode = "let var a := 5 function f(): int = g(a) function g(i: int) = f() in f() end";
+        String tigerCode = "let var a := 5 function f():int = g(a) function g(i: int):int = f() in f() end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -263,7 +279,7 @@ public class Chap5Test {
 
     @Test
     public void invalid_field_type() {
-        String tigerCode = "let type = myrec {num:int} in (test(1)) end";
+        String tigerCode = "let type myrec = {num:int} var a:myrec := myrec{num=12} in (a.num := 4) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
