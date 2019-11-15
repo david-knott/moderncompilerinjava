@@ -219,24 +219,33 @@ public class Semant {
         // need to record the types of the formals
         // need to check that the return type matches the
         // body return type
-        FunctionDec next = e;
+        FunctionDec current = e;
         do {
 
             // add function first
-            env.venv.put(next.name,
-                    new FunEntry(transTypeFields(e.params), e.result != null ? transTy(e.result).actual() : null));
+            env.venv.put(current.name,
+                    new FunEntry(transTypeFields(current.params), current.result != null ? transTy(current.result).actual() : null));
+            current = current.next;
+        } while (current != null);
+        current = e;
+        do {
+
             env.venv.beginScope();
-            for (var p = e.params; p != null; p = p.tail) {
+            for (var p = current.params; p != null; p = p.tail) {
                 // add formals as vars within function scope
                 env.venv.put(p.name, new VarEntry((Types.Type) env.tenv.get(p.typ)));
             }
-            var transBody = transExp(e.body);
-            if (e.result != null && transBody.ty.actual() != transTy(e.result)) {
-                error(e.pos, "Return type does not match body type");
+            var transBody = transExp(current.body);
+            if (current.result != null && transBody.ty.actual() != transTy(current.result)) {
+                error(current.pos, "Return type does not match body type");
             }
             env.venv.endScope();
-            next = e.next;
-        } while (next != null);
+            current = current.next;
+        } while (current != null);
+
+
+
+
         /*
          * next = e; do { var translatedBody = transExp(next.body);
          * System.out.println(translatedBody);

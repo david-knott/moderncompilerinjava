@@ -19,7 +19,7 @@ class Binder {
 
 public class Table {
 
-    private java.util.Dictionary dict = new java.util.Hashtable();
+    private java.util.Dictionary<Symbol, Binder> dict = new java.util.Hashtable<Symbol, Binder>();
     private Symbol top;
     private Binder marks;
 
@@ -30,7 +30,7 @@ public class Table {
      * Gets the object associated with the specified symbol in the Table.
      */
     public Object get(Symbol key) {
-        Binder e = (Binder) dict.get(key);
+        Binder e = dict.get(key);
         if (e == null)
             return null;
         else
@@ -59,7 +59,7 @@ public class Table {
      */
     public void endScope() {
         while (top != null) {
-            Binder e = (Binder) dict.get(top);
+            Binder e = dict.get(top);
             if (e.tail != null)
                 dict.put(top, e.tail);
             else
@@ -73,7 +73,7 @@ public class Table {
     /**
      * Returns an enumeration of the Table's symbols.
      */
-    public java.util.Enumeration keys() {
+    public java.util.Enumeration<Symbol> keys() {
         return dict.keys();
     }
 }

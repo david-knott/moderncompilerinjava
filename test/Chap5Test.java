@@ -277,6 +277,14 @@ public class Chap5Test {
         m.typeCheck();
         assertFalse(m.hasErrors());
     }
- 
-
+     
+    @Test
+    public void call_rec_function() {
+        String tigerCode = "let function test(a: int): int = ( test2(a)) function test2(a: int):int = (test(a))  in (test(1)) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.buildAst();
+        m.typeCheck();
+        assertFalse(m.hasErrors());
+    }
 }

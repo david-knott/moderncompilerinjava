@@ -67,7 +67,7 @@ non terminal Absyn.CallExp callExp;
 non terminal Absyn.IfExp ifThen, ifThenElse; 
 non terminal Absyn.WhileExp whileExp; 
 non terminal Absyn.ForExp forExp; 
-non terminal negation; 
+non terminal Absyn.Exp negation; 
 
 precedence left AND, OR;
 precedence nonassoc EQ, NEQ, GT, LT, GE, LE;
@@ -126,7 +126,7 @@ exp ::= lValue:lv {: RESULT = new Absyn.VarExp(lvleft, lv); :}
 | arrCreate:ac {: RESULT = ac; :}
 | recCreate:rc {: RESULT = rc; :}
 | assignment:a {: RESULT = a; :}
-| negation 
+| negation:n {: RESULT = n; :}
 | ifThenElse:ite {: RESULT = ite; :}
 | ifThen:it {: RESULT = it; :}
 | whileExp:we {: RESULT = we; :} 
@@ -136,7 +136,7 @@ exp ::= lValue:lv {: RESULT = new Absyn.VarExp(lvleft, lv); :}
 //| error:e {: parser.report_error("Syntax error, skip rest",e); :} 
 ;
 
-negation ::= MINUS exp;
+negation ::= MINUS exp:e1 {: RESULT = new Absyn.OpExp(e1left, new Absyn.IntExp(e1left,0), Absyn.OpExp.MINUS, e1); :};
 
 infixExp ::= exp:e1 PLUS exp:e2 {: RESULT = new Absyn.OpExp(e1left, e1, Absyn.OpExp.PLUS, e2); :}
 | exp:e1 MINUS exp:e2 {: RESULT = new Absyn.OpExp(e1left, e1, Absyn.OpExp.MINUS, e2); :}
