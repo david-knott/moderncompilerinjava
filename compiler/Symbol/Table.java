@@ -12,11 +12,6 @@ class Binder {
     }
 }
 
-/**
- * The Table class is similar to java.util.Dictionary, except that each key must
- * be a Symbol and there is a scope mechanism.
- */
-
 public class Table {
 
     private java.util.Dictionary<Symbol, Binder> dict = new java.util.Hashtable<Symbol, Binder>();

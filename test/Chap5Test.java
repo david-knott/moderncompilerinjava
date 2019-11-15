@@ -17,8 +17,8 @@ public class Chap5Test {
         String tigerCode = "let var badVariable:int := 123 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
+        var t = m.getTypeSymbolTable();
         assertFalse(m.hasErrors());
     }
 
@@ -27,8 +27,7 @@ public class Chap5Test {
         String tigerCode = "let var badVariable:string := \"string\" in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -37,8 +36,7 @@ public class Chap5Test {
         String tigerCode = "let var badVariable:int := \"string\" in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
 
@@ -47,8 +45,7 @@ public class Chap5Test {
         String tigerCode = "let type t1 = int var v1:int := 1 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -61,8 +58,7 @@ public class Chap5Test {
         String tigerCode = "let type t1 = int var v1:t1 := 123 type t2 = t1 var v2:t2 := 345 type t3 = t2 var v3:t3 := 347  in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -71,8 +67,7 @@ public class Chap5Test {
         String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=\"Nobody\"} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
 
@@ -81,8 +76,7 @@ public class Chap5Test {
         String tigerCode = "let type rectype = {name:string, age:int} var rec1:rectype := rectype {name=\"Nobody\", age=2345}   in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -91,8 +85,7 @@ public class Chap5Test {
         String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [10] of 0 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -101,8 +94,7 @@ public class Chap5Test {
         String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [10] of \"x\" in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
 
@@ -111,8 +103,7 @@ public class Chap5Test {
         String tigerCode = "(1;2;\"dsds\")";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -121,8 +112,7 @@ public class Chap5Test {
         String tigerCode = "()";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -131,8 +121,7 @@ public class Chap5Test {
         String tigerCode = "let in (1;2;\"dsds\") end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -141,8 +130,7 @@ public class Chap5Test {
         String tigerCode = "let in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -151,9 +139,7 @@ public class Chap5Test {
         String tigerCode = "let type list = { first:int, last:list} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
-        // m.getTypeSymbolTable().
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -162,8 +148,7 @@ public class Chap5Test {
         String tigerCode = "let var N := 8 type intArray = array of int var row := intArray [ N ] of 0 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -172,8 +157,7 @@ public class Chap5Test {
         String tigerCode = "let var N := \"string\" type intArray = array of int var row := intArray [ N ] of 0 in ( row[0] ) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
 
@@ -182,8 +166,7 @@ public class Chap5Test {
         String tigerCode = "let function functionname():string = (1) in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
 
@@ -193,8 +176,7 @@ public class Chap5Test {
         String tigerCode = "let function functionname():int = (1) in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
 
@@ -203,8 +185,7 @@ public class Chap5Test {
         String tigerCode = "let function test(a:string, b:int):int = (1) in (est()) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
 
@@ -213,8 +194,7 @@ public class Chap5Test {
         String tigerCode = "let function test(a:string):int = (1) in (test()) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
  
@@ -223,8 +203,7 @@ public class Chap5Test {
         String tigerCode = "let function test(a:int, b:int):int = (1) in (test(1,2,3)) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
   
@@ -233,8 +212,7 @@ public class Chap5Test {
         String tigerCode = "let function test(a:int, b:int):int = (1) in (test(1)) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
  
@@ -243,8 +221,7 @@ public class Chap5Test {
         String tigerCode = "let function test(a:string, b:int):int = (2) in (test(1, 1)) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
  
@@ -253,8 +230,7 @@ public class Chap5Test {
         String tigerCode = "let function test(a:string, b:int):int = (2) in (test(1, \"string\")) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertTrue(m.hasErrors());
     }
 
@@ -263,8 +239,7 @@ public class Chap5Test {
         String tigerCode = "let function test(a:int, b:string):int = (2) in (test(1, \"string\")) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
  
@@ -273,18 +248,25 @@ public class Chap5Test {
         String tigerCode = "let function test(a: int): int = ( test(a) ) in (test(1)) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
         assertFalse(m.hasErrors());
     }
      
     @Test
     public void call_rec_function() {
-        String tigerCode = "let function test(a: int): int = ( test2(a)) function test2(a: int):int = (test(a))  in (test(1)) end";
+        String tigerCode = "let var a := 5 function f(): int = g(a) function g(i: int) = f() in f() end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.buildAst();
-        m.typeCheck();
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void invalid_field_type() {
+        String tigerCode = "let type = myrec {num:int} in (test(1)) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
         assertFalse(m.hasErrors());
     }
 }
