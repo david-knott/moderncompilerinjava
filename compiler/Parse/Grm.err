@@ -1,8 +1,6 @@
 Opening files...
 Parsing specification from standard input...
 Checking specification...
-Warning: Non terminal "typeId" was declared but never used
-Warning: Non terminal "subscript" was declared but never used
 Warning: Non terminal "fieldExp" was declared but never used
 Building parse tables...
   Computing non-terminal nullability...
@@ -39,12 +37,12 @@ Writing parser...
 ===== Non terminals =====
 [0]$START [1]program [2]exp [3]expList [4]expListAux 
 [5]paramList [6]paramListAux [7]letExp [8]decList [9]dec 
-[10]varDec [11]typeId [12]funcDec [13]tyDec [14]ty 
-[15]arrTy [16]recTy [17]fieldDec [18]fieldDecList [19]fieldDecListAux 
-[20]recCreate [21]assignment [22]fieldCreate [23]fieldCreateList [24]fieldCreateListAux 
-[25]lValue [26]arrCreate [27]subscript [28]fieldExp [29]infixExp 
-[30]seqExp [31]seqExpAux [32]callExp [33]ifThen [34]ifThenElse 
-[35]whileExp [36]forExp [37]negation 
+[10]varDec [11]funcDec [12]tyDec [13]ty [14]arrTy 
+[15]recTy [16]fieldDec [17]fieldDecList [18]fieldDecListAux [19]recCreate 
+[20]assignment [21]fieldCreate [22]fieldCreateList [23]fieldCreateListAux [24]lValue 
+[25]arrCreate [26]fieldExp [27]infixExp [28]seqExp [29]seqExpAux 
+[30]callExp [31]ifThen [32]ifThenElse [33]whileExp [34]forExp 
+[35]negation 
 
 ===== Productions =====
 [0] $START ::= program EOF 
@@ -5839,36 +5837,36 @@ From state #159
 -------- REDUCE_TABLE --------
 From state #0
  [non term 1->state 10] [non term 2->state 7] [non term 7->state 14]
- [non term 20->state 23] [non term 21->state 20] [non term 25->state 3]
- [non term 26->state 19] [non term 29->state 1] [non term 30->state 26]
- [non term 32->state 6] [non term 33->state 24] [non term 34->state 15]
- [non term 35->state 9] [non term 36->state 17] [non term 37->state 4]
+ [non term 19->state 23] [non term 20->state 20] [non term 24->state 3]
+ [non term 25->state 19] [non term 27->state 1] [non term 28->state 26]
+ [non term 30->state 6] [non term 31->state 24] [non term 32->state 15]
+ [non term 33->state 9] [non term 34->state 17] [non term 35->state 4]
 From state #1
 From state #2
 From state #3
 From state #4
 From state #5
- [non term 2->state 150] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 150] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #6
 From state #7
 From state #8
- [non term 2->state 145] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 145] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #9
 From state #10
 From state #11
- [non term 2->state 138] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 138] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #12
 From state #13
 From state #14
@@ -5879,104 +5877,104 @@ From state #18
 From state #19
 From state #20
 From state #21
- [non term 2->state 112] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 112] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #22
  [non term 8->state 58] [non term 9->state 64] [non term 10->state 62]
- [non term 12->state 60] [non term 13->state 61]
+ [non term 11->state 60] [non term 12->state 61]
 From state #23
 From state #24
 From state #25
 From state #26
 From state #27
 From state #28
- [non term 2->state 29] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 29] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #29
 From state #30
- [non term 2->state 57] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 57] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #31
- [non term 2->state 56] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 56] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #32
- [non term 2->state 55] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 55] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #33
- [non term 2->state 54] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 54] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #34
- [non term 2->state 51] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 51] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #35
- [non term 2->state 50] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 50] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #36
- [non term 2->state 49] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 49] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #37
- [non term 2->state 48] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 48] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #38
- [non term 2->state 47] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 47] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #39
- [non term 2->state 46] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 46] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #40
- [non term 2->state 45] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 45] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #41
- [non term 2->state 44] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 44] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #42
- [non term 2->state 43] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 43] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #43
 From state #44
 From state #45
@@ -5987,11 +5985,11 @@ From state #49
 From state #50
 From state #51
 From state #52
- [non term 2->state 53] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 53] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #53
 From state #54
 From state #55
@@ -6005,15 +6003,15 @@ From state #62
 From state #63
 From state #64
  [non term 8->state 86] [non term 9->state 64] [non term 10->state 62]
- [non term 12->state 60] [non term 13->state 61]
+ [non term 11->state 60] [non term 12->state 61]
 From state #65
 From state #66
 From state #67
- [non term 14->state 68] [non term 15->state 71] [non term 16->state 72]
+ [non term 13->state 68] [non term 14->state 71] [non term 15->state 72]
 From state #68
 From state #69
 From state #70
- [non term 17->state 78] [non term 18->state 77]
+ [non term 16->state 78] [non term 17->state 77]
 From state #71
 From state #72
 From state #73
@@ -6022,12 +6020,12 @@ From state #75
 From state #76
 From state #77
 From state #78
- [non term 19->state 80]
+ [non term 18->state 80]
 From state #79
- [non term 17->state 81]
+ [non term 16->state 81]
 From state #80
 From state #81
- [non term 19->state 82]
+ [non term 18->state 82]
 From state #82
 From state #83
 From state #84
@@ -6035,88 +6033,88 @@ From state #85
 From state #86
 From state #87
 From state #88
- [non term 17->state 78] [non term 18->state 89]
+ [non term 16->state 78] [non term 17->state 89]
 From state #89
 From state #90
 From state #91
- [non term 2->state 96] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 96] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #92
 From state #93
 From state #94
- [non term 2->state 95] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 95] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #95
 From state #96
 From state #97
 From state #98
- [non term 14->state 101] [non term 15->state 71] [non term 16->state 72]
+ [non term 13->state 101] [non term 14->state 71] [non term 15->state 72]
 From state #99
- [non term 2->state 100] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 100] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #100
 From state #101
 From state #102
- [non term 2->state 103] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 103] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #103
 From state #104
  [non term 2->state 105] [non term 3->state 106] [non term 7->state 14]
- [non term 20->state 23] [non term 21->state 20] [non term 25->state 3]
- [non term 26->state 19] [non term 29->state 1] [non term 30->state 26]
- [non term 32->state 6] [non term 33->state 24] [non term 34->state 15]
- [non term 35->state 9] [non term 36->state 17] [non term 37->state 4]
+ [non term 19->state 23] [non term 20->state 20] [non term 24->state 3]
+ [non term 25->state 19] [non term 27->state 1] [non term 28->state 26]
+ [non term 30->state 6] [non term 31->state 24] [non term 32->state 15]
+ [non term 33->state 9] [non term 34->state 17] [non term 35->state 4]
 From state #105
  [non term 4->state 108]
 From state #106
 From state #107
 From state #108
 From state #109
- [non term 2->state 110] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 110] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #110
  [non term 4->state 111]
 From state #111
 From state #112
 From state #113
- [non term 22->state 129] [non term 23->state 128]
+ [non term 21->state 129] [non term 22->state 128]
 From state #114
- [non term 2->state 123] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 123] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #115
  [non term 2->state 117] [non term 5->state 116] [non term 7->state 14]
- [non term 20->state 23] [non term 21->state 20] [non term 25->state 3]
- [non term 26->state 19] [non term 29->state 1] [non term 30->state 26]
- [non term 32->state 6] [non term 33->state 24] [non term 34->state 15]
- [non term 35->state 9] [non term 36->state 17] [non term 37->state 4]
+ [non term 19->state 23] [non term 20->state 20] [non term 24->state 3]
+ [non term 25->state 19] [non term 27->state 1] [non term 28->state 26]
+ [non term 30->state 6] [non term 31->state 24] [non term 32->state 15]
+ [non term 33->state 9] [non term 34->state 17] [non term 35->state 4]
 From state #116
 From state #117
  [non term 6->state 118]
 From state #118
 From state #119
- [non term 2->state 120] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 120] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #120
  [non term 6->state 121]
 From state #121
@@ -6124,80 +6122,80 @@ From state #122
 From state #123
 From state #124
 From state #125
- [non term 2->state 126] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 126] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #126
 From state #127
 From state #128
 From state #129
- [non term 24->state 131]
+ [non term 23->state 131]
 From state #130
- [non term 22->state 132]
+ [non term 21->state 132]
 From state #131
 From state #132
- [non term 24->state 133]
+ [non term 23->state 133]
 From state #133
 From state #134
 From state #135
- [non term 2->state 136] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 136] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #136
 From state #137
 From state #138
- [non term 31->state 139]
+ [non term 29->state 139]
 From state #139
 From state #140
- [non term 2->state 141] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 141] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #141
- [non term 31->state 142]
+ [non term 29->state 142]
 From state #142
 From state #143
 From state #144
 From state #145
 From state #146
- [non term 2->state 147] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 147] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #147
 From state #148
- [non term 2->state 149] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 149] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #149
 From state #150
 From state #151
- [non term 2->state 152] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 152] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #152
 From state #153
- [non term 2->state 158] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 158] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #154
- [non term 2->state 157] [non term 7->state 14] [non term 20->state 23]
- [non term 21->state 20] [non term 25->state 3] [non term 26->state 19]
- [non term 29->state 1] [non term 30->state 26] [non term 32->state 6]
- [non term 33->state 24] [non term 34->state 15] [non term 35->state 9]
- [non term 36->state 17] [non term 37->state 4]
+ [non term 2->state 157] [non term 7->state 14] [non term 19->state 23]
+ [non term 20->state 20] [non term 24->state 3] [non term 25->state 19]
+ [non term 27->state 1] [non term 28->state 26] [non term 30->state 6]
+ [non term 31->state 24] [non term 32->state 15] [non term 33->state 9]
+ [non term 34->state 17] [non term 35->state 4]
 From state #155
 From state #156
 From state #157
@@ -6206,11 +6204,11 @@ From state #159
 -----------------------------
 Closing files...
 ------- CUP v0.10k Parser Generation Summary -------
-  0 errors and 5 warnings
-  45 terminals, 38 non-terminals, and 82 productions declared, 
+  0 errors and 3 warnings
+  45 terminals, 36 non-terminals, and 82 productions declared, 
   producing 160 unique parse states.
-  3 terminals declared but not used.
-  0 non-terminals declared but not used.
+  1 terminal declared but not used.
+  0 non-terminal declared but not used.
   0 productions never reduced.
   2 conflicts detected (3 expected).
   Code written to "Grm.java", and "sym.java".

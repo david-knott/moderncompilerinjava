@@ -1,11 +1,8 @@
 package Semant;
 
-import Absyn.AssignExp;
 import Absyn.FieldList;
-import Absyn.ForExp;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
-import Absyn.WhileExp;
 import Symbol.Symbol;
 import Translate.Exp;
 import Translate.ExpTy;
@@ -103,8 +100,6 @@ public class Semant {
      * @return return the looked up nametype
      */
     Types.Type transTy(final Absyn.NameTy t) {
-        if(t == null)
-            return VOID;
         final var cached = fetchTypeAndReport(t.name, t.pos);
         return cached;
     }
@@ -122,6 +117,9 @@ public class Semant {
         throw new Error("Not Implemented " + t.getClass().getName());
     }
 
+    /**
+     * Translate a variable into a expression
+     */
     ExpTy transVar(final Absyn.SimpleVar e) {
         final var x = env.venv.get(e.name);
         if (x instanceof VarEntry) {
@@ -153,7 +151,7 @@ public class Semant {
          * (env.tenv.get(e.field).actual() != varType) { error(e.pos, "Invalid type: " +
          * e.field); }
          */
-        return new ExpTy(null, null);
+        return new ExpTy(null, fieldType);
 
     }
 
@@ -169,7 +167,7 @@ public class Semant {
         final var indexExp = e.index;
         // translate the index expression and check its an INT
         if (transExp(indexExp).ty.actual() != INT) {
-            error(e.pos, "Subscript expression is not of type int: ");
+            error(e.pos, "Subscript expression is not of type int");
         }
         // translate the variable and check its an instance of an ARRAY
         final var translatedArrayVar = transVar(e.var);
@@ -199,7 +197,7 @@ public class Semant {
         throw new Error("Not Implemented " + e.getClass().getName());
     }
 
-    RECORD transTypeFields(final FieldList fields) {
+    private RECORD transTypeFields(final FieldList fields) {
         Types.RECORD head = null;
         Types.RECORD prev = null;
         for (Absyn.FieldList l = fields; l != null; l = l.tail) {
@@ -215,27 +213,15 @@ public class Semant {
     }
 
     /**
-     * 
      * Translate a function declaration into an intermediate expresion:w
      * 
      * @param
      * @return
      */
     Exp transDec(final Absyn.FunctionDec e) {
-        // process the function headers first
-        // e.body - function body , type of this is return type of function ;
-        // e.name - name of function
-        // e.next - related recursive function
-        // e.params - formals for the function
-        // e.result - type of result, may be null
-        // for a function, what should we type check ?
-        // need to record the types of the formals
-        // need to check that the return type matches the
-        // body return type
         FunctionDec current = e;
         do {
-
-            // add function first
+            // add function header first
             env.venv.put(current.name, new FunEntry(transTypeFields(current.params),
                     current.result != null ? transTy(current.result).actual() : Semant.VOID));
             current = current.next;
@@ -244,25 +230,17 @@ public class Semant {
         do {
             env.venv.beginScope();
             for (var p = current.params; p != null; p = p.tail) {
-                // add formals as vars within function scope
+                // add formals as local vars within function scope
                 env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
             final var transBody = transExp(current.body);
-            //transTy returns VOID is param is null
+            // transTy returns VOID is param is null
             if (transBody.ty.actual() != transTy(current.result).actual()) {
                 error(current.pos, "Return type does not match body type");
             }
             env.venv.endScope();
             current = current.next;
         } while (current != null);
-
-        /*
-         * next = e; do { var translatedBody = transExp(next.body);
-         * System.out.println(translatedBody);
-         * 
-         * next = e.next; } while (next != null);
-         */
-
         return null;
     }
 
@@ -296,13 +274,6 @@ public class Semant {
             namedType.bind(mappedType);
             next = e.next;
         } while (next != null);
-        /*
-         * //created a named type for the type definition var namedType = new
-         * Types.NAME(e.name); //stick it into the type env so that its available for
-         * //look ups by the transTy function env.tenv.put(e.name, namedType); var
-         * mappedType = transTy(e.ty); //set the name types actual type to the //type
-         * returned by the the transTy function namedType.bind(mappedType);
-         */
         return null;
     }
 
@@ -426,8 +397,8 @@ public class Semant {
     ExpTy transExp(final Absyn.CallExp callExp) {
         final Entry x = (Entry) (env.venv.get(callExp.func));
         if (x instanceof FunEntry) {
-            // evaluate each expression in arg list and check if
-            // correct type
+            // evaluate each expression in arg
+            // list and check if it is correct type
             final var ent = (FunEntry) x;
             var argExpList = callExp.args;
             for (RECORD argType = ((FunEntry) x).formals; argType != null; argType = argType.tail) {
@@ -495,12 +466,14 @@ public class Semant {
         if (tt == null || !(tt.actual() instanceof Types.ARRAY)) {
             error(arrayExp.pos, "Type not found:" + typeSymbol);
         } else {
-            // check that initialising expression is the same type as the array element type
+            // check that initialising expression is the
+            // same type as the array element type
             if (transExp(initExp).ty != ((Types.ARRAY) tt.actual()).element) {
                 error(arrayExp.pos, "Type mismatch: array init expression is not of type " + tt);
             }
+            return new ExpTy(null, tt.actual());
         }
-        return new ExpTy(null, tt);
+        return new ExpTy(null, VOID);
     }
 
     /**
@@ -508,9 +481,7 @@ public class Semant {
      * record expression contains a symbol for the type and one or more name value
      * pairs that are a symbol and a initialising expression. Type validation checks
      * 1) Check the type is valid 'rectype' 2) Check the fields are the correct type
-     * Notes & Questions 1) Do we need to consider nested record types ? 2) How do
-     * we handle array properties 3) Is the order of the field exp list important ?
-     * 4) Are all fields mandatory ? YES
+     * Notes & Questions 1) Do we need to consider nested record types ?
      * 
      * @param recordExp
      * @return
@@ -539,17 +510,18 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.AssignExp assignExp) {
-
         return new ExpTy(null, Semant.VOID);
     }
 
     ExpTy transExp(final Absyn.ForExp forExp) {
-
         return new ExpTy(null, Semant.VOID);
     }
 
     ExpTy transExp(final Absyn.WhileExp whileExp) {
+        return new ExpTy(null, Semant.VOID);
+    }
 
+    ExpTy transExp(final Absyn.IfExp ifExp) {
         return new ExpTy(null, Semant.VOID);
     }
 
@@ -577,7 +549,7 @@ public class Semant {
         // get transExp of initialising expression
         final var transExp = transExp(initExp);
         // compare type of field with type of expression
-        if (fieldType != transExp.ty) {
+        if (fieldType.actual() != transExp.ty.actual()) {
             error(fel.pos, "Type mismatch: " + fieldType + " != " + transExp.ty);
         }
         // return exp and type
@@ -611,6 +583,12 @@ public class Semant {
             return transExp((Absyn.RecordExp) e);
         else if (e instanceof Absyn.AssignExp)
             return transExp((Absyn.AssignExp) e);
+        else if (e instanceof Absyn.WhileExp)
+            return transExp((Absyn.WhileExp) e);
+        else if (e instanceof Absyn.ForExp)
+            return transExp((Absyn.ForExp) e);
+        else if (e instanceof Absyn.IfExp)
+            return transExp((Absyn.IfExp) e);
         else
             throw new Error("Cannot handle " + e.getClass().getName());
     }

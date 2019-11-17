@@ -1,12 +1,23 @@
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import org.junit.Test;
-import Parse.*;
+
+import Main.Main;
 
 public class Chap3PrecedenceTest {
 
     @Test
-    public void associativeTest() {
-        String filename = "./test/fixtures/associative.tig";
-        new Parse(filename);
+    public void printtest() {
+        String tigerCode = "(1 * 2 * -3;4;10)";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        m.print();
+        assertFalse(m.hasErrors());
     }
 }
