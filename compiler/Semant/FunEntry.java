@@ -1,6 +1,8 @@
 package Semant;
 
 class FunEntry extends Entry {
+    //Translate.Level level;
+    //Temp.Label label;
     Types.RECORD formals;
     Types.Type result;
 
