@@ -18,12 +18,12 @@ public class Print {
   }
 
   void say(int i) {
-    Integer local = new Integer(i);
+    Integer local = i;
     out.print(local.toString());
   }
 
   void say(boolean b) {
-    Boolean local = new Boolean(b);
+    Boolean local = b;
     out.print(local.toString());
   }
 

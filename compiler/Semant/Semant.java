@@ -1,19 +1,22 @@
 package Semant;
 
-import Absyn.BreakExp;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
 import Symbol.Symbol;
+import Temp.Label;
 import Translate.Exp;
 import Translate.ExpTy;
+import Translate.Level;
 import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
+import Util.BoolList;
 
 public class Semant {
     private final Env env;
     private final boolean breakScope;
+    private Level level;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
@@ -43,16 +46,15 @@ public class Semant {
         this(new Env(err));
     }
 
-    Semant(final Env e)  {
-        this(e, false);
+    Semant(final Env e) {
+        this(e, false, new Level(null));
     }
 
-    Semant(final Env e, boolean bs) {
+    Semant(final Env e, boolean bs, Level lev) {
         env = e;
         breakScope = bs;
+        level = lev;
     }
-
-
 
     /**
      * Returns the env, this is used for testing.
@@ -229,20 +231,30 @@ public class Semant {
      */
     Exp transDec(final Absyn.FunctionDec e) {
         FunctionDec current = e;
+        // add function entry to environment tables so it
+        // is available for lookup inside the function body
+        // this is to facilitate recursive function calls
         do {
-            // add function header first
-            env.venv.put(current.name, new FunEntry(transTypeFields(current.params),
-                    current.result != null ? transTy(current.result).actual() : Semant.VOID));
+            //get the functions return type
+            var functionReturnType = current.result != null ? transTy(current.result).actual() : Semant.VOID;
+            // add a new nesting level into the function entry
+            var functionEntry = new FunEntry(new Level(level, e.name, new BoolList(true, null)), new Label(),
+                    transTypeFields(current.params), functionReturnType);
+            //add function entry into the value environment
+            env.venv.put(current.name, functionEntry);
             current = current.next;
         } while (current != null);
         current = e;
         do {
+            // get the new level for this function
+            var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             env.venv.beginScope();
             for (var p = current.params; p != null; p = p.tail) {
                 // add formals as local vars within function scope
                 env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
-            final var transBody = transExp(current.body);
+            // pass new level into new instance of semant and evalute the body
+            final var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
             // transTy returns VOID is param is null
             if (transBody.ty.actual() != transTy(current.result).actual()) {
                 error(current.pos, "Return type does not match body type");
@@ -523,31 +535,28 @@ public class Semant {
     }
 
     /**
-     * Returns a translated for loop.
-     * When evaluating the body of the loop,
-     * a new instance of Semant is created with its break
-     * scope variable set to true. This indicates that
-     * break statements are legal inside this expression
+     * Returns a translated for loop. When evaluating the body of the loop, a new
+     * instance of Semant is created with its break scope variable set to true. This
+     * indicates that break statements are legal inside this expression
      * 
      * @param forExp
      * @return
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
-        var transBody = new Semant(env, true).transExp(forExp.body);
+        var transBody = new Semant(env, true, level).transExp(forExp.body);
         return new ExpTy(null, Semant.VOID);
     }
 
     /**
-     * Returns a translated while loop.
-     * When evaluating the body of the loop,
-     * a new instance of Semant is created with its break
-     * scope variable set to true. This indicates that
-     * break statements are legal inside this expression
+     * Returns a translated while loop. When evaluating the body of the loop, a new
+     * instance of Semant is created with its break scope variable set to true. This
+     * indicates that break statements are legal inside this expression
+     * 
      * @param whileExp
      * @return
      */
     ExpTy transExp(final Absyn.WhileExp whileExp) {
-        var transBody = new Semant(env, true).transExp(whileExp.body);
+        var transBody = new Semant(env, true, level).transExp(whileExp.body);
         return new ExpTy(null, Semant.VOID);
     }
 
@@ -556,20 +565,18 @@ public class Semant {
     }
 
     /**
-     * Returns a translated break expression.
-     * This expression must be nested within a while or 
-     * for loop
+     * Returns a translated break expression. This expression must be nested within
+     * a while or for loop
+     * 
      * @param breakExp
      * @return
      */
     ExpTy transExp(final Absyn.BreakExp breakExp) {
-        if(!breakScope){
+        if (!breakScope) {
             error(breakExp.pos, "break must be inside a while or for loop");
         }
         return new ExpTy(null, Semant.VOID);
     }
-
-
 
     /**
      * Translates a fieldExpList to its tiger type A fieldExpList is of form
