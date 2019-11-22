@@ -1,5 +1,6 @@
 package Semant;
 
+import Absyn.BreakExp;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
@@ -12,6 +13,7 @@ import Types.RECORD;
 
 public class Semant {
     private final Env env;
+    private final boolean breakScope;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
@@ -41,9 +43,16 @@ public class Semant {
         this(new Env(err));
     }
 
-    Semant(final Env e) {
-        env = e;
+    Semant(final Env e)  {
+        this(e, false);
     }
+
+    Semant(final Env e, boolean bs) {
+        env = e;
+        breakScope = bs;
+    }
+
+
 
     /**
      * Returns the env, this is used for testing.
@@ -513,17 +522,54 @@ public class Semant {
         return new ExpTy(null, Semant.VOID);
     }
 
+    /**
+     * Returns a translated for loop.
+     * When evaluating the body of the loop,
+     * a new instance of Semant is created with its break
+     * scope variable set to true. This indicates that
+     * break statements are legal inside this expression
+     * 
+     * @param forExp
+     * @return
+     */
     ExpTy transExp(final Absyn.ForExp forExp) {
+        var transBody = new Semant(env, true).transExp(forExp.body);
         return new ExpTy(null, Semant.VOID);
     }
 
+    /**
+     * Returns a translated while loop.
+     * When evaluating the body of the loop,
+     * a new instance of Semant is created with its break
+     * scope variable set to true. This indicates that
+     * break statements are legal inside this expression
+     * @param whileExp
+     * @return
+     */
     ExpTy transExp(final Absyn.WhileExp whileExp) {
+        var transBody = new Semant(env, true).transExp(whileExp.body);
         return new ExpTy(null, Semant.VOID);
     }
 
     ExpTy transExp(final Absyn.IfExp ifExp) {
         return new ExpTy(null, Semant.VOID);
     }
+
+    /**
+     * Returns a translated break expression.
+     * This expression must be nested within a while or 
+     * for loop
+     * @param breakExp
+     * @return
+     */
+    ExpTy transExp(final Absyn.BreakExp breakExp) {
+        if(!breakScope){
+            error(breakExp.pos, "break must be inside a while or for loop");
+        }
+        return new ExpTy(null, Semant.VOID);
+    }
+
+
 
     /**
      * Translates a fieldExpList to its tiger type A fieldExpList is of form
@@ -589,6 +635,9 @@ public class Semant {
             return transExp((Absyn.ForExp) e);
         else if (e instanceof Absyn.IfExp)
             return transExp((Absyn.IfExp) e);
+        else if (e instanceof Absyn.BreakExp)
+            return transExp((Absyn.BreakExp) e);
+
         else
             throw new Error("Cannot handle " + e.getClass().getName());
     }

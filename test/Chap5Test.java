@@ -285,4 +285,53 @@ public class Chap5Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void break_illegal_position() {
+        String tigerCode = "let var a:int := 1 in a := a + 1;break end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertTrue(m.hasErrors());
+    }
+
+    @Test
+    public void for_loop() {
+        String tigerCode = "let var a:int := 1 in (for j := 0 to 10 do a := a + 1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void for_loop_with_break() {
+        String tigerCode = "let var a:int := 1 in (for j := 0 to 10 do break) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+    @Test
+    public void while_loop() {
+        String tigerCode = "let var a:int := 1 in ( while a < 10 do a := a + 1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void while_loop_with_break() {
+        String tigerCode = "let var a:int := 1 in ( while a < 10 do ( a := a + 1; break ) ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+
 }
