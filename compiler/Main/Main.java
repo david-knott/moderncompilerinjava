@@ -55,6 +55,10 @@ public class Main {
         this.semant = new Semant(errorMsg);
     }
 
+    public ErrorMsg getErrorMsg(){
+        return this.errorMsg;
+    }
+
     /**
      * Returns the symbol table for types. Used for testing
      */

@@ -4,6 +4,9 @@ import Absyn.BreakExp;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
+import ErrorMsg.BreakNestingError;
+import ErrorMsg.TypeMismatchError;
+import ErrorMsg.UndefinedVariableError;
 import Symbol.Symbol;
 import Translate.Exp;
 import Translate.ExpTy;
@@ -43,7 +46,7 @@ public class Semant {
         this(new Env(err));
     }
 
-    Semant(final Env e)  {
+    Semant(final Env e) {
         this(e, false);
     }
 
@@ -51,8 +54,6 @@ public class Semant {
         env = e;
         breakScope = bs;
     }
-
-
 
     /**
      * Returns the env, this is used for testing.
@@ -135,7 +136,7 @@ public class Semant {
             final VarEntry ent = (VarEntry) x;
             return new ExpTy(null, ent.ty);
         } else {
-            error(e.pos, "Undefined variable: " + e.name);
+            env.errorMsg.add(new UndefinedVariableError(e.pos, e.name));
             return new ExpTy(null, INT);
         }
     }
@@ -152,14 +153,6 @@ public class Semant {
     ExpTy transVar(final Absyn.FieldVar e) {
         var varType = transVar(e.var).ty.actual();
         var fieldType = env.tenv.get(e.field);
-
-        /*
-         * if (fieldType == null) { error(e.pos, "Undefined field type: " + e.field);
-         * return new ExpTy(null, null); } if(varType == null){ error(e.pos,
-         * "Undefined variable: " + e.var); return new ExpTy(null, null); } if
-         * (env.tenv.get(e.field).actual() != varType) { error(e.pos, "Invalid type: " +
-         * e.field); }
-         */
         return new ExpTy(null, fieldType);
 
     }
@@ -174,15 +167,16 @@ public class Semant {
      */
     ExpTy transVar(final Absyn.SubscriptVar e) {
         final var indexExp = e.index;
+        final var transIndexExp = transExp(indexExp);
         // translate the index expression and check its an INT
-        if (transExp(indexExp).ty.actual() != INT) {
-            error(e.pos, "Subscript expression is not of type int");
+        if (transIndexExp.ty.actual() != INT) {
+            env.errorMsg.add(new TypeMismatchError(e.pos, transIndexExp.ty.actual()));
         }
         // translate the variable and check its an instance of an ARRAY
         final var translatedArrayVar = transVar(e.var);
         final Types.Type elementType = translatedArrayVar.ty.actual();
-        if (!(elementType instanceof ARRAY)) {
-            error(e.pos, "Type of variable is not an array");
+        if (!(elementType.actual() instanceof ARRAY)) {
+            env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
         }
         return new ExpTy(null, elementType);
     }
@@ -238,13 +232,13 @@ public class Semant {
         current = e;
         do {
             env.venv.beginScope();
+            var vent = (FunEntry) env.venv.get(current.name);
             for (var p = current.params; p != null; p = p.tail) {
                 // add formals as local vars within function scope
                 env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
             final var transBody = transExp(current.body);
-            // transTy returns VOID is param is null
-            if (transBody.ty.actual() != transTy(current.result).actual()) {
+            if (transBody.ty.actual() != vent.result.actual()) {
                 error(current.pos, "Return type does not match body type");
             }
             env.venv.endScope();
@@ -326,6 +320,12 @@ public class Semant {
             throw new Error("Not Implemented " + e.getClass().getName());
     }
 
+    /**
+     * Translate a var expressions into ir code
+     * 
+     * @param e
+     * @return
+     */
     ExpTy transExp(final Absyn.VarExp e) {
         final var transVar = transVar(e.var);
         return new ExpTy(null, transVar.ty);
@@ -468,7 +468,7 @@ public class Semant {
         // check that the type of size is an int
         final var tSizeTy = transExp(sizeExp).ty;
         if (tSizeTy != INT) {
-            error(arrayExp.pos, "Type mismatch: array size expression is not an int " + tSizeTy);
+            env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tSizeTy, Semant.INT));
         }
         // Get type of expression, it should be an array and not null
         final var tt = (Types.Type) env.tenv.get(typeSymbol);
@@ -519,36 +519,45 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.AssignExp assignExp) {
+        var transVar = transVar(assignExp.var);
+        var transExp = transExp(assignExp.exp);
+        if (transVar.ty.actual() != transExp.ty.actual()) {
+            env.errorMsg.add(new TypeMismatchError(assignExp.pos, transVar.ty.actual(), transExp.ty.actual()));
+        }
         return new ExpTy(null, Semant.VOID);
     }
 
     /**
-     * Returns a translated for loop.
-     * When evaluating the body of the loop,
-     * a new instance of Semant is created with its break
-     * scope variable set to true. This indicates that
-     * break statements are legal inside this expression
+     * Returns a translated for loop. When evaluating the body of the loop, a new
+     * instance of Semant is created with its break scope variable set to true. This
+     * indicates that break statements are legal inside this expression
      * 
      * @param forExp
      * @return
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
         var transBody = new Semant(env, true).transExp(forExp.body);
+        if (transBody.ty.actual() != Semant.VOID) {
+            env.errorMsg.add(new TypeMismatchError(forExp.pos, transBody.ty.actual(), Semant.VOID));
+        }
         return new ExpTy(null, Semant.VOID);
     }
 
     /**
-     * Returns a translated while loop.
-     * When evaluating the body of the loop,
-     * a new instance of Semant is created with its break
-     * scope variable set to true. This indicates that
-     * break statements are legal inside this expression
+     * Returns a translated while loop. When evaluating the body of the loop, a new
+     * instance of Semant is created with its break scope variable set to true. This
+     * indicates that break statements are legal inside this expression
+     * 
      * @param whileExp
      * @return
      */
     ExpTy transExp(final Absyn.WhileExp whileExp) {
         var transBody = new Semant(env, true).transExp(whileExp.body);
+        if (transBody.ty.actual() != Semant.VOID) {
+            env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
+        }
         return new ExpTy(null, Semant.VOID);
+
     }
 
     ExpTy transExp(final Absyn.IfExp ifExp) {
@@ -556,20 +565,18 @@ public class Semant {
     }
 
     /**
-     * Returns a translated break expression.
-     * This expression must be nested within a while or 
-     * for loop
+     * Returns a translated break expression. This expression must be nested within
+     * a while or for loop
+     * 
      * @param breakExp
      * @return
      */
     ExpTy transExp(final Absyn.BreakExp breakExp) {
-        if(!breakScope){
-            error(breakExp.pos, "break must be inside a while or for loop");
+        if (!breakScope) {
+            env.errorMsg.add(new BreakNestingError(breakExp.pos));
         }
         return new ExpTy(null, Semant.VOID);
     }
-
-
 
     /**
      * Translates a fieldExpList to its tiger type A fieldExpList is of form

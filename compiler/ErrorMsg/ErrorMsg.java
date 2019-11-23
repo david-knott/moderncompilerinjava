@@ -8,15 +8,25 @@ public class ErrorMsg {
     private String filename;
     public boolean anyErrors;
     public List<String> errors;
+    public List<CompilerError> compilerErrors;
 
     public ErrorMsg(String f) {
         filename = f;
         errors = new ArrayList<String>();
+        compilerErrors = new ArrayList<CompilerError>();
     }
 
     public void newline(int pos) {
         lineNum++;
         linePos = new LineList(pos, linePos);
+    }
+
+    public void add(CompilerError compilerError){
+        compilerErrors.add(compilerError);
+    }
+
+    public List<CompilerError> getCompilerErrors(){
+        return compilerErrors;
     }
 
     public void error(int pos, String msg) {
