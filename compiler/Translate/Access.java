@@ -3,9 +3,9 @@ package Translate;
 public class Access {
     Level home;
     Frame.Access acc;
-    Access(Level l, Frame.Access a){
+
+    Access(Level l, Frame.Access a) {
         home = l;
         acc = a;
     }
-
 }
