@@ -4,8 +4,10 @@ import Absyn.BreakExp;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
+import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
 import ErrorMsg.FieldNotDefinedError;
+import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
 import ErrorMsg.UndefinedVariableError;
 import Symbol.Symbol;
@@ -269,8 +271,7 @@ public class Semant {
         // if the expression type is not null
         if (e.typ != null) {
             if (otherType != type) {
-                error(e.pos, "Types do not match, type of (" + e + " translates to " + otherType
-                        + " is not of declared type " + type + ")");
+                env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
             }
         }
         //check that any variable that is assigned to nil is a record type
@@ -387,14 +388,15 @@ public class Semant {
             // list and check if it is correct type
             final var ent = (FunEntry) x;
             var argExpList = callExp.args;
-            for (RECORD argType = ((FunEntry) x).formals; argType != null; argType = argType.tail) {
+            for (RECORD fmlType = ((FunEntry) x).formals; fmlType != null; fmlType = fmlType.tail) {
                 if (argExpList == null) {
                     error(callExp.pos, "Supplied argument list is too short");
                     break;
                 }
                 final var transArg = transExp(argExpList.head);
-                if (transArg.ty.actual() != argType.fieldType.actual()) {
-                    error(callExp.pos, "Incorrect type in function ");
+                if (transArg.ty.actual() != fmlType.fieldType.actual()) {
+                    //error(callExp.pos, "Incorrect type in function ");
+                    env.errorMsg.add(new ArgumentMismatchError(callExp.pos, fmlType.fieldType.actual() , transArg.ty.actual()));
                 }
                 argExpList = argExpList.tail;
             }
@@ -403,7 +405,7 @@ public class Semant {
             }
             return new ExpTy(null, ent.result);
         } else {
-            error(callExp.pos, "Undefined function: " + callExp.func);
+            env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
             return new ExpTy(null, INT);
         }
     }

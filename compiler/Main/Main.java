@@ -55,7 +55,7 @@ public class Main {
         this.semant = new Semant(errorMsg);
     }
 
-    public ErrorMsg getErrorMsg(){
+    public ErrorMsg getErrorMsg() {
         return this.errorMsg;
     }
 
@@ -73,7 +73,7 @@ public class Main {
     }
 
     public boolean hasErrors() {
-        return this.errorMsg.anyErrors;
+        return this.errorMsg.getCompilerErrors().size() != 0;
     }
 
     public void print() {

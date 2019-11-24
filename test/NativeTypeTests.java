@@ -11,8 +11,10 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.ErrorMsg;
 import ErrorMsg.FieldNotDefinedError;
+import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
 import ErrorMsg.UndefinedVariableError;
 import Main.Main;
@@ -22,7 +24,7 @@ import Semant.Semant;
  * A set of tests that ensure the type checking rules have been implemented
  * correctly
  */
-public class TypeTests {
+public class NativeTypeTests {
 
     @Test
     public void fundec_void_return() {
@@ -66,7 +68,7 @@ public class TypeTests {
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
-        assertTrue(m.hasErrors());
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
@@ -78,8 +80,8 @@ public class TypeTests {
         assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof UndefinedVariableError);
-            if(a instanceof UndefinedVariableError){
-                assertEquals("b", ((UndefinedVariableError)a).getSymbol().toString());
+            if (a instanceof UndefinedVariableError) {
+                assertEquals("b", ((UndefinedVariableError) a).getSymbol().toString());
             }
         });
     }
@@ -93,9 +95,9 @@ public class TypeTests {
         assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof TypeMismatchError);
-            if(a instanceof TypeMismatchError){
-                assertEquals(Semant.INT, ((TypeMismatchError)a).getLeft());
-                assertEquals(Semant.STRING, ((TypeMismatchError)a).getRight());
+            if (a instanceof TypeMismatchError) {
+                assertEquals(Semant.INT, ((TypeMismatchError) a).getLeft());
+                assertEquals(Semant.STRING, ((TypeMismatchError) a).getRight());
             }
         });
     }
@@ -118,9 +120,9 @@ public class TypeTests {
         assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof TypeMismatchError);
-            if(a instanceof TypeMismatchError){
-                assertEquals(Semant.STRING, ((TypeMismatchError)a).getLeft());
-                assertEquals(Semant.INT, ((TypeMismatchError)a).getRight());
+            if (a instanceof TypeMismatchError) {
+                assertEquals(Semant.STRING, ((TypeMismatchError) a).getLeft());
+                assertEquals(Semant.INT, ((TypeMismatchError) a).getRight());
             }
         });
     }
@@ -134,8 +136,8 @@ public class TypeTests {
         assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof TypeMismatchError);
-            if(a instanceof TypeMismatchError){
-                assertEquals(Semant.STRING, ((TypeMismatchError)a).getLeft());
+            if (a instanceof TypeMismatchError) {
+                assertEquals(Semant.STRING, ((TypeMismatchError) a).getLeft());
             }
         });
     }
@@ -149,8 +151,8 @@ public class TypeTests {
         assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof TypeMismatchError);
-            if(a instanceof TypeMismatchError){
-                assertEquals(Semant.INT, ((TypeMismatchError)a).getLeft());
+            if (a instanceof TypeMismatchError) {
+                assertEquals(Semant.INT, ((TypeMismatchError) a).getLeft());
             }
         });
     }
@@ -197,57 +199,135 @@ public class TypeTests {
 
     @Test
     public void exp_int_has_type_int() {
-
+        String tigerCode = "let var a:int := \"s\" in a end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.INT);
+            assertEquals(a.getRight(), Semant.STRING);
+        });
     }
 
     @Test
     public void exp_string_has_type_string() {
-
+        String tigerCode = "let var a:string:= 1 in a end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.STRING);
+            assertEquals(a.getRight(), Semant.INT);
+        });
     }
 
     @Test
     public void exp_seq_empty_type_is_void() {
-
+        String tigerCode = "let var a:= () var b:int := 1 in (b := a) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.INT);
+            assertEquals(a.getRight(), Semant.VOID);
+        });
     }
 
     @Test
     public void exp_seq_not_empty_type_is_last_exp_type() {
-
+        String tigerCode = "let var a:= (1;2;\"string\") var b:int := 1 in (b := a) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.INT);
+            assertEquals(a.getRight(), Semant.STRING);
+        });
     }
 
     @Test
     public void exp_neg_operand_and_result_are_int() {
-
+        String tigerCode = "let var a:= 1 var b:= \"string\" in (b := -a) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.STRING);
+            assertEquals(a.getRight(), Semant.INT);
+        });
     }
 
     @Test
     public void exp_call_identifier_is_function() {
-
+        String tigerCode = "let in a() end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractFunctionNotDefinedError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getName().toString(), "a");
+        });
     }
 
     @Test
     public void exp_call_actual_and_formals_match() {
+        String tigerCode = "let function a(a:int, b:string):string = (a; b) in a(1, 2) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractArgumentMismatchErrors(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getArgument(), Semant.INT);
+            assertEquals(a.getFormal(), Semant.STRING);
+        });
 
     }
 
     @Test
     public void exp_call_type_matches_function_type() {
-
+        String tigerCode = "let function a(a:int, b:int):int= (a; b) var res:string:= \"\" in res := a(1, 2) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.STRING);
+            assertEquals(a.getRight(), Semant.INT);
+        });
     }
 
-    private static List<TypeMismatchError> extractTypeMismatchError(ErrorMsg errorMsg){
-        return errorMsg.getCompilerErrors().stream()
-                .filter(x -> x instanceof TypeMismatchError).map(m -> (TypeMismatchError) m)
-                .collect(Collectors.toList());
+    private static List<TypeMismatchError> extractTypeMismatchError(ErrorMsg errorMsg) {
+        return errorMsg.getCompilerErrors().stream().filter(x -> x instanceof TypeMismatchError)
+                .map(m -> (TypeMismatchError) m).collect(Collectors.toList());
     }
 
-    private static List<FieldNotDefinedError> extractFieldNotDefinedError(ErrorMsg errorMsg){
-        return errorMsg.getCompilerErrors().stream()
-                .filter(x -> x instanceof FieldNotDefinedError).map(m -> (FieldNotDefinedError) m)
-                .collect(Collectors.toList());
+    private static List<FieldNotDefinedError> extractFieldNotDefinedError(ErrorMsg errorMsg) {
+        return errorMsg.getCompilerErrors().stream().filter(x -> x instanceof FieldNotDefinedError)
+                .map(m -> (FieldNotDefinedError) m).collect(Collectors.toList());
     }
 
+    private static List<FunctionNotDefinedError> extractFunctionNotDefinedError(ErrorMsg errorMsg) {
+        return errorMsg.getCompilerErrors().stream().filter(x -> x instanceof FunctionNotDefinedError)
+                .map(m -> (FunctionNotDefinedError) m).collect(Collectors.toList());
+    }
 
+private static List<ArgumentMismatchError> extractArgumentMismatchErrors(ErrorMsg errorMsg) {
+        return errorMsg.getCompilerErrors().stream().filter(x -> x instanceof ArgumentMismatchError)
+                .map(m -> (ArgumentMismatchError) m).collect(Collectors.toList());
+    }
 
 
 }
