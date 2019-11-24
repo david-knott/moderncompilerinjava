@@ -1,6 +1,5 @@
 package Semant;
 
-import Absyn.BreakExp;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
@@ -483,7 +482,7 @@ public class Semant {
         // Loop through fieldExpLists rec{field1=value, field2=value2.....}
         var temp = (RECORD) tigerType.actual();
         for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
-            // translate the field expression, and do what with it ?
+            // TODO: translate the field expression, and do what with it ?
             final var fieldExpTy = transExp(fel, temp);
             // advance to next tiger type
             temp = temp.tail;
