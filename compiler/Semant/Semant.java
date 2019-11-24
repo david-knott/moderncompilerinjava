@@ -8,6 +8,7 @@ import ErrorMsg.BreakNestingError;
 import ErrorMsg.FieldNotDefinedError;
 import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
+import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
 import Symbol.Symbol;
 import Translate.Exp;
@@ -477,7 +478,7 @@ public class Semant {
         final var expressionTypeSymbol = recordExp.typ;
         final var tigerType = (Types.Type) env.tenv.get(expressionTypeSymbol);
         if (tigerType == null) {
-            error(recordExp.pos, "Unknown type " + expressionTypeSymbol);
+            env.errorMsg.add(new UndefinedTypeError(recordExp.pos, tigerType));
         }
         // Loop through fieldExpLists rec{field1=value, field2=value2.....}
         var temp = (RECORD) tigerType.actual();
