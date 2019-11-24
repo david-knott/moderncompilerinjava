@@ -3,6 +3,12 @@ package Semant;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
+import ErrorMsg.ArgumentMismatchError;
+import ErrorMsg.BreakNestingError;
+import ErrorMsg.FieldNotDefinedError;
+import ErrorMsg.FunctionNotDefinedError;
+import ErrorMsg.TypeMismatchError;
+import ErrorMsg.UndefinedVariableError;
 import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
@@ -21,26 +27,6 @@ public class Semant {
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
     public static final Types.Type NIL = new Types.NIL();
-
-    private void error(final int pos, final String message) {
-        env.errorMsg.error(pos, message);
-    }
-
-    private Types.Type fetchTypeAndReport(final Symbol sym, final int pos) {
-        final Types.Type cached = (Types.Type) env.tenv.get(sym);
-        if (cached == null) {
-            error(pos, "No type found for symbol:" + sym);
-            return null;
-        }
-        return cached;
-    }
-
-    private Exp checkInt(final ExpTy et, final int pos) {
-        if (!(et.ty.actual() instanceof Types.INT)) {
-            error(pos, "Integer required");
-        }
-        return et.exp;
-    }
 
     public Semant(final ErrorMsg.ErrorMsg err) {
         this(new Env(err));
@@ -137,7 +123,7 @@ public class Semant {
             final VarEntry ent = (VarEntry) x;
             return new ExpTy(null, ent.ty);
         } else {
-            error(e.pos, "Undefined variable: " + e.name);
+            env.errorMsg.add(new UndefinedVariableError(e.pos, e.name));
             return new ExpTy(null, INT);
         }
     }
@@ -153,17 +139,16 @@ public class Semant {
      */
     ExpTy transVar(final Absyn.FieldVar e) {
         var varType = transVar(e.var).ty.actual();
-        var fieldType = env.tenv.get(e.field);
-
-        /*
-         * if (fieldType == null) { error(e.pos, "Undefined field type: " + e.field);
-         * return new ExpTy(null, null); } if(varType == null){ error(e.pos,
-         * "Undefined variable: " + e.var); return new ExpTy(null, null); } if
-         * (env.tenv.get(e.field).actual() != varType) { error(e.pos, "Invalid type: " +
-         * e.field); }
-         */
-        return new ExpTy(null, fieldType);
-
+        if (!(varType.actual() instanceof RECORD)) {
+            env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
+        }
+        for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
+            if (r.fieldName == e.field) {
+                return new ExpTy(null, r.fieldType.actual());
+            }
+        }
+        env.errorMsg.add(new FieldNotDefinedError(e.pos, e.field));
+        return new ExpTy(null, INT);
     }
 
     /**
@@ -176,15 +161,16 @@ public class Semant {
      */
     ExpTy transVar(final Absyn.SubscriptVar e) {
         final var indexExp = e.index;
+        final var transIndexExp = transExp(indexExp);
         // translate the index expression and check its an INT
-        if (transExp(indexExp).ty.actual() != INT) {
-            error(e.pos, "Subscript expression is not of type int");
+        if (transIndexExp.ty.actual() != INT) {
+            env.errorMsg.add(new TypeMismatchError(e.pos, transIndexExp.ty.actual()));
         }
         // translate the variable and check its an instance of an ARRAY
         final var translatedArrayVar = transVar(e.var);
         final Types.Type elementType = translatedArrayVar.ty.actual();
-        if (!(elementType instanceof ARRAY)) {
-            error(e.pos, "Type of variable is not an array");
+        if (!(elementType.actual() instanceof ARRAY)) {
+            env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
         }
         return new ExpTy(null, elementType);
     }
@@ -206,21 +192,6 @@ public class Semant {
             return transVar((Absyn.SubscriptVar) e);
         }
         throw new Error("Not Implemented " + e.getClass().getName());
-    }
-
-    private RECORD transTypeFields(final FieldList fields) {
-        Types.RECORD head = null;
-        Types.RECORD prev = null;
-        for (Absyn.FieldList l = fields; l != null; l = l.tail) {
-            final var cached = fetchTypeAndReport(l.typ, l.pos);
-            final Types.RECORD current = new Types.RECORD(l.name, cached, null);
-            if (head == null)
-                head = current;
-            else
-                prev.tail = current; // insert the current item at the end of the previous
-            prev = current;
-        }
-        return head;
     }
 
     /**
@@ -249,14 +220,13 @@ public class Semant {
             // get the new level for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             env.venv.beginScope();
+            var vent = (FunEntry) env.venv.get(current.name);
             for (var p = current.params; p != null; p = p.tail) {
                 // add formals as local vars within function scope
                 env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
-            // pass new level into new instance of semant and evalute the body
             final var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
-            // transTy returns VOID is param is null
-            if (transBody.ty.actual() != transTy(current.result).actual()) {
+            if (transBody.ty.actual() != vent.result.actual()) {
                 error(current.pos, "Return type does not match body type");
             }
             env.venv.endScope();
@@ -310,13 +280,16 @@ public class Semant {
         final ExpTy initExpTy = transExp(e.init);
         // get the expression type
         final Types.Type type = initExpTy.ty.actual();
+        final Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
         // if the expression type is not null
         if (e.typ != null) {
-            final Types.Type otherType = transTy(e.typ).actual();
             if (otherType != type) {
-                error(e.pos, "Types do not match, type of (" + e + " translates to " + otherType
-                        + " is not of declared type " + type + ")");
+                env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
             }
+        }
+        //check that any variable that is assigned to nil is a record type
+        if(initExpTy.ty.actual() == NIL && !(otherType.actual() instanceof RECORD)){
+            env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
         }
         // add variable value mapping
         env.venv.put(e.name, new VarEntry(type));
@@ -338,6 +311,12 @@ public class Semant {
             throw new Error("Not Implemented " + e.getClass().getName());
     }
 
+    /**
+     * Translate a var expressions into ir code
+     * 
+     * @param e
+     * @return
+     */
     ExpTy transExp(final Absyn.VarExp e) {
         final var transVar = transVar(e.var);
         return new ExpTy(null, transVar.ty);
@@ -422,14 +401,15 @@ public class Semant {
             // list and check if it is correct type
             final var ent = (FunEntry) x;
             var argExpList = callExp.args;
-            for (RECORD argType = ((FunEntry) x).formals; argType != null; argType = argType.tail) {
+            for (RECORD fmlType = ((FunEntry) x).formals; fmlType != null; fmlType = fmlType.tail) {
                 if (argExpList == null) {
                     error(callExp.pos, "Supplied argument list is too short");
                     break;
                 }
                 final var transArg = transExp(argExpList.head);
-                if (transArg.ty.actual() != argType.fieldType.actual()) {
-                    error(callExp.pos, "Incorrect type in function ");
+                if (transArg.ty.actual() != fmlType.fieldType.actual()) {
+                    //error(callExp.pos, "Incorrect type in function ");
+                    env.errorMsg.add(new ArgumentMismatchError(callExp.pos, fmlType.fieldType.actual() , transArg.ty.actual()));
                 }
                 argExpList = argExpList.tail;
             }
@@ -438,7 +418,7 @@ public class Semant {
             }
             return new ExpTy(null, ent.result);
         } else {
-            error(callExp.pos, "Undefined function: " + callExp.func);
+            env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
             return new ExpTy(null, INT);
         }
     }
@@ -480,7 +460,7 @@ public class Semant {
         // check that the type of size is an int
         final var tSizeTy = transExp(sizeExp).ty;
         if (tSizeTy != INT) {
-            error(arrayExp.pos, "Type mismatch: array size expression is not an int " + tSizeTy);
+            env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tSizeTy, Semant.INT));
         }
         // Get type of expression, it should be an array and not null
         final var tt = (Types.Type) env.tenv.get(typeSymbol);
@@ -516,7 +496,7 @@ public class Semant {
         // Loop through fieldExpLists rec{field1=value, field2=value2.....}
         var temp = (RECORD) tigerType.actual();
         for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
-            // translate the field expression, and do what with it ?
+            // TODO: translate the field expression, and do what with it ?
             final var fieldExpTy = transExp(fel, temp);
             // advance to next tiger type
             temp = temp.tail;
@@ -531,6 +511,11 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.AssignExp assignExp) {
+        var transVar = transVar(assignExp.var); //left value
+        var transExp = transExp(assignExp.exp); //right value
+        if (transVar.ty.actual() != transExp.ty.actual()) {
+            env.errorMsg.add(new TypeMismatchError(assignExp.pos, transVar.ty.actual(), transExp.ty.actual()));
+        }
         return new ExpTy(null, Semant.VOID);
     }
 
@@ -544,6 +529,9 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
         var transBody = new Semant(env, true, level).transExp(forExp.body);
+        if (transBody.ty.actual() != Semant.VOID) {
+            env.errorMsg.add(new TypeMismatchError(forExp.pos, transBody.ty.actual(), Semant.VOID));
+        }
         return new ExpTy(null, Semant.VOID);
     }
 
@@ -557,7 +545,11 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.WhileExp whileExp) {
         var transBody = new Semant(env, true, level).transExp(whileExp.body);
+        if (transBody.ty.actual() != Semant.VOID) {
+            env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
+        }
         return new ExpTy(null, Semant.VOID);
+
     }
 
     ExpTy transExp(final Absyn.IfExp ifExp) {
@@ -573,7 +565,7 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.BreakExp breakExp) {
         if (!breakScope) {
-            error(breakExp.pos, "break must be inside a while or for loop");
+            env.errorMsg.add(new BreakNestingError(breakExp.pos));
         }
         return new ExpTy(null, Semant.VOID);
     }
@@ -644,8 +636,47 @@ public class Semant {
             return transExp((Absyn.IfExp) e);
         else if (e instanceof Absyn.BreakExp)
             return transExp((Absyn.BreakExp) e);
+        else if (e instanceof Absyn.NilExp)
+            return transExp((Absyn.NilExp) e);
+
 
         else
             throw new Error("Cannot handle " + e.getClass().getName());
     }
+
+    private RECORD transTypeFields(final FieldList fields) {
+        Types.RECORD head = null;
+        Types.RECORD prev = null;
+        for (Absyn.FieldList l = fields; l != null; l = l.tail) {
+            final var cached = fetchTypeAndReport(l.typ, l.pos);
+            final Types.RECORD current = new Types.RECORD(l.name, cached, null);
+            if (head == null)
+                head = current;
+            else
+                prev.tail = current; // insert the current item at the end of the previous
+            prev = current;
+        }
+        return head;
+    }
+
+    private void error(final int pos, final String message) {
+        env.errorMsg.error(pos, message);
+    }
+
+    private Types.Type fetchTypeAndReport(final Symbol sym, final int pos) {
+        final Types.Type cached = (Types.Type) env.tenv.get(sym);
+        if (cached == null) {
+            error(pos, "No type found for symbol:" + sym);
+            return null;
+        }
+        return cached;
+    }
+
+    private Exp checkInt(final ExpTy et, final int pos) {
+        if (!(et.ty.actual() instanceof Types.INT)) {
+            error(pos, "Integer required");
+        }
+        return et.exp;
+    }
+
 }

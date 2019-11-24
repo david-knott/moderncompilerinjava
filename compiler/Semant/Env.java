@@ -2,7 +2,6 @@ package Semant;
 
 import Types.RECORD;
 import Types.Type;
-import Util.BoolList;
 import Symbol.GenericTable;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
@@ -20,10 +19,9 @@ public class Env {
         outerMost = new Level(null);
         // initialize function values
         venv = new GenericTable<Entry>();
-
         venv.put(Symbol.symbol("print"),
-                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("s"), Semant.STRING, null), null));
-        venv.put(Symbol.symbol("flush"), new FunEntry(outerMost, new Label(), null, null));
+                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.VOID));
+        venv.put(Symbol.symbol("flush"), new FunEntry(outerMost, new Label(), null, Semant.VOID));
         venv.put(Symbol.symbol("getchar"), new FunEntry(outerMost, new Label(), null, Semant.STRING));
         venv.put(Symbol.symbol("ord"), new FunEntry(outerMost, new Label(),
                 new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.STRING));
@@ -39,7 +37,7 @@ public class Env {
         venv.put(Symbol.symbol("not"),
                 new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.INT));
         venv.put(Symbol.symbol("exit"),
-                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("i"), Semant.INT, null), null));
+                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.VOID));
         // initialize types table
         tenv = new GenericTable<Type>();
         tenv.put(Symbol.symbol("int"), Semant.INT);

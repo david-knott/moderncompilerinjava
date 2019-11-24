@@ -9,4 +9,3 @@ class VarEntry extends Entry {
         ty = t;
     }
 }
-
