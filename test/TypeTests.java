@@ -6,9 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import ErrorMsg.ErrorMsg;
+import ErrorMsg.FieldNotDefinedError;
 import ErrorMsg.TypeMismatchError;
 import ErrorMsg.UndefinedVariableError;
 import Main.Main;
@@ -90,8 +94,8 @@ public class TypeTests {
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof TypeMismatchError);
             if(a instanceof TypeMismatchError){
-                assertEquals(Semant.INT, ((TypeMismatchError)a).getType1());
-                assertEquals(Semant.STRING, ((TypeMismatchError)a).getType2());
+                assertEquals(Semant.INT, ((TypeMismatchError)a).getLeft());
+                assertEquals(Semant.STRING, ((TypeMismatchError)a).getRight());
             }
         });
     }
@@ -115,8 +119,8 @@ public class TypeTests {
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof TypeMismatchError);
             if(a instanceof TypeMismatchError){
-                assertEquals(Semant.STRING, ((TypeMismatchError)a).getType1());
-                assertEquals(Semant.INT, ((TypeMismatchError)a).getType2());
+                assertEquals(Semant.STRING, ((TypeMismatchError)a).getLeft());
+                assertEquals(Semant.INT, ((TypeMismatchError)a).getRight());
             }
         });
     }
@@ -131,30 +135,64 @@ public class TypeTests {
         m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
             assertTrue(a instanceof TypeMismatchError);
             if(a instanceof TypeMismatchError){
-                assertEquals(Semant.STRING, ((TypeMismatchError)a).getType1());
-              ////  assertEquals(Semant.INT, ((TypeMismatchError)a).getType2());
+                assertEquals(Semant.STRING, ((TypeMismatchError)a).getLeft());
             }
         });
     }
 
     @Test
     public void field_type_base_expression_is_record_type() {
-
+        String tigerCode = "let type list = {first: int, rest: list}  var a:list := list{ first = 1} var b := 1 in ( b := a ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        m.getErrorMsg().getCompilerErrors().stream().findAny().ifPresent(a -> {
+            assertTrue(a instanceof TypeMismatchError);
+            if(a instanceof TypeMismatchError){
+                assertEquals(Semant.INT, ((TypeMismatchError)a).getLeft());
+            }
+        });
     }
 
     @Test
     public void field_type_identifier_is_field_of_record() {
-
+        String tigerCode = "let type atype = {first: int}  var a:atype := atype{ first = 1} in ( a.firsty := 1 ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractFieldNotDefinedError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals("firsty", a.getField().toString());
+        });
     }
 
     @Test
     public void field_type_result_type_is_type_of_field() {
-
+        String tigerCode = "let type atype = {first: int}  var a:atype := atype{ first = 1} var b:string := \"\" in ( b := a.first ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getRight(), Semant.INT);
+            assertEquals(a.getLeft(), Semant.STRING);
+        });
     }
 
     @Test
     public void exp_nil_used_where_record_type_can_be_determined() {
-
+        String tigerCode = "let type rectype = {name:string, id:int} var a:= nil in a end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getRight(), Semant.NIL);
+        });
     }
 
     @Test
@@ -196,5 +234,20 @@ public class TypeTests {
     public void exp_call_type_matches_function_type() {
 
     }
+
+    private static List<TypeMismatchError> extractTypeMismatchError(ErrorMsg errorMsg){
+        return errorMsg.getCompilerErrors().stream()
+                .filter(x -> x instanceof TypeMismatchError).map(m -> (TypeMismatchError) m)
+                .collect(Collectors.toList());
+    }
+
+    private static List<FieldNotDefinedError> extractFieldNotDefinedError(ErrorMsg errorMsg){
+        return errorMsg.getCompilerErrors().stream()
+                .filter(x -> x instanceof FieldNotDefinedError).map(m -> (FieldNotDefinedError) m)
+                .collect(Collectors.toList());
+    }
+
+
+
 
 }
