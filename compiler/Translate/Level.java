@@ -10,6 +10,7 @@ public class Level {
     public AccessList formals;
     public Level(Level parent, Symbol name, BoolList fmls){
 
+
     }
 
     //associate a frame with this level

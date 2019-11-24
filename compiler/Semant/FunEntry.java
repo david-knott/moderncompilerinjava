@@ -1,8 +1,5 @@
 package Semant;
 
-import Temp.Label;
-import Translate.Level;
-
 class FunEntry extends Entry {
     Translate.Level level;
     Temp.Label label;
