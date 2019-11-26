@@ -14,6 +14,7 @@ import Symbol.Symbol;
 import Translate.Exp;
 import Translate.ExpTy;
 import Types.ARRAY;
+import Types.INT;
 import Types.NAME;
 import Types.RECORD;
 
@@ -333,13 +334,23 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.OpExp e) {
+
+        var transExpLeft =transExp(e.left);
+        var transExpRight =transExp(e.right);
+        if(!transExpLeft.ty.actual().coerceTo(Semant.INT)) {
+            env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, null));
+        }
+        if (!transExpRight.ty.actual().coerceTo(Semant.INT)) {
+            env.errorMsg.add(new TypeMismatchError(e.left.pos, null, transExpRight.ty));
+        }
+       // checkInt(transExp(e.left), e.left.pos);
+       // checkInt(transExp(e.right), e.right.pos);
+
         switch (e.oper) {
         case Absyn.OpExp.PLUS:
         case Absyn.OpExp.MINUS:
         case Absyn.OpExp.MUL:
         case Absyn.OpExp.DIV:
-            checkInt(transExp(e.left), e.left.pos);
-            checkInt(transExp(e.right), e.right.pos);
             return new ExpTy(null, INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);

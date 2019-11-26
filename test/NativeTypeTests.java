@@ -309,6 +309,222 @@ public class NativeTypeTests {
         });
     }
 
+    @Test
+    public void exp_infix_plus_operands_type_int() {
+        String tigerCode = "let var a := 1 + \"a\" in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getRight(), Semant.STRING);
+        });
+    }
+
+    @Test
+    public void exp_infix_plus_result_type_int() {
+        String tigerCode = "let var a := 1 + 2 var b:string := \"\" in (b := a) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.STRING);
+            assertEquals(a.getRight(), Semant.INT);
+        });
+    }
+
+    @Test
+    public void exp_infix_equals_operand_types_match() {
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_infix_equals_result_type_int() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_infix_comp_operand_types_match() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_infix_comp_result_int() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_arr_create_tyid_is_array_type() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_arr_create_sq_brket_exp_type_int() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_arr_create_init_exp_matches_array_type() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_arr_create_result_type_is_array_type() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_rec_create_tyid_is_record_type() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_rec_create_field_order_matches() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_rec_create_field_name_matches() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_rec_create_field_type_matches() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_rec_create_result_type_is_record_type() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_assign_lvalue_exp_type_match() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_assign_result_type_void() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_ifthenelse_condition_type_int() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_ifthenelse_thenclause_elseclause_types_match() {
+
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_ifthenelse_return_type_matches_then() {
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_ifthenelse_return_type_matches_else() {
+        assertFalse("to be implemented", true);
+    }
+
+    @Test
+    public void exp_while_condition_type_is_int_type() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_while_body_type_is_void() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_while_result_type_is_void() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_for_start_index_is_int_type() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_for_end_index_is_int_type() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_for_variable_is_not_assigned_to() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_for_body_type_is_void() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_for_result_type_is_void() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_break_only_valid_in_for() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_break_only_valid_in_while() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_break_return_type_is_void() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_let_empty_body_return_type_is_void() {
+        assertFalse("to be implemented", true);
+
+    }
+
+    @Test
+    public void exp_let_body_return_type_is_last_body_exp() {
+        assertFalse("to be implemented", true);
+
+    }
+
     private static List<TypeMismatchError> extractTypeMismatchError(ErrorMsg errorMsg) {
         return errorMsg.getCompilerErrors().stream().filter(x -> x instanceof TypeMismatchError)
                 .map(m -> (TypeMismatchError) m).collect(Collectors.toList());
@@ -324,10 +540,9 @@ public class NativeTypeTests {
                 .map(m -> (FunctionNotDefinedError) m).collect(Collectors.toList());
     }
 
-private static List<ArgumentMismatchError> extractArgumentMismatchErrors(ErrorMsg errorMsg) {
+    private static List<ArgumentMismatchError> extractArgumentMismatchErrors(ErrorMsg errorMsg) {
         return errorMsg.getCompilerErrors().stream().filter(x -> x instanceof ArgumentMismatchError)
                 .map(m -> (ArgumentMismatchError) m).collect(Collectors.toList());
     }
-
 
 }
