@@ -484,20 +484,39 @@ public class NativeTypeTests {
 
     @Test
     public void exp_for_start_index_is_int_type() {
-        assertFalse("to be implemented", true);
-
+        String tigerCode = "let var a:int := 1 in (for j := \"a\" to 10 do a := a + 1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.STRING);
+            assertEquals(a.getRight(), Semant.INT);
+        });
     }
 
     @Test
     public void exp_for_end_index_is_int_type() {
-        assertFalse("to be implemented", true);
-
+        String tigerCode = "let var a:int := 1 in (for j := 0 to \"a\" do a := a + 1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.STRING);
+            assertEquals(a.getRight(), Semant.INT);
+        });
     }
 
     @Test
     public void exp_for_variable_is_not_assigned_to() {
-        assertFalse("to be implemented", true);
-
+        String tigerCode = "let var a:int := 1 in (for j := 0 to 10 do (a := a + j; j := 2)) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
@@ -514,31 +533,54 @@ public class NativeTypeTests {
 
     @Test
     public void exp_break_only_valid_in_for() {
-        assertFalse("to be implemented", true);
-
+        String tigerCode = "let var a:int := 1 in a := a + 1;break end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertTrue(m.hasErrors());
     }
 
     @Test
     public void exp_break_only_valid_in_while() {
-        assertFalse("to be implemented", true);
-
+String tigerCode = "let var a:int := 1 in a := a + 1;break end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertTrue(m.hasErrors());
     }
 
     @Test
     public void exp_break_return_type_is_void() {
-        assertFalse("to be implemented", true);
-
+        String tigerCode = "break";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
     }
 
     @Test
     public void exp_let_empty_body_return_type_is_void() {
-        assertFalse("to be implemented", true);
-
+        String tigerCode = "let var a:int := 0 function b() = let in () end in (a := b() ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.INT);
+            assertEquals(a.getRight(), Semant.VOID);
+        });
     }
 
     @Test
     public void exp_let_body_return_type_is_last_body_exp() {
-        assertFalse("to be implemented", true);
+        String tigerCode = "let var a:string := \"\" function b() = let in (1) end in (a := b() ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        var typeErrors = extractTypeMismatchError(m.getErrorMsg());
+        typeErrors.stream().findAny().ifPresent(a -> {
+            assertEquals(a.getLeft(), Semant.INT);
+            assertEquals(a.getRight(), Semant.STRING);
+        });
 
     }
 

@@ -388,8 +388,8 @@ public class Semant {
     }
 
     /**
-     * Returns a translated call expression.
-     * Checks that the order of arguments matches the formals
+     * Returns a translated call expression. Checks that the order of arguments
+     * matches the formals
      * 
      * @param callExp
      * @return
@@ -539,10 +539,25 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
+        env.tenv.beginScope();
+        env.venv.beginScope();
+        // add the start value to value table
+        env.venv.put(forExp.var.name, new VarEntry(INT));
+        var lowTy = transExp(forExp.var.init);
+        if (lowTy.ty.actual() != Semant.INT) {
+            env.errorMsg.add(new TypeMismatchError(forExp.var.pos, lowTy.ty.actual(), Semant.INT));
+        }
+        var hiTy = transExp(forExp.hi);
+        if (hiTy.ty.actual() != Semant.INT) {
+            env.errorMsg.add(new TypeMismatchError(forExp.hi.pos, hiTy.ty.actual(), Semant.INT));
+        }
+        // TODO: Check if start value is assigned to inside body ??
         var transBody = new Semant(env, true).transExp(forExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
-            env.errorMsg.add(new TypeMismatchError(forExp.pos, transBody.ty.actual(), Semant.VOID));
+            env.errorMsg.add(new TypeMismatchError(forExp.body.pos, transBody.ty.actual(), Semant.VOID));
         }
+        env.venv.endScope();
+        env.tenv.endScope();
         return new ExpTy(null, Semant.VOID);
     }
 
@@ -555,15 +570,33 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.WhileExp whileExp) {
+        env.tenv.beginScope();
+        env.venv.beginScope();
+        var testExp = transExp(whileExp.test);
+        if (testExp.ty.actual() != INT) {
+            env.errorMsg.add(new TypeMismatchError(whileExp.test.pos, testExp.ty.actual(), Semant.INT));
+        }
         var transBody = new Semant(env, true).transExp(whileExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
             env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
         }
+        env.venv.endScope();
+        env.tenv.endScope();
         return new ExpTy(null, Semant.VOID);
 
     }
 
     ExpTy transExp(final Absyn.IfExp ifExp) {
+        // TODO: Do we need a beginScope here ?
+        var testExp = transExp(ifExp.test);
+        if (testExp.ty.actual() != INT) {
+            env.errorMsg.add(new TypeMismatchError(ifExp.test.pos, testExp.ty.actual(), Semant.INT));
+        }
+        var thenExp = transExp(ifExp.thenclause);
+        var elseExp = ifExp.elseclause != null ? transExp(ifExp.elseclause) : null;
+        if (elseExp != null && elseExp.ty.actual() != thenExp.ty.actual()) {
+            env.errorMsg.add(new TypeMismatchError(ifExp.thenclause.pos, thenExp.ty.actual(), elseExp.ty.actual()));
+        }
         return new ExpTy(null, Semant.VOID);
     }
 
@@ -584,14 +617,14 @@ public class Semant {
     /**
      * Translates a fieldExpList to its tiger type A fieldExpList is of form
      * property1=expression1 Typechecker should check that the type of property1 is
-     * the same as the type of expression1
-     * TODO: Improve field list checking. 
+     * the same as the type of expression1 TODO: Improve field list checking.
+     * 
      * @param fel
      * @return
      */
     ExpTy transExp(final Absyn.FieldExpList fel, final Types.RECORD recordType) {
         if (recordType == null) {
-      //      error(fel.pos, "Unknown symbol: " + fel.name);
+            // error(fel.pos, "Unknown symbol: " + fel.name);
             env.errorMsg.add(new UndefinedVariableError(fel.pos, fel.name));
             return new ExpTy(null, null);
         }
@@ -607,7 +640,7 @@ public class Semant {
         final var transExp = transExp(initExp);
         // compare type of field with type of expression
         if (fieldType.actual() != transExp.ty.actual()) {
-            //error(fel.pos, "Type mismatch: " + fieldType + " != " + transExp.ty);
+            // error(fel.pos, "Type mismatch: " + fieldType + " != " + transExp.ty);
             env.errorMsg.add(new TypeMismatchError(fel.pos, fieldType, transExp.ty));
         }
         // return exp and type
