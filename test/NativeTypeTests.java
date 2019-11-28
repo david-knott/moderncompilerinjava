@@ -343,7 +343,6 @@ public class NativeTypeTests {
 
     @Test
     public void exp_infix_equals_result_type_int() {
-
         assertFalse("to be implemented", true);
     }
 
@@ -361,26 +360,38 @@ public class NativeTypeTests {
 
     @Test
     public void exp_arr_create_tyid_is_array_type() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let var a := 1 type arrtype1 = int var arr1 := arrtype1 [10] of 0 in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
     public void exp_arr_create_sq_brket_exp_type_int() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let var a := 1 type arrtype1 = array of int var arr1 := arrtype1 [\"a\"] of 0 in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
     public void exp_arr_create_init_exp_matches_array_type() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let var a := 1 type arrtype1 = array of int var arr1 := arrtype1 [10] of \"a\" in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
     public void exp_arr_create_result_type_is_array_type() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [10] of 10 var a:int := 0 in ( a:= arr1 ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test

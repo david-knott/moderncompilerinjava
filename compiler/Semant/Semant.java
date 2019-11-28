@@ -463,12 +463,13 @@ public class Semant {
         // Get type of expression, it should be an array and not null
         final var tt = (Types.Type) env.tenv.get(typeSymbol);
         if (tt == null || !(tt.actual() instanceof Types.ARRAY)) {
-            error(arrayExp.pos, "Type not found:" + typeSymbol);
+            env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tt));
         } else {
             // check that initialising expression is the
             // same type as the array element type
             if (transExp(initExp).ty != ((Types.ARRAY) tt.actual()).element) {
-                error(arrayExp.pos, "Type mismatch: array init expression is not of type " + tt);
+                //error(arrayExp.pos, "Type mismatch: array init expression is not of type " + tt);
+                env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tt));
             }
             return new ExpTy(null, tt.actual());
         }
