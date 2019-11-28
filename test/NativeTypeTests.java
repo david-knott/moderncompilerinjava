@@ -396,14 +396,20 @@ public class NativeTypeTests {
 
     @Test
     public void exp_rec_create_tyid_is_record_type() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := int {name=\"Nobody\", age=\"Nobody\"} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
     public void exp_rec_create_field_order_matches() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let type rectype = {name:string} var rec1 := rectype {age=1} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(2, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
