@@ -11,16 +11,20 @@ import ErrorMsg.TypeMismatchError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
 import Symbol.Symbol;
+import Temp.Label;
 import Translate.Exp;
 import Translate.ExpTy;
+import Translate.Level;
 import Types.ARRAY;
 import Types.INT;
 import Types.NAME;
 import Types.RECORD;
+import Util.BoolList;
 
 public class Semant {
     private final Env env;
     private final boolean breakScope;
+    private Level level;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
@@ -31,12 +35,13 @@ public class Semant {
     }
 
     Semant(final Env e) {
-        this(e, false);
+        this(e, false, new Level(null));
     }
 
-    Semant(final Env e, boolean bs) {
+    Semant(final Env e, boolean bs, Level lev) {
         env = e;
         breakScope = bs;
+        level = lev;
     }
 
     /**
@@ -199,21 +204,30 @@ public class Semant {
      */
     Exp transDec(final Absyn.FunctionDec e) {
         FunctionDec current = e;
+        // add function entry to environment tables so it
+        // is available for lookup inside the function body
+        // this is to facilitate recursive function calls
         do {
-            // add function header first
-            env.venv.put(current.name, new FunEntry(transTypeFields(current.params),
-                    current.result != null ? transTy(current.result).actual() : Semant.VOID));
+            //get the functions return type
+            var functionReturnType = current.result != null ? transTy(current.result).actual() : Semant.VOID;
+            // add a new nesting level into the function entry
+            var functionEntry = new FunEntry(new Level(level, e.name, new BoolList(true, null)), new Label(),
+                    transTypeFields(current.params), functionReturnType);
+            //add function entry into the value environment
+            env.venv.put(current.name, functionEntry);
             current = current.next;
         } while (current != null);
         current = e;
         do {
+            // get the new level for this function
+            var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             env.venv.beginScope();
             var vent = (FunEntry) env.venv.get(current.name);
             for (var p = current.params; p != null; p = p.tail) {
                 // add formals as local vars within function scope
                 env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
-            final var transBody = transExp(current.body);
+            final var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
             if (transBody.ty.actual() != vent.result.actual()) {
                 // error(current.pos, "Return type does not match body type");
                 env.errorMsg.add(new TypeMismatchError(e.pos, transBody.ty.actual()));
@@ -352,6 +366,10 @@ public class Semant {
         case Absyn.OpExp.MINUS:
         case Absyn.OpExp.MUL:
         case Absyn.OpExp.DIV:
+        case Absyn.OpExp.LE:
+        case Absyn.OpExp.GE:
+        case Absyn.OpExp.LT:
+        case Absyn.OpExp.GT:
             return new ExpTy(null, INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);
@@ -552,7 +570,7 @@ public class Semant {
             env.errorMsg.add(new TypeMismatchError(forExp.hi.pos, hiTy.ty.actual(), Semant.INT));
         }
         // TODO: Check if start value is assigned to inside body ??
-        var transBody = new Semant(env, true).transExp(forExp.body);
+        var transBody = new Semant(env, true, level).transExp(forExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
             env.errorMsg.add(new TypeMismatchError(forExp.body.pos, transBody.ty.actual(), Semant.VOID));
         }
@@ -576,7 +594,7 @@ public class Semant {
         if (testExp.ty.actual() != INT) {
             env.errorMsg.add(new TypeMismatchError(whileExp.test.pos, testExp.ty.actual(), Semant.INT));
         }
-        var transBody = new Semant(env, true).transExp(whileExp.body);
+        var transBody = new Semant(env, true, level).transExp(whileExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
             env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
         }
