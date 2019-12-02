@@ -474,7 +474,6 @@ public class NativeTypeTests {
     @Test
     public void exp_while_condition_type_is_int_type() {
         assertFalse("to be implemented", true);
-
     }
 
     @Test

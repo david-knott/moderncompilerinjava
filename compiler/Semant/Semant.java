@@ -208,12 +208,12 @@ public class Semant {
         // is available for lookup inside the function body
         // this is to facilitate recursive function calls
         do {
-            //get the functions return type
+            // get the functions return type
             var functionReturnType = current.result != null ? transTy(current.result).actual() : Semant.VOID;
             // add a new nesting level into the function entry
             var functionEntry = new FunEntry(new Level(level, e.name, new BoolList(true, null)), new Label(),
                     transTypeFields(current.params), functionReturnType);
-            //add function entry into the value environment
+            // add function entry into the value environment
             env.venv.put(current.name, functionEntry);
             current = current.next;
         } while (current != null);
@@ -358,9 +358,6 @@ public class Semant {
         if (!transExpRight.ty.actual().coerceTo(Semant.INT)) {
             env.errorMsg.add(new TypeMismatchError(e.left.pos, null, transExpRight.ty));
         }
-        // checkInt(transExp(e.left), e.left.pos);
-        // checkInt(transExp(e.right), e.right.pos);
-
         switch (e.oper) {
         case Absyn.OpExp.PLUS:
         case Absyn.OpExp.MINUS:
@@ -370,6 +367,7 @@ public class Semant {
         case Absyn.OpExp.GE:
         case Absyn.OpExp.LT:
         case Absyn.OpExp.GT:
+        case Absyn.OpExp.EQ:
             return new ExpTy(null, INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);

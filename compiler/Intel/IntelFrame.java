@@ -1,45 +1,45 @@
 package Intel;
 
-import Frame.Access;
 import Temp.Label;
 import Temp.Temp;
 import Util.BoolList;
 import Frame.*;
 
-    class IntelFrame extends Frame{
+class IntelFrame extends Frame {
 
-        IntelFrame(Label name, AccessList formals){
-            base.name = name;
-            base.formals = formals;
-        }
-    @Override
-    public Frame newFrame(Label name, AccessList formals) {
-        // TODO Auto-generated method stub
-        return new IntelFrame(name, formals);
+    // record the access
+    private int off = WORD_SIZE;
+    private static final int WORD_SIZE = 8;
+
+    IntelFrame(Label nm, AccessList frml) {
+        name = nm;
+        formals = frml;
     }
 
     @Override
     public Access allocLocal(boolean escape) {
-        // TODO Auto-generated method stub
-        return escape ? InFrame(off) : InReg(new Temp());
+        return escape ? new InFrame(off + WORD_SIZE) : new InReg(new Temp());
     }
 
+    @Override
+    public Frame newFrame(Label name, BoolList formals) {
+        return null;
+    }
 }
 
-class InFrame extends Access{
+class InFrame extends Access {
 
     int offset;
-    
-    InFrame(int os){
-        offset = os;   
+
+    InFrame(int os) {
+        offset = os;
     }
 }
 
 class InReg extends Access {
     Temp temp;
-    
-    
-    InReg(Temp tmp){
-        temp = tmp;   
+
+    InReg(Temp tmp) {
+        temp = tmp;
     }
 }
