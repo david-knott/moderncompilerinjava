@@ -441,13 +441,11 @@ public class NativeTypeTests {
 
     @Test
     public void exp_assign_lvalue_exp_type_match() {
-
         assertFalse("to be implemented", true);
     }
 
     @Test
     public void exp_assign_result_type_void() {
-
         assertFalse("to be implemented", true);
     }
 
