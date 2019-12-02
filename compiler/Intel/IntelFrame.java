@@ -11,9 +11,17 @@ class IntelFrame extends Frame {
     private int off = WORD_SIZE;
     private static final int WORD_SIZE = 8;
 
-    IntelFrame(Label nm, AccessList frml) {
+    IntelFrame(Label nm, BoolList frml) {
         name = nm;
-        formals = frml;
+        BoolList tmp = frml;
+        AccessList al = null;
+        AccessList prev =  null;
+        while(tmp != null){
+            al = new AccessList(allocLocal(tmp.head), prev);
+            prev = al;
+            tmp = tmp.tail;
+        }
+        formals = al;
     }
 
     @Override
@@ -23,7 +31,7 @@ class IntelFrame extends Frame {
 
     @Override
     public Frame newFrame(Label name, BoolList formals) {
-        return null;
+        return new IntelFrame(name, formals);
     }
 }
 
