@@ -405,7 +405,7 @@ public class NativeTypeTests {
 
     @Test
     public void exp_rec_create_field_order_matches() {
-        String tigerCode = "let type rectype = {name:string} var rec1 := rectype {age=1} in () end";
+        String tigerCode = "let type rectype = {name:int,code:int} var rec1 := rectype {code=1,age=1} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -414,20 +414,29 @@ public class NativeTypeTests {
 
     @Test
     public void exp_rec_create_field_name_matches() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let type rectype = {name:int,code:int} var rec1 := rectype {name=1,codey=1} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
     public void exp_rec_create_field_type_matches() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let type rectype = {name:string,code:int} var rec1 := rectype {name=1,code=1} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
     public void exp_rec_create_result_type_is_record_type() {
-
-        assertFalse("to be implemented", true);
+        String tigerCode = "let type rectype = {name:int,code:int} var rec1 := rectype {name=1,code=1} var rec2:int := rec1 in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
@@ -542,7 +551,7 @@ public class NativeTypeTests {
 
     @Test
     public void exp_break_only_valid_in_while() {
-String tigerCode = "let var a:int := 1 in a := a + 1;break end";
+        String tigerCode = "let var a:int := 1 in a := a + 1;break end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
