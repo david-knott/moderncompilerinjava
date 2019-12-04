@@ -1,0 +1,53 @@
+function call ( 8 formal arguments, multiplty last 2 and returns the result )
+
+save the contents of the base pointer register onto the stack
+move the stack pointer to the bae pointer register
+move the contents of edi register onto base pointer address + offset ( 1 ) 
+move the contents of esi register onto base pointer address + offset ( 2 )
+.
+.
+move the contents of r9d register onto base pointer address + offset ( 6 )
+move the contents of the base pointer address - offset into the eax register, in the outgoing arguments prev frame
+multiply contents of the base pointer address - offset with contents of eax register
+move contents of eax register into 4 words after the base pointer ( in current frame )
+move contents of of base pointer address - 4 words into eax 
+pop rbp bytes off stack and store in rbp ( assumes that rbp is at top to stack )
+ret from function
+
+main method
+
+save the contents of the base pointer register onto the stack
+move the stack pointer to the bae pointer register
+push 8 onto stack, we might use this in the function
+push 7 onto the stack, we might use this in the function
+move arguments from 6 -> 1 into registers
+call the function
+add 16 bytes to rsp stack pointer, reset the stack pointer, do we need to calculate all the bytes allocated ?
+move 0 into eax, eax contains the return value
+leave
+return
+
+
+8 arguments
+function 
+move arguments from register into frame 
+-20[rbp]
+-24[rbp]
+-28[rbp]
+-32[rbp]
+-36[rbp]
+-40[rbp]
+move escaping arguments from previous frame into register
+
+I think there is an 8 byte space at the end of the stack pointer, then the outgoing arguments
+
+so 16[rbp] means 16 bytes back into the previous frame. In the previous frame, an 8 and a 7 were pushed into the stack at positions
+rbp + 8, and rbp + 16. an extra 8 bytes was added when we entered the new function. relative to the new base pointer ( equal to the old
+stack pointer ) 7 is at base pointer minus 8 byte offset minus 8 byts ( 16 ), 8 is at 8 - 8 - 8 ( 24 ) 
+
+and 24[rbp] means 24 bytes back into the previous frame
+
+
+
+
+
