@@ -2,6 +2,7 @@ package Semant;
 
 import Absyn.FieldList;
 import Absyn.FunctionDec;
+import Absyn.SimpleVar;
 import Absyn.TypeDec;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
@@ -10,13 +11,13 @@ import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
+import ErrorMsg.VariableAssignError;
 import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
 import Translate.ExpTy;
 import Translate.Level;
 import Types.ARRAY;
-import Types.INT;
 import Types.NAME;
 import Types.RECORD;
 import Util.BoolList;
@@ -540,6 +541,14 @@ public class Semant {
     ExpTy transExp(final Absyn.AssignExp assignExp) {
         var transVar = transVar(assignExp.var); // left value
         var transExp = transExp(assignExp.exp); // right value
+        if (assignExp.var instanceof SimpleVar) {
+            var simpleVar = (SimpleVar) assignExp.var;
+            var varEntry = (VarEntry) env.venv.get(simpleVar.name);
+            if (varEntry.readOnly) {
+                env.errorMsg.add(new VariableAssignError(assignExp.pos, simpleVar.name));
+            }
+        }
+
         if (transVar.ty.actual() != transExp.ty.actual()) {
             env.errorMsg.add(new TypeMismatchError(assignExp.pos, transVar.ty.actual(), transExp.ty.actual()));
         }
@@ -563,6 +572,8 @@ public class Semant {
         if (lowTy.ty.actual() != Semant.INT) {
             env.errorMsg.add(new TypeMismatchError(forExp.var.pos, lowTy.ty.actual(), Semant.INT));
         }
+        VarEntry varEntry = (VarEntry) env.venv.get(forExp.var.name);
+        varEntry.readOnly = true;
         var hiTy = transExp(forExp.hi);
         if (hiTy.ty.actual() != Semant.INT) {
             env.errorMsg.add(new TypeMismatchError(forExp.hi.pos, hiTy.ty.actual(), Semant.INT));
