@@ -332,6 +332,16 @@ public class Chap5Test {
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void test_empty_let_body() {
+        String tigerCode = "let var outer:= 1 function name(): int = ( let function name2(): int = (outer + 1) in (1)  end ) in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 
 
 }

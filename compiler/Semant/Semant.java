@@ -12,6 +12,7 @@ import ErrorMsg.TypeMismatchError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
 import ErrorMsg.VariableAssignError;
+import FindEscape.FindEscape;
 import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
@@ -30,6 +31,7 @@ public class Semant {
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
     public static final Types.Type NIL = new Types.NIL();
+    public FindEscape findEscape;
 
     public Semant(final ErrorMsg.ErrorMsg err) {
         this(new Env(err));
@@ -212,7 +214,9 @@ public class Semant {
             // get the functions return type
             var functionReturnType = current.result != null ? transTy(current.result).actual() : Semant.VOID;
             // add a new nesting level into the function entry
-            var functionEntry = new FunEntry(new Level(level, e.name, new BoolList(true, null)), new Label(),
+            // add allocations for the parameters to be passed 
+            // to this function
+            var functionEntry = new FunEntry(new Level(level, e.name, buildBoolList(current.params)), new Label(),
                     transTypeFields(current.params), functionReturnType);
             // add function entry into the value environment
             env.venv.put(current.name, functionEntry);
@@ -225,12 +229,10 @@ public class Semant {
             env.venv.beginScope();
             var vent = (FunEntry) env.venv.get(current.name);
             for (var p = current.params; p != null; p = p.tail) {
-                // add formals as local vars within function scope
                 env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
             final var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
             if (transBody.ty.actual() != vent.result.actual()) {
-                // error(current.pos, "Return type does not match body type");
                 env.errorMsg.add(new TypeMismatchError(e.pos, transBody.ty.actual()));
             }
             env.venv.endScope();
@@ -295,6 +297,8 @@ public class Semant {
         if (initExpTy.ty.actual() == NIL && !(otherType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
         }
+        // allocate space for this variable
+        level.allocLocal(e.escape);
         // add variable value mapping
         env.venv.put(e.name, new VarEntry(type));
         return null;
@@ -614,7 +618,6 @@ public class Semant {
     }
 
     ExpTy transExp(final Absyn.IfExp ifExp) {
-        // TODO: Do we need a beginScope here ?
         var testExp = transExp(ifExp.test);
         if (testExp.ty.actual() != INT) {
             env.errorMsg.add(new TypeMismatchError(ifExp.test.pos, testExp.ty.actual(), Semant.INT));
@@ -674,6 +677,9 @@ public class Semant {
         return new ExpTy(null, fieldType);
     }
 
+    public void findEscape(final Absyn.Exp exp){
+        this.findEscape = new FindEscape(exp);
+    }
     /**
      * Main dispatch function for expressions
      * 
@@ -711,9 +717,23 @@ public class Semant {
             return transExp((Absyn.BreakExp) e);
         else if (e instanceof Absyn.NilExp)
             return transExp((Absyn.NilExp) e);
-
         else
             throw new Error("Cannot handle " + e.getClass().getName());
+    }
+
+    private BoolList buildBoolList(final FieldList fields) {
+        BoolList head = null;
+        BoolList prev = null;
+        for (Absyn.FieldList l = fields; l != null; l = l.tail) {
+            // final var cached = fetchTypeAndReport(l.typ, l.pos);
+            final BoolList current = new BoolList(false, null);
+            if (head == null)
+                head = current;
+            else
+                prev.tail = current; // insert the current item at the end of the previous
+            prev = current;
+        }
+        return head;
     }
 
     private RECORD transTypeFields(final FieldList fields) {
@@ -731,14 +751,10 @@ public class Semant {
         return head;
     }
 
-    private void error(final int pos, final String message) {
-        env.errorMsg.error(pos, message);
-    }
-
     private Types.Type fetchTypeAndReport(final Symbol sym, final int pos) {
         final Types.Type cached = (Types.Type) env.tenv.get(sym);
         if (cached == null) {
-            error(pos, "No type found for symbol:" + sym);
+            env.errorMsg.add(new UndefinedVariableError(pos, sym));
             return null;
         }
         return cached;

@@ -24,25 +24,6 @@ public class Main {
     private ErrorMsg errorMsg;
     private Grm parser;
 
-    private void buildAst() {
-        try {
-            final java_cup.runtime.Symbol rootSymbol = parser.parse();
-            this.ast = (Program) rootSymbol.value;
-        } catch (final Throwable e) {
-            throw new Error("Unable to translate", e);
-        } finally {
-            try {
-                this.inputStream.close();
-            } catch (final java.io.IOException e) {
-                throw new Error(e.toString());
-            }
-        }
-    }
-
-    private void typeCheck() {
-        this.semant.transExp(this.ast.absyn);
-    }
-
     public Main(final String filename) throws FileNotFoundException {
         this(filename, new java.io.FileInputStream(filename));
     }
@@ -79,4 +60,25 @@ public class Main {
     public void print() {
         new Absyn.Print(System.out).prExp(this.ast.absyn, 0);
     }
+
+    private void buildAst() {
+        try {
+            final java_cup.runtime.Symbol rootSymbol = parser.parse();
+            this.ast = (Program) rootSymbol.value;
+        } catch (final Throwable e) {
+            throw new Error("Unable to translate", e);
+        } finally {
+            try {
+                this.inputStream.close();
+            } catch (final java.io.IOException e) {
+                throw new Error(e.toString());
+            }
+        }
+    }
+
+    private void typeCheck() {
+        this.semant.findEscape(this.ast.absyn);
+        this.semant.transExp(this.ast.absyn);
+    }
+
 }
