@@ -17,6 +17,7 @@ import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.StringExp;
 import Absyn.SubscriptVar;
+import Absyn.TypeDec;
 import Absyn.VarExp;
 import Absyn.WhileExp;
 
@@ -138,6 +139,8 @@ public class FindEscape {
     }
 
     private void traverseExp(int depth, Absyn.Exp e) {
+        if(e == null)
+            return;
         if (e instanceof Absyn.VarExp)
             traverseExp(depth, (Absyn.VarExp) e);
         else if (e instanceof Absyn.IntExp)
@@ -169,7 +172,7 @@ public class FindEscape {
         else if (e instanceof Absyn.NilExp)
             traverseExp(depth, (Absyn.NilExp) e);
         else
-            throw new Error("Cannot handle " + e.getClass().getName());
+            throw new Error("Cannot handle " + e);
     }
 
     private void traverseDec(int depth, Absyn.FunctionDec e) {
@@ -186,6 +189,11 @@ public class FindEscape {
         traverseExp(depth, e.init);
         this.escEnv.put(e.name, new VarEscape(depth, e));
     }
+
+    private void traverseDec(int depth, Absyn.TypeDec e) {
+    }
+
+
 
     private void traverseDec(int depth, Absyn.Dec e) {
         if (e instanceof Absyn.VarDec)

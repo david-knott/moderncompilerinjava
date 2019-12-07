@@ -9,6 +9,8 @@ import ErrorMsg.BreakNestingError;
 import ErrorMsg.FieldNotDefinedError;
 import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
+import ErrorMsg.TypeNotIntError;
+import ErrorMsg.TypeNotVoidError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
 import ErrorMsg.VariableAssignError;
@@ -33,12 +35,8 @@ public class Semant {
     public static final Types.Type NIL = new Types.NIL();
     public FindEscape findEscape;
 
-    public Semant(final ErrorMsg.ErrorMsg err) {
-        this(new Env(err));
-    }
-
-    Semant(final Env e) {
-        this(e, false, new Level(null));
+    public Semant(final ErrorMsg.ErrorMsg err, final Level lvl) {
+        this(new Env(err, lvl), false, lvl);
     }
 
     Semant(final Env e, boolean bs, Level lev) {
@@ -177,7 +175,7 @@ public class Semant {
         if (!(elementType.actual() instanceof ARRAY)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
         }
-        return new ExpTy(null, elementType);
+        return new ExpTy(null, ((ARRAY)elementType).element);
     }
 
     /**
@@ -214,7 +212,7 @@ public class Semant {
             // get the functions return type
             var functionReturnType = current.result != null ? transTy(current.result).actual() : Semant.VOID;
             // add a new nesting level into the function entry
-            // add allocations for the parameters to be passed 
+            // add allocations for the parameters to be passed
             // to this function
             var functionEntry = new FunEntry(new Level(level, e.name, buildBoolList(current.params)), new Label(),
                     transTypeFields(current.params), functionReturnType);
@@ -232,8 +230,8 @@ public class Semant {
                 env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
             }
             final var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
-            if (transBody.ty.actual() != vent.result.actual()) {
-                env.errorMsg.add(new TypeMismatchError(e.pos, transBody.ty.actual()));
+            if (!transBody.ty.coerceTo(vent.result)) {
+                env.errorMsg.add(new TypeMismatchError(e.pos, transBody.ty.actual(), vent.result));
             }
             env.venv.endScope();
             current = current.next;
@@ -357,12 +355,6 @@ public class Semant {
 
         var transExpLeft = transExp(e.left);
         var transExpRight = transExp(e.right);
-        if (!transExpLeft.ty.actual().coerceTo(Semant.INT)) {
-            env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, null));
-        }
-        if (!transExpRight.ty.actual().coerceTo(Semant.INT)) {
-            env.errorMsg.add(new TypeMismatchError(e.left.pos, null, transExpRight.ty));
-        }
         switch (e.oper) {
         case Absyn.OpExp.PLUS:
         case Absyn.OpExp.MINUS:
@@ -372,7 +364,20 @@ public class Semant {
         case Absyn.OpExp.GE:
         case Absyn.OpExp.LT:
         case Absyn.OpExp.GT:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+
         case Absyn.OpExp.EQ:
+            //the order here is important, expRigth.coerceTo(expLeft) is not the same as the reverse
+
+            if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
+                env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
+            }
+
             return new ExpTy(null, INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);
@@ -438,7 +443,6 @@ public class Semant {
             }
             if (argExpList != null) {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
-
                 // error(callExp.pos, "Supplied argument list is too long");
             }
             return new ExpTy(null, ent.result);
@@ -461,6 +465,9 @@ public class Semant {
             returnType = VOID;
         } else {
             Absyn.ExpList expList = seqExp.list;
+            if (expList.head == null && expList.tail == null) {
+                returnType = VOID;
+            }
             // skip to end of the sequence
             while (expList.tail != null)
                 expList = expList.tail;
@@ -574,18 +581,17 @@ public class Semant {
         env.venv.put(forExp.var.name, new VarEntry(INT));
         var lowTy = transExp(forExp.var.init);
         if (lowTy.ty.actual() != Semant.INT) {
-            env.errorMsg.add(new TypeMismatchError(forExp.var.pos, lowTy.ty.actual(), Semant.INT));
+            env.errorMsg.add(new TypeNotIntError(forExp.var.pos, lowTy.ty.actual()));
         }
         VarEntry varEntry = (VarEntry) env.venv.get(forExp.var.name);
         varEntry.readOnly = true;
         var hiTy = transExp(forExp.hi);
         if (hiTy.ty.actual() != Semant.INT) {
-            env.errorMsg.add(new TypeMismatchError(forExp.hi.pos, hiTy.ty.actual(), Semant.INT));
+            env.errorMsg.add(new TypeNotIntError(forExp.hi.pos, hiTy.ty.actual()));
         }
-        // TODO: Check if start value is assigned to inside body ??
         var transBody = new Semant(env, true, level).transExp(forExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
-            env.errorMsg.add(new TypeMismatchError(forExp.body.pos, transBody.ty.actual(), Semant.VOID));
+            env.errorMsg.add(new TypeNotVoidError(forExp.body.pos, transBody.ty.actual()));
         }
         env.venv.endScope();
         env.tenv.endScope();
@@ -624,10 +630,14 @@ public class Semant {
         }
         var thenExp = transExp(ifExp.thenclause);
         var elseExp = ifExp.elseclause != null ? transExp(ifExp.elseclause) : null;
-        if (elseExp != null && elseExp.ty.actual() != thenExp.ty.actual()) {
+        if (elseExp != null && !elseExp.ty.coerceTo(thenExp.ty)) {
             env.errorMsg.add(new TypeMismatchError(ifExp.thenclause.pos, thenExp.ty.actual(), elseExp.ty.actual()));
+            return new ExpTy(null, Semant.VOID);
+        } else if (elseExp != null && elseExp.ty.coerceTo(thenExp.ty)) {
+            return new ExpTy(null, elseExp.ty.actual());
+        } else {
+            return new ExpTy(null, Semant.VOID);
         }
-        return new ExpTy(null, Semant.VOID);
     }
 
     /**
@@ -677,9 +687,10 @@ public class Semant {
         return new ExpTy(null, fieldType);
     }
 
-    public void findEscape(final Absyn.Exp exp){
+    public void findEscape(final Absyn.Exp exp) {
         this.findEscape = new FindEscape(exp);
     }
+
     /**
      * Main dispatch function for expressions
      * 

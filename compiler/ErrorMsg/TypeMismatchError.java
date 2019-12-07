@@ -2,7 +2,7 @@ package ErrorMsg;
 
 import Types.Type;
 
-public class TypeMismatchError extends CompilerError{
+public class TypeMismatchError extends CompilerError {
     private final Type type1;
     private final Type type2;
 
@@ -18,11 +18,11 @@ public class TypeMismatchError extends CompilerError{
         type2 = r;
     }
 
-    public Type getLeft(){
+    public Type getLeft() {
         return type1;
     }
 
-    public Type getRight(){
+    public Type getRight() {
         return type2;
     }
 }

@@ -14,9 +14,9 @@ public class Env {
     ErrorMsg.ErrorMsg errorMsg;
     Level outerMost;
 
-    Env(ErrorMsg.ErrorMsg err) {
+    Env(ErrorMsg.ErrorMsg err, Level om) {
         errorMsg = err;
-        outerMost = new Level(null);
+        outerMost = om;
         // initialize function values
         venv = new GenericTable<Entry>();
         venv.put(Symbol.symbol("print"),
@@ -24,7 +24,9 @@ public class Env {
         venv.put(Symbol.symbol("flush"), new FunEntry(outerMost, new Label(), null, Semant.VOID));
         venv.put(Symbol.symbol("getchar"), new FunEntry(outerMost, new Label(), null, Semant.STRING));
         venv.put(Symbol.symbol("ord"), new FunEntry(outerMost, new Label(),
-                new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.STRING));
+                new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.INT));
+        venv.put(Symbol.symbol("chr"), new FunEntry(outerMost, new Label(),
+                new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.STRING));
         venv.put(Symbol.symbol("size"),
                 new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.INT));
         venv.put(Symbol.symbol("substring"), new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("s"),

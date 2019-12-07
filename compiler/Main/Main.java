@@ -4,11 +4,14 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import ErrorMsg.ErrorMsg;
+import Frame.Frame;
+import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
 import Symbol.SymbolTable;
+import Translate.Level;
 import Types.Type;
 
 public class Main {
@@ -33,7 +36,7 @@ public class Main {
         this.inputStream = inputStream;
         this.errorMsg = new ErrorMsg(this.name);
         this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
-        this.semant = new Semant(errorMsg);
+        this.semant = new Semant(errorMsg, new Level(new IntelFrame(null, null)));
     }
 
     public ErrorMsg getErrorMsg() {
