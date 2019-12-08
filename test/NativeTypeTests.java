@@ -578,14 +578,14 @@ public class NativeTypeTests {
 
     @Test
     public void exp_let_body_return_type_is_last_body_exp() {
-        String tigerCode = "let var a:string := \"\" function b() = let in (1) end in (a := b() ) end";
+        String tigerCode = "let var a:string := \"\" function b():int = let in (1) end in (a := b() ) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
         var typeErrors = extractTypeMismatchError(m.getErrorMsg());
         typeErrors.stream().findAny().ifPresent(a -> {
-            assertEquals(a.getLeft(), Semant.INT);
-            assertEquals(a.getRight(), Semant.STRING);
+            assertEquals(a.getLeft(), Semant.STRING);
+            assertEquals(a.getRight(), Semant.INT);
         });
 
     }

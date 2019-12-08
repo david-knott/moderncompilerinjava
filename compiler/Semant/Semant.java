@@ -205,6 +205,8 @@ public class Semant {
      */
     Exp transDec(final Absyn.FunctionDec e) {
         FunctionDec current = e;
+        //if we have already processed this function while
+        //to handling recursive functions 
         // add function entry to environment tables so it
         // is available for lookup inside the function body
         // this is to facilitate recursive function calls
@@ -337,6 +339,9 @@ public class Semant {
     ExpTy transExp(final Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
+        //TODO: need to ensure that we dont include duplicate
+        //functions, where are there are functions that
+        //are contigous
         for (Absyn.DecList p = e.decs; p != null; p = p.tail)
             transDec(p.head);
         final ExpTy et = transExp(e.body);
@@ -736,8 +741,7 @@ public class Semant {
         BoolList head = null;
         BoolList prev = null;
         for (Absyn.FieldList l = fields; l != null; l = l.tail) {
-            // final var cached = fetchTypeAndReport(l.typ, l.pos);
-            final BoolList current = new BoolList(false, null);
+            final BoolList current = new BoolList(l.escape, null);
             if (head == null)
                 head = current;
             else

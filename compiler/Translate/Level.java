@@ -1,6 +1,5 @@
 package Translate;
 
-import Intel.IntelFrame;
 import Symbol.Symbol;
 import Temp.Label;
 import Util.BoolList;
@@ -10,9 +9,16 @@ public class Level {
     Frame.Frame frame;
     Level parent;
     // formal function arguments for level
+    //this includes a static link to the 
+    //previous stack frame
     public AccessList formals;
 
     public Level(Level prnt, Symbol name, BoolList fmls) {
+        AccessList accessList = null;
+        AccessList current = null;
+        AccessList previous = null;
+        for(var fml = fmls; fml != null; fml = fml.tail){
+        }
         frame = prnt.frame.newFrame(new Label(), fmls);
     }
 
@@ -21,12 +27,7 @@ public class Level {
         frame = f;
     }
 
-    // allocate new local variable in the current frame
-    // probaby called by accessing the symbol table
-    // when a new variable is declared
     public Access allocLocal(boolean escape) {
-        frame.allocLocal(escape);
-        return null;
+        return new Access(this, frame.allocLocal(escape));
     }
-
 }

@@ -30,6 +30,7 @@ import Frame.*;
  */
 public class IntelFrame extends Frame {
 
+    private static int id = 0;
     private int off = 0;
     private static final int WORD_SIZE = 8;
 
@@ -37,20 +38,22 @@ public class IntelFrame extends Frame {
         //need to save any registers we are going to use on the stack before we do anything
         //once the function has written to the output register, we can deallocate locals
         //and the restore the registers
-        //
+        //formals are placed by the caller in the out going arguments of previous stack from
+        //reachable as ebp + 8, ebp + 16
         name = nm;
         BoolList tmp = frml;
         AccessList al = null;
         AccessList prev =  null;
-        int i = 0;
         //should be allocated from right to left
         while(tmp != null){
-            var escape =  i++ > 5 || tmp.head;
+            //var escape =  i++ > 5 || tmp.head;
+            var escape =  tmp.head;
             Access local;
             if(!escape) {
                local = new InReg(new Temp());
             } else {
-                local = new InFrame((off = off + WORD_SIZE + WORD_SIZE));
+                local = new InFrame((off));
+                off = off + WORD_SIZE;
             }
             al = new AccessList(local, prev);
             prev = al;
@@ -59,16 +62,24 @@ public class IntelFrame extends Frame {
         formals = al;
     }
 
+
     @Override
     public Access allocLocal(boolean escape) {
-        return escape ? new InFrame((off = off - WORD_SIZE)) : new InReg(new Temp());
+        System.out.println("allocate local variable in current stack frame:" + this.toString());
+        var ret = escape ? new InFrame(off) : new InReg(new Temp());
+        off = off - WORD_SIZE;
+        return ret;
 
     }
 
     @Override
     public Frame newFrame(Label name, BoolList formals) {
-        System.out.println("NEW FRAME");
+        System.out.println("create new stack frame " + this.toString());
         return new IntelFrame(name, formals);
+    }
+
+    public String toString(){
+        return "stack frame " + id++;
     }
 }
 
@@ -77,7 +88,7 @@ class InFrame extends Access {
     int offset;
 
     InFrame(int os) {
-        System.out.println("ALLOC: InFrame " + os);
+        System.out.println("bp[" + os+ "]");
         offset = os;
     }
 }
@@ -86,7 +97,7 @@ class InReg extends Access {
     Temp temp;
 
     InReg(Temp tmp) {
-        System.out.println("ALLOC: InReg " + tmp);
+        System.out.println("reg:" + tmp);
         temp = tmp;
     }
 }
