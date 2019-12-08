@@ -1,0 +1,65 @@
+// Type your code here, or load an example.
+int square(int a, int b, int c, int d, int e, int f, int g, int h, int i) {
+    int localA = 555;
+    int localB = g * h * i;
+    int localC = a * b * c * d * e * f;
+    int res = localA * localB * localC;
+    return res;
+}
+
+int  main(){
+    int local = square(1,2,3,4,5,6,7,8,9);
+    return 1;
+}
+
+
+_Z6squareiiiiiiiii:
+        push    rbp
+        mov     rbp, rsp
+        mov     DWORD PTR [rbp-20], edi
+        mov     DWORD PTR [rbp-24], esi
+        mov     DWORD PTR [rbp-28], edx
+        mov     DWORD PTR [rbp-32], ecx
+        mov     DWORD PTR [rbp-36], r8d
+        mov     DWORD PTR [rbp-40], r9d
+        mov     DWORD PTR [rbp-4], 555
+        mov     eax, DWORD PTR [rbp+16]
+        imul    eax, DWORD PTR [rbp+24]
+        mov     edx, DWORD PTR [rbp+32]
+        imul    eax, edx
+        mov     DWORD PTR [rbp-8], eax
+        mov     eax, DWORD PTR [rbp-20]
+        imul    eax, DWORD PTR [rbp-24]
+        imul    eax, DWORD PTR [rbp-28]
+        imul    eax, DWORD PTR [rbp-32]
+        imul    eax, DWORD PTR [rbp-36]
+        mov     edx, DWORD PTR [rbp-40]
+        imul    eax, edx
+        mov     DWORD PTR [rbp-12], eax
+        mov     eax, DWORD PTR [rbp-4]
+        imul    eax, DWORD PTR [rbp-8]
+        mov     edx, DWORD PTR [rbp-12]
+        imul    eax, edx
+        mov     DWORD PTR [rbp-16], eax
+        mov     eax, DWORD PTR [rbp-16]
+        pop     rbp
+        ret
+main:
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 16
+        push    9
+        push    8
+        push    7
+        mov     r9d, 6
+        mov     r8d, 5
+        mov     ecx, 4
+        mov     edx, 3
+        mov     esi, 2
+        mov     edi, 1
+        call    _Z6squareiiiiiiiii
+        add     rsp, 24
+        mov     DWORD PTR [rbp-4], eax
+        mov     eax, 1
+        leave
+        ret
