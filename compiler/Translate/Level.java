@@ -22,7 +22,8 @@ public class Level {
         AccessList previous = null;
         for(var fml = fmls; fml != null; fml = fml.tail){
         }
-        frame = prnt.frame.newFrame(new Label(), fmls);
+        //add new formal parameter for static link to parent frame
+        frame = prnt.frame.newFrame(new Label(), new BoolList(true, fmls));
     }
 
     // associate a frame with this level
