@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import ErrorMsg.ErrorMsg;
-import Frame.Frame;
+import FindEscape.FindEscape;
 import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
@@ -80,7 +80,7 @@ public class Main {
     }
 
     private void typeCheck() {
-        this.semant.findEscape(this.ast.absyn);
+        new FindEscape(this.ast.absyn);
         this.semant.transExp(this.ast.absyn);
     }
 

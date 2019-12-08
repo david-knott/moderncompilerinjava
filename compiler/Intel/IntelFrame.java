@@ -30,9 +30,11 @@ import Frame.*;
  */
 public class IntelFrame extends Frame {
 
+
     private static int id = 0;
-    private int off = 0;
-    private static final int WORD_SIZE = 8;
+    private int formalOffset = 4;
+    private int localOffset = -4;
+    private static final int WORD_SIZE = 4;
 
     public IntelFrame(Label nm, BoolList frml) {
         //need to save any registers we are going to use on the stack before we do anything
@@ -40,20 +42,23 @@ public class IntelFrame extends Frame {
         //and the restore the registers
         //formals are placed by the caller in the out going arguments of previous stack from
         //reachable as ebp + 8, ebp + 16
+        id++;
+        System.out.println("intel frame created " + id);
         name = nm;
         BoolList tmp = frml;
         AccessList al = null;
         AccessList prev =  null;
+        int i = 0;
         //should be allocated from right to left
         while(tmp != null){
-            //var escape =  i++ > 5 || tmp.head;
-            var escape =  tmp.head;
+            var escape =  i++ > 5 || tmp.head;
+            //var escape =  tmp.head;
             Access local;
             if(!escape) {
                local = new InReg(new Temp());
             } else {
-                local = new InFrame((off));
-                off = off + WORD_SIZE;
+                local = new InFrame((formalOffset));
+                formalOffset = formalOffset + WORD_SIZE;
             }
             al = new AccessList(local, prev);
             prev = al;
@@ -62,24 +67,24 @@ public class IntelFrame extends Frame {
         formals = al;
     }
 
-
     @Override
     public Access allocLocal(boolean escape) {
-        System.out.println("allocate local variable in current stack frame:" + this.toString());
-        var ret = escape ? new InFrame(off) : new InReg(new Temp());
-        off = off - WORD_SIZE;
+        System.out.println("allocate local variable " + this.toString());
+        var ret = escape ? new InFrame(localOffset) : new InReg(new Temp());
+        localOffset = localOffset - WORD_SIZE;
         return ret;
 
     }
 
     @Override
     public Frame newFrame(Label name, BoolList formals) {
-        System.out.println("create new stack frame " + this.toString());
+        System.out.println("creating new stack frame " + this.toString());
         return new IntelFrame(name, formals);
     }
 
+    @Override
     public String toString(){
-        return "stack frame " + id++;
+        return "[stack frame " + id + "]";
     }
 }
 

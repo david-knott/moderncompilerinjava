@@ -11,8 +11,28 @@ import Main.Main;
 public class Chap6Test {
 
     @Test
-    public void printtest() {
-        String tigerCode = "let var a:int := 1 function fa(aa:int, bb:int):int = fb(aa, bb) + bb + a  function fb(a:int, b:int):int = a * b in () end";
+    public void formals_six_or_less_in_temporaries() {
+        String tigerCode = "let function fa(aa:int, bb:int, cc:int, dd:int):int = (1) in (1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        //need to get the layout and test
+        assertFalse(m.hasErrors());
+    }
+
+
+    @Test
+    public void formals_greater_than_six_in_() {
+        String tigerCode = "let function fa(aa:int, bb:int, cc:int, dd:int, ee:int, ff:int, gg:int, hh:int):int = (1) in (1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void locals() {
+        String tigerCode = "let function fa(aa:int, bb:int, cc:int, dd:int, ee:int, ff:int, gg:int, hh:int):int = (let var a:= 1 var b := 2 in (b) end) in (1) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

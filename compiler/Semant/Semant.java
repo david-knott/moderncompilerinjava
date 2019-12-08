@@ -1,8 +1,10 @@
 package Semant;
 
 import Absyn.FieldList;
+import Absyn.FieldVar;
 import Absyn.FunctionDec;
 import Absyn.SimpleVar;
+import Absyn.SubscriptVar;
 import Absyn.TypeDec;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
@@ -14,7 +16,6 @@ import ErrorMsg.TypeNotVoidError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
 import ErrorMsg.VariableAssignError;
-import FindEscape.FindEscape;
 import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
@@ -33,7 +34,6 @@ public class Semant {
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
     public static final Types.Type NIL = new Types.NIL();
-    public FindEscape findEscape;
 
     public Semant(final ErrorMsg.ErrorMsg err, final Level lvl) {
         this(new Env(err, lvl), false, lvl);
@@ -557,12 +557,23 @@ public class Semant {
     ExpTy transExp(final Absyn.AssignExp assignExp) {
         var transVar = transVar(assignExp.var); // left value
         var transExp = transExp(assignExp.exp); // right value
+        //check to see if we are assigning to a readonly variable
         if (assignExp.var instanceof SimpleVar) {
             var simpleVar = (SimpleVar) assignExp.var;
             var varEntry = (VarEntry) env.venv.get(simpleVar.name);
             if (varEntry.readOnly) {
                 env.errorMsg.add(new VariableAssignError(assignExp.pos, simpleVar.name));
             }
+        } else if(assignExp.var instanceof SubscriptVar ){
+            var subscriptVar = (SubscriptVar)assignExp.var;
+            
+
+        } else if(assignExp.var instanceof FieldVar ){
+
+            var fieldVar = (FieldVar)assignExp.var;
+
+        } else {
+            throw new RuntimeException("Unhandled type " + assignExp.var);
         }
 
         if (transVar.ty.actual() != transExp.ty.actual()) {
@@ -692,10 +703,6 @@ public class Semant {
         return new ExpTy(null, fieldType);
     }
 
-    public void findEscape(final Absyn.Exp exp) {
-        this.findEscape = new FindEscape(exp);
-    }
-
     /**
      * Main dispatch function for expressions
      * 
@@ -741,6 +748,7 @@ public class Semant {
         BoolList head = null;
         BoolList prev = null;
         for (Absyn.FieldList l = fields; l != null; l = l.tail) {
+            System.out.println(l.name);
             final BoolList current = new BoolList(l.escape, null);
             if (head == null)
                 head = current;

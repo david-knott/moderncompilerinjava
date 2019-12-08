@@ -32,7 +32,7 @@ class FormalEscape extends Escape {
     FormalEscape(int d, Absyn.FieldList f) {
         depth = d;
         fl = f;
-        fl.escape = true;// false;
+        fl.escape = false;
     }
 
     void setEscape() {
@@ -46,7 +46,7 @@ class VarEscape extends Escape {
     VarEscape(int d, Absyn.VarDec v) {
         depth = d;
         vd = v;
-        vd.escape = true; //false;
+        vd.escape = false;
     }
 
     void setEscape() {
