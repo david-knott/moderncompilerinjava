@@ -32,7 +32,7 @@ public class Chap6Test {
 
     @Test
     public void locals() {
-        String tigerCode = "let function fa(aa:int, bb:int, cc:int, dd:int, ee:int, ff:int, gg:int, hh:int):int = (let var a:= 1 var b := 2 in (b) end) in (1) end";
+        String tigerCode = "let function fa(aa:int, bb:int, cc:int, dd:int, ee:int, ff:int, gg:int, hh:int):int = (let var a:= 1 var b := 2 var c := 4 in (gg * hh + a + b) end) in (3) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

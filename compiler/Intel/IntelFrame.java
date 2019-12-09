@@ -44,7 +44,6 @@ public class IntelFrame extends Frame {
         //reachable as ebp + 8, ebp + 16
         id++;
         System.out.println("intel frame created " + id);
-        name = nm;
         BoolList tmp = frml;
         AccessList al = null;
         AccessList prev =  null;
@@ -85,6 +84,10 @@ public class IntelFrame extends Frame {
     @Override
     public String toString(){
         return "[stack frame " + id + "]";
+    }
+
+    private void generateLocals(){
+
     }
 }
 

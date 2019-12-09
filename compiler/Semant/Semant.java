@@ -748,7 +748,6 @@ public class Semant {
         BoolList head = null;
         BoolList prev = null;
         for (Absyn.FieldList l = fields; l != null; l = l.tail) {
-            System.out.println(l.name);
             final BoolList current = new BoolList(l.escape, null);
             if (head == null)
                 head = current;
