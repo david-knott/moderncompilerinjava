@@ -6,7 +6,6 @@ import Absyn.BreakExp;
 import Absyn.CallExp;
 import Absyn.FieldVar;
 import Absyn.ForExp;
-import Absyn.FunctionDec;
 import Absyn.IfExp;
 import Absyn.IntExp;
 import Absyn.LetExp;
@@ -32,7 +31,7 @@ class FormalEscape extends Escape {
     FormalEscape(int d, Absyn.FieldList f) {
         depth = d;
         fl = f;
-        fl.escape = false;
+        fl.escape = true;
     }
 
     void setEscape() {
@@ -46,7 +45,7 @@ class VarEscape extends Escape {
     VarEscape(int d, Absyn.VarDec v) {
         depth = d;
         vd = v;
-        vd.escape = false;
+        vd.escape = true;
     }
 
     void setEscape() {
