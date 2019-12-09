@@ -11,9 +11,6 @@ public class Level {
     // stack frame associate with this levels()
     Frame.Frame frame;
     Level parent;
-    // formal function arguments for level
-    //this includes a static link to the 
-    //previous stack frame
     public AccessList formals;
 
     public Level(Level prnt, Symbol name, BoolList fmls) {
