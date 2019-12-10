@@ -8,6 +8,7 @@ public abstract class Frame {
     public AccessList formals;
 
     abstract public Temp FP();
+
     abstract public Temp RV();
 
     abstract public int wordSize();

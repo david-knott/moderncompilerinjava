@@ -1,8 +1,5 @@
 package Translate;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import Symbol.Symbol;
 import Temp.Label;
 import Util.BoolList;
@@ -14,17 +11,31 @@ public class Level {
     public AccessList formals;
 
     public Level(Level prnt, Symbol name, BoolList fmls) {
-        AccessList accessList = null;
+        System.out.println("New level constructor" + this.toString());
+        //TODO: Ensure formal ordering is correct
         AccessList current = null;
         AccessList previous = null;
-        for(var fml = fmls; fml != null; fml = fml.tail){
-        }
-        //add new formal parameter for static link to parent frame
+        // add new formal parameter for static link to parent frame
         frame = prnt.frame.newFrame(new Label(), new BoolList(true, fmls));
+        //get the formals from the stack and add their access to translate acccess
+        Frame.AccessList frameFormals = frame.formals;
+        for (var fml = fmls; fml != null; fml = fml.tail) {
+            if(formals == null){
+                formals = new AccessList(new Access(prnt, frameFormals.head));
+                current = formals;
+            } else {
+                previous = current;
+                current = new AccessList(new Access(prnt, frameFormals.head));
+                previous.tail = current;
+            }
+            frameFormals = frameFormals.tail;
+        }
+        System.out.println("End level constructor" + this.toString());
     }
 
     // associate a frame with this level
     public Level(Frame.Frame f) {
+        System.out.println("New level constructor" + this.toString());
         frame = f;
     }
 
