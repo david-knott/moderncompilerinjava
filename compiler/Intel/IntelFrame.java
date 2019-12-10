@@ -25,10 +25,9 @@ import Frame.*;
  */
 public class IntelFrame extends Frame {
 
-    private static int id = 0;
-    private int formalOffset = 4;
-    private int localOffset = -4;
-    private static final int WORD_SIZE = 4;
+    private int formalOffset = 8;
+    private int localOffset = -8;
+    private static final int WORD_SIZE = 8;
 
     public IntelFrame(Label nm, BoolList frml) {
         // need to save any registers we are going to use on the stack before we do
@@ -39,8 +38,7 @@ public class IntelFrame extends Frame {
         // formals are placed by the caller in the out going arguments of previous stack
         // from
         // reachable as ebp + 8, ebp + 16
-        id++;
-        System.out.println("intel frame created " + id + this.toString());
+        System.out.println("intel frame created");
         BoolList tmp = frml;
         AccessList al = null;
         AccessList prev = null;
@@ -62,6 +60,8 @@ public class IntelFrame extends Frame {
             tmp = tmp.tail;
         }
         formals = al;
+        System.out.println("end constructor");
+
     }
 
     @Override
@@ -76,12 +76,8 @@ public class IntelFrame extends Frame {
     @Override
     public Frame newFrame(Label name, BoolList formals) {
         System.out.println("creating new stack frame " + this.toString());
-        return new IntelFrame(name, formals);
-    }
 
-    @Override
-    public String toString() {
-        return "[stack frame " + id + "]";
+        return new IntelFrame(name, formals);
     }
 
     @Override

@@ -13,4 +13,12 @@ public class Translate {
     public Exp simpleVar(Access access, Level level) {
         return null;
     }
+
+    /**
+     * Translates formals at a level
+     * @param level
+     */
+    void formals(Level level){
+
+    }
 }

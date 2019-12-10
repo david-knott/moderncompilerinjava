@@ -18,6 +18,7 @@ import ErrorMsg.UndefinedVariableError;
 import ErrorMsg.VariableAssignError;
 import Symbol.Symbol;
 import Temp.Label;
+import Translate.Access;
 import Translate.Exp;
 import Translate.ExpTy;
 import Translate.Level;
@@ -145,10 +146,10 @@ public class Semant {
      */
     ExpTy transVar(final Absyn.FieldVar e) {
         var varType = transVar(e.var).ty.actual();
-        //TODO: This calls simpleVar eventually,
-        //TODO: DOes it use its translated exp ?
+        // TODO: This calls simpleVar eventually,
+        // TODO: DOes it use its translated exp ?
         var varExp = transVar(e.var);
-        
+
         if (!(varType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
         }
@@ -182,7 +183,7 @@ public class Semant {
         if (!(elementType.actual() instanceof ARRAY)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
         }
-        return new ExpTy(null, ((ARRAY)elementType).element);
+        return new ExpTy(null, ((ARRAY) elementType).element);
     }
 
     /**
@@ -212,8 +213,8 @@ public class Semant {
      */
     Exp transDec(final Absyn.FunctionDec e) {
         FunctionDec current = e;
-        //if we have already processed this function while
-        //to handling recursive functions 
+        // if we have already processed this function while
+        // to handling recursive functions
         // add function entry to environment tables so it
         // is available for lookup inside the function body
         // this is to facilitate recursive function calls
@@ -223,6 +224,8 @@ public class Semant {
             // add a new nesting level into the function entry
             // add allocations for the parameters to be passed
             // to this function
+            // creates a new level and a new frame and allocates space for the formal parameters
+            // for each formal parameter, we need to get its frame access
             var functionEntry = new FunEntry(new Level(level, e.name, buildBoolList(current.params)), new Label(),
                     transTypeFields(current.params), functionReturnType);
             // add function entry into the value environment
@@ -231,12 +234,19 @@ public class Semant {
         } while (current != null);
         current = e;
         do {
+            //I think we begin scope here because we
+            //are processing the function body in this 
+            //loop
+            env.venv.beginScope();
             // get the new level for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
-            env.venv.beginScope();
             var vent = (FunEntry) env.venv.get(current.name);
+            var translateAccess = newLevel.formals;
             for (var p = current.params; p != null; p = p.tail) {
-                env.venv.put(p.name, new VarEntry(env.tenv.get(p.typ).actual()));
+                //TODO: Check if this is right, Passing in the translate access to the var entry
+                var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
+                env.venv.put(p.name, varEntry);
+                translateAccess = translateAccess.tail;
             }
             final var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
             if (!transBody.ty.coerceTo(vent.result)) {
@@ -305,9 +315,10 @@ public class Semant {
             env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
         }
         // allocate space for this variable
-        level.allocLocal(e.escape);
+        var translateAccess = level.allocLocal(e.escape);
         // add variable value mapping
-        env.venv.put(e.name, new VarEntry(type));
+        var varEntry = new VarEntry(type, translateAccess);
+        env.venv.put(e.name, varEntry);
         return null;
     }
 
@@ -600,8 +611,11 @@ public class Semant {
     ExpTy transExp(final Absyn.ForExp forExp) {
         env.tenv.beginScope();
         env.venv.beginScope();
-        // add the start value to value table
-        env.venv.put(forExp.var.name, new VarEntry(INT));
+        // add the loop start value to value table
+        // the loop index definately doesn't escape
+        var translateAccess = level.allocLocal(false);
+        var startVarEntry = new VarEntry(INT, translateAccess);
+        env.venv.put(forExp.var.name, startVarEntry);
         var lowTy = transExp(forExp.var.init);
         if (lowTy.ty.actual() != Semant.INT) {
             env.errorMsg.add(new TypeNotIntError(forExp.var.pos, lowTy.ty.actual()));
