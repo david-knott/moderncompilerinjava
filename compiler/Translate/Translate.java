@@ -6,6 +6,12 @@ package Translate;
  */
 public class Translate {
 
+    private Frag frags;
+
+    public Frag getResult() {
+        return frags;
+    }
+
     public void procEntryExit(Level level, Exp body) {
 
     }

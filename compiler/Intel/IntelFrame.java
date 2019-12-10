@@ -3,6 +3,7 @@ package Intel;
 import Temp.Label;
 import Temp.Temp;
 import Tree.Exp;
+import Tree.ExpList;
 import Tree.Stm;
 import Util.BoolList;
 import Frame.*;
@@ -100,6 +101,12 @@ public class IntelFrame extends Frame {
 
     @Override
     public Stm procEntryExit1(Stm body) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Exp externalCall(String func, ExpList args) {
         // TODO Auto-generated method stub
         return null;
     }
