@@ -1,5 +1,9 @@
 package Translate;
 
+/**
+ * Creates intermediate code, using frame information
+ * level and the ?
+ */
 public class Translate {
     public void procEntryExit(Level level, Exp body) {
 

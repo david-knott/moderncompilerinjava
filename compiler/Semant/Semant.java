@@ -21,6 +21,7 @@ import Temp.Label;
 import Translate.Exp;
 import Translate.ExpTy;
 import Translate.Level;
+import Translate.Translate;
 import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
@@ -30,6 +31,7 @@ public class Semant {
     private final Env env;
     private final boolean breakScope;
     private Level level;
+    private final Translate translate;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
@@ -43,6 +45,7 @@ public class Semant {
         env = e;
         breakScope = bs;
         level = lev;
+        translate = new Translate();
     }
 
     /**
