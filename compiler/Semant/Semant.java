@@ -127,7 +127,7 @@ public class Semant {
         final var x = env.venv.get(e.name);
         if (x instanceof VarEntry) {
             final VarEntry ent = (VarEntry) x;
-            return new ExpTy(null, ent.ty);
+            return new ExpTy(translate.simpleVar(ent.access, level), ent.ty);
         } else {
             env.errorMsg.add(new UndefinedVariableError(e.pos, e.name));
             return new ExpTy(null, INT);
@@ -145,6 +145,10 @@ public class Semant {
      */
     ExpTy transVar(final Absyn.FieldVar e) {
         var varType = transVar(e.var).ty.actual();
+        //TODO: This calls simpleVar eventually,
+        //TODO: DOes it use its translated exp ?
+        var varExp = transVar(e.var);
+        
         if (!(varType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
         }

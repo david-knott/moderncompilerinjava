@@ -2,7 +2,8 @@ package Semant;
 
 class VarEntry extends Entry {
 
-    //Translate.Access access;
+    //TODO: Implement
+    Translate.Access access;
     Types.Type ty;
     boolean readOnly;
 
