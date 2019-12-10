@@ -241,7 +241,6 @@ public class Semant {
             // get the new level for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             var vent = (FunEntry) env.venv.get(current.name);
-            //var translateAccess = vent.level.formals;
             var translateAccess = newLevel.formals;
             for (var p = current.params; p != null; p = p.tail) {
                 //TODO: Check if this is right, Passing in the translate access to the var entry

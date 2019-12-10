@@ -24,9 +24,9 @@ import Frame.*;
  */
 public class IntelFrame extends Frame {
 
-    private int formalOffset = 4;
-    private int localOffset = -4;
-    private static final int WORD_SIZE = 4;
+    private int formalOffset = 8;
+    private int localOffset = -8;
+    private static final int WORD_SIZE = 8;
 
     public IntelFrame(Label nm, BoolList frml) {
         // need to save any registers we are going to use on the stack before we do
