@@ -2,8 +2,6 @@ package Frame;
 
 import Temp.Label;
 import Temp.Temp;
-import Tree.ExpList;
-import Tree.Stm;
 
 public abstract class Frame {
     public Label name;

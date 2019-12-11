@@ -7,8 +7,7 @@ import Tree.MEM;
 import Tree.TEMP;
 
 /**
- * Creates intermediate code, using frame information
- * level and the ?
+ * Creates intermediate code, using frame information level and the ?
  */
 public class Translate {
 
@@ -19,34 +18,43 @@ public class Translate {
     }
 
     /**
-     * This function has the side effect of remembering
-     * a ProcFrag
+     * This function has the side effect of remembering a ProcFrag
      */
     public void procEntryExit(Level level, Exp body) {
 
     }
 
+    /**
+     * Returns a IR of a simple variable. This comprises of an offset from the
+     * framepointer + the frame pointers. This is wrapped in a a EX class
+     * 
+     * @param access
+     * @param level
+     * @return
+     */
     public Exp simpleVar(Access access, Level level) {
-        
-        /*
-        var frameAcess = access.acc;
-        int offset = 0;
-        if(frameAcess instanceof InFrame){
-        }
-        new MEM(new BINOP(BINOP.PLUS, new TEMP(level.frame.FP()), new CONST(k)));
-        */
-        return null;
+        var treeExp = access.acc.exp(new TEMP(level.frame.FP()));
+        return new Ex(treeExp);
     }
 
-    public Exp string(Label label, String literal){
+    public Exp subscriptVar(Access access, Level level) {
+        throw new Error("Not implemeneted");
+    }
+
+    public Exp fieldVar(Access access, Level level) {
+        throw new Error("Not implemeneted");
+    }
+
+    public Exp string(Label label, String literal) {
         return null;
     }
 
     /**
-     * Translates formals at a level
+     * Translates formals at a level ???
+     * 
      * @param level
      */
-    void formals(Level level){
+    void formals(Level level) {
 
     }
 }

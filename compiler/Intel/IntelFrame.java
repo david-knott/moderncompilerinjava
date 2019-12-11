@@ -2,9 +2,13 @@ package Intel;
 
 import Temp.Label;
 import Temp.Temp;
+import Tree.BINOP;
+import Tree.CONST;
 import Tree.Exp;
 import Tree.ExpList;
+import Tree.MEM;
 import Tree.Stm;
+import Tree.TEMP;
 import Util.BoolList;
 import Frame.*;
 
@@ -77,7 +81,6 @@ public class IntelFrame extends Frame {
     @Override
     public Frame newFrame(Label name, BoolList formals) {
         System.out.println("creating new stack frame " + this.toString());
-
         return new IntelFrame(name, formals);
     }
 
@@ -123,8 +126,11 @@ class InFrame extends Access {
 
     @Override
     public Exp exp(Exp framePtr) {
-        // TODO Auto-generated method stub
-        return null;
+        if(!(framePtr instanceof TEMP)){
+            throw new IllegalArgumentException("framePtr argument should be of type Tree.TEMP");
+        }
+        var fp = (TEMP)framePtr;
+        return new MEM(new BINOP(BINOP.PLUS, fp, new CONST(offset)));
     }
 }
 
@@ -138,7 +144,6 @@ class InReg extends Access {
 
     @Override
     public Exp exp(Exp framePtr) {
-        // TODO Auto-generated method stub
-        return null;
+        return new TEMP(temp);
     }
 }
