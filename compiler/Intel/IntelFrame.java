@@ -30,8 +30,8 @@ import Frame.*;
  */
 public class IntelFrame extends Frame {
 
-    private int formalOffset = 8;
-    private int localOffset = -8;
+    private int formalOffset = 0;
+    private int localOffset = 0;
     private static final int WORD_SIZE = 8;
 
     public IntelFrame(Label nm, BoolList frml) {
@@ -65,8 +65,6 @@ public class IntelFrame extends Frame {
             tmp = tmp.tail;
         }
         formals = al;
-        System.out.println("end constructor");
-
     }
 
     @Override

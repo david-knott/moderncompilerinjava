@@ -128,7 +128,8 @@ public class Semant {
         final var x = env.venv.get(e.name);
         if (x instanceof VarEntry) {
             final VarEntry ent = (VarEntry) x;
-            return new ExpTy(translate.simpleVar(ent.access, level), ent.ty);
+            var translateExp = translate.simpleVar(ent.access, level);
+            return new ExpTy(translateExp, ent.ty);
         } else {
             env.errorMsg.add(new UndefinedVariableError(e.pos, e.name));
             return new ExpTy(null, INT);

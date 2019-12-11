@@ -11,8 +11,8 @@ import Main.Main;
 public class Chap7Test {
 
     @Test
-    public void formals_six_or_less_in_temporaries() {
-        String tigerCode = "let function fa(aa:int, bb:int, cc:int, dd:int):int = (1) in (1) end";
+    public void simple_var_translation() {
+        String tigerCode = "let var a:int := 1 var b:int := 1 var c:int := 2 in (c := a + b) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

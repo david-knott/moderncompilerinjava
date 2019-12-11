@@ -33,6 +33,31 @@ public class Translate {
      * @return
      */
     public Exp simpleVar(Access access, Level level) {
+        // TODO: Handle static links, where the variable is stored
+        // in a frame beneath this one. We need the level the current
+        // function is being used in and the level where the variable is
+        // declared.
+
+        // starting from the level of usage
+        // we decent until we reach the level that
+        // the accesss is defined at.
+        // exp = MEM(+ ( CONST kn, MEM( +(CONST kn-1 ) )
+        var slinkLevel = level;
+        while (slinkLevel != access.home) {
+            // produces a chain of MEM and BINOP nodes
+            // to fetch stat links for all frames
+            // need the static link offset.
+            // get the current frames pointer and find the position
+            // of the static link ?
+            var framePtr = new TEMP(level.frame.FP());
+            // TODO: i am assuming the first item is the static link
+            if (level.formals != null) {
+
+                var staticLinkExp = level.formals.head.acc.exp(framePtr);
+            }
+            slinkLevel = slinkLevel.parent;
+        } 
+
         var treeExp = access.acc.exp(new TEMP(level.frame.FP()));
         return new Ex(treeExp);
     }
