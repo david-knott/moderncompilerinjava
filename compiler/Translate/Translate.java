@@ -25,8 +25,12 @@ public class Translate {
     }
 
     /**
-     * Returns a IR of a simple variable. This comprises of an offset from the
-     * framepointer + the frame pointers. This is wrapped in a a EX class
+     * Returns a IR expression of a simple variable. 
+     * This comprises of an offset from the defining frames
+     * frame pointer. If this variable is declared at same level
+     * this will be the associated framees frame pointer. If the
+     * variable is defined in at a lower level, it wil be relative
+     * to that frame pointer, passed using the chain of static links
      * 
      * @param access the variable and the level where it was defined 
      * @param level the level this variable is being accessed from
