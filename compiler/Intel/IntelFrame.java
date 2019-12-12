@@ -57,8 +57,8 @@ public class IntelFrame extends Frame {
             if (!escape) {
                 local = new InReg(new Temp());
             } else {
-                local = new InFrame((formalOffset));
                 formalOffset = formalOffset + WORD_SIZE;
+                local = new InFrame((formalOffset));
             }
             al = new AccessList(local, prev);
             prev = al;
@@ -70,8 +70,8 @@ public class IntelFrame extends Frame {
     @Override
     public Access allocLocal(boolean escape) {
         System.out.println("Allocate local variable in frame " + this.toString());
-        var ret = escape ? new InFrame(localOffset) : new InReg(new Temp());
         localOffset = localOffset - WORD_SIZE;
+        var ret = escape ? new InFrame(localOffset) : new InReg(new Temp());
         return ret;
 
     }

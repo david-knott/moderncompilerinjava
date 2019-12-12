@@ -184,6 +184,7 @@ public class Semant {
         if (!(elementType.actual() instanceof ARRAY)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
         }
+        //var translateExp = translate.subscriptVar(ent.access, level);
         return new ExpTy(null, ((ARRAY) elementType).element);
     }
 
