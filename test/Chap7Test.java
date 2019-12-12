@@ -20,4 +20,12 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void simple_var_translation_static_link() {
+        String tigerCode = "let var a:int := 1 function fa(aa:int):int = (let var b:int := 1 function fb(bb:int):int = (bb + a) in fb(b) end ) in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
 }

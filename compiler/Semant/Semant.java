@@ -225,7 +225,8 @@ public class Semant {
             // add a new nesting level into the function entry
             // add allocations for the parameters to be passed
             // to this function
-            // creates a new level and a new frame and allocates space for the formal parameters
+            // creates a new level and a new frame and allocates space for the formal
+            // parameters
             // for each formal parameter, we need to get its frame access
             var functionEntry = new FunEntry(new Level(level, e.name, buildBoolList(current.params)), new Label(),
                     transTypeFields(current.params), functionReturnType);
@@ -235,16 +236,17 @@ public class Semant {
         } while (current != null);
         current = e;
         do {
-            //I think we begin scope here because we
-            //are processing the function body in this 
-            //loop
+            // I think we begin scope here because we
+            // are processing the function body in this
+            // loop
             env.venv.beginScope();
             // get the new level for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             var vent = (FunEntry) env.venv.get(current.name);
             var translateAccess = newLevel.formals;
             for (var p = current.params; p != null; p = p.tail) {
-                //TODO: Check if this is right, Passing in the translate access to the var entry
+                // TODO: Check if this is right, Passing in the translate access to the var
+                // entry
                 var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
                 env.venv.put(p.name, varEntry);
                 translateAccess = translateAccess.tail;
@@ -358,9 +360,9 @@ public class Semant {
     ExpTy transExp(final Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
-        //TODO: need to ensure that we dont include duplicate
-        //functions, where are there are functions that
-        //are contigous
+        // TODO: need to ensure that we dont include duplicate
+        // functions, where are there are functions that
+        // are contigous
         for (Absyn.DecList p = e.decs; p != null; p = p.tail)
             transDec(p.head);
         final ExpTy et = transExp(e.body);
@@ -396,7 +398,8 @@ public class Semant {
             }
 
         case Absyn.OpExp.EQ:
-            //the order here is important, expRigth.coerceTo(expLeft) is not the same as the reverse
+            // the order here is important, expRigth.coerceTo(expLeft) is not the same as
+            // the reverse
 
             if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
                 env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
@@ -576,20 +579,23 @@ public class Semant {
     ExpTy transExp(final Absyn.AssignExp assignExp) {
         var transVar = transVar(assignExp.var); // left value
         var transExp = transExp(assignExp.exp); // right value
-        //check to see if we are assigning to a readonly variable
+        // check to see if we are assigning to a readonly variable
         if (assignExp.var instanceof SimpleVar) {
             var simpleVar = (SimpleVar) assignExp.var;
             var varEntry = (VarEntry) env.venv.get(simpleVar.name);
-            if (varEntry.readOnly) {
-                env.errorMsg.add(new VariableAssignError(assignExp.pos, simpleVar.name));
+            if (varEntry == null) {
+                env.errorMsg.add(new UndefinedVariableError(assignExp.var.pos, simpleVar.name));
+            } else {
+                if (varEntry.readOnly) {
+                    env.errorMsg.add(new VariableAssignError(assignExp.pos, simpleVar.name));
+                }
             }
-        } else if(assignExp.var instanceof SubscriptVar ){
-            var subscriptVar = (SubscriptVar)assignExp.var;
-            
+        } else if (assignExp.var instanceof SubscriptVar) {
+            var subscriptVar = (SubscriptVar) assignExp.var;
 
-        } else if(assignExp.var instanceof FieldVar ){
+        } else if (assignExp.var instanceof FieldVar) {
 
-            var fieldVar = (FieldVar)assignExp.var;
+            var fieldVar = (FieldVar) assignExp.var;
 
         } else {
             throw new RuntimeException("Unhandled type " + assignExp.var);

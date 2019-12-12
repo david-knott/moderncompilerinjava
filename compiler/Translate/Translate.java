@@ -28,38 +28,33 @@ public class Translate {
      * Returns a IR of a simple variable. This comprises of an offset from the
      * framepointer + the frame pointers. This is wrapped in a a EX class
      * 
-     * @param access
-     * @param level
-     * @return
+     * @param access the variable and the level where it was defined 
+     * @param level the level this variable is being accessed from
+     * @return a translated expression
      */
     public Exp simpleVar(Access access, Level level) {
-        // TODO: Handle static links, where the variable is stored
-        // in a frame beneath this one. We need the level the current
-        // function is being used in and the level where the variable is
-        // declared.
 
-        // starting from the level of usage
+        // starting from the level where variable is used
         // we decent until we reach the level that
-        // the accesss is defined at.
-        // exp = MEM(+ ( CONST kn, MEM( +(CONST kn-1 ) )
+        // the variable is defined in. We build up
+        // an expression as follows
+        // item1 = MEM ( BINOP (k1, FP)) - 1 is level of usage
+        // item2 = MEM ( BINOP (k2, item1))
+        // item3 = MEM ( BINOP (k3, item2))
+        // itemn-1 = MEM ( BINOP (kn-1, itemn-2))
+        // itemn = MEM ( BINOP (kn, itemn-1)) - n is level of definition
+        
+        //Calculate position of static link relative to framepointer
+        //TODO: Is it correct to assume static is always at 8
+        final int staticLinkOffset = 8;
+        Tree.Exp exp =new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(level.frame.FP())));
+        //Variable is defined in a stack frame beneath the current one
         var slinkLevel = level;
         while (slinkLevel != access.home) {
-            // produces a chain of MEM and BINOP nodes
-            // to fetch stat links for all frames
-            // need the static link offset.
-            // get the current frames pointer and find the position
-            // of the static link ?
-            var framePtr = new TEMP(level.frame.FP());
-            // TODO: i am assuming the first item is the static link
-            if (level.formals != null) {
-
-                var staticLinkExp = level.formals.head.acc.exp(framePtr);
-            }
+            exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), exp));
             slinkLevel = slinkLevel.parent;
         } 
-
-        var treeExp = access.acc.exp(new TEMP(level.frame.FP()));
-        return new Ex(treeExp);
+        return new Ex(access.acc.exp(exp));
     }
 
     public Exp subscriptVar(Access access, Level level) {

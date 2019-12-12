@@ -11,8 +11,9 @@ public class Level {
     public AccessList formals;
 
     public Level(Level prnt, Symbol name, BoolList fmls) {
-        System.out.println("New level constructor" + this.toString());
+        System.out.println("Level(Level,Symbol,BoolList):" + this.toString());
         //TODO: Ensure formal ordering is correct
+        parent = prnt;
         AccessList current = null;
         AccessList previous = null;
         // add new formal parameter for static link to parent frame
@@ -30,12 +31,11 @@ public class Level {
             }
             frameFormals = frameFormals.tail;
         }
-        System.out.println("End level constructor" + this.toString());
     }
 
     // associate a frame with this level
     public Level(Frame.Frame f) {
-        System.out.println("New level constructor" + this.toString());
+        System.out.println("Level(Frame):" + this.toString());
         frame = f;
     }
 

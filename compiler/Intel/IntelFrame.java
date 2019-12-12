@@ -43,7 +43,7 @@ public class IntelFrame extends Frame {
         // formals are placed by the caller in the out going arguments of previous stack
         // from
         // reachable as ebp + 8, ebp + 16
-        System.out.println("intel frame created");
+        System.out.println("Intel frame created " + this.toString());
         BoolList tmp = frml;
         AccessList al = null;
         AccessList prev = null;
@@ -69,7 +69,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Access allocLocal(boolean escape) {
-        System.out.println("allocate local variable " + this.toString());
+        System.out.println("Allocate local variable in frame " + this.toString());
         var ret = escape ? new InFrame(localOffset) : new InReg(new Temp());
         localOffset = localOffset - WORD_SIZE;
         return ret;
@@ -78,7 +78,6 @@ public class IntelFrame extends Frame {
 
     @Override
     public Frame newFrame(Label name, BoolList formals) {
-        System.out.println("creating new stack frame " + this.toString());
         return new IntelFrame(name, formals);
     }
 
@@ -90,8 +89,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public int wordSize() {
-        // TODO Auto-generated method stub
-        return 0;
+        return WORD_SIZE;
     }
 
     @Override
@@ -124,11 +122,7 @@ class InFrame extends Access {
 
     @Override
     public Exp exp(Exp framePtr) {
-        if(!(framePtr instanceof TEMP)){
-            throw new IllegalArgumentException("framePtr argument should be of type Tree.TEMP");
-        }
-        var fp = (TEMP)framePtr;
-        return new MEM(new BINOP(BINOP.PLUS, fp, new CONST(offset)));
+        return new MEM(new BINOP(BINOP.PLUS, framePtr, new CONST(offset)));
     }
 }
 
