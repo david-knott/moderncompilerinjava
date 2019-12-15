@@ -1,5 +1,7 @@
 package Translate;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import Temp.Label;
 import Tree.BINOP;
 import Tree.CONST;
@@ -41,25 +43,37 @@ public class Translate {
     }
 
     /**
-     * Return the array element at index i. This can be found by
-     * getting the mem at variable at offet k, this is a pointer
-     * to the array memory location on the heap. 
-     * The element will be at the memory location + i * word size
+     * Return the array element at index i. This can be found by getting the mem at
+     * variable at offet k, this is a pointer to the array memory location on the
+     * heap. The element will be at the memory location + i * word size
+     * 
+     * @param translatedArrayVar
+     * @param transIndexExp
      * @param access
      * @param level
      * @return
      */
-    public Exp subscriptVar(Access access, Level level) {
-        var exp = staticLinkOffset(access, level);
-        int i = 10;
-        //tke memory value of exp and add k * i
-        var x = new BINOP(BINOP.PLUS, new MEM(exp), new CONST( level.frame.wordSize() * i));
+    public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar) {
+        var baseExp = translatedArrayVar.exp.unEx();
+        var indexExp = transIndexExp.exp.unEx();
+        // TODO: Fetch the wordsize from the frame access
+        // subscript value is at the base array address
+        // plus the array index multiplied by the word size
+        var x = new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(8)));
         return new Ex(x);
     }
 
     public Exp fieldVar(Access access, Level level) {
         throw new Error("Not implemeneted");
     }
+
+    public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        return new Ex(new BINOP(BINOP.PLUS, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
+    }
+
+	public Exp integer(int value) {
+		return new Ex(new CONST(value));
+	}
 
     public Exp string(Label label, String literal) {
         return null;

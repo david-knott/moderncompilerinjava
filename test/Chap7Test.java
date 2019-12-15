@@ -28,4 +28,22 @@ public class Chap7Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void subscript_var() {
+        String tigerCode = "let var N := 8 type intArray = array of int var row := intArray [ N ] of 0 in ( row[2] ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void record_var() {
+        String tigerCode = "let var N := 8 type intArray = array of int var row := intArray [ N ] of 0 in ( row[2] ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
 }

@@ -146,11 +146,8 @@ public class Semant {
      * @return
      */
     ExpTy transVar(final Absyn.FieldVar e) {
-        var varType = transVar(e.var).ty.actual();
-        // TODO: This calls simpleVar eventually,
-        // TODO: DOes it use its translated exp ?
         var varExp = transVar(e.var);
-
+        var varType = varExp.ty.actual();
         if (!(varType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
         }
@@ -184,8 +181,9 @@ public class Semant {
         if (!(elementType.actual() instanceof ARRAY)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
         }
-        //var translateExp = translate.subscriptVar(ent.access, level);
-        return new ExpTy(null, ((ARRAY) elementType).element);
+        // type checking is complete, translate to IL
+        var translateExp = translate.subscriptVar(transIndexExp, translatedArrayVar);
+        return new ExpTy(translateExp, ((ARRAY) elementType).element);
     }
 
     /**
@@ -349,7 +347,7 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.VarExp e) {
         final var transVar = transVar(e.var);
-        return new ExpTy(null, transVar.ty);
+        return new ExpTy(transVar.exp, transVar.ty);
     }
 
     /**
@@ -369,7 +367,7 @@ public class Semant {
         final ExpTy et = transExp(e.body);
         env.tenv.endScope();
         env.venv.endScope();
-        return new ExpTy(null, et.ty);
+        return new ExpTy(et.exp, et.ty);
     }
 
     /**
@@ -397,6 +395,8 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
+            var boExp = translate.binaryOperator(0, transExpLeft, transExpRight);
+            return new ExpTy(boExp, INT);
 
         case Absyn.OpExp.EQ:
             // the order here is important, expRigth.coerceTo(expLeft) is not the same as
@@ -438,7 +438,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.IntExp intExp) {
-        return new ExpTy(null, INT);
+        return new ExpTy(translate.integer(intExp.value), INT);
     }
 
     /**

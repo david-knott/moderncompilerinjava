@@ -2,7 +2,6 @@ package Translate;
 
 import Temp.Label;
 import Temp.Temp;
-import Tree.LABEL;
 import Tree.Stm;
 
 abstract public class Exp {
