@@ -64,18 +64,16 @@ public class Translate {
     }
 
     public Exp fieldVar(Exp exp, int fieldIndex) {
-        var x = new BINOP(BINOP.PLUS, exp.unEx(), new CONST(fieldIndex * 8));
-        return new Ex(x);
-
+        return new Ex(new BINOP(BINOP.PLUS, exp.unEx(), new CONST(fieldIndex * 8)));
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
         return new Ex(new BINOP(BINOP.PLUS, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
 
-	public Exp integer(int value) {
-		return new Ex(new CONST(value));
-	}
+    public Exp integer(int value) {
+        return new Ex(new CONST(value));
+    }
 
     public Exp string(Label label, String literal) {
         return null;
