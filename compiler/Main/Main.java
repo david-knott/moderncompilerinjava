@@ -81,7 +81,7 @@ public class Main {
 
     private void typeCheck() {
         new FindEscape(this.ast.absyn);
-        this.semant.transExp(this.ast.absyn);
+        var frags = this.semant.transProg(this.ast.absyn);
     }
 
 }

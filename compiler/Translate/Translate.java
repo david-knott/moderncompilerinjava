@@ -22,11 +22,12 @@ public class Translate {
      */
     public void procEntryExit(Level level, Exp body) {
         var procFrag = new ProcFrag(body.unNx(), null);
-        if(frags == null) {
+        if (frags == null) {
             frags = procFrag;
         } else {
             frags.next = procFrag;
         }
+        // var statement1 = level.frame.procEntryExit1(body.unNx());
     }
 
     /**
@@ -70,7 +71,7 @@ public class Translate {
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        //TODO: Implement operators other than plus
+        // TODO: Implement operators other than plus
         return new Ex(new BINOP(BINOP.PLUS, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
 
@@ -78,17 +79,60 @@ public class Translate {
         return new Ex(new CONST(value));
     }
 
-    public Exp string(Label label, String literal) {
+    public Exp string(String literal) {
         return null;
     }
 
-    /**
-     * Translates formals at a level ???
-     * 
-     * @param level
-     */
-    void formals(Level level) {
+    public Exp Noop() {
+        return new Ex(new Tree.CONST(0));
+    }
 
+    public Exp functionBody(Level level, ExpTy firstFunction) {
+        return Noop();
+    }
+
+    public Exp transDec() {
+        return Noop();
+    }
+
+    public Exp nil() {
+        return Noop();
+    }
+
+    public Exp call() {
+        return Noop();
+    }
+
+    public Exp seq() {
+        return Noop();
+    }
+
+    public Exp array() {
+        return Noop();
+    }
+
+    public Exp record() {
+        return Noop();
+    }
+
+    public Exp forE() {
+        return Noop();
+    }
+
+    public Exp whileL() {
+        return Noop();
+    }
+
+    public Exp ifE() {
+        return Noop();
+    }
+
+    public Exp breakE() {
+        return Noop();
+    }
+
+    public Exp fieldEList() {
+        return Noop();
     }
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {
@@ -113,55 +157,4 @@ public class Translate {
         return exp;
     }
 
-	public Exp Noop() {
-		return new Ex(new Tree.CONST(0));
-	}
-
-	public Exp functionBody(Level level, ExpTy firstFunction) {
-		return Noop();
-	}
-
-	public Exp transDec() {
-		return Noop();
-	}
-
-	public Exp nil() {
-		return Noop();
-	}
-
-	public Exp call() {
-		return Noop();
-	}
-
-	public Exp seq() {
-		return Noop();
-	}
-
-	public Exp array() {
-		return Noop();
-	}
-
-	public Exp record() {
-		return Noop();
-	}
-
-	public Exp forE() {
-		return Noop();
-	}
-
-	public Exp whileL() {
-		return Noop();
-	}
-
-	public Exp ifE() {
-		return Noop();
-	}
-
-	public Exp breakE() {
-		return Noop();
-	}
-
-	public Exp fieldEList() {
-		return Noop();
-	}
 }

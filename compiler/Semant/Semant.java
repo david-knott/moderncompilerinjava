@@ -20,6 +20,7 @@ import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
 import Translate.ExpTy;
+import Translate.Frag;
 import Translate.Level;
 import Translate.Translate;
 import Types.ARRAY;
@@ -55,6 +56,11 @@ public class Semant {
      */
     public Env getEnv() {
         return this.env;
+    }
+
+    public Frag transProg(Absyn.Exp absyn) {
+        this.transExp(absyn);
+        return translate.getResult();
     }
 
     /**
@@ -150,7 +156,7 @@ public class Semant {
         if (!(varType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
         }
-        //iterate through each record field till we find a match
+        // iterate through each record field till we find a match
         int i = 0;
         for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
             i++;
@@ -227,7 +233,7 @@ public class Semant {
             // add a new nesting level into the function entry
             // add allocations for the parameters to be passed
             // to this function
-            // creates a new level and a new frame and allocates 
+            // creates a new level and a new frame and allocates
             // space for the formal parameters
             // for each formal parameter, we need to get its frame access
             var functionEntry = new FunEntry(new Level(level, e.name, buildBoolList(current.params)), new Label(),
@@ -245,7 +251,7 @@ public class Semant {
             // get the new level for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             var vent = (FunEntry) env.venv.get(current.name);
-            //iterate formals adding access to the created var entries
+            // iterate formals adding access to the created var entries
             var translateAccess = newLevel.formals;
             for (var p = current.params; p != null; p = p.tail) {
                 var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
@@ -253,7 +259,7 @@ public class Semant {
                 translateAccess = translateAccess.tail;
             }
             var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
-            if(firstFunction == null){
+            if (firstFunction == null) {
                 firstFunction = transBody;
             }
             if (!transBody.ty.coerceTo(vent.result)) {
@@ -262,7 +268,7 @@ public class Semant {
             env.venv.endScope();
             current = current.next;
         } while (current != null);
-        //add the fragment to the list 
+        // add the fragment to the list
         var body = translate.functionBody(level, firstFunction);
         translate.procEntryExit(level, body);
         return translate.Noop();
@@ -284,7 +290,7 @@ public class Semant {
             // we can use the name type for other declarations that
             // depend on it, and set its binding type later.
             env.tenv.put(next.name, namedType);
-            next = e.next;
+            next = next.next;
         } while (next != null);
         // process type declarations expressions, where the type name above
         // may be used recursively
@@ -296,7 +302,7 @@ public class Semant {
             // get the named type from the env
             var namedType = (NAME) env.tenv.get(next.name);
             namedType.bind(mappedType);
-            next = e.next;
+            next = next.next;
         } while (next != null);
         return translate.Noop();
     }
@@ -385,17 +391,73 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.OpExp e) {
-
+        // TODO: implement this correctly
         var transExpLeft = transExp(e.left);
         var transExpRight = transExp(e.right);
         switch (e.oper) {
         case Absyn.OpExp.PLUS:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+
         case Absyn.OpExp.MINUS:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+
         case Absyn.OpExp.MUL:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+
         case Absyn.OpExp.DIV:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+
         case Absyn.OpExp.LE:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+
         case Absyn.OpExp.GE:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+
         case Absyn.OpExp.LT:
+            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
+            }
+            if (!transExpRight.ty.coerceTo(Semant.INT)) {
+                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
+            }
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+
         case Absyn.OpExp.GT:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
@@ -403,18 +465,16 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            var boExp = translate.binaryOperator(0, transExpLeft, transExpRight);
-            return new ExpTy(boExp, INT);
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
 
         case Absyn.OpExp.EQ:
-            // the order here is important, expRigth.coerceTo(expLeft) is not the same as
+            // the order here is important,
+            // expRigth.coerceTo(expLeft) is not the same as
             // the reverse
-
             if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
                 env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
             }
-
-            return new ExpTy(null, INT);
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);
     }
@@ -436,8 +496,8 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.StringExp stringExp) {
-        //TODO: Label argument
-        return new ExpTy(translate.string(null, stringExp.value), STRING);
+        // TODO: Label argument
+        return new ExpTy(translate.string(stringExp.value), STRING);
     }
 
     /**
@@ -819,4 +879,5 @@ public class Semant {
         }
         return cached;
     }
+
 }
