@@ -18,7 +18,6 @@ import ErrorMsg.UndefinedVariableError;
 import ErrorMsg.VariableAssignError;
 import Symbol.Symbol;
 import Temp.Label;
-import Translate.Access;
 import Translate.Exp;
 import Translate.ExpTy;
 import Translate.Level;
@@ -156,7 +155,7 @@ public class Semant {
         for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
             i++;
             if (r.fieldName == e.field) {
-                var translateExp = translate.fieldVar(varExp.exp, i);
+                var translateExp = translate.fieldVar(varExp.exp, i, level);
                 return new ExpTy(translateExp, r.fieldType.actual());
             }
         }
@@ -186,7 +185,7 @@ public class Semant {
             env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
         }
         // type checking is complete, translate to IL
-        var translateExp = translate.subscriptVar(transIndexExp, translatedArrayVar);
+        var translateExp = translate.subscriptVar(transIndexExp, translatedArrayVar, level);
         return new ExpTy(translateExp, ((ARRAY) elementType).element);
     }
 
@@ -216,20 +215,20 @@ public class Semant {
      * @return
      */
     Exp transDec(final Absyn.FunctionDec e) {
-        FunctionDec current = e;
         // if we have already processed this function while
         // to handling recursive functions
         // add function entry to environment tables so it
         // is available for lookup inside the function body
         // this is to facilitate recursive function calls
+        FunctionDec current = e;
         do {
             // get the functions return type
             var functionReturnType = current.result != null ? transTy(current.result).actual() : Semant.VOID;
             // add a new nesting level into the function entry
             // add allocations for the parameters to be passed
             // to this function
-            // creates a new level and a new frame and allocates space for the formal
-            // parameters
+            // creates a new level and a new frame and allocates 
+            // space for the formal parameters
             // for each formal parameter, we need to get its frame access
             var functionEntry = new FunEntry(new Level(level, e.name, buildBoolList(current.params)), new Label(),
                     transTypeFields(current.params), functionReturnType);
@@ -238,30 +237,35 @@ public class Semant {
             current = current.next;
         } while (current != null);
         current = e;
+        ExpTy firstFunction = null;
         do {
             // I think we begin scope here because we
-            // are processing the function body in this
-            // loop
+            // are processing the function body in this loop
             env.venv.beginScope();
             // get the new level for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             var vent = (FunEntry) env.venv.get(current.name);
+            //iterate formals adding access to the created var entries
             var translateAccess = newLevel.formals;
             for (var p = current.params; p != null; p = p.tail) {
-                // TODO: Check if this is right, Passing in the translate access to the var
-                // entry
                 var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
                 env.venv.put(p.name, varEntry);
                 translateAccess = translateAccess.tail;
             }
-            final var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
+            var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
+            if(firstFunction == null){
+                firstFunction = transBody;
+            }
             if (!transBody.ty.coerceTo(vent.result)) {
                 env.errorMsg.add(new TypeMismatchError(e.pos, transBody.ty.actual(), vent.result));
             }
             env.venv.endScope();
             current = current.next;
         } while (current != null);
-        return null;
+        //add the fragment to the list 
+        var body = translate.functionBody(level, firstFunction);
+        translate.procEntryExit(level, body);
+        return translate.Noop();
     }
 
     /**
@@ -288,13 +292,13 @@ public class Semant {
         do {
             // set the name types actual type to the
             // type returned by the the transTy function
-            final var mappedType = transTy(next.ty);
+            var mappedType = transTy(next.ty);
             // get the named type from the env
-            final var namedType = (NAME) env.tenv.get(next.name);
+            var namedType = (NAME) env.tenv.get(next.name);
             namedType.bind(mappedType);
             next = e.next;
         } while (next != null);
-        return null;
+        return translate.Noop();
     }
 
     /**
@@ -325,7 +329,7 @@ public class Semant {
         // add variable value mapping
         var varEntry = new VarEntry(type, translateAccess);
         env.venv.put(e.name, varEntry);
-        return null;
+        return translate.transDec();
     }
 
     /**
@@ -422,7 +426,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.NilExp nilExp) {
-        return new ExpTy(null, NIL);
+        return new ExpTy(translate.nil(), NIL);
     }
 
     /**
@@ -432,7 +436,8 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.StringExp stringExp) {
-        return new ExpTy(null, STRING);
+        //TODO: Label argument
+        return new ExpTy(translate.string(null, stringExp.value), STRING);
     }
 
     /**
@@ -477,7 +482,7 @@ public class Semant {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
                 // error(callExp.pos, "Supplied argument list is too long");
             }
-            return new ExpTy(null, ent.result);
+            return new ExpTy(translate.call(), ent.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
             return new ExpTy(null, INT);
@@ -505,7 +510,7 @@ public class Semant {
                 expList = expList.tail;
             returnType = transExp(expList.head).ty;
         }
-        return new ExpTy(null, returnType);
+        return new ExpTy(translate.seq(), returnType);
     }
 
     /**
@@ -538,7 +543,7 @@ public class Semant {
                 // tt);
                 env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tt));
             }
-            return new ExpTy(null, tt.actual());
+            return new ExpTy(translate.array(), tt.actual());
         }
         return new ExpTy(null, VOID);
     }
@@ -567,12 +572,12 @@ public class Semant {
             var temp = (RECORD) tigerType.actual();
             for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
                 // TODO: translate the field expression, and do what with it ?
-                final var fieldExpTy = transExp(fel, temp);
+                var fieldExpTy = transExp(fel, temp);
                 // advance to next tiger type
                 temp = temp.tail;
             }
         }
-        return new ExpTy(null, tigerType);
+        return new ExpTy(translate.record(), tigerType);
     }
 
     /**
@@ -644,7 +649,7 @@ public class Semant {
         }
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(null, Semant.VOID);
+        return new ExpTy(translate.forE(), Semant.VOID);
     }
 
     /**
@@ -668,7 +673,7 @@ public class Semant {
         }
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(null, Semant.VOID);
+        return new ExpTy(translate.whileL(), Semant.VOID);
 
     }
 
@@ -683,9 +688,9 @@ public class Semant {
             env.errorMsg.add(new TypeMismatchError(ifExp.thenclause.pos, thenExp.ty.actual(), elseExp.ty.actual()));
             return new ExpTy(null, Semant.VOID);
         } else if (elseExp != null && elseExp.ty.coerceTo(thenExp.ty)) {
-            return new ExpTy(null, elseExp.ty.actual());
+            return new ExpTy(translate.ifE(), elseExp.ty.actual());
         } else {
-            return new ExpTy(null, Semant.VOID);
+            return new ExpTy(translate.ifE(), Semant.VOID);
         }
     }
 
@@ -700,7 +705,7 @@ public class Semant {
         if (!breakScope) {
             env.errorMsg.add(new BreakNestingError(breakExp.pos));
         }
-        return new ExpTy(null, Semant.VOID);
+        return new ExpTy(translate.breakE(), Semant.VOID);
     }
 
     /**
@@ -733,7 +738,7 @@ public class Semant {
             env.errorMsg.add(new TypeMismatchError(fel.pos, fieldType, transExp.ty));
         }
         // return exp and type
-        return new ExpTy(null, fieldType);
+        return new ExpTy(translate.fieldEList(), fieldType);
     }
 
     /**

@@ -1,7 +1,5 @@
 package Translate;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
 import Temp.Label;
 import Tree.BINOP;
 import Tree.CONST;
@@ -23,7 +21,12 @@ public class Translate {
      * This function has the side effect of remembering a ProcFrag
      */
     public void procEntryExit(Level level, Exp body) {
-
+        var procFrag = new ProcFrag(body.unNx(), null);
+        if(frags == null) {
+            frags = procFrag;
+        } else {
+            frags.next = procFrag;
+        }
     }
 
     /**
@@ -53,21 +56,21 @@ public class Translate {
      * @param level
      * @return
      */
-    public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar) {
+    public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar, Level level) {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
-        // TODO: Fetch the wordsize from the frame access
         // subscript value is at the base array address
         // plus the array index multiplied by the word size
-        var x = new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(8)));
+        var x = new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(level.frame.wordSize())));
         return new Ex(x);
     }
 
-    public Exp fieldVar(Exp exp, int fieldIndex) {
-        return new Ex(new BINOP(BINOP.PLUS, exp.unEx(), new CONST(fieldIndex * 8)));
+    public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
+        return new Ex(new BINOP(BINOP.PLUS, exp.unEx(), new CONST(fieldIndex * level.frame.wordSize())));
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        //TODO: Implement operators other than plus
         return new Ex(new BINOP(BINOP.PLUS, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
 
@@ -109,4 +112,56 @@ public class Translate {
         }
         return exp;
     }
+
+	public Exp Noop() {
+		return new Ex(new Tree.CONST(0));
+	}
+
+	public Exp functionBody(Level level, ExpTy firstFunction) {
+		return Noop();
+	}
+
+	public Exp transDec() {
+		return Noop();
+	}
+
+	public Exp nil() {
+		return Noop();
+	}
+
+	public Exp call() {
+		return Noop();
+	}
+
+	public Exp seq() {
+		return Noop();
+	}
+
+	public Exp array() {
+		return Noop();
+	}
+
+	public Exp record() {
+		return Noop();
+	}
+
+	public Exp forE() {
+		return Noop();
+	}
+
+	public Exp whileL() {
+		return Noop();
+	}
+
+	public Exp ifE() {
+		return Noop();
+	}
+
+	public Exp breakE() {
+		return Noop();
+	}
+
+	public Exp fieldEList() {
+		return Noop();
+	}
 }
