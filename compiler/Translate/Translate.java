@@ -63,8 +63,10 @@ public class Translate {
         return new Ex(x);
     }
 
-    public Exp fieldVar(Access access, Level level) {
-        throw new Error("Not implemeneted");
+    public Exp fieldVar(Exp exp, int fieldIndex) {
+        var x = new BINOP(BINOP.PLUS, exp.unEx(), new CONST(fieldIndex * 8));
+        return new Ex(x);
+
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {

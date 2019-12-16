@@ -146,14 +146,18 @@ public class Semant {
      * @return
      */
     ExpTy transVar(final Absyn.FieldVar e) {
-        var varExp = transVar(e.var);
-        var varType = varExp.ty.actual();
+        final var varExp = transVar(e.var);
+        final var varType = varExp.ty.actual();
         if (!(varType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
         }
+        //iterate through each record field till we find a match
+        int i = 0;
         for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
+            i++;
             if (r.fieldName == e.field) {
-                return new ExpTy(null, r.fieldType.actual());
+                var translateExp = translate.fieldVar(varExp.exp, i);
+                return new ExpTy(translateExp, r.fieldType.actual());
             }
         }
         env.errorMsg.add(new FieldNotDefinedError(e.pos, e.field));
