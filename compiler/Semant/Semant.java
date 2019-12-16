@@ -20,6 +20,7 @@ import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
 import Translate.ExpTy;
+import Translate.ExpTyList;
 import Translate.Frag;
 import Translate.Level;
 import Translate.Translate;
@@ -58,8 +59,15 @@ public class Semant {
         return this.env;
     }
 
+    /**
+     * Main method to translate and type check ast
+     * 
+     * @param absyn
+     * @return
+     */
     public Frag transProg(Absyn.Exp absyn) {
-        this.transExp(absyn);
+        var trans = this.transExp(absyn);
+        translate.procEntryExit(level, trans.exp);
         return translate.getResult();
     }
 
@@ -76,7 +84,7 @@ public class Semant {
         Types.RECORD head = null;
         Types.RECORD prev = null;
         for (Absyn.FieldList l = t.fields; l != null; l = l.tail) {
-            final var cached = fetchTypeAndReport(l.typ, t.pos);
+            final var cached = getType(l.typ, t.pos);
             // create record for current item
             final Types.RECORD current = new Types.RECORD(l.name, cached, null);
             // set the previous items tail to the current item
@@ -98,7 +106,7 @@ public class Semant {
      * @return
      */
     Types.Type transTy(final Absyn.ArrayTy t) {
-        final var cached = fetchTypeAndReport(t.typ, t.pos);
+        final var cached = getType(t.typ, t.pos);
         return new Types.ARRAY(cached);
     }
 
@@ -109,7 +117,7 @@ public class Semant {
      * @return return the looked up nametype
      */
     Types.Type transTy(final Absyn.NameTy t) {
-        final var cached = fetchTypeAndReport(t.name, t.pos);
+        final var cached = getType(t.name, t.pos);
         return cached;
     }
 
@@ -127,7 +135,7 @@ public class Semant {
     }
 
     /**
-     * Translate a variable into a expression
+     * Translate a variable into a IR
      */
     ExpTy transVar(final Absyn.SimpleVar e) {
         final var x = env.venv.get(e.name);
@@ -236,8 +244,8 @@ public class Semant {
             // creates a new level and a new frame and allocates
             // space for the formal parameters
             // for each formal parameter, we need to get its frame access
-            var functionEntry = new FunEntry(new Level(level, e.name, buildBoolList(current.params)), new Label(),
-                    transTypeFields(current.params), functionReturnType);
+            var functionEntry = new FunEntry(new Level(level, e.name, getBoolList(current.params)), new Label(),
+                    getRecordType(current.params), functionReturnType);
             // add function entry into the value environment
             env.venv.put(current.name, functionEntry);
             current = current.next;
@@ -275,7 +283,7 @@ public class Semant {
     }
 
     /**
-     * Recursive support for declarations
+     * Recursive support for declarations No intermediate code is generated here
      * 
      * @param e
      * @return
@@ -285,7 +293,7 @@ public class Semant {
         // process headers first to capture a reference to type name
         TypeDec next = e;
         do {
-            final var namedType = new Types.NAME(next.name);
+            var namedType = new Types.NAME(next.name);
             // stick it into the type env with a null type binding
             // we can use the name type for other declarations that
             // depend on it, and set its binding type later.
@@ -308,8 +316,7 @@ public class Semant {
     }
 
     /**
-     * Translates a variable declaration into an intermediate expression and tiger
-     * type
+     * Translates a variable declaration into an intermediate expression
      * 
      * @param e
      * @return
@@ -335,7 +342,7 @@ public class Semant {
         // add variable value mapping
         var varEntry = new VarEntry(type, translateAccess);
         env.venv.put(e.name, varEntry);
-        return translate.transDec();
+        return translate.transDec(level, translateAccess);
     }
 
     /**
@@ -354,7 +361,7 @@ public class Semant {
     }
 
     /**
-     * Translate a var expressions into ir code
+     * Translate a var expressions into ir code and type
      * 
      * @param e
      * @return
@@ -367,18 +374,17 @@ public class Semant {
     /**
      * Returns a let expression
      * 
+     * IR ?
+     * 
      * @param e
      * @return
      */
     ExpTy transExp(final Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
-        // TODO: need to ensure that we dont include duplicate
-        // functions, where are there are functions that
-        // are contigous
         for (Absyn.DecList p = e.decs; p != null; p = p.tail)
             transDec(p.head);
-        final ExpTy et = transExp(e.body);
+        ExpTy et = transExp(e.body);
         env.tenv.endScope();
         env.venv.endScope();
         return new ExpTy(et.exp, et.ty);
@@ -402,7 +408,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MINUS:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -411,7 +417,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.binaryOperator(1, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MUL:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -420,7 +426,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.binaryOperator(2, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.DIV:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -429,7 +435,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.binaryOperator(3, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LE:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -438,7 +444,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.relativeOperator(4, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GE:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -447,7 +453,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.relativeOperator(5, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LT:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -456,7 +462,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.relativeOperator(6, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GT:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -465,7 +471,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), boExp, INT);
+            return new ExpTy(translate.relativeOperator(7, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.EQ:
             // the order here is important,
@@ -474,7 +480,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
                 env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.equalsOperator(8, transExpLeft, transExpRight), INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);
     }
@@ -492,11 +498,10 @@ public class Semant {
     /**
      * Returns an string expression
      * 
-     * @param intExp
+     * @param stringExp
      * @return
      */
     ExpTy transExp(final Absyn.StringExp stringExp) {
-        // TODO: Label argument
         return new ExpTy(translate.string(stringExp.value), STRING);
     }
 
@@ -522,17 +527,15 @@ public class Semant {
         if (x instanceof FunEntry) {
             // evaluate each expression in arg
             // list and check if it is correct type
-            final var ent = (FunEntry) x;
+            var ent = (FunEntry) x;
             var argExpList = callExp.args;
             for (RECORD fmlType = ((FunEntry) x).formals; fmlType != null; fmlType = fmlType.tail) {
                 if (argExpList == null) {
-                    // error(callExp.pos, "Supplied argument list is too short");
                     env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
                     break;
                 }
-                final var transArg = transExp(argExpList.head);
+                var transArg = transExp(argExpList.head);
                 if (transArg.ty.actual() != fmlType.fieldType.actual()) {
-                    // error(callExp.pos, "Incorrect type in function ");
                     env.errorMsg.add(
                             new ArgumentMismatchError(callExp.pos, fmlType.fieldType.actual(), transArg.ty.actual()));
                 }
@@ -542,11 +545,17 @@ public class Semant {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
                 // error(callExp.pos, "Supplied argument list is too long");
             }
-            return new ExpTy(translate.call(), ent.result);
+            return new ExpTy(translate.call(level), ent.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
             return new ExpTy(null, INT);
         }
+    }
+
+    ExpTy transExp(final Absyn.ExpList list){
+
+
+        return null;
     }
 
     /**
@@ -558,7 +567,9 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.SeqExp seqExp) {
         Types.Type returnType;
+        Exp trx = null;
         if (seqExp.list == null) {
+            trx = translate.Noop();
             returnType = VOID;
         } else {
             Absyn.ExpList expList = seqExp.list;
@@ -569,8 +580,9 @@ public class Semant {
             while (expList.tail != null)
                 expList = expList.tail;
             returnType = transExp(expList.head).ty;
+            trx = translate.seq(level, transExp(expList));
         }
-        return new ExpTy(translate.seq(), returnType);
+        return new ExpTy(trx, returnType);
     }
 
     /**
@@ -583,11 +595,11 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.ArrayExp arrayExp) {
-        final var typeSymbol = arrayExp.typ;
-        final var sizeExp = arrayExp.size;
-        final var initExp = arrayExp.init;
+        var typeSymbol = arrayExp.typ;
+        var sizeExp = arrayExp.size;
+        var initExp = arrayExp.init;
         // check that the type of size is an int
-        final var tSizeTy = transExp(sizeExp).ty;
+        var tSizeTy = transExp(sizeExp).ty;
         if (tSizeTy != INT) {
             env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tSizeTy, Semant.INT));
         }
@@ -595,61 +607,69 @@ public class Semant {
         final var tt = (Types.Type) env.tenv.get(typeSymbol);
         if (tt == null || !(tt.actual() instanceof Types.ARRAY)) {
             env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tt));
+            return new ExpTy(null, VOID);
         } else {
             // check that initialising expression is the
             // same type as the array element type
-            if (transExp(initExp).ty != ((Types.ARRAY) tt.actual()).element) {
-                // error(arrayExp.pos, "Type mismatch: array init expression is not of type " +
-                // tt);
+            var transInitExp = transExp(initExp);
+            if (transInitExp.ty != ((Types.ARRAY) tt.actual()).element) {
                 env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tt));
             }
-            return new ExpTy(translate.array(), tt.actual());
+            return new ExpTy(translate.array(level, transInitExp), tt.actual());
         }
-        return new ExpTy(null, VOID);
     }
 
     /**
-     * Translate a record expression. example rectype {name=\"Nobody\", age=12345} A
-     * record expression contains a symbol for the type and one or more name value
-     * pairs that are a symbol and a initialising expression. Type validation checks
-     * 1) Check the type is valid 'rectype' 2) Check the fields are the correct type
-     * Notes & Questions 1) Do we need to consider nested record types ?
+     * Generates the Type and IR for a record initialisation.
+     * The initialiser for each field type contains an expression
      * 
-     * @param recordExp
+     * For IR, we must create a record in heap memory using
+     * external function calls to alloc memory. We use the field offsets 
+     * to calculate field memory locations and set those to
+     * the initialisation values.
+     * @param recordExp the record to be initialised
      * @return
      */
     ExpTy transExp(final Absyn.RecordExp recordExp) {
-        final var expressionTypeSymbol = recordExp.typ;
-        final var tigerType = (Types.Type) env.tenv.get(expressionTypeSymbol);
+        var expressionTypeSymbol = recordExp.typ;
+        var tigerType = (Types.Type) env.tenv.get(expressionTypeSymbol);
         if (tigerType == null) {
             env.errorMsg.add(new UndefinedTypeError(recordExp.pos, tigerType));
         }
-        // Loop through fieldExpLists rec{field1=value, field2=value2.....}
+        ExpTyList expTyList = null;
+        ExpTyList current = null;
         if (!(tigerType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(recordExp.pos, tigerType));
         } else {
-
             var temp = (RECORD) tigerType.actual();
             for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
-                // TODO: translate the field expression, and do what with it ?
-                var fieldExpTy = transExp(fel, temp);
-                // advance to next tiger type
+                if(expTyList == null){
+                    current = expTyList = new ExpTyList(transFieldListExp(fel, temp), null);
+                } else {
+                    current.tail = new ExpTyList(transFieldListExp(fel, temp), null);
+                    current = current.tail;
+                }
                 temp = temp.tail;
             }
         }
-        return new ExpTy(translate.record(), tigerType);
+        //a list of all the fieldExpTys here
+        return new ExpTy(translate.record(level,expTyList), tigerType);
     }
 
     /**
-     * Translates an assignment expession into a native type and intermediate code
+     * Translates an assignment expession into a type and intermediate code
+     * An assignment expression occurs when a value or expression is assigned 
+     * to a defined variable
      * 
+     * For IR, this would be a evaluating the right side
+     * and moving this value into the memory / register of the left side
      * @param assignExp
      * @return
      */
     ExpTy transExp(final Absyn.AssignExp assignExp) {
         var transVar = transVar(assignExp.var); // left value
         var transExp = transExp(assignExp.exp); // right value
-        // check to see if we are assigning to a readonly variable
+        // check to see if we are trying to assign to a readonly variable
         if (assignExp.var instanceof SimpleVar) {
             var simpleVar = (SimpleVar) assignExp.var;
             var varEntry = (VarEntry) env.venv.get(simpleVar.name);
@@ -660,11 +680,12 @@ public class Semant {
                     env.errorMsg.add(new VariableAssignError(assignExp.pos, simpleVar.name));
                 }
             }
+            //
         } else if (assignExp.var instanceof SubscriptVar) {
             var subscriptVar = (SubscriptVar) assignExp.var;
+            //
 
         } else if (assignExp.var instanceof FieldVar) {
-
             var fieldVar = (FieldVar) assignExp.var;
 
         } else {
@@ -674,7 +695,7 @@ public class Semant {
         if (transVar.ty.actual() != transExp.ty.actual()) {
             env.errorMsg.add(new TypeMismatchError(assignExp.pos, transVar.ty.actual(), transExp.ty.actual()));
         }
-        return new ExpTy(null, Semant.VOID);
+        return new ExpTy(translate.assign(level, transVar, transExp), Semant.VOID);
     }
 
     /**
@@ -682,14 +703,16 @@ public class Semant {
      * instance of Semant is created with its break scope variable set to true. This
      * indicates that break statements are legal inside this expression
      * 
+     * We assume the index variable does not escape
+     * 
+     * IR Code
+     * The for loop can be translated into the following sequence
      * @param forExp
      * @return
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
         env.tenv.beginScope();
         env.venv.beginScope();
-        // add the loop start value to value table
-        // the loop index definately doesn't escape
         var translateAccess = level.allocLocal(false);
         var startVarEntry = new VarEntry(INT, translateAccess);
         env.venv.put(forExp.var.name, startVarEntry);
@@ -709,7 +732,7 @@ public class Semant {
         }
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(translate.forE(), Semant.VOID);
+        return new ExpTy(translate.forE(level, lowTy, hiTy, transBody), Semant.VOID);
     }
 
     /**
@@ -733,10 +756,15 @@ public class Semant {
         }
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(translate.whileL(), Semant.VOID);
+        return new ExpTy(translate.whileL(level, testExp, transBody), Semant.VOID);
 
     }
 
+    /**
+     * Returns a translated if expression.
+     * @param ifExp
+     * @return
+     */
     ExpTy transExp(final Absyn.IfExp ifExp) {
         var testExp = transExp(ifExp.test);
         if (testExp.ty.actual() != INT) {
@@ -748,9 +776,9 @@ public class Semant {
             env.errorMsg.add(new TypeMismatchError(ifExp.thenclause.pos, thenExp.ty.actual(), elseExp.ty.actual()));
             return new ExpTy(null, Semant.VOID);
         } else if (elseExp != null && elseExp.ty.coerceTo(thenExp.ty)) {
-            return new ExpTy(translate.ifE(), elseExp.ty.actual());
+            return new ExpTy(translate.ifE(level, testExp, thenExp, elseExp), elseExp.ty.actual());
         } else {
-            return new ExpTy(translate.ifE(), Semant.VOID);
+            return new ExpTy(translate.ifE(level, testExp, thenExp), Semant.VOID);
         }
     }
 
@@ -765,43 +793,9 @@ public class Semant {
         if (!breakScope) {
             env.errorMsg.add(new BreakNestingError(breakExp.pos));
         }
-        return new ExpTy(translate.breakE(), Semant.VOID);
+        return new ExpTy(translate.breakE(level), Semant.VOID);
     }
-
-    /**
-     * Translates a fieldExpList to its tiger type A fieldExpList is of form
-     * property1=expression1 Typechecker should check that the type of property1 is
-     * the same as the type of expression1 TODO: Improve field list checking.
-     * 
-     * @param fel
-     * @return
-     */
-    ExpTy transExp(final Absyn.FieldExpList fel, final Types.RECORD recordType) {
-        if (recordType == null) {
-            // error(fel.pos, "Unknown symbol: " + fel.name);
-            env.errorMsg.add(new UndefinedVariableError(fel.pos, fel.name));
-            return new ExpTy(null, null);
-        }
-        // get type of field for this record type
-        final var fieldType = recordType.fieldType;
-        final var fieldName = recordType.fieldName;
-        if (fel.name != fieldName) {
-            env.errorMsg.add(new UndefinedVariableError(fel.pos, fel.name));
-        }
-        // get initialising expression
-        final var initExp = fel.init;
-        // get transExp of initialising expression
-        final var transExp = transExp(initExp);
-        // compare type of field with type of expression
-        if (fieldType.actual() != transExp.ty.actual()) {
-            // error(fel.pos, "Type mismatch: " + fieldType + " != " + transExp.ty);
-            env.errorMsg.add(new TypeMismatchError(fel.pos, fieldType, transExp.ty));
-        }
-        // return exp and type
-        return new ExpTy(translate.fieldEList(), fieldType);
-    }
-
-    /**
+   /**
      * Main dispatch function for expressions
      * 
      * @param e
@@ -842,7 +836,38 @@ public class Semant {
             throw new Error("Cannot handle " + e.getClass().getName());
     }
 
-    private BoolList buildBoolList(final FieldList fields) {
+    /**
+     * Translates a field exp list into its type. This function
+     * does not generate IR and should be refactored accordingly
+     * @param fel
+     * @return
+     */
+    private ExpTy transFieldListExp(final Absyn.FieldExpList fel, final Types.RECORD recordType) {
+        if (recordType == null) {
+            // error(fel.pos, "Unknown symbol: " + fel.name);
+            env.errorMsg.add(new UndefinedVariableError(fel.pos, fel.name));
+            return new ExpTy(null, null);
+        }
+        // get type of field for this record type
+        final var fieldType = recordType.fieldType;
+        final var fieldName = recordType.fieldName;
+        if (fel.name != fieldName) {
+            env.errorMsg.add(new UndefinedVariableError(fel.pos, fel.name));
+        }
+        // get initialising expression
+        final var initExp = fel.init;
+        // get transExp of initialising expression
+        final var transExp = transExp(initExp);
+        // compare type of field with type of expression
+        if (fieldType.actual() != transExp.ty.actual()) {
+            env.errorMsg.add(new TypeMismatchError(fel.pos, fieldType, transExp.ty));
+        }
+        // return exp and type
+        return new ExpTy(translate.fieldEList(level, transExp), fieldType);
+    }
+
+ 
+    private BoolList getBoolList(final FieldList fields) {
         BoolList head = null;
         BoolList prev = null;
         for (Absyn.FieldList l = fields; l != null; l = l.tail) {
@@ -856,11 +881,11 @@ public class Semant {
         return head;
     }
 
-    private RECORD transTypeFields(final FieldList fields) {
+    private RECORD getRecordType(final FieldList fields) {
         Types.RECORD head = null;
         Types.RECORD prev = null;
         for (Absyn.FieldList l = fields; l != null; l = l.tail) {
-            final var cached = fetchTypeAndReport(l.typ, l.pos);
+            final var cached = getType(l.typ, l.pos);
             final Types.RECORD current = new Types.RECORD(l.name, cached, null);
             if (head == null)
                 head = current;
@@ -871,7 +896,7 @@ public class Semant {
         return head;
     }
 
-    private Types.Type fetchTypeAndReport(final Symbol sym, final int pos) {
+    private Types.Type getType(final Symbol sym, final int pos) {
         final Types.Type cached = (Types.Type) env.tenv.get(sym);
         if (cached == null) {
             env.errorMsg.add(new UndefinedVariableError(pos, sym));

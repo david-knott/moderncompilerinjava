@@ -40,6 +40,10 @@ class Ex extends Exp {
     }
 }
 
+/**
+ * Represents an expression that does not yield
+ * a value, this is referred to as a statement.
+ */
 class Nx extends Exp {
     private final Tree.Stm stm;
 
@@ -63,6 +67,15 @@ class Nx extends Exp {
     }
 }
 
+/**
+ * An abstract class that 
+ * represents an expression that yields a boolean
+ * value. This is used to control logic flow in the
+ * program.
+ * 
+ * This class is subclassed by RelCx which is used
+ * for comparision operations
+ */
 abstract class Cx extends Exp {
 
     @Override
@@ -92,6 +105,14 @@ abstract class Cx extends Exp {
     }
 }
 
+/**
+ * This class is used to represent a conditional expression
+ * that yields a boolean value. It is typically used in control
+ * flow structures such as loops and branches. It can also be
+ * assigned to a variable.
+ * 
+ * IR Code is just a simple CJUMP to the supplied labels.
+ */
 class RelCx extends Cx {
 
     private Tree.Exp right;
@@ -110,6 +131,14 @@ class RelCx extends Cx {
     }
 }
 
+/**
+ * A subclass to handle if then else expressions.
+ * Where condition is the if condition,
+ * aa this the expression in the then block
+ * and bb is the optional expression in the else block
+ * 
+ * IR Code
+ */
 class IfThenElseExp extends Exp {
 
     Exp cond, a, b;

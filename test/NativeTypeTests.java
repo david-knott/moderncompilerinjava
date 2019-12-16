@@ -282,7 +282,7 @@ public class NativeTypeTests {
 
     @Test
     public void exp_call_actual_and_formals_match() {
-        String tigerCode = "let function a(a:int, b:string):string = (a; b) in a(1, 2) end";
+        String tigerCode = "let function a(a:int, b:string):string = (a; b) function fb():int = 1 in a(1, 2) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();

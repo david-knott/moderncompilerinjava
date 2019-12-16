@@ -45,12 +45,13 @@ public abstract class Frame {
     abstract public Access allocLocal(boolean escape);
 
     /**
-     * Handles view shift in functions
+     * Handles view shift in functions. This function
+     * is used in generating the code for functions
      */
     abstract public Tree.Stm procEntryExit1(Tree.Stm body);
 
     /**
-     * Calls an external function
+     * Calls an external function outside of Tiger
      */
     abstract public Tree.Exp externalCall(String func, Tree.ExpList args);
 }

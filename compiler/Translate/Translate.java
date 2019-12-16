@@ -1,18 +1,25 @@
 package Translate;
 
-import Temp.Label;
 import Tree.BINOP;
 import Tree.CONST;
 import Tree.MEM;
 import Tree.TEMP;
 
 /**
- * Creates intermediate code, using frame information level and the ?
+ * Translates to IR and stores fragments for use
+ * after translation phase is complete.
  */
 public class Translate {
 
     private Frag frags;
 
+    /**
+     * Returns a linked list of fragments. This includes
+     * data fragments for strings, and ProcFrag for functions.
+     * There is also a top level frag for the main tiger implicit
+     * function call.
+     * @return
+     */
     public Frag getResult() {
         return frags;
     }
@@ -25,7 +32,8 @@ public class Translate {
         if (frags == null) {
             frags = procFrag;
         } else {
-            frags.next = procFrag;
+           procFrag.next = frags;
+           frags = procFrag;
         }
         // var statement1 = level.frame.procEntryExit1(body.unNx());
     }
@@ -71,16 +79,24 @@ public class Translate {
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        // TODO: Implement operators other than plus
-        return new Ex(new BINOP(BINOP.PLUS, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
+        return new Ex(new BINOP(i, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
+
+	public Exp relativeOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+		return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
+	}
+
+	public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+		return null;
+	}
 
     public Exp integer(int value) {
         return new Ex(new CONST(value));
     }
 
     public Exp string(String literal) {
-        return null;
+        //create a data fragment ?
+        return new Ex(new CONST(0));
     }
 
     public Exp Noop() {
@@ -91,7 +107,7 @@ public class Translate {
         return Noop();
     }
 
-    public Exp transDec() {
+    public Exp transDec(Level level, Access translateAccess) {
         return Noop();
     }
 
@@ -99,42 +115,49 @@ public class Translate {
         return Noop();
     }
 
-    public Exp call() {
+    public Exp call(Level level) {
         return Noop();
     }
 
-    public Exp seq() {
+    public Exp seq(Level level, ExpTy expTy) {
         return Noop();
     }
 
-    public Exp array() {
+    public Exp array(Level level, ExpTy transInitExp) {
         return Noop();
     }
 
-    public Exp record() {
+    public Exp record(Level level, ExpTyList expTyList) {
         return Noop();
     }
 
-    public Exp forE() {
+    public Exp forE(Level level, ExpTy lowTy, ExpTy hiTy, ExpTy transBody) {
         return Noop();
     }
 
-    public Exp whileL() {
+    public Exp whileL(Level level, ExpTy testExp, ExpTy transBody) {
         return Noop();
     }
 
-    public Exp ifE() {
+    public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
         return Noop();
     }
 
-    public Exp breakE() {
+    public Exp breakE(Level level) {
         return Noop();
     }
 
-    public Exp fieldEList() {
+    public Exp fieldEList(Level level, ExpTy transExp) {
         return Noop();
     }
 
+	public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
+        return Noop();
+    }
+
+	public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
+		return null;
+	}
     private Tree.Exp staticLinkOffset(Access access, Level level) {
         // starting from the level where variable is used
         // we decent until we reach the level that
@@ -146,7 +169,7 @@ public class Translate {
         // itemn-1 = MEM ( BINOP (kn-1, itemn-2))
         // itemn = MEM ( BINOP (kn, itemn-1)) - n is level of definition
         // Calculate position of static link relative to framepointer
-        final int staticLinkOffset = 8;
+        final int staticLinkOffset = 0;
         Tree.Exp exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(level.frame.FP())));
         // Variable is defined in a stack frame beneath the current one
         var slinkLevel = level;
@@ -156,5 +179,4 @@ public class Translate {
         }
         return exp;
     }
-
 }
