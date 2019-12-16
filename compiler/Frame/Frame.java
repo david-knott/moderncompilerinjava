@@ -14,9 +14,9 @@ public abstract class Frame {
     abstract public Temp FP();
 
     /**
-     * Return value register. This is the
-     * register than a function puts its return
-     * value into
+     * Return the value register. This is the
+     * register where a function puts its return
+     * value
      * @return a temporary register
      */
     abstract public Temp RV();
