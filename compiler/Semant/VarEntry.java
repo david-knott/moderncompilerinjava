@@ -1,6 +1,5 @@
 package Semant;
 
-
 class VarEntry extends Entry {
 
     Translate.Access access;
