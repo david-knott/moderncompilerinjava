@@ -6,18 +6,18 @@ import Tree.MEM;
 import Tree.TEMP;
 
 /**
- * Translates to IR and stores fragments for use
- * after translation phase is complete.
+ * Translates to IR and stores fragments for use after translation phase is
+ * complete.
  */
 public class Translate {
 
     private Frag frags;
 
     /**
-     * Returns a linked list of fragments. This includes
-     * data fragments for strings, and ProcFrag for functions.
-     * There is also a top level frag for the main tiger implicit
-     * function call.
+     * Returns a linked list of fragments. This includes data fragments for strings,
+     * and ProcFrag for functions. There is also a top level frag for the main tiger
+     * implicit function call.
+     * 
      * @return
      */
     public Frag getResult() {
@@ -32,8 +32,8 @@ public class Translate {
         if (frags == null) {
             frags = procFrag;
         } else {
-           procFrag.next = frags;
-           frags = procFrag;
+            procFrag.next = frags;
+            frags = procFrag;
         }
         // var statement1 = level.frame.procEntryExit1(body.unNx());
     }
@@ -68,10 +68,8 @@ public class Translate {
     public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar, Level level) {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
-        // subscript value is at the base array address
-        // plus the array index multiplied by the word size
-        var x = new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(level.frame.wordSize())));
-        return new Ex(x);
+        return new Ex(
+                new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(level.frame.wordSize()))));
     }
 
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
@@ -82,20 +80,20 @@ public class Translate {
         return new Ex(new BINOP(i, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
 
-	public Exp relativeOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-		return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
-	}
+    public Exp relativeOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
+    }
 
-	public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-		return null;
-	}
+    public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        return null;
+    }
 
     public Exp integer(int value) {
         return new Ex(new CONST(value));
     }
 
     public Exp string(String literal) {
-        //create a data fragment ?
+        // create a data fragment ?
         return new Ex(new CONST(0));
     }
 
@@ -119,7 +117,7 @@ public class Translate {
         return Noop();
     }
 
-    public Exp seq(Level level, ExpTy expTy) {
+    public Exp seq(Level level, ExpTyList expTyList) {
         return Noop();
     }
 
@@ -151,13 +149,14 @@ public class Translate {
         return Noop();
     }
 
-	public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
+    public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
         return Noop();
     }
 
-	public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
-		return null;
-	}
+    public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
+        return null;
+    }
+
     private Tree.Exp staticLinkOffset(Access access, Level level) {
         // starting from the level where variable is used
         // we decent until we reach the level that

@@ -567,20 +567,27 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.SeqExp seqExp) {
         Types.Type returnType;
+        ExpTy expTy = null;
         Exp trx = null;
-        if (seqExp.list == null) {
+        Absyn.ExpList expList = seqExp.list;
+        if (expList == null) {
             trx = translate.Noop();
             returnType = VOID;
         } else {
-            Absyn.ExpList expList = seqExp.list;
+            //check if the exp list
             if (expList.head == null && expList.tail == null) {
                 returnType = VOID;
             }
             // skip to end of the sequence
-            while (expList.tail != null)
+            expTy = transExp(expList.head);
+            var expTyList = new ExpTyList(new ExpTy(expTy.exp, expTy.ty), null);
+            while (expList.tail != null){
+                expTyList = new ExpTyList(new ExpTy(expTy.exp, expTy.ty), expTyList);
                 expList = expList.tail;
+            }
+            //return type
             returnType = transExp(expList.head).ty;
-            trx = translate.seq(level, transExp(expList));
+            trx = translate.seq(level, expTyList);
         }
         return new ExpTy(trx, returnType);
     }

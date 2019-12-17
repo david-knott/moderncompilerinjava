@@ -46,4 +46,49 @@ public class Chap7Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void int_ir() {
+        String tigerCode = "10";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void binop_plus_ir() {
+        String tigerCode = "10 + 1";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void binop_minus_minus_ir() {
+        String tigerCode = "10 + 8 - 3 - 1";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void int_seq_ir() {
+        String tigerCode = "(1)";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+
+
+
+
+
+
+
 }
