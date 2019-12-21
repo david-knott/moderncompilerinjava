@@ -32,8 +32,8 @@ import Util.BoolList;
 public class Semant {
     private final Env env;
     private final boolean breakScope;
-    private Level level;
     private final Translate translate;
+    private Level level;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
@@ -552,10 +552,24 @@ public class Semant {
         }
     }
 
-    ExpTy transExp(final Absyn.ExpList list){
-
-
-        return null;
+    /**
+     * Translate an expression list into IR using rules as per specification
+     * 
+     * @param expList
+     * @return
+     */
+    ExpTy transExp(Absyn.ExpList expList) {
+        if (expList.head == null) {
+            return new ExpTy(translate.Noop(), VOID);
+        } else {
+            // reverses the order of the explist
+            ExpTyList etList = null;
+            do {
+                etList = new ExpTyList(transExp(expList.head), etList);
+                expList = expList.tail;
+            } while (expList != null);
+            return new ExpTy(translate.seq(level, etList), etList.expTy.ty);
+        }
     }
 
     /**
@@ -566,30 +580,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.SeqExp seqExp) {
-        Types.Type returnType;
-        ExpTy expTy = null;
-        Exp trx = null;
-        Absyn.ExpList expList = seqExp.list;
-        if (expList == null) {
-            trx = translate.Noop();
-            returnType = VOID;
-        } else {
-            //check if the exp list
-            if (expList.head == null && expList.tail == null) {
-                returnType = VOID;
-            }
-            // skip to end of the sequence
-            expTy = transExp(expList.head);
-            var expTyList = new ExpTyList(new ExpTy(expTy.exp, expTy.ty), null);
-            while (expList.tail != null){
-                expTyList = new ExpTyList(new ExpTy(expTy.exp, expTy.ty), expTyList);
-                expList = expList.tail;
-            }
-            //return type
-            returnType = transExp(expList.head).ty;
-            trx = translate.seq(level, expTyList);
-        }
-        return new ExpTy(trx, returnType);
+        return transExp(seqExp.list);
     }
 
     /**
@@ -627,13 +618,13 @@ public class Semant {
     }
 
     /**
-     * Generates the Type and IR for a record initialisation.
-     * The initialiser for each field type contains an expression
+     * Generates the Type and IR for a record initialisation. The initialiser for
+     * each field type contains an expression
      * 
-     * For IR, we must create a record in heap memory using
-     * external function calls to alloc memory. We use the field offsets 
-     * to calculate field memory locations and set those to
-     * the initialisation values.
+     * For IR, we must create a record in heap memory using external function calls
+     * to alloc memory. We use the field offsets to calculate field memory locations
+     * and set those to the initialisation values.
+     * 
      * @param recordExp the record to be initialised
      * @return
      */
@@ -650,7 +641,7 @@ public class Semant {
         } else {
             var temp = (RECORD) tigerType.actual();
             for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
-                if(expTyList == null){
+                if (expTyList == null) {
                     current = expTyList = new ExpTyList(transFieldListExp(fel, temp), null);
                 } else {
                     current.tail = new ExpTyList(transFieldListExp(fel, temp), null);
@@ -659,17 +650,18 @@ public class Semant {
                 temp = temp.tail;
             }
         }
-        //a list of all the fieldExpTys here
-        return new ExpTy(translate.record(level,expTyList), tigerType);
+        // a list of all the fieldExpTys here
+        return new ExpTy(translate.record(level, expTyList), tigerType);
     }
 
     /**
-     * Translates an assignment expession into a type and intermediate code
-     * An assignment expression occurs when a value or expression is assigned 
-     * to a defined variable
+     * Translates an assignment expession into a type and intermediate code An
+     * assignment expression occurs when a value or expression is assigned to a
+     * defined variable
      * 
-     * For IR, this would be a evaluating the right side
-     * and moving this value into the memory / register of the left side
+     * For IR, this would be a evaluating the right side and moving this value into
+     * the memory / register of the left side
+     * 
      * @param assignExp
      * @return
      */
@@ -689,11 +681,11 @@ public class Semant {
             }
             //
         } else if (assignExp.var instanceof SubscriptVar) {
-            var subscriptVar = (SubscriptVar) assignExp.var;
+            // var subscriptVar = (SubscriptVar) assignExp.var;
             //
 
         } else if (assignExp.var instanceof FieldVar) {
-            var fieldVar = (FieldVar) assignExp.var;
+            // var fieldVar = (FieldVar) assignExp.var;
 
         } else {
             throw new RuntimeException("Unhandled type " + assignExp.var);
@@ -712,8 +704,8 @@ public class Semant {
      * 
      * We assume the index variable does not escape
      * 
-     * IR Code
-     * The for loop can be translated into the following sequence
+     * IR Code The for loop can be translated into the following sequence
+     * 
      * @param forExp
      * @return
      */
@@ -769,6 +761,7 @@ public class Semant {
 
     /**
      * Returns a translated if expression.
+     * 
      * @param ifExp
      * @return
      */
@@ -802,7 +795,8 @@ public class Semant {
         }
         return new ExpTy(translate.breakE(level), Semant.VOID);
     }
-   /**
+
+    /**
      * Main dispatch function for expressions
      * 
      * @param e
@@ -844,8 +838,9 @@ public class Semant {
     }
 
     /**
-     * Translates a field exp list into its type. This function
-     * does not generate IR and should be refactored accordingly
+     * Translates a field exp list into its type. This function does not generate IR
+     * and should be refactored accordingly
+     * 
      * @param fel
      * @return
      */
@@ -873,7 +868,6 @@ public class Semant {
         return new ExpTy(translate.fieldEList(level, transExp), fieldType);
     }
 
- 
     private BoolList getBoolList(final FieldList fields) {
         BoolList head = null;
         BoolList prev = null;

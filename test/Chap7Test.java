@@ -16,7 +16,7 @@ public class Chap7Test {
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
-        //need to get the layout and test
+        // need to get the layout and test
         assertFalse(m.hasErrors());
     }
 
@@ -76,19 +76,10 @@ public class Chap7Test {
 
     @Test
     public void int_seq_ir() {
-        String tigerCode = "(1)";
+        String tigerCode = "(1;4;9;\"string\")";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
         assertFalse(m.hasErrors());
     }
-
-
-
-
-
-
-
-
-
 }

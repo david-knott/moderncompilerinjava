@@ -36,13 +36,13 @@ class Ex extends Exp {
         // 0, then go to label t
         // if expression evaultest to
         // 1 the go to label f
-        return new Tree.CJUMP(Tree.CJUMP.EQ, this.unEx(), new Tree.CONST(0) , t, f);
+        return new Tree.CJUMP(Tree.CJUMP.EQ, this.unEx(), new Tree.CONST(0), t, f);
     }
 }
 
 /**
- * Represents an expression that does not yield
- * a value, this is referred to as a statement.
+ * Represents an expression that does not yield a value, this is referred to as
+ * a statement.
  */
 class Nx extends Exp {
     private final Tree.Stm stm;
@@ -68,13 +68,10 @@ class Nx extends Exp {
 }
 
 /**
- * An abstract class that 
- * represents an expression that yields a boolean
- * value. This is used to control logic flow in the
- * program.
+ * An abstract class that represents an expression that yields a boolean value.
+ * This is used to control logic flow in the program.
  * 
- * This class is subclassed by RelCx which is used
- * for comparision operations
+ * This class is subclassed by RelCx which is used for comparision operations
  */
 abstract class Cx extends Exp {
 
@@ -83,18 +80,16 @@ abstract class Cx extends Exp {
         Label t = new Label();
         Label f = new Label();
         Temp r = new Temp();
-        //move const 1 into temp r
-        //call conditional statement with labels
-        //add label false
-        //move const 0 into register r
-        //add label true
-        //create emit temp with register r
+        // move const 1 into temp r
+        // call conditional statement with labels
+        // add label false
+        // move const 0 into register r
+        // add label true
+        // create emit temp with register r
         return new Tree.ESEQ(
-                new Tree.SEQ(new Tree.MOVE(new Tree.TEMP(r), new Tree.CONST(1)), 
-                new Tree.SEQ(unCx(t, f),
+                new Tree.SEQ(new Tree.MOVE(new Tree.TEMP(r), new Tree.CONST(1)), new Tree.SEQ(unCx(t, f),
                         new Tree.SEQ(new Tree.LABEL(f),
-                                new Tree.SEQ(new Tree.MOVE(new Tree.TEMP(r), new Tree.CONST(0)), 
-                                new Tree.LABEL(t))))),
+                                new Tree.SEQ(new Tree.MOVE(new Tree.TEMP(r), new Tree.CONST(0)), new Tree.LABEL(t))))),
                 new Tree.TEMP(r));
     }
 
@@ -106,10 +101,9 @@ abstract class Cx extends Exp {
 }
 
 /**
- * This class is used to represent a conditional expression
- * that yields a boolean value. It is typically used in control
- * flow structures such as loops and branches. It can also be
- * assigned to a variable.
+ * This class is used to represent a conditional expression that yields a
+ * boolean value. It is typically used in control flow structures such as loops
+ * and branches. It can also be assigned to a variable.
  * 
  * IR Code is just a simple CJUMP to the supplied labels.
  */
@@ -132,10 +126,9 @@ class RelCx extends Cx {
 }
 
 /**
- * A subclass to handle if then else expressions.
- * Where condition is the if condition,
- * aa this the expression in the then block
- * and bb is the optional expression in the else block
+ * A subclass to handle if then else expressions. Where condition is the if
+ * condition, aa this the expression in the then block and bb is the optional
+ * expression in the else block
  * 
  * IR Code
  */
@@ -146,12 +139,16 @@ class IfThenElseExp extends Exp {
     Label f = new Label();
     Label join = new Label();
 
-    IfThenElseExp(Exp cc, Exp aa, Exp bb) {
-        cond = cc;
+    IfThenElseExp(Exp tst, Exp aa, Exp bb) {
+        cond = tst;
         a = aa;
         b = bb;
     }
 
+    /**
+     * Returns the result where the then and else have the same type that is not
+     * void
+     */
     @Override
     Tree.Exp unEx() {
         throw new RuntimeException("Not implemented");
@@ -162,8 +159,14 @@ class IfThenElseExp extends Exp {
         throw new RuntimeException("Not implemented");
     }
 
+    /**
+     * Used by & and | operators
+     */
     @Override
     Stm unCx(Label t, Label f) {
-        throw new RuntimeException("Not implemented");
+        var seq = new Tree.SEQ(
+            null, null
+        );
+        return seq;
     }
 }

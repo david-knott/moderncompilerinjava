@@ -1,8 +1,13 @@
 package Translate;
 
+import Temp.Label;
 import Tree.BINOP;
 import Tree.CONST;
+import Tree.ESEQ;
+import Tree.LABEL;
 import Tree.MEM;
+import Tree.NAME;
+import Tree.SEQ;
 import Tree.TEMP;
 
 /**
@@ -94,7 +99,8 @@ public class Translate {
 
     public Exp string(String literal) {
         // create a data fragment ?
-        return new Ex(new CONST(0));
+        // return new Ex(new CONST(0));
+        return new Ex(new NAME(new Label()));
     }
 
     public Exp Noop() {
@@ -115,10 +121,22 @@ public class Translate {
 
     public Exp call(Level level) {
         return Noop();
+
     }
 
     public Exp seq(Level level, ExpTyList expTyList) {
-        return Noop();
+        //list is reversed
+        var last = expTyList.expTy;
+        //add the last item as an expression with result
+        ESEQ es = new ESEQ(null, last.exp.unEx());
+        expTyList = expTyList.tail;
+        //all the other items are statements with side affects
+        SEQ s = null;
+        for (var e = expTyList; e != null; e = e.tail) {
+            s = new SEQ(e.expTy.exp.unNx(), s);
+        }
+        es.stm = s;
+        return new Ex(es);
     }
 
     public Exp array(Level level, ExpTy transInitExp) {
@@ -138,7 +156,13 @@ public class Translate {
     }
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
-        return Noop();
+        var ifThenElse = new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
+        return ifThenElse;
+    }
+
+    public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
+        var ifThenElse = new IfThenElseExp(testExp.exp, thenExp.exp, null);
+        return ifThenElse;
     }
 
     public Exp breakE(Level level) {
@@ -151,10 +175,6 @@ public class Translate {
 
     public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
         return Noop();
-    }
-
-    public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
-        return null;
     }
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {
