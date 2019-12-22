@@ -135,8 +135,11 @@ class RelCx extends Cx {
 class IfThenElseExp extends Exp {
 
     Exp cond, a, b;
+    //begining of the the clause
     Label t = new Label();
+    //begining of the else clause
     Label f = new Label();
+    //both branches jump to this when the complete
     Label join = new Label();
 
     IfThenElseExp(Exp tst, Exp aa, Exp bb) {
@@ -146,12 +149,20 @@ class IfThenElseExp extends Exp {
     }
 
     /**
-     * Returns the result where the then and else have the same type that is not
-     * void
+     * Returns the result where the then and else 
+     * have the same type that is not void. 
      */
     @Override
     Tree.Exp unEx() {
-        throw new RuntimeException("Not implemented");
+        //return new Ex(new SEQ(null, null));
+        var seq = new Tree.SEQ(
+            cond.unCx(t, f),
+            new Tree.SEQ(
+                new Tree.LABEL(t),
+                null
+            )
+        );
+        return null;
     }
 
     @Override
@@ -160,10 +171,12 @@ class IfThenElseExp extends Exp {
     }
 
     /**
-     * Used by & and | operators
+     * Used by & and | operators.
+     * Label tt is the position where conditions in else or then 
+     * must jump if they evaluate to true or false
      */
     @Override
-    Stm unCx(Label t, Label f) {
+    Stm unCx(Label tt, Label ff) {
         var seq = new Tree.SEQ(
             null, null
         );
