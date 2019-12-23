@@ -82,4 +82,24 @@ public class Chap7Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void if_then_else() {
+        String tigerCode = "if (1) then (2) else (3)";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void if_then_else_and() {
+        String tigerCode = "if 1 & 2 then (3) else (4)";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 }

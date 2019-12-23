@@ -154,22 +154,62 @@ class IfThenElseExp extends Exp {
      */
     @Override
     Tree.Exp unEx() {
-        //return new Ex(new SEQ(null, null));
-        var seq = new Tree.SEQ(
-            cond.unCx(t, f),
+        var r = new Temp();
+        return new Tree.ESEQ(
             new Tree.SEQ(
-                new Tree.LABEL(t),
-                null
-            )
-        );
-        return null;
+                cond.unCx(t, f),//eval cx with labels t and f
+                new Tree.SEQ(
+                    new Tree.LABEL(t),//add label t
+                    new Tree.SEQ( //eval then express
+                        new Tree.MOVE( //move ex result into r
+                            new Tree.TEMP(r), 
+                            a.unEx() 
+                        ),
+                        new Tree.SEQ(
+                            new Tree.JUMP(join),
+                            new Tree.SEQ(
+                                new Tree.LABEL(f), //add label f
+                                new Tree.SEQ(
+                                    new Tree.MOVE( //move
+                                        new Tree.TEMP(r), //result of b
+                                        b.unEx() //into register r
+                                    ),
+                                    new Tree.JUMP(join)
+                                )
+                            )
+                        )
+                    )   
+                )
+            ), new Tree.TEMP(r)); //return the result in register r
     }
 
     @Override
     Stm unNx() {
-        throw new RuntimeException("Not implemented");
+        return 
+            new Tree.SEQ(
+                cond.unCx(t, f),//eval cx with labels t and f
+                new Tree.SEQ(
+                    new Tree.LABEL(t),//add label t
+                    new Tree.SEQ( //eval then express
+                            a.unNx() 
+                        ,
+                        new Tree.SEQ(
+                            new Tree.JUMP(join),
+                            new Tree.SEQ(
+                                new Tree.LABEL(f), //add label f
+                                new Tree.SEQ(
+                                        b.unNx() //into register r
+                                    ,
+                                    new Tree.JUMP(join)
+                                )
+                            )
+                        )
+                    )   
+            )
+        );
     }
 
+    
     /**
      * Used by & and | operators.
      * Label tt is the position where conditions in else or then 
@@ -177,9 +217,27 @@ class IfThenElseExp extends Exp {
      */
     @Override
     Stm unCx(Label tt, Label ff) {
-        var seq = new Tree.SEQ(
-            null, null
+        return 
+            new Tree.SEQ(
+                cond.unCx(t, f),//eval cx with labels t and f
+                new Tree.SEQ(
+                    new Tree.LABEL(t),//add label t
+                    new Tree.SEQ( //eval then express
+                            a.unCx(tt, ff) 
+                        ,
+                        new Tree.SEQ(
+                            new Tree.JUMP(join),
+                            new Tree.SEQ(
+                                new Tree.LABEL(f), //add label f
+                                new Tree.SEQ(
+                                        b.unCx(tt, ff) //into register r
+                                    ,
+                                    new Tree.JUMP(join)
+                                )
+                            )
+                        )
+                    )   
+            )
         );
-        return seq;
     }
 }

@@ -176,8 +176,8 @@ assignment ::= lValue:l ASSIGN exp:e {: RESULT = new Absyn.AssignExp(lleft, l, e
 ifThen ::= IF exp:e1 THEN exp:e2 {: RESULT = new Absyn.IfExp(e1left, e1, e2); :};
 
 ifThenElse ::= IF exp:e1 THEN exp:e2 ELSE exp:e3 {: RESULT = new Absyn.IfExp(e1left, e1, e2, e3); :}
-| exp:e1 AND exp:e2 {: RESULT = new Absyn.IfExp(e1left, e1, new Absyn.IntExp(e1left, 1), new Absyn.IntExp(e1left, 0)); :} 
-| exp:e1 OR exp:e2 {: RESULT = new Absyn.IfExp(e1left, e1, new Absyn.IntExp(e1left, 1), new Absyn.IntExp(e1left, 0)); :} 
+| exp:e1 AND exp:e2 {: RESULT = new Absyn.IfExp(e1left, e1, e2, new Absyn.IntExp(e1left, 0)); :} 
+| exp:e1 OR exp:e2 {: RESULT = new Absyn.IfExp(e1left, e1, new Absyn.IntExp(e1left, 1), e2); :} 
 ;
 
 
