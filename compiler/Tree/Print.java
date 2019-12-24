@@ -130,7 +130,7 @@ public class Print {
       else if (s instanceof EXP)
          prStm((EXP) s, d);
       else
-         throw new Error("Print.prStm");
+         throw new Error("Print.prStm " + s);
    }
 
    void prExp(BINOP e, int d) {

@@ -101,5 +101,15 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void if_then_else_and_seq() {
+        String tigerCode = "if (10 & 20) then 3 else 4";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 
 }

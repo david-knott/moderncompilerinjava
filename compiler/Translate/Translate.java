@@ -40,6 +40,7 @@ public class Translate {
             procFrag.next = frags;
             frags = procFrag;
         }
+        new Tree.Print(System.out).prStm(body.unNx());
         // var statement1 = level.frame.procEntryExit1(body.unNx());
     }
 
@@ -126,17 +127,21 @@ public class Translate {
 
     public Exp seq(Level level, ExpTyList expTyList) {
         //list is reversed
-        var last = expTyList.expTy;
-        //add the last item as an expression with result
-        ESEQ es = new ESEQ(null, last.exp.unEx());
-        expTyList = expTyList.tail;
-        //all the other items are statements with side affects
-        SEQ s = null;
-        for (var e = expTyList; e != null; e = e.tail) {
-            s = new SEQ(e.expTy.exp.unNx(), s);
+        if(expTyList.tail == null){
+            return expTyList.expTy.exp;
+        } else {
+            var last = expTyList.expTy;
+            //add the last item as an expression with result
+            ESEQ es = new ESEQ(null, last.exp.unEx());
+            expTyList = expTyList.tail;
+            //all the other items are statements with side affects
+            SEQ s = null;
+            for (var e = expTyList; e != null; e = e.tail) {
+                s = new SEQ(e.expTy.exp.unNx(), s);
+            }
+            es.stm = s;
+            return new Ex(es);
         }
-        es.stm = s;
-        return new Ex(es);
     }
 
     public Exp array(Level level, ExpTy transInitExp) {
@@ -156,6 +161,7 @@ public class Translate {
     }
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
+        //TODO: Can an if condition contain a sequence ?
         var ifThenElse = new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
         return ifThenElse;
     }
