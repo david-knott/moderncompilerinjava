@@ -157,56 +157,63 @@ class IfThenElseExp extends Exp {
         var r = new Temp();
         return new Tree.ESEQ(
             new Tree.SEQ(
-                cond.unCx(t, f),//eval cx with labels t and f
                 new Tree.SEQ(
-                    new Tree.LABEL(t),//add label t
-                    new Tree.SEQ( //eval then express
-                        new Tree.MOVE( //move ex result into r
-                            new Tree.TEMP(r), 
-                            a.unEx() 
-                        ),
-                        new Tree.SEQ(
-                            new Tree.JUMP(join),
+                    cond.unCx(t, f),//eval cx with labels t and f
+                    new Tree.SEQ(
+                        new Tree.LABEL(t),//add label t
+                        new Tree.SEQ( //eval then express
+                            new Tree.MOVE( //move ex result into r
+                                new Tree.TEMP(r), 
+                                a.unEx() 
+                            ),
                             new Tree.SEQ(
-                                new Tree.LABEL(f), //add label f
+                                new Tree.JUMP(join),
                                 new Tree.SEQ(
-                                    new Tree.MOVE( //move
-                                        new Tree.TEMP(r), //result of b
-                                        b.unEx() //into register r
-                                    ),
-                                    new Tree.JUMP(join)
+                                    new Tree.LABEL(f), //add label f
+                                    new Tree.SEQ(
+                                        new Tree.MOVE( //move
+                                            new Tree.TEMP(r), //result of b
+                                            b.unEx() //into register r
+                                        ),
+                                        new Tree.JUMP(join)
+                                    )
                                 )
                             )
-                        )
-                    )   
-                )
-            ), new Tree.TEMP(r)); //return the result in register r
+                        )   
+                    )
+                ), 
+            new Tree.LABEL(join)),
+            new Tree.TEMP(r)
+        );
     }
 
     @Override
     Stm unNx() {
         return 
             new Tree.SEQ(
-                cond.unCx(t, f),//eval cx with labels t and f
                 new Tree.SEQ(
-                    new Tree.LABEL(t),//add label t
-                    new Tree.SEQ( //eval then express
-                            a.unNx() 
-                        ,
-                        new Tree.SEQ(
-                            new Tree.JUMP(join),
+                    cond.unCx(t, f),//eval cx with labels t and f
+                    new Tree.SEQ(
+                        new Tree.LABEL(t),//add label t
+                        new Tree.SEQ( //eval then express
+                                a.unNx() 
+                            ,
                             new Tree.SEQ(
-                                new Tree.LABEL(f), //add label f
+                                new Tree.JUMP(join),
                                 new Tree.SEQ(
-                                        b.unNx() //into register r
-                                    ,
-                                    new Tree.JUMP(join)
+                                    new Tree.LABEL(f), //add label f
+                                    new Tree.SEQ(
+                                            b.unNx() //into register r
+                                        ,
+                                        new Tree.JUMP(join)
+                                    )
                                 )
                             )
-                        )
-                    )   
-            )
-        );
+                        )   
+                    )
+                ),
+                new Tree.LABEL(join)
+            );
     }
 
     

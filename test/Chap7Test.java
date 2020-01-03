@@ -109,7 +109,4 @@ public class Chap7Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
-
-
-
 }
