@@ -103,10 +103,21 @@ public class Chap7Test {
 
     @Test
     public void if_then_else_and_seq() {
-        String tigerCode = "if (10 & 20) then 3 else 4";
+        String tigerCode = "if (10 < 11 & 20 > 23) then 3 else 4";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void while_stm() {
+        String tigerCode = "while 10 do break";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 }

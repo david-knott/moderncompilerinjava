@@ -4,7 +4,6 @@ import Temp.Label;
 import Tree.BINOP;
 import Tree.CONST;
 import Tree.ESEQ;
-import Tree.LABEL;
 import Tree.MEM;
 import Tree.NAME;
 import Tree.SEQ;
@@ -157,7 +156,35 @@ public class Translate {
     }
 
     public Exp whileL(Level level, ExpTy testExp, ExpTy transBody) {
-        return Noop();
+        var loopStart = new Label();
+        var loopEnd = new Label();
+        //if test expression is true go to loopStart
+        //if test expression is false go to loopEnd
+        //loopStart
+        //body expression
+        //if test expression is true go to loopStart
+        //if test expression is false go to loopEnd
+        //jump to loopStart
+        //loopEnd
+        return new Nx(
+            new SEQ(
+                testExp.exp.unCx(loopStart, loopEnd), 
+                    new SEQ(
+                        new Tree.JUMP(loopStart), 
+                        new Tree.SEQ(
+                            new Tree.LABEL(loopStart),
+                            new SEQ(
+                                transBody.exp.unNx(), 
+                                new SEQ(
+                                    testExp.exp.unCx(loopStart, loopEnd),
+                                    new SEQ(
+                                        new Tree.JUMP(loopStart),
+                                        new Tree.LABEL(loopEnd)))
+                            )
+                        )
+                    )
+            )
+        );
     }
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
