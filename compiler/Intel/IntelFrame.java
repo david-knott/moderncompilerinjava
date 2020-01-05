@@ -33,6 +33,8 @@ public class IntelFrame extends Frame {
     private int formalOffset = 0;
     private int localOffset = 0;
     private static final int WORD_SIZE = 8;
+    private static Temp rv = new Temp();
+    private static Temp fp = new Temp();
 
     public IntelFrame(Label nm, BoolList frml) {
         // need to save any registers we are going to use on the stack before we do
@@ -51,7 +53,7 @@ public class IntelFrame extends Frame {
         // should be allocated from right to left
         while (tmp != null) {
             var escape = i++ > 5 || tmp.head;
-            escape = true;
+           // escape = true;
             // var escape = tmp.head;
             Access local;
             if (!escape) {
@@ -73,7 +75,6 @@ public class IntelFrame extends Frame {
         localOffset = localOffset - WORD_SIZE;
         var ret = escape ? new InFrame(localOffset) : new InReg(new Temp());
         return ret;
-
     }
 
     @Override
@@ -84,7 +85,7 @@ public class IntelFrame extends Frame {
     @Override
     public Temp FP() {
         // TODO Auto-generated method stub
-        return null;
+        return fp;
     }
 
     @Override
@@ -94,8 +95,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Temp RV() {
-        // TODO Auto-generated method stub
-        return null;
+        return rv;
     }
 
     @Override

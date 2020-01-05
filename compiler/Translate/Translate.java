@@ -90,7 +90,7 @@ public class Translate {
     }
 
     public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        return null;
+        return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
     }
 
     public Exp integer(int value) {
@@ -156,19 +156,21 @@ public class Translate {
     }
 
     public Exp whileL(Level level, ExpTy testExp, ExpTy transBody) {
+        var whileStart = new Label();
         var loopStart = new Label();
         var loopEnd = new Label();
+        //whileStart
         //if test expression is true go to loopStart
         //if test expression is false go to loopEnd
         //loopStart
         //body expression
-        //if test expression is true go to loopStart
-        //if test expression is false go to loopEnd
-        //jump to loopStart
+        //jump to whileStart
         //loopEnd
         return new Nx(
             new SEQ(
-                testExp.exp.unCx(loopStart, loopEnd), 
+                new Tree.LABEL(whileStart),
+                new SEQ(
+                    testExp.exp.unCx(loopStart, loopEnd), 
                     new SEQ(
                         new Tree.JUMP(loopStart), 
                         new Tree.SEQ(
@@ -176,13 +178,12 @@ public class Translate {
                             new SEQ(
                                 transBody.exp.unNx(), 
                                 new SEQ(
-                                    testExp.exp.unCx(loopStart, loopEnd),
-                                    new SEQ(
-                                        new Tree.JUMP(loopStart),
-                                        new Tree.LABEL(loopEnd)))
+                                    new Tree.JUMP(whileStart),
+                                    new Tree.LABEL(loopEnd))
                             )
                         )
                     )
+                )                
             )
         );
     }
