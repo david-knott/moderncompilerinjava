@@ -597,9 +597,9 @@ public class Semant {
         var sizeExp = arrayExp.size;
         var initExp = arrayExp.init;
         // check that the type of size is an int
-        var tSizeTy = transExp(sizeExp).ty;
-        if (tSizeTy != INT) {
-            env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tSizeTy, Semant.INT));
+        var transSizeExp = transExp(sizeExp);
+        if (transSizeExp.ty != INT) {
+            env.errorMsg.add(new TypeMismatchError(arrayExp.pos, transSizeExp.ty, Semant.INT));
         }
         // Get type of expression, it should be an array and not null
         final var tt = (Types.Type) env.tenv.get(typeSymbol);
@@ -613,7 +613,7 @@ public class Semant {
             if (transInitExp.ty != ((Types.ARRAY) tt.actual()).element) {
                 env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tt));
             }
-            return new ExpTy(translate.array(level, transInitExp), tt.actual());
+            return new ExpTy(translate.array(level, transSizeExp, transInitExp), tt.actual());
         }
     }
 

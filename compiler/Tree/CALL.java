@@ -1,6 +1,4 @@
 package Tree;
-import Temp.Temp;
-import Temp.Label;
 public class CALL extends Exp {
   public Exp func;
   public ExpList args;

@@ -1,10 +1,14 @@
 package Translate;
 
 import Temp.Label;
+import Temp.Temp;
 import Tree.BINOP;
+import Tree.CALL;
 import Tree.CONST;
 import Tree.ESEQ;
+import Tree.ExpList;
 import Tree.MEM;
+import Tree.MOVE;
 import Tree.NAME;
 import Tree.SEQ;
 import Tree.TEMP;
@@ -143,12 +147,64 @@ public class Translate {
         }
     }
 
-    public Exp array(Level level, ExpTy transInitExp) {
-        return Noop();
+    public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
+        Temp arrayPointer = new Temp();
+        return new Ex(
+            new ESEQ(
+                    new MOVE(
+                        new TEMP(arrayPointer) 
+                        , 
+                        new CALL(
+                            new NAME(new Label("initArray")),
+                            null /* pass in the array length exp 
+                            and the initialising value */
+                            ) 
+                        )
+                    ,
+                new TEMP(arrayPointer) 
+            )
+        );
     }
 
     public Exp record(Level level, ExpTyList expTyList) {
-        return Noop();
+        Temp recordPointer = new Temp();
+        SEQ initSubTreeSeq = null; 
+        int total = 0;
+        for(var s = expTyList; s != null; s = s.tail){
+            initSubTreeSeq = new SEQ(
+                new MOVE(
+                    new MEM(
+                        new BINOP(
+                            0, 
+                            new TEMP(recordPointer), 
+                            new CONST(level.frame.wordSize() * total))
+                    ),
+                    expTyList.expTy.exp.unEx()
+                ),
+                initSubTreeSeq
+            );
+            total++;
+        }
+        int size = level.frame.wordSize() * total;
+        return new Ex(
+            new ESEQ(
+                new SEQ(
+                    new MOVE(
+                        new TEMP(recordPointer), 
+                        new CALL(
+                            new NAME(new Label("malloc")),
+                            new ExpList(new CONST(size), null)
+                            ) 
+                        ),
+                    /*
+                    generate the tree fragment for the
+                    record types
+                    )*/
+                    initSubTreeSeq
+                ),
+                new TEMP(recordPointer) 
+            )
+        );
     }
 
     public Exp forE(Level level, ExpTy lowTy, ExpTy hiTy, ExpTy transBody) {
