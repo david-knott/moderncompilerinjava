@@ -211,6 +211,7 @@ public class Translate {
         return Noop();
     }
 
+    //TODO: Include break statement in translation
     public Exp whileL(Level level, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();
@@ -246,6 +247,7 @@ public class Translate {
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
         //TODO: Can an if condition contain a sequence ?
+        //TODO: Is this correct ?
         var ifThenElse = new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
         return ifThenElse;
     }

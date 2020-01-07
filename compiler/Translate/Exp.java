@@ -221,6 +221,7 @@ class IfThenElseExp extends Exp {
      * Used by & and | operators.
      * Label tt is the position where conditions in else or then 
      * must jump if they evaluate to true or false
+     * Check is this is correct
      */
     @Override
     Stm unCx(Label tt, Label ff) {
