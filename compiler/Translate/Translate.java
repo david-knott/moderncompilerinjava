@@ -1,5 +1,6 @@
 package Translate;
 
+import Absyn.NilExp;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -13,6 +14,7 @@ import Tree.MEM;
 import Tree.MOVE;
 import Tree.NAME;
 import Tree.SEQ;
+import Tree.Stm;
 import Tree.TEMP;
 
 /**
@@ -38,6 +40,10 @@ public class Translate {
      * This function has the side effect of remembering a ProcFrag
      */
     public void procEntryExit(Level level, Exp body) {
+        //body could be null if there
+        //is a type checking errpr
+        if(body == null)
+        return;
         var procFrag = new ProcFrag(body.unNx(), null);
         if (frags == null) {
             frags = procFrag;
@@ -80,7 +86,18 @@ public class Translate {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
         return new Ex(
-                new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(level.frame.wordSize()))));
+                new BINOP(
+                    BINOP.PLUS, 
+                    baseExp, 
+                    new BINOP(
+                        BINOP.MUL, 
+                        indexExp, 
+                        new CONST(
+                            level.frame.wordSize()
+                        )
+                    )
+                )
+            );
     }
 
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
@@ -127,7 +144,6 @@ public class Translate {
 
     public Exp call(Level level) {
         return Noop();
-
     }
 
     /**
@@ -135,28 +151,31 @@ public class Translate {
      * If a sequence can be used for syntactic grouping
      * or for a list of expressions with the last item
      * as the returned value
+     * Note that the parameter exTyList is in reverse
      */
     public Exp seq(Level level, ExpTyList expTyList) {
         //list is reversed
         if(expTyList.tail == null){
             return expTyList.expTy.exp;
         } else {
-            expTyList = expTyList.tail;
-            //all the other items are statements with side affects
-            //we dont care about their value
-            SEQ s = null;
-            for (var e = expTyList; e != null; e = e.tail) {
-                s = new SEQ(e.expTy.exp.unNx(), s);
+            //loop through the list in reverse
+            Stm seq = null;
+            for(var e = expTyList; e != null; e = e.tail){
+                if(seq == null){
+                    seq = e.expTy.exp.unNx();
+                } else {
+                    seq = new SEQ(seq, e.expTy.exp.unNx());
+                }
+                if(e.tail == null){
+                    if(e.expTy.ty.coerceTo(Semant.VOID)) {
+                        return new Nx(new SEQ(seq, e.expTy.exp.unNx()));
+                    } else {
+                        return new Ex(new ESEQ(seq, e.expTy.exp.unEx()));
+                    }
+                }
             }
-            var last = expTyList.expTy;
-            //add the last item as an expression with result
-            //if last item returns void so its a statement
-            if(last.ty.coerceTo(Semant.VOID)) {
-               return new Nx(new SEQ(s, last.exp.unNx()));
-            } else {
-               return new Ex(new ESEQ(s, last.exp.unEx()));
-            }
-        }
+            return new Nx(seq);
+       }
     }
 
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
@@ -183,6 +202,7 @@ public class Translate {
         Temp recordPointer = new Temp();
         SEQ initSubTreeSeq = null; 
         int total = 0;
+        //TODO: Check if order is incorrect
         for(var s = expTyList; s != null; s = s.tail){
             initSubTreeSeq = new SEQ(
                 new MOVE(
@@ -272,8 +292,7 @@ public class Translate {
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
         //TODO: Can an if condition contain a sequence ?
         //TODO: Is this correct ?
-        var ifThenElse = new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
-        return ifThenElse;
+        return new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
     }
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
@@ -285,8 +304,18 @@ public class Translate {
         return Noop();
     }
 
+    /**
+     * Assign the value in transExp into the location of transvar
+     */
     public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
-        return Noop();
+        return new Nx(
+            new MOVE(
+                new MEM(
+                    transVar.exp.unEx()
+                ), 
+                transExp.exp.unEx()
+            )
+        );
     }
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {

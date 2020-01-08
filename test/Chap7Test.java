@@ -121,10 +121,34 @@ public class Chap7Test {
 
     @Test
     public void while_break_stm() {
-        String tigerCode = "let var a:int := 1 in while a = 2 do ( break; a := 1 ) end";
+        String tigerCode = "let var a:int := 1 in while a = 2 do ( 11; 22; break; a := 1 ) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap7", inputStream);
         m.compile();
         assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void int_assign(){
+        String tigerCode = "let var a:int := 1 in (a := a - 10) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap7", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void record_assign(){
+        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=199} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap7", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void array_assign(){
+
+        assertFalse(true);
     }
 }

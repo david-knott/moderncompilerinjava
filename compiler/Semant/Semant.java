@@ -559,6 +559,9 @@ public class Semant {
      * @return
      */
     ExpTy transExp(Absyn.ExpList expList) {
+        if (expList == null) {
+            return new ExpTy(translate.Noop(), VOID);
+        }
         if (expList.head == null) {
             return new ExpTy(translate.Noop(), VOID);
         } else {
