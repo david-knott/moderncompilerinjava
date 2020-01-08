@@ -382,14 +382,16 @@ public class Semant {
     ExpTy transExp(final Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
+        ExpTyList expTyList = new ExpTyList(null, null);
         for (Absyn.DecList p = e.decs; p != null; p = p.tail){
             Exp transDecExp = transDec(p.head);
+          //  expTyList.expTy
         }
         ExpTy et = transExp(e.body);
-        //TODO: Do we combine the dec and exp ?
+        var eee = translate.letE(expTyList, et);
         env.tenv.endScope();
         env.venv.endScope();
-        return et;
+        return new ExpTy(eee, et.ty);
     }
 
     /**

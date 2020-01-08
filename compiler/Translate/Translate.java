@@ -318,6 +318,10 @@ public class Translate {
         );
     }
 
+	public Exp letE(ExpTyList expTyList, ExpTy et) {
+		return null;
+	}
+
     private Tree.Exp staticLinkOffset(Access access, Level level) {
         // starting from the level where variable is used
         // we decent until we reach the level that
@@ -339,4 +343,5 @@ public class Translate {
         }
         return exp;
     }
+
 }
