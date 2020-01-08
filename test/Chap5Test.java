@@ -288,7 +288,7 @@ public class Chap5Test {
 
     @Test
     public void break_illegal_position() {
-        String tigerCode = "let var a:int := 1 in a := a + 1;break end";
+        String tigerCode = "let var a:int := 1 in break end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -325,7 +325,7 @@ public class Chap5Test {
 
     @Test
     public void while_loop_with_break() {
-        String tigerCode = "let var a:int := 1 in ( while a < 10 do ( a := a + 1; break ) ) end";
+        String tigerCode = "let var a:int := 1 in  while a < 10 do break  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();

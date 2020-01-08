@@ -31,7 +31,7 @@ import Util.BoolList;
 
 public class Semant {
     private final Env env;
-    private final boolean breakScope;
+    private final Label breakScopeLabel;
     private final Translate translate;
     private Level level;
     public static final Types.Type INT = new Types.INT();
@@ -40,12 +40,12 @@ public class Semant {
     public static final Types.Type NIL = new Types.NIL();
 
     public Semant(final ErrorMsg.ErrorMsg err, final Level lvl) {
-        this(new Env(err, lvl), false, lvl);
+        this(new Env(err, lvl), null, lvl);
     }
 
-    Semant(final Env e, boolean bs, Level lev) {
+    Semant(final Env e, Label bsl, Level lev) {
         env = e;
-        breakScope = bs;
+        breakScopeLabel = bsl;
         level = lev;
         translate = new Translate();
     }
@@ -266,7 +266,7 @@ public class Semant {
                 env.venv.put(p.name, varEntry);
                 translateAccess = translateAccess.tail;
             }
-            var transBody = new Semant(env, breakScope, newLevel).transExp(current.body);
+            var transBody = new Semant(env, breakScopeLabel, newLevel).transExp(current.body);
             if (firstFunction == null) {
                 firstFunction = transBody;
             }
@@ -568,6 +568,7 @@ public class Semant {
                 etList = new ExpTyList(transExp(expList.head), etList);
                 expList = expList.tail;
             } while (expList != null);
+            //returned type is last expressions type
             return new ExpTy(translate.seq(level, etList), etList.expTy.ty);
         }
     }
@@ -725,13 +726,14 @@ public class Semant {
         if (hiTy.ty.actual() != Semant.INT) {
             env.errorMsg.add(new TypeNotIntError(forExp.hi.pos, hiTy.ty.actual()));
         }
-        var transBody = new Semant(env, true, level).transExp(forExp.body);
+        var loopEnd = new Label();
+        var transBody = new Semant(env, loopEnd, level).transExp(forExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
             env.errorMsg.add(new TypeNotVoidError(forExp.body.pos, transBody.ty.actual()));
         }
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(translate.forE(level, lowTy, hiTy, transBody), Semant.VOID);
+        return new ExpTy(translate.forE(level, loopEnd, lowTy, hiTy, transBody), Semant.VOID);
     }
 
     /**
@@ -749,15 +751,33 @@ public class Semant {
         if (testExp.ty.actual() != INT) {
             env.errorMsg.add(new TypeMismatchError(whileExp.test.pos, testExp.ty.actual(), Semant.INT));
         }
-        var transBody = new Semant(env, true, level).transExp(whileExp.body);
+        //end of loop label
+        var loopEnd = new Label();
+        //pass in the end loop label so that breaks can jump to it
+        var transBody = new Semant(env, loopEnd, level).transExp(whileExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
             env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
         }
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(translate.whileL(level, testExp, transBody), Semant.VOID);
+        return new ExpTy(translate.whileL(level, loopEnd, testExp, transBody), Semant.VOID);
 
     }
+
+    /**
+     * Returns a translated break expression. This expression must be nested within
+     * a while or for loop
+     * 
+     * @param breakExp
+     * @return
+     */
+    ExpTy transExp(final Absyn.BreakExp breakExp) {
+        if (breakScopeLabel == null) {
+            env.errorMsg.add(new BreakNestingError(breakExp.pos));
+        }
+        return new ExpTy(translate.breakE(level, breakScopeLabel), Semant.VOID);
+    }
+
 
     /**
      * Returns a translated if expression.
@@ -780,20 +800,6 @@ public class Semant {
         } else {
             return new ExpTy(translate.ifE(level, testExp, thenExp), Semant.VOID);
         }
-    }
-
-    /**
-     * Returns a translated break expression. This expression must be nested within
-     * a while or for loop
-     * 
-     * @param breakExp
-     * @return
-     */
-    ExpTy transExp(final Absyn.BreakExp breakExp) {
-        if (!breakScope) {
-            env.errorMsg.add(new BreakNestingError(breakExp.pos));
-        }
-        return new ExpTy(translate.breakE(level), Semant.VOID);
     }
 
     /**

@@ -1,5 +1,6 @@
 package Translate;
 
+import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
 import Tree.BINOP;
@@ -7,6 +8,7 @@ import Tree.CALL;
 import Tree.CONST;
 import Tree.ESEQ;
 import Tree.ExpList;
+import Tree.JUMP;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.NAME;
@@ -128,22 +130,32 @@ public class Translate {
 
     }
 
+    /**
+     * Translates a sequence of expressions into IR.
+     * If a sequence can be used for syntactic grouping
+     * or for a list of expressions with the last item
+     * as the returned value
+     */
     public Exp seq(Level level, ExpTyList expTyList) {
         //list is reversed
         if(expTyList.tail == null){
             return expTyList.expTy.exp;
         } else {
-            var last = expTyList.expTy;
-            //add the last item as an expression with result
-            ESEQ es = new ESEQ(null, last.exp.unEx());
             expTyList = expTyList.tail;
             //all the other items are statements with side affects
+            //we dont care about their value
             SEQ s = null;
             for (var e = expTyList; e != null; e = e.tail) {
                 s = new SEQ(e.expTy.exp.unNx(), s);
             }
-            es.stm = s;
-            return new Ex(es);
+            var last = expTyList.expTy;
+            //add the last item as an expression with result
+            //if last item returns void so its a statement
+            if(last.ty.coerceTo(Semant.VOID)) {
+               return new Nx(new SEQ(s, last.exp.unNx()));
+            } else {
+               return new Ex(new ESEQ(s, last.exp.unEx()));
+            }
         }
     }
 
@@ -156,7 +168,8 @@ public class Translate {
                         , 
                         new CALL(
                             new NAME(new Label("initArray")),
-                            null /* pass in the array length exp 
+                            null 
+                            /* pass in the array length exp 
                             and the initialising value */
                             ) 
                         )
@@ -207,15 +220,14 @@ public class Translate {
         );
     }
 
-    public Exp forE(Level level, ExpTy lowTy, ExpTy hiTy, ExpTy transBody) {
+    public Exp forE(Level level, Label loopEnd, ExpTy lowTy, ExpTy hiTy, ExpTy transBody) {
         return Noop();
     }
 
     //TODO: Include break statement in translation
-    public Exp whileL(Level level, ExpTy testExp, ExpTy transBody) {
+    public Exp whileL(Level level, Label loopEnd, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();
-        var loopEnd = new Label();
         //whileStart
         //if test expression is true go to loopStart
         //if test expression is false go to loopEnd
@@ -245,6 +257,18 @@ public class Translate {
         );
     }
 
+    /**
+     * Jumps to enclosing while loop end label
+     **/
+    public Exp breakE(Level level, Label loopEnd) {
+        //if break is illegally nested loopend will be null
+        if(loopEnd == null)
+            return Noop(); 
+        return new Nx(
+            new JUMP(loopEnd)
+        );
+    }
+
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
         //TODO: Can an if condition contain a sequence ?
         //TODO: Is this correct ?
@@ -255,10 +279,6 @@ public class Translate {
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
         var ifThenElse = new IfThenElseExp(testExp.exp, thenExp.exp, null);
         return ifThenElse;
-    }
-
-    public Exp breakE(Level level) {
-        return Noop();
     }
 
     public Exp fieldEList(Level level, ExpTy transExp) {

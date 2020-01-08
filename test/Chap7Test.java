@@ -118,4 +118,13 @@ public class Chap7Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void while_break_stm() {
+        String tigerCode = "let var a:int := 1 in while a = 2 do ( break; a := 1 ) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap7", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
 }
