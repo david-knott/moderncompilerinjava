@@ -31,7 +31,8 @@ s2.right = s3
 
 etc
 
-' this doesn't keep a record of the first item '
+this doesn't keep a record of the first item
+
 var r = null, p = null, c  = null
 for each ei
  p = c
@@ -42,7 +43,7 @@ for each ei
  if p != null
    p.right = c
    
-' perhaps we should use a do while loop '
+perhaps we should use a do while loop
 var c = new seq(e0)
 var p = null
 var e = e0
