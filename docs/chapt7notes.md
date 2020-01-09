@@ -2,22 +2,22 @@
 
 (e1, e2, e3, e4, e5, e6 ) where sequence evaluates to e6
 
-eseq(
-  seq(
-     e1,
-     seq(
-        e2,
-        seq(
-           e3,
-           seq(
-              e4,
-              e5
-           )
-        )
-     )
-  ),
-  e6
-)
+  eseq(
+    seq(
+       e1,
+       seq(
+          e2,
+          seq(
+             e3,
+             seq(
+                e4,
+                e5
+             )
+          )
+       )
+    ),
+    e6
+  )
 
 for e1 -> e6 
 
