@@ -44,7 +44,7 @@ for each ei
    p.right = c
    
 perhaps we should use a do while loop
-var c = new seq(e0)
+var c = new seq(e->val)
 var p = null
 var e = e0
 do
@@ -52,7 +52,7 @@ do
   p = c
   var last = e->tail == null;
   if not last
-    c = new seq(s, null)
+    c = new seq(e->val, null)
   else
     p = c
   if p != null
