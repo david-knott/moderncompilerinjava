@@ -853,9 +853,7 @@ public class Semant {
     }
 
     /**
-     * Translates a field exp list into its type. This function does not generate IR
-     * and should be refactored accordingly
-     * 
+     * Translates a field exp list into its type and returns IR
      * @param fel
      * @return
      */
