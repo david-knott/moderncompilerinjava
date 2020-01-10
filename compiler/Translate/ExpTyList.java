@@ -8,6 +8,8 @@ public class ExpTyList {
         expTy = et;
         tail = t;
     }
+    
+    public ExpTyList reverse(){
+        return this;
+    }
 }
-
-

@@ -127,23 +127,23 @@ public class Translate {
     }
 
     public Exp Noop() {
-        return new Ex(new Tree.CONST(0));
+        return new Ex(new Tree.CONST(10));
     }
 
     public Exp functionBody(Level level, ExpTy firstFunction) {
-        return Noop();
+        return new Ex(new Tree.CONST(1));
     }
 
     public Exp transDec(Level level, Access translateAccess) {
-        return Noop();
+        return new Ex(new Tree.CONST(2));
     }
 
     public Exp nil() {
-        return Noop();
+        return new Ex(new Tree.CONST(3));
     }
 
     public Exp call(Level level) {
-        return Noop();
+        return new Ex(new Tree.CONST(4));
     }
 
     /**
@@ -204,20 +204,34 @@ public class Translate {
         int total = 0;
         //TODO: Check if order is incorrect
         for(var s = expTyList; s != null; s = s.tail){
-            initSubTreeSeq = new SEQ(
-                new MOVE(
-                    new MEM(
-                        new BINOP(
-                            0, 
-                            new TEMP(recordPointer), 
-                            new CONST(level.frame.wordSize() * total))
+            if(s.tail == null){
+                initSubTreeSeq.right = new MOVE(
+                        new MEM(
+                            new BINOP(
+                                0, 
+                                new TEMP(recordPointer), 
+                                new CONST(level.frame.wordSize() * total))
+                        ),
+                        s.expTy.exp.unEx()
+                    );
+
+            } else {
+                initSubTreeSeq = new SEQ(
+                    new MOVE(
+                        new MEM(
+                            new BINOP(
+                                0, 
+                                new TEMP(recordPointer), 
+                                new CONST(level.frame.wordSize() * total))
+                        ),
+                        s.expTy.exp.unEx()
                     ),
-                    expTyList.expTy.exp.unEx()
-                ),
-                initSubTreeSeq
-            );
+                    initSubTreeSeq
+                );
+            }
             total++;
         }
+        System.out.println(initSubTreeSeq);
         int size = level.frame.wordSize() * total;
         return new Ex(
             new ESEQ(
@@ -227,8 +241,8 @@ public class Translate {
                         new CALL(
                             new NAME(new Label("malloc")),
                             new ExpList(new CONST(size), null)
-                            ) 
-                        ),
+                        ) 
+                    ),
                     /*
                     generate the tree fragment for the
                     record types
@@ -241,7 +255,7 @@ public class Translate {
     }
 
     public Exp forE(Level level, Label loopEnd, ExpTy lowTy, ExpTy hiTy, ExpTy transBody) {
-        return Noop();
+        return new Ex(new Tree.CONST(5));
     }
 
     //TODO: Include break statement in translation
@@ -296,12 +310,7 @@ public class Translate {
     }
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
-        var ifThenElse = new IfThenElseExp(testExp.exp, thenExp.exp, null);
-        return ifThenElse;
-    }
-
-    public Exp fieldEList(Level level, ExpTy transExp) {
-        return Noop();
+        return new IfThenElseExp(testExp.exp, thenExp.exp, null);
     }
 
     /**
@@ -318,8 +327,29 @@ public class Translate {
         );
     }
 
-	public Exp letE(ExpTyList expTyList, ExpTy et) {
-		return null;
+	public Exp letE(ExpTyList expTyList) {
+        expTyList = expTyList.reverse();
+        var seq = new SEQ(
+            expTyList.expTy.exp.unNx(), 
+            null
+        );
+        ESEQ es = new ESEQ(seq, null);
+        SEQ c = seq, p = null;
+        ExpTyList e = expTyList;
+        while(expTyList != null){
+            p = c;
+            if(e.tail == null){
+                es.exp= e.expTy.exp.unEx();
+                break;
+            } else if(e.tail.tail  == null) {
+                p.right = e.expTy.exp.unNx();
+            } else {
+                c = new SEQ(e.expTy.exp.unNx(), null); 
+                p.right = c;
+            }
+            e = e.tail;
+        }
+		return new Ex(es);
 	}
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {

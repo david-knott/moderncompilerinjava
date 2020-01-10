@@ -139,7 +139,7 @@ public class Chap7Test {
 
     @Test
     public void record_assign(){
-        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=199} in () end";
+        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=999} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap7", inputStream);
         m.compile();

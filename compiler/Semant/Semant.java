@@ -342,7 +342,8 @@ public class Semant {
         // add variable value mapping
         var varEntry = new VarEntry(type, translateAccess);
         env.venv.put(e.name, varEntry);
-        return translate.transDec(level, translateAccess);
+        //return translate.transDec(level, translateAccess);
+        return initExpTy.exp;
     }
 
     /**
@@ -382,13 +383,14 @@ public class Semant {
     ExpTy transExp(final Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
-        ExpTyList expTyList = new ExpTyList(null, null);
+        ExpTyList expTyList = null;
         for (Absyn.DecList p = e.decs; p != null; p = p.tail){
             Exp transDecExp = transDec(p.head);
-          //  expTyList.expTy
+            expTyList = new ExpTyList(new ExpTy(transDecExp, Semant.VOID), expTyList);
         }
         ExpTy et = transExp(e.body);
-        var eee = translate.letE(expTyList, et);
+        expTyList = new ExpTyList(et, expTyList);
+        var eee = translate.letE(expTyList);
         env.tenv.endScope();
         env.venv.endScope();
         return new ExpTy(eee, et.ty);
@@ -877,8 +879,7 @@ public class Semant {
         if (fieldType.actual() != transExp.ty.actual()) {
             env.errorMsg.add(new TypeMismatchError(fel.pos, fieldType, transExp.ty));
         }
-        // return exp and type
-        return new ExpTy(translate.fieldEList(level, transExp), fieldType);
+        return transExp;
     }
 
     private BoolList getBoolList(final FieldList fields) {
