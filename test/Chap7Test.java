@@ -148,7 +148,10 @@ public class Chap7Test {
 
     @Test
     public void array_assign(){
-
-        assertFalse(true);
+        String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [10] of 0 in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
     }
 }

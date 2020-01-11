@@ -23,7 +23,7 @@ public class Chap5Test {
 
     @Test
     public void flush_test() {
-        String tigerCode = "let in flush() end";
+        String tigerCode = "let var a:int := 0 in flush() end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();

@@ -38,4 +38,23 @@ public class ExpTyList {
         last.tail = new ExpTyList(et, null);
         return last.tail;
     }
+
+    public ExpTyList last(){
+        var head = this;
+        while (head.tail != null) {
+            head = head.tail;
+        }
+        return head;
+    }
+
+    public ExpTyList exceptLast() {
+        var head = this;
+        ExpTyList allExceptLast = new ExpTyList(expTy);
+        while (head.tail != null) {
+            //TODO: Append items to list.
+      //      allExceptLast.append(head.expTy);
+            head = head.tail;
+        }
+        return allExceptLast;
+    }
 }

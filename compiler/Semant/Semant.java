@@ -388,8 +388,7 @@ public class Semant {
         // TODO: Refactor node add
         ExpTyList expTyList = null;
         for (Absyn.DecList p = e.decs; p != null; p = p.tail) {
-            Exp transDecExp = transDec(p.head);
-         //   expTyList = new ExpTyList(new ExpTy(transDecExp, Semant.VOID), expTyList);
+            expTyList = new ExpTyList(new ExpTy(transDec(p.head), Semant.VOID), expTyList);
         }
         ExpTy et = transExp(e.body);
         expTyList = new ExpTyList(et, expTyList);

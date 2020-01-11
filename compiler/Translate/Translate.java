@@ -250,13 +250,60 @@ public class Translate {
         return new Nx(new MOVE(new MEM(transVar.exp.unEx()), transExp.exp.unEx()));
     }
 
+    /**
+     * 
+     */
     public Exp letE(ExpTyList expTyList) {
-        expTyList = expTyList.reverse();
+        ExpTyList current = expTyList.reverse();
+        //only one item in list
+        if(current.tail == null){
+            return new Ex(current.expTy.exp.unEx());
+        }
+        //split the list in first n -1 items and last n item
+        var allExceptLast = expTyList.exceptLast();
+        var last = expTyList.last();
+        //TODO: if more than one item
+        if(allExceptLast.tail == null){
+            return new Ex(
+                new ESEQ(
+                    allExceptLast.expTy.exp.unNx(),
+                    last.expTy.exp.unEx() 
+                )
+            );
+        } else {
+            var seq = new SEQ(allExceptLast.expTy.exp.unNx(), null);
+            //handle when there is only one item in the list
+            allExceptLast = allExceptLast.tail;
+            while(allExceptLast != null){
+                if(allExceptLast.tail == null) {
+                    seq.right = allExceptLast.expTy.exp.unNx();
+                } else {
+                    seq = new SEQ(allExceptLast.expTy.exp.unNx(), seq);
+                }
+                allExceptLast = allExceptLast.tail;
+            }
+            return new Ex(
+                new ESEQ(
+                    seq,
+                    last.expTy.exp.unEx() 
+                )
+            );
+        }
+        /*
         var seq = new SEQ(expTyList.expTy.exp.unNx(), null);
         ESEQ es = new ESEQ(seq, null);
-        SEQ c = seq, p = null;
-        ExpTyList e = expTyList;
-        while (expTyList != null) {
+        ExpTyList current = expTyList;
+        while (current != null) {
+
+
+        }
+        */
+     //   return new Nx(seq);
+        //if exptylist only contains one item, 
+        //just return that
+        //more than one, as before
+        /*
+        while (e != null) {
             p = c;
             if (e.tail == null) {
                 es.exp = e.expTy.exp.unEx();
@@ -269,7 +316,7 @@ public class Translate {
             }
             e = e.tail;
         }
-        return new Ex(es);
+        return new Ex(es);*/
     }
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {
