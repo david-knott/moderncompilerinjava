@@ -1,6 +1,5 @@
 package Translate;
 
-import Absyn.NilExp;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -40,10 +39,10 @@ public class Translate {
      * This function has the side effect of remembering a ProcFrag
      */
     public void procEntryExit(Level level, Exp body) {
-        //body could be null if there
-        //is a type checking errpr
-        if(body == null)
-        return;
+        // body could be null if there
+        // is a type checking errpr
+        if (body == null)
+            return;
         var procFrag = new ProcFrag(body.unNx(), null);
         if (frags == null) {
             frags = procFrag;
@@ -86,18 +85,7 @@ public class Translate {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
         return new Ex(
-                new BINOP(
-                    BINOP.PLUS, 
-                    baseExp, 
-                    new BINOP(
-                        BINOP.MUL, 
-                        indexExp, 
-                        new CONST(
-                            level.frame.wordSize()
-                        )
-                    )
-                )
-            );
+                new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(level.frame.wordSize()))));
     }
 
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
@@ -142,32 +130,35 @@ public class Translate {
         return new Ex(new Tree.CONST(3));
     }
 
-    public Exp call(Level level) {
-        return new Ex(new Tree.CONST(4));
+    public Exp call(Level level, Label functionLabel, ExpTyList expTyList) {
+        if (level == null)
+            throw new IllegalArgumentException("Level cannot be null");
+        if (functionLabel == null)
+            throw new IllegalArgumentException("FunctionLabel cannot be null");
+        ExpList expList = null; //new ExpList(null, null);
+        return new Ex(new CALL(new NAME(functionLabel), expList));
     }
 
     /**
-     * Translates a sequence of expressions into IR.
-     * If a sequence can be used for syntactic grouping
-     * or for a list of expressions with the last item
-     * as the returned value
-     * Note that the parameter exTyList is in reverse
+     * Translates a sequence of expressions into IR. If a sequence can be used for
+     * syntactic grouping or for a list of expressions with the last item as the
+     * returned value Note that the parameter exTyList is in reverse
      */
     public Exp seq(Level level, ExpTyList expTyList) {
-        //list is reversed
-        if(expTyList.tail == null){
+        // list is reversed
+        if (expTyList.tail == null) {
             return expTyList.expTy.exp;
         } else {
-            //loop through the list in reverse
+            //TODO: Check if loop through the list in reverse
             Stm seq = null;
-            for(var e = expTyList; e != null; e = e.tail){
-                if(seq == null){
+            for (var e = expTyList; e != null; e = e.tail) {
+                if (seq == null) {
                     seq = e.expTy.exp.unNx();
                 } else {
                     seq = new SEQ(seq, e.expTy.exp.unNx());
                 }
-                if(e.tail == null){
-                    if(e.expTy.ty.coerceTo(Semant.VOID)) {
+                if (e.tail == null) {
+                    if (e.expTy.ty.coerceTo(Semant.VOID)) {
                         return new Nx(new SEQ(seq, e.expTy.exp.unNx()));
                     } else {
                         return new Ex(new ESEQ(seq, e.expTy.exp.unEx()));
@@ -175,137 +166,76 @@ public class Translate {
                 }
             }
             return new Nx(seq);
-       }
+        }
     }
 
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
         Temp arrayPointer = new Temp();
-        return new Ex(
-            new ESEQ(
-                    new MOVE(
-                        new TEMP(arrayPointer) 
-                        , 
-                        new CALL(
-                            new NAME(new Label("initArray")),
-                            null 
-                            /* pass in the array length exp 
-                            and the initialising value */
-                            ) 
-                        )
-                    ,
-                new TEMP(arrayPointer) 
-            )
-        );
+        return new Ex(new ESEQ(new MOVE(new TEMP(arrayPointer), new CALL(new NAME(new Label("initArray")), null
+        /*
+         * pass in the array length exp and the initialising value
+         */
+        )), new TEMP(arrayPointer)));
     }
 
     public Exp record(Level level, ExpTyList expTyList) {
         Temp recordPointer = new Temp();
-        SEQ initSubTreeSeq = null; 
+        SEQ initSubTreeSeq = null;
         int total = 0;
-        //TODO: Check if order is incorrect
-        for(var s = expTyList; s != null; s = s.tail){
-            if(s.tail == null){
+        // TODO: BUG HERE WHEN THERE IS ONLY ONE FIELD
+        for (var s = expTyList; s != null; s = s.tail) {
+            if (s.tail == null) {
                 initSubTreeSeq.right = new MOVE(
-                        new MEM(
-                            new BINOP(
-                                0, 
-                                new TEMP(recordPointer), 
-                                new CONST(level.frame.wordSize() * total))
-                        ),
-                        s.expTy.exp.unEx()
-                    );
-
+                        new MEM(new BINOP(0, new TEMP(recordPointer), new CONST(level.frame.wordSize() * total))),
+                        s.expTy.exp.unEx());
             } else {
-                initSubTreeSeq = new SEQ(
-                    new MOVE(
-                        new MEM(
-                            new BINOP(
-                                0, 
-                                new TEMP(recordPointer), 
-                                new CONST(level.frame.wordSize() * total))
-                        ),
-                        s.expTy.exp.unEx()
-                    ),
-                    initSubTreeSeq
-                );
+                initSubTreeSeq = new SEQ(new MOVE(
+                        new MEM(new BINOP(0, new TEMP(recordPointer), new CONST(level.frame.wordSize() * total))),
+                        s.expTy.exp.unEx()), initSubTreeSeq);
             }
             total++;
         }
-        System.out.println(initSubTreeSeq);
         int size = level.frame.wordSize() * total;
-        return new Ex(
-            new ESEQ(
-                new SEQ(
-                    new MOVE(
-                        new TEMP(recordPointer), 
-                        new CALL(
-                            new NAME(new Label("malloc")),
-                            new ExpList(new CONST(size), null)
-                        ) 
-                    ),
-                    /*
-                    generate the tree fragment for the
-                    record types
-                    )*/
-                    initSubTreeSeq
-                ),
-                new TEMP(recordPointer) 
-            )
-        );
+        return new Ex(new ESEQ(
+                new SEQ(new MOVE(new TEMP(recordPointer),
+                        new CALL(new NAME(new Label("malloc")), new ExpList(new CONST(size), null))), initSubTreeSeq),
+                new TEMP(recordPointer)));
     }
 
     public Exp forE(Level level, Label loopEnd, ExpTy lowTy, ExpTy hiTy, ExpTy transBody) {
         return new Ex(new Tree.CONST(5));
     }
 
-    //TODO: Include break statement in translation
+    // TODO: Include break statement in translation
     public Exp whileL(Level level, Label loopEnd, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();
-        //whileStart
-        //if test expression is true go to loopStart
-        //if test expression is false go to loopEnd
-        //loopStart
-        //body expression
-        //jump to whileStart
-        //loopEnd
-        return new Nx(
-            new SEQ(
-                new Tree.LABEL(whileStart),
-                new SEQ(
-                    testExp.exp.unCx(loopStart, loopEnd), 
-                    new SEQ(
-                        new Tree.JUMP(loopStart), 
-                        new Tree.SEQ(
-                            new Tree.LABEL(loopStart),
-                            new SEQ(
-                                transBody.exp.unNx(), 
-                                new SEQ(
-                                    new Tree.JUMP(whileStart),
-                                    new Tree.LABEL(loopEnd))
-                            )
-                        )
-                    )
-                )                
-            )
-        );
+        // whileStart
+        // if test expression is true go to loopStart
+        // if test expression is false go to loopEnd
+        // loopStart
+        // body expression
+        // jump to whileStart
+        // loopEnd
+        return new Nx(new SEQ(new Tree.LABEL(whileStart),
+                new SEQ(testExp.exp.unCx(loopStart, loopEnd), new SEQ(new Tree.JUMP(loopStart), new Tree.SEQ(
+                        new Tree.LABEL(loopStart),
+                        new SEQ(transBody.exp.unNx(), new SEQ(new Tree.JUMP(whileStart), new Tree.LABEL(loopEnd))))))));
     }
 
     /**
      * Jumps to enclosing while loop end label
      **/
     public Exp breakE(Level level, Label loopEnd) {
-        //if break is illegally nested loopend will be null
-        if(loopEnd == null)
-            return Noop(); 
-        return new Nx(
-            new JUMP(loopEnd)
-        );
+        // if break is illegally nested loopend will be null
+        if (loopEnd == null)
+            return Noop();
+        return new Nx(new JUMP(loopEnd));
     }
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
-        //TODO: Can an if condition contain a sequence ?
-        //TODO: Is this correct ?
+        // TODO: Can an if condition contain a sequence ?
+        // TODO: Is this correct ?
         return new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
     }
 
@@ -317,40 +247,30 @@ public class Translate {
      * Assign the value in transExp into the location of transvar
      */
     public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
-        return new Nx(
-            new MOVE(
-                new MEM(
-                    transVar.exp.unEx()
-                ), 
-                transExp.exp.unEx()
-            )
-        );
+        return new Nx(new MOVE(new MEM(transVar.exp.unEx()), transExp.exp.unEx()));
     }
 
-	public Exp letE(ExpTyList expTyList) {
+    public Exp letE(ExpTyList expTyList) {
         expTyList = expTyList.reverse();
-        var seq = new SEQ(
-            expTyList.expTy.exp.unNx(), 
-            null
-        );
+        var seq = new SEQ(expTyList.expTy.exp.unNx(), null);
         ESEQ es = new ESEQ(seq, null);
         SEQ c = seq, p = null;
         ExpTyList e = expTyList;
-        while(expTyList != null){
+        while (expTyList != null) {
             p = c;
-            if(e.tail == null){
-                es.exp= e.expTy.exp.unEx();
+            if (e.tail == null) {
+                es.exp = e.expTy.exp.unEx();
                 break;
-            } else if(e.tail.tail  == null) {
+            } else if (e.tail.tail == null) {
                 p.right = e.expTy.exp.unNx();
             } else {
-                c = new SEQ(e.expTy.exp.unNx(), null); 
+                c = new SEQ(e.expTy.exp.unNx(), null);
                 p.right = c;
             }
             e = e.tail;
         }
-		return new Ex(es);
-	}
+        return new Ex(es);
+    }
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {
         // starting from the level where variable is used

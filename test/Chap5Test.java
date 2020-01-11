@@ -80,8 +80,27 @@ public class Chap5Test {
     }
 
     @Test
+    public void type_var_dec_rec_invalid_one_field() {
+        String tigerCode = "let type rectype = {name:string} var rec1 := rectype {name=\"Nobody\"} in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertTrue(m.hasErrors());
+    }
+
+    @Test
+    public void type_var_dec_rec_valid_one_field() {
+        String tigerCode = "let type rectype = {name:string} var rec1:rectype := rectype {name=\"Nobody\"}   in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+    @Test
     public void type_var_dec_rec_invalid() {
-        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=\"Nobody\"} in () end";
+        String tigerCode = "let type rectype = {id:int, name:string, age:int} var rec1 := rectype {id=1, name=\"Nobody\", age=\"Nobody\"} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -136,15 +155,6 @@ public class Chap5Test {
     @Test
     public void let_sequence_string() {
         String tigerCode = "let in (1;2;\"dsds\") end";
-        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
-        Main m = new Main("chap5", inputStream);
-        m.compile();
-        assertFalse(m.hasErrors());
-    }
-
-    @Test
-    public void let_sequence_empty_void() {
-        String tigerCode = "let in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
