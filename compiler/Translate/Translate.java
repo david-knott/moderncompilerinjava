@@ -108,26 +108,23 @@ public class Translate {
         return new Ex(new CONST(value));
     }
 
+    //TODO: String IR
     public Exp string(String literal) {
-        // create a data fragment ?
-        // return new Ex(new CONST(0));
         return new Ex(new NAME(new Label()));
     }
 
     public Exp Noop() {
-        return new Ex(new Tree.CONST(10));
+        return new Ex(new Tree.CONST(0));
     }
 
     public Exp functionBody(Level level, ExpTy firstFunction) {
-        return new Ex(new Tree.CONST(1));
+        return firstFunction.exp;
+
     }
 
-    public Exp transDec(Level level, Access translateAccess) {
-        return new Ex(new Tree.CONST(2));
-    }
-
+    //TODO: nil IR
     public Exp nil() {
-        return new Ex(new Tree.CONST(3));
+        throw new Error();
     }
 
     public Exp call(Level level, Label functionLabel, ExpTyList expTyList) {
@@ -135,7 +132,11 @@ public class Translate {
             throw new IllegalArgumentException("Level cannot be null");
         if (functionLabel == null)
             throw new IllegalArgumentException("FunctionLabel cannot be null");
-        ExpList expList = null; //new ExpList(null, null);
+        ExpList expList = new ExpList(new TEMP(level.frame.FP()), null);
+        while(expTyList != null){
+            expList.append(expTyList.expTy.exp.unEx());
+            expTyList = expTyList.tail;
+        }
         return new Ex(new CALL(new NAME(functionLabel), expList));
     }
 
@@ -170,12 +171,22 @@ public class Translate {
     }
 
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
+        ExpList args = new ExpList(transSizeExp.exp.unEx(), new ExpList(transInitExp.exp.unEx(), null));
         Temp arrayPointer = new Temp();
-        return new Ex(new ESEQ(new MOVE(new TEMP(arrayPointer), new CALL(new NAME(new Label("initArray")), null
-        /*
-         * pass in the array length exp and the initialising value
-         */
-        )), new TEMP(arrayPointer)));
+        return new Ex(
+            new ESEQ(
+                new MOVE(
+                    new TEMP(arrayPointer), 
+                    new CALL(
+                        new NAME(
+                            new Label("initArray")
+                        ),
+                        args 
+                    )
+                ), 
+                new TEMP(arrayPointer)
+            )
+        );
     }
 
     public Exp record(Level level, ExpTyList expTyList) {
@@ -206,17 +217,9 @@ public class Translate {
         return new Ex(new Tree.CONST(5));
     }
 
-    // TODO: Include break statement in translation
     public Exp whileL(Level level, Label loopEnd, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();
-        // whileStart
-        // if test expression is true go to loopStart
-        // if test expression is false go to loopEnd
-        // loopStart
-        // body expression
-        // jump to whileStart
-        // loopEnd
         return new Nx(new SEQ(new Tree.LABEL(whileStart),
                 new SEQ(testExp.exp.unCx(loopStart, loopEnd), new SEQ(new Tree.JUMP(loopStart), new Tree.SEQ(
                         new Tree.LABEL(loopStart),
@@ -234,8 +237,6 @@ public class Translate {
     }
 
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
-        // TODO: Can an if condition contain a sequence ?
-        // TODO: Is this correct ?
         return new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
     }
 
@@ -253,6 +254,7 @@ public class Translate {
     /**
      * 
      */
+    //TODO: Still a bug in this method
     public Exp letE(ExpTyList expTyList) {
         ExpTyList current = expTyList.reverse();
         //only one item in list
@@ -262,7 +264,6 @@ public class Translate {
         //split the list in first n -1 items and last n item
         var allExceptLast = expTyList.exceptLast();
         var last = expTyList.last();
-        //TODO: if more than one item
         if(allExceptLast.tail == null){
             return new Ex(
                 new ESEQ(
@@ -272,7 +273,6 @@ public class Translate {
             );
         } else {
             var seq = new SEQ(allExceptLast.expTy.exp.unNx(), null);
-            //handle when there is only one item in the list
             allExceptLast = allExceptLast.tail;
             while(allExceptLast != null){
                 if(allExceptLast.tail == null) {
@@ -289,34 +289,6 @@ public class Translate {
                 )
             );
         }
-        /*
-        var seq = new SEQ(expTyList.expTy.exp.unNx(), null);
-        ESEQ es = new ESEQ(seq, null);
-        ExpTyList current = expTyList;
-        while (current != null) {
-
-
-        }
-        */
-     //   return new Nx(seq);
-        //if exptylist only contains one item, 
-        //just return that
-        //more than one, as before
-        /*
-        while (e != null) {
-            p = c;
-            if (e.tail == null) {
-                es.exp = e.expTy.exp.unEx();
-                break;
-            } else if (e.tail.tail == null) {
-                p.right = e.expTy.exp.unNx();
-            } else {
-                c = new SEQ(e.expTy.exp.unNx(), null);
-                p.right = c;
-            }
-            e = e.tail;
-        }
-        return new Ex(es);*/
     }
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {

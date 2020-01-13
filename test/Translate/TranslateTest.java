@@ -1,3 +1,4 @@
+package Translate;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -24,9 +25,11 @@ import Translate.Translate;
 public class TranslateTest {
     @Test
     public void nil() {
-        Translate t = new Translate();
-        var nil = t.nil();
-        System.out.println(nil);
+        Translate translate = new Translate();
+        var ex = translate.Noop().unEx();
+        var nx = translate.Noop().unNx();
+System.out.println("test");
+
     }
 
 

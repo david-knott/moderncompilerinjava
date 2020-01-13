@@ -51,8 +51,7 @@ public class ExpTyList {
         var head = this;
         ExpTyList allExceptLast = new ExpTyList(expTy);
         while (head.tail != null) {
-            //TODO: Append items to list.
-      //      allExceptLast.append(head.expTy);
+            allExceptLast.append(head.expTy);
             head = head.tail;
         }
         return allExceptLast;
