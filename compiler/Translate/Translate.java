@@ -132,6 +132,7 @@ public class Translate {
             throw new IllegalArgumentException("Level cannot be null");
         if (functionLabel == null)
             throw new IllegalArgumentException("FunctionLabel cannot be null");
+        //add current frames frame pointer as parameter to call
         ExpList expList = new ExpList(new TEMP(level.frame.FP()), null);
         while(expTyList != null){
             expList.append(expTyList.expTy.exp.unEx());
