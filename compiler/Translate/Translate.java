@@ -133,21 +133,20 @@ public class Translate {
         throw new Error();
     }
 
-    public Exp call(Level targetLevel, Level srcLevel, Label functionLabel, ExpTyList expTyList) {
-        if (targetLevel == null)
-            throw new IllegalArgumentException("Target function level cannot be null");
-        if (srcLevel == null)
-            throw new IllegalArgumentException("Source function level cannot be null");
+    public Exp call(Level currentLevel, Level functionLevel, Label functionLabel, ExpTyList expTyList) {
+        if (currentLevel == null)
+            throw new IllegalArgumentException("Current level cannot be null");
+        if (functionLevel == null)
+            throw new IllegalArgumentException("Function level cannot be null");
         if (functionLabel == null)
             throw new IllegalArgumentException("FunctionLabel cannot be null");
         //add current frames frame pointer as parameter to call
-
         var exp = new MEM(
             new BINOP(
                 BINOP.PLUS, 
                 staticLinkOffset(
-                    targetLevel, 
-                    srcLevel
+                    currentLevel, 
+                    functionLevel
                 ),
                 new CONST(0)
             )
