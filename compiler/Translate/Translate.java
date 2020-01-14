@@ -35,6 +35,15 @@ public class Translate {
         return frags;
     }
 
+    public void addFrag(Frag procFrag){
+        if (frags == null) {
+            frags = procFrag;
+        } else {
+            procFrag.next = frags;
+            frags = procFrag;
+        }
+    }
+
     /**
      * This function has the side effect of remembering a ProcFrag
      */
@@ -43,13 +52,7 @@ public class Translate {
         // is a type checking errpr
         if (body == null)
             return;
-        var procFrag = new ProcFrag(body.unNx(), null);
-        if (frags == null) {
-            frags = procFrag;
-        } else {
-            procFrag.next = frags;
-            frags = procFrag;
-        }
+        addFrag(new ProcFrag(body.unNx(), null));
         new Tree.Print(System.out).prStm(body.unNx());
         // var statement1 = level.frame.procEntryExit1(body.unNx());
     }
@@ -109,8 +112,11 @@ public class Translate {
     }
 
     //TODO: String IR
-    public Exp string(String literal) {
-        return new Ex(new NAME(new Label()));
+    public Exp string(String literal, Level level) {
+        Label label = new Label();
+        var stringFragment = level.frame.string(label, literal);
+        addFrag(new DataFrag(label, stringFragment));
+        return new Ex(new NAME(label));
     }
 
     public Exp Noop() {
@@ -127,13 +133,26 @@ public class Translate {
         throw new Error();
     }
 
-    public Exp call(Level level, Label functionLabel, ExpTyList expTyList) {
-        if (level == null)
-            throw new IllegalArgumentException("Level cannot be null");
+    public Exp call(Level targetLevel, Level srcLevel, Label functionLabel, ExpTyList expTyList) {
+        if (targetLevel == null)
+            throw new IllegalArgumentException("Target function level cannot be null");
+        if (srcLevel == null)
+            throw new IllegalArgumentException("Source function level cannot be null");
         if (functionLabel == null)
             throw new IllegalArgumentException("FunctionLabel cannot be null");
         //add current frames frame pointer as parameter to call
-        ExpList expList = new ExpList(new TEMP(level.frame.FP()), null);
+
+        var exp = new MEM(
+            new BINOP(
+                BINOP.PLUS, 
+                staticLinkOffset(
+                    targetLevel, 
+                    srcLevel
+                ),
+                new CONST(0)
+            )
+        );
+        ExpList expList = new ExpList(exp, null);
         while(expTyList != null){
             expList.append(expTyList.expTy.exp.unEx());
             expTyList = expTyList.tail;
@@ -292,20 +311,21 @@ public class Translate {
         }
     }
 
+    
+    private Tree.Exp staticLinkOffset(Level target, Level source) {
+        final int staticLinkOffset = 0;
+        Tree.Exp exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(target.frame.FP())));
+        var slinkLevel = source;
+        while (slinkLevel != target) {
+            exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), exp));
+            slinkLevel = slinkLevel.parent;
+        }
+        return exp;
+    }
+
     private Tree.Exp staticLinkOffset(Access access, Level level) {
-        // starting from the level where variable is used
-        // we decent until we reach the level that
-        // the variable is defined in. We build up
-        // an expression as follows
-        // item1 = MEM ( BINOP (k1, FP)) - 1 is level of usage
-        // item2 = MEM ( BINOP (k2, item1))
-        // item3 = MEM ( BINOP (k3, item2))
-        // itemn-1 = MEM ( BINOP (kn-1, itemn-2))
-        // itemn = MEM ( BINOP (kn, itemn-1)) - n is level of definition
-        // Calculate position of static link relative to framepointer
         final int staticLinkOffset = 0;
         Tree.Exp exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(level.frame.FP())));
-        // Variable is defined in a stack frame beneath the current one
         var slinkLevel = level;
         while (slinkLevel != access.home) {
             exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), exp));

@@ -75,6 +75,12 @@ public class TranslateTest {
             // TODO Auto-generated method stub
             return null;
         }
+
+        @Override
+        public Exp string(Label l, String literal) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     @Test
@@ -83,23 +89,38 @@ public class TranslateTest {
         var ex = translate.Noop().unEx();
         var nx = translate.Noop().unNx();
         assertFalse(true);
-
     }
 
     @Test
-    public void string_test() {
+    public void string_literal_test() {
         Translate translate = new Translate();
-        var exp = translate.string("this is a string");
+        Level level = new Level(new TestFrame());
+        var exp = translate.string("this is a string", level);
+        assertFalse(true);
+    }
+
+
+    @Test
+    public void string_comparision_test() {
+        Translate translate = new Translate();
+        var left = new ExpTy(null, Semant.STRING);
+        var right = new ExpTy(null, Semant.STRING);
+        var exp = translate.equalsOperator(1, left, right);
         assertFalse(true);
     }
 
     @Test
-    public void call_test() {
+    public void function_call_test() {
         Translate translate = new Translate();
         Level level = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        level2.parent = level;
         //pass in IL versions of call parameters
         ExpTyList expTyList = null; //new ExpTyList(new ExpTy());
-        var exp = translate.call(level, new Label("test"), null);
+        var exp = translate.call(level, level2, new Label("test"), null);
+        if(exp instanceof Ex){
+          //  ((Ex)exp);
+        }
         System.out.println(exp);
         assertFalse(true);
     }

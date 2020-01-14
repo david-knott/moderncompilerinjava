@@ -13,7 +13,7 @@ abstract public class Exp {
 }
 
 class Ex extends Exp {
-    private final Tree.Exp exp;
+    Tree.Exp exp;
 
     Ex(Tree.Exp e) {
         exp = e;
@@ -45,7 +45,7 @@ class Ex extends Exp {
  * a statement.
  */
 class Nx extends Exp {
-    private final Tree.Stm stm;
+    Tree.Stm stm;
 
     Nx(Tree.Stm s) {
         stm = s;
@@ -109,9 +109,9 @@ abstract class Cx extends Exp {
  */
 class RelCx extends Cx {
 
-    private Tree.Exp right;
-    private Tree.Exp left;
-    private int operator;
+    Tree.Exp right;
+    Tree.Exp left;
+    int operator;
 
     RelCx(Tree.Exp r, Tree.Exp l, int op) {
         right = r;
