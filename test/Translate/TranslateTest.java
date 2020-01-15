@@ -125,6 +125,107 @@ public class TranslateTest {
         assertFalse(true);
     }
 
+    @Test
+    public void level_is_ancestor_depth_1_test() {
+        Level level = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        level2.parent = level;
+        assertTrue(level.ancestor(level2));
+    }
+
+    @Test
+    public void level_is_ancestor_depth_2_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        Level level3 = new Level(new TestFrame());
+        level2.parent = level1;
+        level3.parent = level2;
+        assertTrue(level1.ancestor(level3));
+        assertTrue(level1.ancestor(level2));
+    }
+
+
+    @Test
+    public void level_is_not_ancestor_depth_1_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        level2.parent = level1;
+        assertFalse(level2.ancestor(level1));
+    }
+
+    @Test
+    public void level_is_not_ancestor_depth_2_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        Level level3 = new Level(new TestFrame());
+        level2.parent = level1;
+        level3.parent = level2;
+        assertFalse(level2.ancestor(level1));
+    }
+
+
+    @Test
+    public void level_is_descendant_depth_1_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        level2.parent = level1;
+        assertTrue(level2.descendant(level1));
+    }
+
+    @Test
+    public void level_is_descendant_depth_2_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        Level level3 = new Level(new TestFrame());
+        level2.parent = level1;
+        level3.parent = level2;
+        assertTrue(level2.descendant(level1));
+    }
+
+    @Test
+    public void level_is_depth_minus_2_difference_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        Level level3 = new Level(new TestFrame());
+        level2.parent = level1;
+        level3.parent = level2;
+        assertEquals(-2, level1.depthDifference(level3));
+    }
+
+    @Test
+    public void level_is_depth_plus_2_difference_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        Level level3 = new Level(new TestFrame());
+        level2.parent = level1;
+        level3.parent = level2;
+        assertEquals(2, level3.depthDifference(level1));
+    }
+
+    @Test
+    public void level_is_depth_minus_1_difference_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        level2.parent = level1;
+        assertEquals(-1, level1.depthDifference(level2));
+    }
+
+    @Test
+    public void level_is_depth_plus_1_difference_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        level2.parent = level1;
+        assertEquals(1, level2.depthDifference(level1));
+    }
+
+
+    @Test
+    public void level_is_depth_0_difference_test() {
+        Level level1 = new Level(new TestFrame());
+        Level level2 = new Level(new TestFrame());
+        level2.parent = level1;
+        assertEquals(0, level2.depthDifference(level2));
+    }
 
 
 

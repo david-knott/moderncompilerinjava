@@ -42,4 +42,75 @@ public class Level {
     public Access allocLocal(boolean escape) {
         return new Access(this, frame.allocLocal(escape));
     }
+
+    /**
+     * Returns true if level is an ancestor.
+     * @param level
+     * @return true is level is ancestor otherwise false
+     */
+    public boolean ancestor(Level level){
+        var start = level;
+        //start with this, follow parent link
+        //check if level is equal to parent
+        while(start != null){
+            if(start == this)
+                return true;
+            start = start.parent;
+        }
+        return false;
+    }
+
+    /**
+     * Returns true if level is a descendant.
+     * @param level
+     * @return true is level is descendant otherwise false
+     */
+    public boolean descendant(Level level){
+        var start = this;
+        while(start != null){
+            if(start == level)
+                return true;
+            start = start.parent;
+        }
+        return false;
+    }
+
+    /**
+     * Returns difference in depth. If
+     * level is an ancestor of of this, a negative
+     * value is returned.
+     * If level is a descendant of this, a positive
+     * value is return,
+     * If both levels are equal, a zero is returned
+     * @param level
+     * @return depth difference between levels 
+     */
+    public int depthDifference(Level level){
+        Level start = null;
+        Level end = null;
+        int sign = 1;
+        if(ancestor(level)){
+            end = this;
+            start = level;
+            sign = -1;
+        } else if(descendant(level)){
+            start = this;
+            end = level;
+            sign = 1;
+        } else {
+            return 0;
+        }
+        int depth = 0;
+        while(start != null){
+            if(start == end) {
+                break;
+            }
+            depth++;
+            start = start.parent;
+        }
+        return sign * depth;
+    }
+
+
+
 }

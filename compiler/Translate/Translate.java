@@ -133,11 +133,11 @@ public class Translate {
         throw new Error();
     }
 
-    public Exp call(Level currentLevel, Level functionLevel, Label functionLabel, ExpTyList expTyList) {
-        if (currentLevel == null)
-            throw new IllegalArgumentException("Current level cannot be null");
-        if (functionLevel == null)
-            throw new IllegalArgumentException("Function level cannot be null");
+    public Exp call(Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList expTyList) {
+        if (callerLevel == null)
+            throw new IllegalArgumentException("Caller level cannot be null");
+        if (calleeLevel == null)
+            throw new IllegalArgumentException("Callee level cannot be null");
         if (functionLabel == null)
             throw new IllegalArgumentException("FunctionLabel cannot be null");
         //add current frames frame pointer as parameter to call
@@ -145,8 +145,8 @@ public class Translate {
             new BINOP(
                 BINOP.PLUS, 
                 staticLinkOffset(
-                    currentLevel, 
-                    functionLevel
+                    callerLevel, 
+                    calleeLevel
                 ),
                 new CONST(0)
             )
