@@ -9,6 +9,15 @@ public class BoolList {
     tail = t;
   }
 
+  public BoolList append(boolean h) {
+    var last = this;
+    while (last.tail != null) {
+      last = last.tail;
+    }
+    last.tail = new BoolList(h, null);
+    return last.tail;
+  }
+
   public BoolList last() {
     BoolList result = this;
     for (; result.tail != null; result = result.tail)
@@ -16,4 +25,3 @@ public class BoolList {
     return result;
   }
 }
-

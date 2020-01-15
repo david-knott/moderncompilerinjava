@@ -7,8 +7,8 @@ package Translate;
  * the IL code, which is returned from the procEntryExit1
  */
 public class ProcFrag  extends Frag{
-    private Tree.Stm body;
-    private Frame.Frame frame;
+    Tree.Stm body;
+    Frame.Frame frame;
     
     public ProcFrag(Tree.Stm bdt, Frame.Frame frm){
         body = bdt;

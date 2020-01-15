@@ -4,6 +4,7 @@ import Temp.Label;
 import Temp.Temp;
 import Tree.BINOP;
 import Tree.CONST;
+import Tree.ESEQ;
 import Tree.Exp;
 import Tree.ExpList;
 import Tree.MEM;
@@ -108,6 +109,16 @@ public class IntelFrame extends Frame {
     public Exp externalCall(String func, ExpList args) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Exp string(Label l, String literal) {
+        //builds a string with a label definition
+        //and IR code to make a word containing the string lenght
+        //and code to emit character data
+        return new ESEQ(
+           null, null 
+        );
     }
 }
 

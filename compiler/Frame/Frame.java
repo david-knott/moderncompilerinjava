@@ -54,4 +54,6 @@ public abstract class Frame {
      * Calls an external function outside of Tiger
      */
     abstract public Tree.Exp externalCall(String func, Tree.ExpList args);
+
+    abstract public Tree.Exp string(Label l, String literal);
 }

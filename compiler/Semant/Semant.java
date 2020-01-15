@@ -81,22 +81,22 @@ public class Semant {
      */
     Types.Type transTy(final Absyn.RecordTy t) {
         // go through each the fields in this record type
-        Types.RECORD head = null;
-        Types.RECORD prev = null;
-        for (Absyn.FieldList l = t.fields; l != null; l = l.tail) {
-            final var cached = getType(l.typ, t.pos);
-            // create record for current item
-            final Types.RECORD current = new Types.RECORD(l.name, cached, null);
-            // set the previous items tail to the current item
-            // if we dont do this, the list will be reversed when
-            // used by the recordexp transExp
-            if (head == null)
-                head = current;
-            else
-                prev.tail = current; // insert the current item at the end of the previous
-            prev = current;
+        var fieldType = getType(t.fields.typ, t.pos);
+        var record = new Types.RECORD(t.fields.name, fieldType, null);
+        var item = t.fields.tail;
+        while (item != null) {
+            fieldType = getType(item.typ, item.pos);
+            record.append(item.name, fieldType);
+            item = item.tail;
         }
-        return head;
+        return record;
+        /*
+         * Types.RECORD prev = null; for (Absyn.FieldList l = t.fields.tail; l != null;
+         * l = l.tail) { cached = getType(l.typ, t.pos); final Types.RECORD current =
+         * new Types.RECORD(l.name, cached, null); if (head == null) head = current;
+         * else prev.tail = current; // insert the current item at the end of the
+         * previous prev = current; } return head;
+         */
     }
 
     /**
@@ -166,6 +166,7 @@ public class Semant {
         }
         // iterate through each record field till we find a match
         int i = 0;
+        // TODO: Refactor node add
         for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
             i++;
             if (r.fieldName == e.field) {
@@ -261,6 +262,7 @@ public class Semant {
             var vent = (FunEntry) env.venv.get(current.name);
             // iterate formals adding access to the created var entries
             var translateAccess = newLevel.formals;
+            // TODO: Refactor node add
             for (var p = current.params; p != null; p = p.tail) {
                 var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
                 env.venv.put(p.name, varEntry);
@@ -342,7 +344,8 @@ public class Semant {
         // add variable value mapping
         var varEntry = new VarEntry(type, translateAccess);
         env.venv.put(e.name, varEntry);
-        return translate.transDec(level, translateAccess);
+        // return translate.transDec(level, translateAccess);
+        return initExpTy.exp;
     }
 
     /**
@@ -382,13 +385,14 @@ public class Semant {
     ExpTy transExp(final Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
-        ExpTyList expTyList = new ExpTyList(null, null);
-        for (Absyn.DecList p = e.decs; p != null; p = p.tail){
-            Exp transDecExp = transDec(p.head);
-          //  expTyList.expTy
+        // TODO: Refactor node add
+        ExpTyList expTyList = null;
+        for (Absyn.DecList p = e.decs; p != null; p = p.tail) {
+            expTyList = new ExpTyList(new ExpTy(transDec(p.head), Semant.VOID), expTyList);
         }
         ExpTy et = transExp(e.body);
-        var eee = translate.letE(expTyList, et);
+        expTyList = new ExpTyList(et, expTyList);
+        var eee = translate.letE(expTyList);
         env.tenv.endScope();
         env.venv.endScope();
         return new ExpTy(eee, et.ty);
@@ -506,7 +510,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.StringExp stringExp) {
-        return new ExpTy(translate.string(stringExp.value), STRING);
+        return new ExpTy(translate.string(stringExp.value, level), STRING);
     }
 
     /**
@@ -527,13 +531,13 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.CallExp callExp) {
-        final Entry x = (Entry) (env.venv.get(callExp.func));
-        if (x instanceof FunEntry) {
-            // evaluate each expression in arg
-            // list and check if it is correct type
-            var ent = (FunEntry) x;
+        final Entry entry = (Entry) (env.venv.get(callExp.func));
+        if (entry instanceof FunEntry) {
+            var funEntry = (FunEntry) entry;
             var argExpList = callExp.args;
-            for (RECORD fmlType = ((FunEntry) x).formals; fmlType != null; fmlType = fmlType.tail) {
+            // Type check first
+            // TODO: Refactor node add
+            for (RECORD fmlType = funEntry.formals; fmlType != null; fmlType = fmlType.tail) {
                 if (argExpList == null) {
                     env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
                     break;
@@ -547,12 +551,25 @@ public class Semant {
             }
             if (argExpList != null) {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
-                // error(callExp.pos, "Supplied argument list is too long");
             }
-            return new ExpTy(translate.call(level), ent.result);
+            // translation generation
+            // loop through the actual arguments
+            // passed to the function reference
+            argExpList = callExp.args;
+            ExpTyList expTyList = null;
+            if (argExpList != null) {
+                // translate the argument and add to list
+                expTyList = new ExpTyList(transExp(argExpList.head));
+                argExpList = argExpList.tail;
+                while (argExpList != null) {
+                    expTyList.append(transExp(argExpList.head));
+                    argExpList = argExpList.tail;
+                }
+            }
+            return new ExpTy(translate.call(level, funEntry.level, funEntry.label, expTyList), funEntry.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
-            return new ExpTy(null, INT);
+            return new ExpTy(translate.Noop(), INT);
         }
     }
 
@@ -575,7 +592,7 @@ public class Semant {
                 etList = new ExpTyList(transExp(expList.head), etList);
                 expList = expList.tail;
             } while (expList != null);
-            //returned type is last expressions type
+            // returned type is last expressions type
             return new ExpTy(translate.seq(level, etList), etList.expTy.ty);
         }
     }
@@ -643,20 +660,26 @@ public class Semant {
             env.errorMsg.add(new UndefinedTypeError(recordExp.pos, tigerType));
         }
         ExpTyList expTyList = null;
-        ExpTyList current = null;
+        // ExpTyList current = null;
         if (!(tigerType.actual() instanceof RECORD)) {
             env.errorMsg.add(new TypeMismatchError(recordExp.pos, tigerType));
         } else {
-            var temp = (RECORD) tigerType.actual();
-            for (var fel = recordExp.fields; fel != null; fel = fel.tail) {
-                if (expTyList == null) {
-                    current = expTyList = new ExpTyList(transFieldListExp(fel, temp), null);
-                } else {
-                    current.tail = new ExpTyList(transFieldListExp(fel, temp), null);
-                    current = current.tail;
-                }
-                temp = temp.tail;
+            var recordType = (RECORD) tigerType.actual();
+            expTyList = new ExpTyList(transFieldListExp(recordExp.fields, recordType), null);
+            var recordFieldsTail = recordExp.fields.tail;
+            recordType = recordType.tail;
+            while (recordFieldsTail != null) {
+                expTyList.append(transFieldListExp(recordFieldsTail, recordType));
+                recordFieldsTail = recordFieldsTail.tail;
+                recordType = recordType.tail;
             }
+
+            /*
+             * for (var fel = recordExp.fields; fel != null; fel = fel.tail) { if (expTyList
+             * == null) { current = expTyList = new ExpTyList(transFieldListExp(fel, temp),
+             * null); } else { current.tail = new ExpTyList(transFieldListExp(fel, temp),
+             * null); current = current.tail; } temp = temp.tail; }
+             */
         }
         // a list of all the fieldExpTys here
         return new ExpTy(translate.record(level, expTyList), tigerType);
@@ -758,9 +781,9 @@ public class Semant {
         if (testExp.ty.actual() != INT) {
             env.errorMsg.add(new TypeMismatchError(whileExp.test.pos, testExp.ty.actual(), Semant.INT));
         }
-        //end of loop label
+        // end of loop label
         var loopEnd = new Label();
-        //pass in the end loop label so that breaks can jump to it
+        // pass in the end loop label so that breaks can jump to it
         var transBody = new Semant(env, loopEnd, level).transExp(whileExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
             env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
@@ -784,7 +807,6 @@ public class Semant {
         }
         return new ExpTy(translate.breakE(level, breakScopeLabel), Semant.VOID);
     }
-
 
     /**
      * Returns a translated if expression.
@@ -851,8 +873,7 @@ public class Semant {
     }
 
     /**
-     * Translates a field exp list into its type. This function does not generate IR
-     * and should be refactored accordingly
+     * Translates a field exp list into its type and returns IR
      * 
      * @param fel
      * @return
@@ -877,37 +898,49 @@ public class Semant {
         if (fieldType.actual() != transExp.ty.actual()) {
             env.errorMsg.add(new TypeMismatchError(fel.pos, fieldType, transExp.ty));
         }
-        // return exp and type
-        return new ExpTy(translate.fieldEList(level, transExp), fieldType);
+        return transExp;
     }
 
     private BoolList getBoolList(final FieldList fields) {
-        BoolList head = null;
-        BoolList prev = null;
-        for (Absyn.FieldList l = fields; l != null; l = l.tail) {
-            final BoolList current = new BoolList(l.escape, null);
-            if (head == null)
-                head = current;
-            else
-                prev.tail = current; // insert the current item at the end of the previous
-            prev = current;
+        BoolList boolList = null; //
+        if (fields != null) {
+            boolList = new BoolList(fields != null ? fields.escape : null, null);
+            var fieldTail = fields.tail;
+            while (fieldTail != null) {
+                boolList.append(fieldTail.escape);
+                fieldTail = fieldTail.tail;
+            }
         }
-        return head;
+        return boolList;
+        /*
+         * BoolList head = null; BoolList prev = null; for (Absyn.FieldList l = fields;
+         * l != null; l = l.tail) { final BoolList current = new BoolList(l.escape,
+         * null); if (head == null) head = current; else prev.tail = current; prev =
+         * current; } return head; Retuns null if no field type passed
+         */
     }
 
     private RECORD getRecordType(final FieldList fields) {
-        Types.RECORD head = null;
-        Types.RECORD prev = null;
-        for (Absyn.FieldList l = fields; l != null; l = l.tail) {
-            final var cached = getType(l.typ, l.pos);
-            final Types.RECORD current = new Types.RECORD(l.name, cached, null);
-            if (head == null)
-                head = current;
-            else
-                prev.tail = current; // insert the current item at the end of the previous
-            prev = current;
+        RECORD recordType = null;
+        if (fields != null) {
+            var fieldType = getType(fields.typ, fields.pos);
+            recordType = new RECORD(fields.name, fieldType, null);
+            var fieldTail = fields.tail;
+            while (fieldTail != null) {
+                fieldType = getType(fieldTail.typ, fieldTail.pos);
+                recordType.append(fieldTail.name, fieldType);
+                fieldTail = fieldTail.tail;
+            }
         }
-        return head;
+        return recordType;
+
+        /*
+         * Types.RECORD head = null; Types.RECORD prev = null; for (Absyn.FieldList l =
+         * fields; l != null; l = l.tail) { final var cached = getType(l.typ, l.pos);
+         * final Types.RECORD current = new Types.RECORD(l.name, cached, null); if (head
+         * == null) head = current; else prev.tail = current; // insert the current item
+         * at the end of the previous prev = current; } return head;
+         */
     }
 
     private Types.Type getType(final Symbol sym, final int pos) {
