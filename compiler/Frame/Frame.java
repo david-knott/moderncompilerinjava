@@ -69,6 +69,24 @@ public abstract class Frame {
      * will be eliminated by register coalescing, so they cost nothing.
      */
     abstract public Tree.Stm procEntryExit1(Tree.Stm body);
+    
+    /**
+     * Wrap the assembly body of a procedure with entry/exit after code generation.
+     */
+    //abstract public Assem.InstrList procEntryExit2(Assem.InstrList body); 
+    
+    
+    /**
+     * Creates the procedure prologue and epilogue assembly language. 
+     * First (for some machines) it calculates the size of the outgoing parameter space in the frame. 
+     * This is equal to the maximum number of outgoing parameters of any CALL instruction in the procedure body. 
+     * Unfortunately, after conversion to Assem trees the procedure calls have been separated from their arguments, 
+     * so the outgoing parameters are not obvious. 
+     * Either procEntryExit2 should scan the body and record this information in some new component of the frame type, 
+     * or procEntryExit3 should use the maximum legal value.
+     */
+    abstract public Tree.Stm procEntryExit3(Tree.Stm body);
+    
 
     /**
      * Calls an external function outside of Tiger
