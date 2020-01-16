@@ -150,9 +150,12 @@ public class Translate {
         } else if (difference > 0){
             //use the callers level ??
         } else {
-            //at the same level
+            //recursive function call
+            if(calleeLevel == callerLevel) {
 
-            //TODO: check for recursion
+            } else {
+                //call to function at same level
+            }
         }
         //add current frames frame pointer as parameter to call
         var exp = new MEM(

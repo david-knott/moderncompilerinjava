@@ -4,6 +4,10 @@ import Symbol.Symbol;
 import Temp.Label;
 import Util.BoolList;
 
+/**
+ * A new level is created for each function definition we encounter during
+ * the type check phase. 
+ */
 public class Level {
     // stack frame associate with this levels()
     Frame.Frame frame;
