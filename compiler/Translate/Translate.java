@@ -125,7 +125,6 @@ public class Translate {
 
     public Exp functionBody(Level level, ExpTy firstFunction) {
         return firstFunction.exp;
-
     }
 
     //TODO: nil IR
@@ -140,6 +139,21 @@ public class Translate {
             throw new IllegalArgumentException("Callee level cannot be null");
         if (functionLabel == null)
             throw new IllegalArgumentException("FunctionLabel cannot be null");
+        //if difference is negative, callee level is less than calller level
+        //which means the function being called has statically nested outside
+        //the the callee
+        //if difference is positive, the callee is statically nesed inside the
+        //caller
+        var difference = calleeLevel.depthDifference(callerLevel);
+        if(difference < 0){
+            //follow difference + 1 static links from callee
+        } else if (difference > 0){
+            //use the callers level ??
+        } else {
+            //at the same level
+
+            //TODO: check for recursion
+        }
         //add current frames frame pointer as parameter to call
         var exp = new MEM(
             new BINOP(

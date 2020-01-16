@@ -227,6 +227,4 @@ public class TranslateTest {
         assertEquals(0, level2.depthDifference(level2));
     }
 
-
-
 }
