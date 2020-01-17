@@ -53,9 +53,11 @@ public class Translate {
         // is a type checking errpr
         if (body == null)
             return;
-        addFrag(new ProcFrag(body.unNx(), null));
-        new Tree.Print(System.out).prStm(body.unNx());
-        // var statement1 = level.frame.procEntryExit1(body.unNx());
+        //
+        var statement1 = level.frame.procEntryExit1(body.unNx());
+        //TODO: Might be a bug here
+        addFrag(new ProcFrag(statement1, null));
+        new Tree.Print(System.out).prStm(statement1);
     }
 
     /**

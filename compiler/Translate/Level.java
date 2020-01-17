@@ -6,10 +6,17 @@ import Util.BoolList;
 
 /**
  * A new level is created for each function definition we encounter during
- * the type check phase. 
+ * the type check phase. The level represents the static nesting level of the
+ * function within the source code. Function nesting is represented as a tree
+ * with the main entry method as the root of this tree. Each function will
+ * have a level instance.
+ * The frame member is the activate record layout for the associated function
+ * The parent member is the parent level which contains this level.
+ * The formals member is the formal argument list for this function. It is
+ * used to indicate whether the arguments should be placed in memory or registers
  */
 public class Level {
-    // stack frame associate with this levels()
+   
     Frame.Frame frame;
     Level parent;
     public AccessList formals;
