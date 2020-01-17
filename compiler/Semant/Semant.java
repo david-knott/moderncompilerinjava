@@ -566,7 +566,8 @@ public class Semant {
                     argExpList = argExpList.tail;
                 }
             }
-            return new ExpTy(translate.call(level, funEntry.level, funEntry.label, expTyList), funEntry.result);
+            
+            return new ExpTy(translate.call(level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
             return new ExpTy(translate.Noop(), INT);

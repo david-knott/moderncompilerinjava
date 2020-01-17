@@ -15,6 +15,7 @@ import Tree.NAME;
 import Tree.SEQ;
 import Tree.Stm;
 import Tree.TEMP;
+import Types.Type;
 
 /**
  * Translates to IR and stores fragments for use after translation phase is
@@ -132,7 +133,17 @@ public class Translate {
         throw new Error();
     }
 
-    public Exp call(Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList expTyList) {
+    /**
+     * Calculates the static link for a function 
+     * Starting with the caller function
+     * @param callerLevel the function calling the callee
+     * @param calleeLevel the function being called
+     * @param functionLabel the function label for the callee function
+     * @param expTyList the agument list of the callee function
+     * @param result the return type of the callee function
+     * @return
+     */
+    public Exp call(Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList expTyList, Type result) {
         if (callerLevel == null)
             throw new IllegalArgumentException("Caller level cannot be null");
         if (calleeLevel == null)
@@ -145,35 +156,31 @@ public class Translate {
         //if difference is positive, the callee is statically nesed inside the
         //caller
         var difference = calleeLevel.depthDifference(callerLevel);
+        Tree.Exp staticLink = null;
+    //   callerLevel.frame
         if(difference < 0){
-            //follow difference + 1 static links from callee
-        } else if (difference > 0){
-            //use the callers level ??
-        } else {
-            //recursive function call
-            if(calleeLevel == callerLevel) {
-
-            } else {
-                //call to function at same level
+            int staticLinkOffset = 0;
+            staticLink = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(callerLevel.frame.FP())));
+            while(difference < 0){
+                staticLink = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), staticLink));
+                difference++;
             }
+        } else if (difference > 0){
+            staticLink = new TEMP(callerLevel.frame.FP());
+        } else {
+            //recursive call.
         }
         //add current frames frame pointer as parameter to call
-        var exp = new MEM(
-            new BINOP(
-                BINOP.PLUS, 
-                staticLinkOffset(
-                    callerLevel, 
-                    calleeLevel
-                ),
-                new CONST(0)
-            )
-        );
-        ExpList expList = new ExpList(exp, null);
+        ExpList expList = new ExpList(staticLink, null);
         while(expTyList != null){
             expList.append(expTyList.expTy.exp.unEx());
             expTyList = expTyList.tail;
         }
-        return new Ex(new CALL(new NAME(functionLabel), expList));
+        if(result.coerceTo(Semant.VOID)){
+            return new Ex(new CALL(new NAME(functionLabel), expList));
+        } else {
+            return new Ex(new CALL(new NAME(functionLabel), expList));
+        }
     }
 
     /**
@@ -325,18 +332,6 @@ public class Translate {
                 )
             );
         }
-    }
-
-    
-    private Tree.Exp staticLinkOffset(Level target, Level source) {
-        final int staticLinkOffset = 0;
-        Tree.Exp exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(target.frame.FP())));
-        var slinkLevel = source;
-        while (slinkLevel != target) {
-            exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), exp));
-            slinkLevel = slinkLevel.parent;
-        }
-        return exp;
     }
 
     private Tree.Exp staticLinkOffset(Access access, Level level) {

@@ -25,6 +25,7 @@ import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
 import Translate.Translate;
+import Tree.CALL;
 import Tree.Exp;
 import Tree.ExpList;
 import Tree.Stm;
@@ -116,8 +117,7 @@ public class TranslateTest {
         Level level2 = new Level(new TestFrame());
         level2.parent = level;
         //pass in IL versions of call parameters
-        ExpTyList expTyList = null; //new ExpTyList(new ExpTy());
-        var exp = translate.call(level, level2, new Label("test"), null);
+        var exp = translate.call(level, level2, new Label("test"), null, Semant.VOID);
         if(exp instanceof Ex){
           //  ((Ex)exp);
         }
@@ -227,4 +227,19 @@ public class TranslateTest {
         assertEquals(0, level2.depthDifference(level2));
     }
 
+    @Test
+    public void call_static_link_test(){
+        Translate translate = new Translate();
+        Level callerLevel = new Level(new TestFrame());
+        Level calleeLevel = new Level(new TestFrame());
+        calleeLevel.parent = callerLevel;
+        var callExp = translate.call(callerLevel, calleeLevel, new Label("function test"), null, Semant.VOID);
+        //the first argument of callExp.exp.args should be a static link with one level
+        if(callExp instanceof Ex){
+            Ex ex = (Ex)callExp;
+
+            System.out.println(ex);
+        }
+
+    }
 }

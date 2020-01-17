@@ -114,7 +114,4 @@ public class Level {
         }
         return sign * depth;
     }
-
-
-
 }
