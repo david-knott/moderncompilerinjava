@@ -115,6 +115,17 @@ public class Chap5Test {
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void type_var_dec_rec_valid_three_field() {
+        String tigerCode = "let type rectype = {age: int, name:string, id: int} var rec1:rectype := rectype {age=99, name=\"Nobody\", id =1234}   in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+
 
 
 

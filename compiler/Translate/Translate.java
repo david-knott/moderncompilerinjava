@@ -392,9 +392,10 @@ public class Translate {
     }
 
     /**
-     * Translate a let expression into IR
-     * @param decList
-     * @param body
+     * Translate a let expression into IR. We use noops
+     * where a strcut
+     * @param decList translated list of declarations
+     * @param body translated body to function
      * @return
      */
     public Exp letE(ExpTyList decList, ExpTy body) {
@@ -416,68 +417,18 @@ public class Translate {
                 )
             );
         }
-       /*
-
-        return body.ty.coerceTo(Semant.VOID) 
-            ? new Nx(
-                new SEQ(
-                    seq,
-                    body.exp.unNx() 
-                )
-            )
-            : new Ex(
-                new ESEQ(
-                    seq,
-                    body.exp.unEx() 
-                )
-            );
-            */
-        /*
-        ExpTyList current = expTyList.reverse();
-        //only one item in list
-        if(current.tail == null){
-            return new Ex(current.expTy.exp.unEx());
-        }
-        //split the list in first n -1 items and last n item
-        var allExceptLast = expTyList.exceptLast();
-        var last = expTyList.last();
-        if(allExceptLast.tail == null){
-            return new Ex(
-                new ESEQ(
-                    allExceptLast.expTy.exp.unNx(),
-                    last.expTy.exp.unEx() 
-                )
-            );
-        } else {
-            var seq = new SEQ(allExceptLast.expTy.exp.unNx(), null);
-            allExceptLast = allExceptLast.tail;
-            while(allExceptLast != null){
-                if(allExceptLast.tail == null) {
-                    seq.right = allExceptLast.expTy.exp.unNx();
-                } else {
-                    seq = new SEQ(allExceptLast.expTy.exp.unNx(), seq);
-                }
-                allExceptLast = allExceptLast.tail;
-            }
-            return new Ex(
-                new ESEQ(
-                    seq,
-                    last.expTy.exp.unEx() 
-                )
-            );
-        }*/
     }
 
     /**
      * Returns a MEM object which represents a static link to
      * a variable in a frame higher up the stack. If the variable
      * is defined in the current stack frame, the static link 
-     * is not needed.
+     * will just refer to the current activation records frame pointer.
      * @param access
      * @param level
      * @return a Tree.Exp containing MEM expressions.
      */
-    private Tree.Exp staticLinkOffset(Access access, Level level) {
+    public Tree.Exp staticLinkOffset(Access access, Level level) {
         int staticLinkOffset = 0;
         Tree.Exp exp = new MEM(
             new BINOP(
@@ -501,8 +452,11 @@ public class Translate {
     }
 
 	public Exp transDec(Level level, Access translateAccess, Exp exp) {
-       // translateAccess.acc.
-        return new Nx(new MOVE(simpleVar(translateAccess, level).unEx(), exp.unEx()));
-      // return exp;
+        return new Nx(
+            new MOVE(
+                simpleVar(translateAccess, level).unEx(), 
+                exp.unEx()
+            )
+        );
 	}
 }

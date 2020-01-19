@@ -192,12 +192,16 @@ public class Semant {
         // translate the index expression and check its an INT
         if (transIndexExp.ty.actual() != INT) {
             env.errorMsg.add(new TypeMismatchError(e.pos, transIndexExp.ty.actual()));
+            //TODO: tidy this up
+            return new ExpTy(translate.Noop(), VOID);
         }
         // translate the variable and check its an instance of an ARRAY
         final var translatedArrayVar = transVar(e.var);
         final Types.Type elementType = translatedArrayVar.ty.actual();
         if (!(elementType.actual() instanceof ARRAY)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
+            //TODO: tidy this up
+            return new ExpTy(translate.Noop(), VOID);
         }
         // type checking is complete, translate to IL
         var translateExp = translate.subscriptVar(transIndexExp, translatedArrayVar, level);
@@ -325,6 +329,11 @@ public class Semant {
      */
     Exp transDec(final Absyn.VarDec e) {
         ExpTy initExpTy = transExp(e.init);
+        //TODO: Tidy this up, this happens when the
+        //init expression cannot be translated
+        if(initExpTy.exp == null){
+            return translate.Noop();
+        }
         Types.Type type = initExpTy.ty.actual();
         Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
         // if the expression type is not null
@@ -703,12 +712,24 @@ public class Semant {
     ExpTy transExp(final Absyn.AssignExp assignExp) {
         var transVar = transVar(assignExp.var); // lvalue
         var transExp = transExp(assignExp.exp); // rvalue
+        if(transExp.exp == null) {
+            //TODO: handle l value and r value
+          //  env.errorMsg.add(new UndefinedVariableError(assignExp.var.pos, assignExp.exp));
+            return new ExpTy(translate.Noop(), Semant.VOID);
+        }
+        if(transVar.exp == null) {
+            //TODO: handle l value and r value
+          //  env.errorMsg.add(new UndefinedVariableError(assignExp.var.pos, assignExp.exp));
+            return new ExpTy(translate.Noop(), Semant.VOID);
+        }
         // check to see if we are trying to assign to a readonly variable
         if (assignExp.var instanceof SimpleVar) {
             var simpleVar = (SimpleVar) assignExp.var;
             var varEntry = (VarEntry) env.venv.get(simpleVar.name);
             if (varEntry == null) {
                 env.errorMsg.add(new UndefinedVariableError(assignExp.var.pos, simpleVar.name));
+                return new ExpTy(translate.Noop(), Semant.VOID);
+                
             } else {
                 if (varEntry.readOnly) {
                     env.errorMsg.add(new VariableAssignError(assignExp.pos, simpleVar.name));

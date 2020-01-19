@@ -108,7 +108,7 @@ public class NativeTypeTests {
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
-        assertEquals(1, m.getErrorMsg().getCompilerErrors().size());
+        assertEquals(2, m.getErrorMsg().getCompilerErrors().size());
     }
 
     @Test
