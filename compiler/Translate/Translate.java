@@ -257,27 +257,61 @@ public class Translate {
         );
     }
 
+    private Stm fieldList(Temp recordPointer,ExpTyList expTyList, Level level){
+        if(expTyList == null || expTyList.expTy == null){
+            return Noop().unNx();
+        }
+        int total = 0;
+        Stm first = new MOVE(
+                        new MEM(
+                            new BINOP(
+                                BINOP.PLUS, 
+                                new TEMP(recordPointer), 
+                                new CONST(level.frame.wordSize() * total)
+                            )
+                        ),
+            expTyList.expTy.exp.unEx()
+        );
+        if(expTyList.tail == null){
+            return first; 
+        }
+        SEQ seq = new SEQ(first, null);
+        expTyList = expTyList.tail;
+        var prev = seq;
+        while (expTyList != null) {
+            total++;
+            Stm fieldExp = 
+                new MOVE(
+                    new MEM(
+                        new BINOP(
+                            BINOP.PLUS, 
+                            new TEMP(recordPointer), 
+                            new CONST(level.frame.wordSize() * total)
+                        )
+                    ),
+                    expTyList.expTy.exp.unEx()
+                );
+            if (expTyList.tail == null) {
+                prev.right = fieldExp;
+            } else {
+                SEQ next = new SEQ(fieldExp, null);
+                prev.right = next;
+                prev = next;
+            }
+            expTyList = expTyList.tail;
+        }
+        return seq;
+    }
+
     public Exp record(Level level, ExpTyList expTyList) {
         Temp recordPointer = new Temp();
-        SEQ initSubTreeSeq = null;
+        Stm stm = fieldList(recordPointer, expTyList, level);
         int total = 0;
-        // TODO: BUG HERE WHEN THERE IS ONLY ONE FIELD
-        for (var s = expTyList; s != null; s = s.tail) {
-            if (s.tail == null) {
-                initSubTreeSeq.right = new MOVE(
-                        new MEM(new BINOP(0, new TEMP(recordPointer), new CONST(level.frame.wordSize() * total))),
-                        s.expTy.exp.unEx());
-            } else {
-                initSubTreeSeq = new SEQ(new MOVE(
-                        new MEM(new BINOP(0, new TEMP(recordPointer), new CONST(level.frame.wordSize() * total))),
-                        s.expTy.exp.unEx()), initSubTreeSeq);
-            }
-            total++;
-        }
+        for (var s = expTyList; s != null; s = s.tail) total++;
         int size = level.frame.wordSize() * total;
         return new Ex(new ESEQ(
                 new SEQ(new MOVE(new TEMP(recordPointer),
-                        new CALL(new NAME(new Label("malloc")), new ExpList(new CONST(size), null))), initSubTreeSeq),
+                        new CALL(new NAME(new Label("malloc")), new ExpList(new CONST(size), null))), stm),
                 new TEMP(recordPointer)));
     }
 
@@ -337,10 +371,11 @@ public class Translate {
         if(decList == null || decList.expTy == null){
             return Noop().unNx();
         }
+        Stm first = decList.expTy.exp.unNx();
         if(decList.tail == null){
-            return decList.expTy.exp.unNx();
+            return first;
         }
-        SEQ seq = new SEQ(decList.expTy.exp.unNx(), null);
+        SEQ seq = new SEQ(first, null);
         decList = decList.tail;
         var prev = seq;
         while (decList != null) {

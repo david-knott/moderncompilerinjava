@@ -90,7 +90,7 @@ public class Chap5Test {
 
     @Test
     public void type_var_dec_rec_invalid_one_field() {
-        String tigerCode = "let type rectype = {name:string} var rec1 := rectype {name=\"Nobody\"} in () end";
+        String tigerCode = "let type rectype = {name:int} var rec1 := rectype {name=\"Nobody\"} in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -105,6 +105,17 @@ public class Chap5Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void type_var_dec_rec_valid_two_field() {
+        String tigerCode = "let type rectype = {age: int, name:string} var rec1:rectype := rectype {age=99, name=\"Nobody\"}   in () end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 
 
     @Test
