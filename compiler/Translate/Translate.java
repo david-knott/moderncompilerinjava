@@ -18,8 +18,8 @@ import Tree.TEMP;
 import Types.Type;
 
 /**
- * Translates to IR and stores fragments for use after translation phase is
- * complete.
+ * Translates Abstract Syntax to IR and stores fragments for use 
+ * in next phase of compileation.
  */
 public class Translate {
 
@@ -36,6 +36,10 @@ public class Translate {
         return frags;
     }
 
+    /**
+     * Add a IR fragment as a side affect of generating the IR.
+     * @param procFrag
+     */
     public void addFrag(Frag procFrag){
         if (frags == null) {
             frags = procFrag;
@@ -45,15 +49,16 @@ public class Translate {
         }
     }
 
-    /**
-     * This function has the side effect of remembering a ProcFrag
-     */
+     /**
+      * This function has the side effect of remembering a ProcFrag
+      * @param level the current static function level
+      * @param body the body of the function we are translating
+      */
     public void procEntryExit(Level level, Exp body) {
         // body could be null if there
         // is a type checking errpr
         if (body == null)
             return;
-        //
         var statement1 = level.frame.procEntryExit1(body.unNx());
         //TODO: Might be a bug here
         addFrag(new ProcFrag(statement1, null));
@@ -80,10 +85,8 @@ public class Translate {
      * Return the array element at index i. This can be found by getting the mem at
      * variable at offet k, this is a pointer to the array memory location on the
      * heap. The element will be at the memory location + i * word size
-     * 
      * @param translatedArrayVar
      * @param transIndexExp
-     * @param access
      * @param level
      * @return
      */
@@ -91,9 +94,28 @@ public class Translate {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
         return new Ex(
-                new BINOP(BINOP.PLUS, baseExp, new BINOP(BINOP.MUL, indexExp, new CONST(level.frame.wordSize()))));
+            new BINOP(
+                BINOP.PLUS, 
+                baseExp, 
+                new BINOP(
+                    BINOP.MUL, 
+                    indexExp, 
+                    new CONST(level.frame.wordSize())
+                )
+            )
+        );
     }
 
+    /**
+     * Translates a field variable. Using the base reference and the field offset
+     * this returns the memory location of the field. If its an int, this will be
+     * the contents of the memory location, if its anything else, its the memory 
+     * location
+     * @param exp base reference of the record
+     * @param fieldIndex the field index, based on the order of the fields
+     * @param level the level that the record is being called
+     * @return
+     */
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
         return new Ex(new BINOP(BINOP.PLUS, exp.unEx(), new CONST(fieldIndex * level.frame.wordSize())));
     }
@@ -123,7 +145,7 @@ public class Translate {
     }
 
     public Exp Noop() {
-        return new Ex(new Tree.CONST(0));
+        return new Ex(new Tree.CONST(-1));
     }
 
     public Exp functionBody(Level level, ExpTy firstFunction) {
@@ -136,8 +158,8 @@ public class Translate {
     }
 
     /**
-     * Calculates the static link for a function 
-     * Starting with the caller function
+     * Generates IR for a call function. Function actual parameters
+     * are passed in as part of calling sequence which happens later.
      * @param callerLevel the function calling the callee
      * @param calleeLevel the function being called
      * @param functionLabel the function label for the callee function
@@ -171,6 +193,7 @@ public class Translate {
             staticLink = new TEMP(callerLevel.frame.FP());
         } else {
             //recursive call.
+            staticLink = new TEMP(callerLevel.frame.FP());
         }
         //add current frames frame pointer as parameter to call
         ExpList expList = new ExpList(staticLink, null);
@@ -293,14 +316,88 @@ public class Translate {
      * Assign the value in transExp into the location of transvar
      */
     public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
-        return new Nx(new MOVE(new MEM(transVar.exp.unEx()), transExp.exp.unEx()));
+        return new Nx(
+            new MOVE(
+                new MEM(
+                    transVar.exp.unEx()
+                ), 
+                transExp.exp.unEx()
+            )
+        );
+    }
+
+    private Exp body(ExpTy expTy){
+        if(expTy == null)
+            return Noop();
+        return expTy.exp;
+    }
+
+    private Stm declarations(ExpTyList decList){
+        //null dec list or head is expTy
+        if(decList == null || decList.expTy == null){
+            return Noop().unNx();
+        }
+        if(decList.tail == null){
+            return decList.expTy.exp.unNx();
+        }
+        SEQ seq = new SEQ(decList.expTy.exp.unNx(), null);
+        decList = decList.tail;
+        var prev = seq;
+        while (decList != null) {
+            if (decList.tail == null) {
+                prev.right = decList.expTy.exp.unNx();
+            } else {
+                SEQ next = new SEQ(decList.expTy.exp.unNx(), null);
+                prev.right = next;
+                prev = next;
+            }
+            decList = decList.tail;
+        }
+        return seq;
     }
 
     /**
-     * 
+     * Translate a let expression into IR
+     * @param decList
+     * @param body
+     * @return
      */
-    //TODO: Still a bug in this method
-    public Exp letE(ExpTyList expTyList) {
+    public Exp letE(ExpTyList decList, ExpTy body) {
+        //build list of items
+        Stm decStatments = declarations(decList);
+        Exp bodyExp = body(body);
+        if(body.ty == Semant.VOID) {
+            return new Nx(
+                new SEQ(
+                    decStatments,
+                    bodyExp.unNx() 
+                )
+            );
+        } else {
+            return new Ex(
+                new ESEQ(
+                    decStatments,
+                    bodyExp.unEx()
+                )
+            );
+        }
+       /*
+
+        return body.ty.coerceTo(Semant.VOID) 
+            ? new Nx(
+                new SEQ(
+                    seq,
+                    body.exp.unNx() 
+                )
+            )
+            : new Ex(
+                new ESEQ(
+                    seq,
+                    body.exp.unEx() 
+                )
+            );
+            */
+        /*
         ExpTyList current = expTyList.reverse();
         //only one item in list
         if(current.tail == null){
@@ -333,18 +430,44 @@ public class Translate {
                     last.expTy.exp.unEx() 
                 )
             );
-        }
+        }*/
     }
 
+    /**
+     * Returns a MEM object which represents a static link to
+     * a variable in a frame higher up the stack. If the variable
+     * is defined in the current stack frame, the static link 
+     * is not needed.
+     * @param access
+     * @param level
+     * @return a Tree.Exp containing MEM expressions.
+     */
     private Tree.Exp staticLinkOffset(Access access, Level level) {
-        final int staticLinkOffset = 0;
-        Tree.Exp exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(level.frame.FP())));
+        int staticLinkOffset = 0;
+        Tree.Exp exp = new MEM(
+            new BINOP(
+                BINOP.PLUS, 
+                new CONST(staticLinkOffset), 
+                new TEMP(level.frame.FP())
+            )
+        );
         var slinkLevel = level;
         while (slinkLevel != access.home) {
-            exp = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), exp));
+            exp = new MEM(
+                new BINOP(
+                    BINOP.PLUS, 
+                    new CONST(staticLinkOffset), 
+                    exp
+                )
+            );
             slinkLevel = slinkLevel.parent;
         }
         return exp;
     }
 
+	public Exp transDec(Level level, Access translateAccess, Exp exp) {
+       // translateAccess.acc.
+        return new Nx(new MOVE(simpleVar(translateAccess, level).unEx(), exp.unEx()));
+      // return exp;
+	}
 }

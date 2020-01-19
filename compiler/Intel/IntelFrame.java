@@ -46,7 +46,7 @@ public class IntelFrame extends Frame {
         // formals are placed by the caller in the out going arguments of previous stack
         // from
         // reachable as ebp + 8, ebp + 16
-        System.out.println("Intel frame created " + this.toString());
+        // System.out.println("Intel frame created " + this.toString());
         BoolList tmp = frml;
         AccessList al = null;
         AccessList prev = null;
@@ -72,7 +72,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Access allocLocal(boolean escape) {
-        System.out.println("Allocate local variable in frame " + this.toString());
+        //System.out.println("Allocate local variable in frame " + this.toString());
         localOffset = localOffset - WORD_SIZE;
         var ret = escape ? new InFrame(localOffset) : new InReg(new Temp());
         return ret;
@@ -85,7 +85,6 @@ public class IntelFrame extends Frame {
 
     @Override
     public Temp FP() {
-        // TODO Auto-generated method stub
         return fp;
     }
 
@@ -102,7 +101,7 @@ public class IntelFrame extends Frame {
     @Override
     public Stm procEntryExit1(Stm body) {
         // TODO Auto-generated method stub
-        return null;
+        return body;
     }
 
     @Override
@@ -120,10 +119,15 @@ public class IntelFrame extends Frame {
            null, null 
         );
     }
+
+    @Override
+    public Stm procEntryExit3(Stm body) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
 
 class InFrame extends Access {
-
     int offset;
 
     InFrame(int os) {

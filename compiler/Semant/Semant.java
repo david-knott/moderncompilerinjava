@@ -324,11 +324,9 @@ public class Semant {
      * @return
      */
     Exp transDec(final Absyn.VarDec e) {
-        // var varname:vartype = expression
-        final ExpTy initExpTy = transExp(e.init);
-        // get the expression type
-        final Types.Type type = initExpTy.ty.actual();
-        final Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
+        ExpTy initExpTy = transExp(e.init);
+        Types.Type type = initExpTy.ty.actual();
+        Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
         // if the expression type is not null
         if (e.typ != null) {
             if (otherType != type) {
@@ -341,11 +339,10 @@ public class Semant {
         }
         // allocate space for this variable
         var translateAccess = level.allocLocal(e.escape);
-        // add variable value mapping
         var varEntry = new VarEntry(type, translateAccess);
         env.venv.put(e.name, varEntry);
-        // return translate.transDec(level, translateAccess);
-        return initExpTy.exp;
+        return translate.transDec(level, translateAccess, initExpTy.exp);
+        //return initExpTy.exp;
     }
 
     /**
@@ -385,17 +382,23 @@ public class Semant {
     ExpTy transExp(final Absyn.LetExp e) {
         env.venv.beginScope();
         env.tenv.beginScope();
-        // TODO: Refactor node add
-        ExpTyList expTyList = null;
-        for (Absyn.DecList p = e.decs; p != null; p = p.tail) {
-            expTyList = new ExpTyList(new ExpTy(transDec(p.head), Semant.VOID), expTyList);
+        ExpTyList irDecList = null;
+        var decList = e.decs;
+        while(decList != null){
+            var transDec = transDec(decList.head);
+            var et = new ExpTy(transDec, Semant.VOID);
+            if(irDecList == null){
+                irDecList = new ExpTyList(et);
+            } else {
+                irDecList.append(et);
+            }
+            decList = decList.tail;
         }
-        ExpTy et = transExp(e.body);
-        expTyList = new ExpTyList(et, expTyList);
-        var eee = translate.letE(expTyList);
+        ExpTy irBody = transExp(e.body);
+        var irLet = translate.letE(irDecList, irBody);
         env.tenv.endScope();
         env.venv.endScope();
-        return new ExpTy(eee, et.ty);
+        return new ExpTy(irLet, irBody.ty);
     }
 
     /**
@@ -698,8 +701,8 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.AssignExp assignExp) {
-        var transVar = transVar(assignExp.var); // left value
-        var transExp = transExp(assignExp.exp); // right value
+        var transVar = transVar(assignExp.var); // lvalue
+        var transExp = transExp(assignExp.exp); // rvalue
         // check to see if we are trying to assign to a readonly variable
         if (assignExp.var instanceof SimpleVar) {
             var simpleVar = (SimpleVar) assignExp.var;

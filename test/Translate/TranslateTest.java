@@ -1,50 +1,34 @@
 package Translate;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import ErrorMsg.ArgumentMismatchError;
-import ErrorMsg.ErrorMsg;
-import ErrorMsg.FieldNotDefinedError;
-import ErrorMsg.FunctionNotDefinedError;
-import ErrorMsg.TypeMismatchError;
-import ErrorMsg.UndefinedVariableError;
-import Frame.Access;
-import Frame.Frame;
-import Main.Main;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
-import Translate.Translate;
-import Tree.CALL;
+import Tree.BINOP;
+import Tree.CONST;
 import Tree.Exp;
 import Tree.ExpList;
+import Tree.MEM;
 import Tree.Stm;
 import Util.BoolList;
 
 public class TranslateTest {
 
-    class TestFrame extends Frame {
+    class TestFrame extends Frame.Frame {
 
         @Override
         public Temp FP() {
             // TODO Auto-generated method stub
-            return null;
+            return new Temp();
         }
 
         @Override
         public Temp RV() {
             // TODO Auto-generated method stub
-            return null;
+            return new Temp();
         }
 
         @Override
@@ -54,13 +38,13 @@ public class TranslateTest {
         }
 
         @Override
-        public Frame newFrame(Label name, BoolList formals) {
+        public Frame.Frame newFrame(Label name, BoolList formals) {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public Access allocLocal(boolean escape) {
+        public Frame.Access allocLocal(boolean escape) {
             // TODO Auto-generated method stub
             return null;
         }
@@ -82,13 +66,53 @@ public class TranslateTest {
             // TODO Auto-generated method stub
             return null;
         }
+
+        @Override
+        public Stm procEntryExit3(Stm body) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+    }
+
+    public class TestAcess extends Frame.Access{
+
+        @Override
+        public Exp exp(Exp framePtr) {
+            return new MEM(new BINOP(BINOP.PLUS, framePtr, new CONST(10)));
+        }
     }
 
     @Test
-    public void nil() {
+    public void local_simpleVar_test() {
         Translate translate = new Translate();
-        var ex = translate.Noop().unEx();
-        var nx = translate.Noop().unNx();
+        Level level = new Level(new TestFrame());
+        var frameAccess = new TestAcess();
+        var access = new Access(level, frameAccess);
+        var simpleVar = translate.simpleVar(access, level);
+        assertFalse(true);
+    }
+
+    @Test
+    public void nonlocal_simpleVar_test() {
+        Translate translate = new Translate();
+        Level varUsageLevel = new Level(new TestFrame());
+        Level varDefLevel = new Level(new TestFrame());
+        varUsageLevel.parent = varDefLevel;
+        var frameAccess = new TestAcess();
+        var access = new Access(varDefLevel, frameAccess);
+        var simpleVar = translate.simpleVar(access, varUsageLevel);
+        assertFalse(true);
+    }
+
+    @Test
+    public void subscriptVar_test() {
+        Translate translate = new Translate();
+        Level level = new Level(new TestFrame());
+        var frameAccess = new TestAcess();
+        var access = new Access(level, frameAccess);
+        var simpleVar = translate.simpleVar(access, level);
+        var transIndexExp = new Tree.CONST(1);
+        //var subscriptVar = translate.subscriptVar(transIndexExp, simpleVar, level);
         assertFalse(true);
     }
 
@@ -96,7 +120,7 @@ public class TranslateTest {
     public void string_literal_test() {
         Translate translate = new Translate();
         Level level = new Level(new TestFrame());
-        var exp = translate.string("this is a string", level);
+     //   var exp = translate.string("this is a string", level);
         assertFalse(true);
     }
 
@@ -126,108 +150,6 @@ public class TranslateTest {
     }
 
     @Test
-    public void level_is_ancestor_depth_1_test() {
-        Level level = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        level2.parent = level;
-        assertTrue(level.ancestor(level2));
-    }
-
-    @Test
-    public void level_is_ancestor_depth_2_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        Level level3 = new Level(new TestFrame());
-        level2.parent = level1;
-        level3.parent = level2;
-        assertTrue(level1.ancestor(level3));
-        assertTrue(level1.ancestor(level2));
-    }
-
-
-    @Test
-    public void level_is_not_ancestor_depth_1_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        level2.parent = level1;
-        assertFalse(level2.ancestor(level1));
-    }
-
-    @Test
-    public void level_is_not_ancestor_depth_2_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        Level level3 = new Level(new TestFrame());
-        level2.parent = level1;
-        level3.parent = level2;
-        assertFalse(level2.ancestor(level1));
-    }
-
-
-    @Test
-    public void level_is_descendant_depth_1_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        level2.parent = level1;
-        assertTrue(level2.descendant(level1));
-    }
-
-    @Test
-    public void level_is_descendant_depth_2_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        Level level3 = new Level(new TestFrame());
-        level2.parent = level1;
-        level3.parent = level2;
-        assertTrue(level2.descendant(level1));
-    }
-
-    @Test
-    public void level_is_depth_minus_2_difference_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        Level level3 = new Level(new TestFrame());
-        level2.parent = level1;
-        level3.parent = level2;
-        assertEquals(-2, level1.depthDifference(level3));
-    }
-
-    @Test
-    public void level_is_depth_plus_2_difference_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        Level level3 = new Level(new TestFrame());
-        level2.parent = level1;
-        level3.parent = level2;
-        assertEquals(2, level3.depthDifference(level1));
-    }
-
-    @Test
-    public void level_is_depth_minus_1_difference_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        level2.parent = level1;
-        assertEquals(-1, level1.depthDifference(level2));
-    }
-
-    @Test
-    public void level_is_depth_plus_1_difference_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        level2.parent = level1;
-        assertEquals(1, level2.depthDifference(level1));
-    }
-
-
-    @Test
-    public void level_is_depth_0_difference_test() {
-        Level level1 = new Level(new TestFrame());
-        Level level2 = new Level(new TestFrame());
-        level2.parent = level1;
-        assertEquals(0, level2.depthDifference(level2));
-    }
-
-    @Test
     public void call_static_link_test(){
         Translate translate = new Translate();
         Level callerLevel = new Level(new TestFrame());
@@ -237,9 +159,33 @@ public class TranslateTest {
         //the first argument of callExp.exp.args should be a static link with one level
         if(callExp instanceof Ex){
             Ex ex = (Ex)callExp;
-
             System.out.println(ex);
         }
-
     }
+
+    @Test
+    public void assign_test() {
+        Translate translate = new Translate();
+        Level level = new Level(new TestFrame());
+        ExpTy transVar = null;
+        ExpTy transExp = null;
+        var assign = translate.assign(level, transVar, transExp);
+        System.out.println(assign);
+        assertFalse(true);
+    }
+
+    @Test
+    public void let_test() {
+        Translate translate = new Translate();
+        var let = translate.letE(null, null);
+        //a nop should be returned
+
+       // let = translate.letE();
+     //   assertFalse(true);
+    }
+
+
+
+
+
 }

@@ -22,8 +22,17 @@ public class Chap5Test {
     }
 
     @Test
+    public void let_test() {
+        String tigerCode = "let in end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
     public void flush_test() {
-        String tigerCode = "let var a:int := 0 in flush() end";
+        String tigerCode = "let in flush() end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -32,7 +41,7 @@ public class Chap5Test {
 
     @Test
     public void type_var_dec_correct_int() {
-        String tigerCode = "let var badVariable:int := 123 in () end";
+        String tigerCode = "let var badVariable:int := 1000 in () end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -59,7 +68,7 @@ public class Chap5Test {
 
     @Test
     public void type_var_dec_custom_type() {
-        String tigerCode = "let type t1 = int var v1:int := 1 in () end";
+        String tigerCode = "let type t1 = int var v1:int := 999 in v1 := v1 + 5 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -72,7 +81,7 @@ public class Chap5Test {
         // semant - add type mapping from t1 -> int
         // semant - check type of v1 is the same as int exp
         // semant - add type mapping from t2 -> type of t1 ( int )
-        String tigerCode = "let type t1 = int var v1:t1 := 123 type t2 = t1 var v2:t2 := 345 type t3 = t2 var v3:t3 := 347  in () end";
+        String tigerCode = "let type t1 = int var v1:t1 := 123 type t2 = t1 var v2:t2 := 345 type t3 = t2 var v3:t3 := 347  in v1 := v3 - v2 + 10 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
