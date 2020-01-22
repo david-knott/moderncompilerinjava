@@ -211,31 +211,64 @@ public class Translate {
     /**
      * Translates a sequence of expressions into IR. If a sequence can be used for
      * syntactic grouping or for a list of expressions with the last item as the
-     * returned value Note that the parameter exTyList is in reverse
+     * returned value 
      */
     public Exp seq(Level level, ExpTyList expTyList) {
-        // list is reversed
-        if (expTyList.tail == null) {
+        if (expTyList.expTy != null && expTyList.tail == null) {
             return expTyList.expTy.exp;
-        } else {
-            //TODO: Check if loop through the list in reverse
-            Stm seq = null;
-            for (var e = expTyList; e != null; e = e.tail) {
-                if (seq == null) {
-                    seq = e.expTy.exp.unNx();
-                } else {
-                    seq = new SEQ(seq, e.expTy.exp.unNx());
-                }
-                if (e.tail == null) {
-                    if (e.expTy.ty.coerceTo(Semant.VOID)) {
-                        return new Nx(new SEQ(seq, e.expTy.exp.unNx()));
-                    } else {
-                        return new Ex(new ESEQ(seq, e.expTy.exp.unEx()));
-                    }
-                }
-            }
-            return new Nx(seq);
         }
+        if(expTyList.last().expTy.ty != Semant.VOID){
+            return new Ex(expSeq(level, expTyList));
+        } else {
+            return new Nx(stmSeq(level, expTyList));
+        }
+    }
+
+    private Stm stmSeq(Level level, ExpTyList expTyList) {
+        if(expTyList.expTy == null && expTyList.tail == null){
+            return null;
+        }
+        var firstStm = expTyList.expTy.exp.unNx();
+        if(expTyList.tail == null){
+            return firstStm;
+        }
+        SEQ seq = new SEQ(firstStm, null);
+        expTyList = expTyList.tail;
+        while(expTyList != null){
+            if(expTyList.tail == null){
+                seq.right = expTyList.expTy.exp.unNx();
+            }else{
+                SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
+                seq.right = seq1;
+                seq = seq1;
+            }
+            expTyList = expTyList.tail;
+        }
+        return seq;
+    }
+
+    private Tree.Exp expSeq(Level level, ExpTyList expTyList) {
+        if(expTyList.expTy == null && expTyList.tail == null){
+            return null;
+        }
+        var firstEx = expTyList.expTy.exp;
+        if(expTyList.tail == null){
+            return firstEx.unEx();
+        }
+        ESEQ eseq = null;
+        SEQ seq = new SEQ(firstEx.unNx(), null);
+        expTyList = expTyList.tail;
+        while(expTyList != null){
+            if(expTyList.tail == null){
+                eseq = new ESEQ(seq, expTyList.expTy.exp.unEx());
+            }else{
+                SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
+                seq.right = seq1;
+                seq = seq1;
+            }
+            expTyList = expTyList.tail;
+        }
+        return eseq;
     }
 
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
@@ -399,7 +432,6 @@ public class Translate {
      * @return
      */
     public Exp letE(ExpTyList decList, ExpTy body) {
-        //build list of items
         Stm decStatments = declarations(decList);
         Exp bodyExp = body(body);
         if(body.ty == Semant.VOID) {

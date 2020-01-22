@@ -2,8 +2,13 @@ package Translate;
 
 import static org.junit.Assert.assertFalse;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+
 import org.junit.Test;
 
+import Main.Main;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -179,10 +184,18 @@ public class TranslateTest {
         Translate translate = new Translate();
         var let = translate.letE(null, null);
         //a nop should be returned
-
-       // let = translate.letE();
-     //   assertFalse(true);
     }
+
+    @Test
+    public void record_assign_test() {
+        String tigerCode = "let type rectype = {age: int} var int1:int := 11 var rec1:rectype := rectype {age=99}   in rec1.age := 111; int1 := 222 end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+
+    }
+
 
 
 

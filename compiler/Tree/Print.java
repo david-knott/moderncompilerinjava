@@ -16,8 +16,12 @@ public class Print {
    }
 
    void indent(int d) {
-      for (int i = 0; i < d; i++)
-         out.print(' ');
+      for (int i = 0; i < d; i++) {
+         out.print('.');
+         out.print('.');
+         out.print('.');
+         out.print('.');
+      }
    }
 
    void say(String s) {

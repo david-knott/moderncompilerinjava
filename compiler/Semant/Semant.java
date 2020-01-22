@@ -598,22 +598,19 @@ public class Semant {
         }
         if (expList.head == null) {
             return new ExpTy(translate.Noop(), VOID);
-        } else {
-            // reverses the order of the explist
-            ExpTyList etList = null;
-            do {
-                etList = new ExpTyList(transExp(expList.head), etList);
-                expList = expList.tail;
-            } while (expList != null);
-            // returned type is last expressions type
-            return new ExpTy(translate.seq(level, etList), etList.expTy.ty);
+        } 
+        ExpTyList etList = new ExpTyList(transExp(expList.head), null);
+        expList = expList.tail;
+        while(expList != null) {
+            etList.append(transExp(expList.head));
+            expList = expList.tail;
         }
+        return new ExpTy(translate.seq(level, etList), etList.expTy.ty);
     }
 
     /**
-     * Returns a translated expression for a sequence If sequence is empty, return
-     * type is void
-     * 
+     * Returns a translated expression for a sequence If sequence is empty, 
+     * return type is void
      * @param seqExp
      * @return
      */
