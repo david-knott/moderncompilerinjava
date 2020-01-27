@@ -188,10 +188,11 @@ public class TranslateTest {
 
     @Test
     public void record_assign_test() {
-        String tigerCode = "let type rectype = {age: int} var int1:int := 11 var rec1:rectype := rectype {age=99}   in rec1.age := 111; int1 := 222 end";
+        String tigerCode = "let type rectype = {age: int} var int1:int := 11 var rec2:rectype := nil var rec1:rectype := rectype {age=99}   in rec1.age := 111; int1 := 222; rec2 := rec1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
-        m.compile();
+        m.compile(); 
+        System.out.println("ss");
         assertFalse(m.hasErrors());
 
     }

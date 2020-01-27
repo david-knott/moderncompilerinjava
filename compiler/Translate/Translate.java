@@ -152,9 +152,8 @@ public class Translate {
         return firstFunction.exp;
     }
 
-    //TODO: nil IR
     public Exp nil() {
-        throw new Error();
+        return new Ex(new CONST(0));
     }
 
     /**

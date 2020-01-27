@@ -338,7 +338,8 @@ public class Semant {
         Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
         // if the expression type is not null
         if (e.typ != null) {
-            if (otherType != type) {
+            if(!type.coerceTo(otherType)){
+          //  if (otherType != type) {
                 env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
             }
         }
@@ -744,7 +745,7 @@ public class Semant {
             throw new RuntimeException("Unhandled type " + assignExp.var);
         }
 
-        if (transVar.ty.actual() != transExp.ty.actual()) {
+        if(!transVar.ty.coerceTo(transExp.ty)){
             env.errorMsg.add(new TypeMismatchError(assignExp.pos, transVar.ty.actual(), transExp.ty.actual()));
         }
         return new ExpTy(translate.assign(level, transVar, transExp), Semant.VOID);
