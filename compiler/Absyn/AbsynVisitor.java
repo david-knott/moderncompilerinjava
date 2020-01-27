@@ -1,6 +1,6 @@
 package Absyn;
 
-interface AbsynVisitor {
+public interface AbsynVisitor {
 
     void visit(ArrayExp exp);
     void visit(ArrayTy exp);

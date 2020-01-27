@@ -22,6 +22,8 @@ public class TypeDec extends Dec {
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
       ty.accept(visitor);
-      next.accept(visitor);
+      if(next != null) {
+         next.accept(visitor);
+      }
    }
 }

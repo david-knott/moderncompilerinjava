@@ -10,6 +10,7 @@ import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
+import Semant.TypeCheckVisitor;
 import Symbol.SymbolTable;
 import Translate.Level;
 import Types.Type;
@@ -81,6 +82,7 @@ public class Main {
 
     private void typeCheck() {
         new FindEscape(this.ast.absyn);
+        this.ast.absyn.accept(new TypeCheckVisitor());
         var frags = this.semant.transProg(this.ast.absyn);
     }
 
