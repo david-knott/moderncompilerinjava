@@ -194,12 +194,6 @@ public class TranslateTest {
         m.compile(); 
         System.out.println("ss");
         assertFalse(m.hasErrors());
-
     }
-
-
-
-
-
 
 }
