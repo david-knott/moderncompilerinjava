@@ -1,10 +1,25 @@
 package Absyn;
+
 import Symbol.Symbol;
+
 public class FieldExpList extends Absyn {
    public Symbol name;
    public Exp init;
    public FieldExpList tail;
-   public FieldExpList(int p, Symbol n, Exp i, FieldExpList t) {pos=p; 
-	name=n; init=i; tail=t;
+
+   public FieldExpList(int p, Symbol n, Exp i, FieldExpList t) {
+      pos = p;
+      name = n;
+      init = i;
+      tail = t;
+   }
+
+   @Override
+   public void accept(AbsynVisitor visitor) {
+      visitor.visit(this);
+      init.accept(visitor);
+      if (tail != null)
+         tail.accept(visitor);
+
    }
 }

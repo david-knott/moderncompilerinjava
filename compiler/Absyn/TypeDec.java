@@ -1,11 +1,27 @@
 package Absyn;
+
 import Symbol.Symbol;
+
 public class TypeDec extends Dec {
    public Symbol name;
    public Ty ty;
    public TypeDec next;
-   public TypeDec(int p, Symbol n, Ty t, TypeDec x) {pos=p; name=n; ty=t; next=x;}
-   public String toString(){
+
+   public TypeDec(int p, Symbol n, Ty t, TypeDec x) {
+      pos = p;
+      name = n;
+      ty = t;
+      next = x;
+   }
+
+   public String toString() {
       return "[TypeDec:{name=" + name + ",ty=" + ty + ",next=" + next + "}]";
+   }
+
+   @Override
+   public void accept(AbsynVisitor visitor) {
+      visitor.visit(this);
+      ty.accept(visitor);
+      next.accept(visitor);
    }
 }

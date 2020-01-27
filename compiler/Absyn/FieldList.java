@@ -1,12 +1,29 @@
 package Absyn;
+
 import Symbol.Symbol;
+
 public class FieldList extends Absyn {
    public Symbol name;
    public Symbol typ;
    public FieldList tail;
    public boolean escape = true;
-   public FieldList(int p, Symbol n, Symbol t, FieldList x) {pos=p; name=n; typ=t; tail=x;}
-   public String toString(){
-      return "[FieldList:{name="+name+",typ="+typ+",tail="+tail+",escape="+escape+"}]";
+
+   public FieldList(int p, Symbol n, Symbol t, FieldList x) {
+      pos = p;
+      name = n;
+      typ = t;
+      tail = x;
+   }
+
+   public String toString() {
+      return "[FieldList:{name=" + name + ",typ=" + typ + ",tail=" + tail + ",escape=" + escape + "}]";
+   }
+
+   @Override
+   public void accept(AbsynVisitor visitor) {
+      visitor.visit(this);
+      if (tail != null)
+         tail.accept(visitor);
+
    }
 }

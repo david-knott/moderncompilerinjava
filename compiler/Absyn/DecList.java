@@ -8,4 +8,11 @@ public class DecList {
       head = h;
       tail = t;
    }
+
+   public void accept(AbsynVisitor visitor) {
+      head.accept(visitor);
+      if (tail != null)
+         tail.accept(visitor);
+   }
+
 }
