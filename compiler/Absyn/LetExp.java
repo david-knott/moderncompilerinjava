@@ -12,9 +12,10 @@ public class LetExp extends Exp {
 
    @Override
    public void accept(AbsynVisitor visitor) {
-      // TODO Auto-generated method stub
+      if (decs != null)
+         decs.accept(visitor);
+      if (body != null)
+         body.accept(visitor);
       visitor.visit(this);
-      decs.accept(visitor);
-      body.accept(visitor);
    }
 }

@@ -1,8 +1,12 @@
 package Semant;
 
+import Absyn.DecList;
+import Absyn.ExpList;
 import Absyn.FieldList;
 import Absyn.FieldVar;
 import Absyn.FunctionDec;
+import Absyn.LetExp;
+import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.SubscriptVar;
 import Absyn.TypeDec;
@@ -786,6 +790,21 @@ public class Semant {
         }
         env.venv.endScope();
         env.tenv.endScope();
+        //lets rebuild the for loop into the abstract syntax for a while
+        var rewriteAbsyn = new LetExp(
+            0, 
+            new DecList(
+                null, 
+                null
+            ), 
+            new SeqExp(
+                0, 
+                new ExpList(
+                    null, 
+                    null
+                )
+            )
+        );
         return new ExpTy(translate.forE(level, loopEnd, lowTy, hiTy, transBody), Semant.VOID);
     }
 

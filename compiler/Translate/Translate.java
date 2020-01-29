@@ -261,10 +261,14 @@ public class Translate {
             if(expTyList.tail == null){
                 eseq = new ESEQ(seq, expTyList.expTy.exp.unEx());
             }else{
-                SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
-                seq.right = seq1;
-                seq = seq1;
-            }
+                if(expTyList.tail.tail == null){
+                    seq.right = expTyList.expTy.exp.unNx();
+                } else {
+                    SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
+                    seq.right = seq1;
+                    seq = seq1;
+                }
+           }
             expTyList = expTyList.tail;
         }
         return eseq;
