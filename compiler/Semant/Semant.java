@@ -10,6 +10,7 @@ import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.SubscriptVar;
 import Absyn.TypeDec;
+import Absyn.VarDec;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
 import ErrorMsg.FieldNotDefinedError;
@@ -172,11 +173,11 @@ public class Semant {
         int i = 0;
         // TODO: Refactor node add
         for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
-            i++;
             if (r.fieldName == e.field) {
                 var translateExp = translate.fieldVar(varExp.exp, i, level);
                 return new ExpTy(translateExp, r.fieldType.actual());
             }
+            i++;
         }
         env.errorMsg.add(new FieldNotDefinedError(e.pos, e.field));
         return new ExpTy(null, INT);
@@ -794,7 +795,7 @@ public class Semant {
         var rewriteAbsyn = new LetExp(
             0, 
             new DecList(
-                null, 
+                null,
                 null
             ), 
             new SeqExp(
@@ -993,5 +994,4 @@ public class Semant {
         }
         return cached;
     }
-
 }

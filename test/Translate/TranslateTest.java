@@ -187,8 +187,8 @@ public class TranslateTest {
     }
 
     @Test
-    public void record_assign_test() {
-        String tigerCode = "let type rectype = {age: int} var int1:int := 11 var rec2:rectype := nil var rec1:rectype := rectype {age=99}   in rec1.age := 111; int1 := 222; rec2 := rec1 end";
+    public void record_assign_test_one_field() {
+        String tigerCode = "let type rectype = {age: int} var rec1:rectype := rectype {age=99} in rec1.age := 999 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile(); 
@@ -196,6 +196,29 @@ public class TranslateTest {
         assertFalse(m.hasErrors());
 
     }
+
+    @Test
+    public void record_assign_test_two_fields() {
+        String tigerCode = "let type rectype = {age: int, id: int} var rec1:rectype := rectype {age=99, id=1} in rec1.id := 11; rec1.age := 999 end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile(); 
+        assertFalse(m.hasErrors());
+    }
+
+
+
+    @Test
+    public void record_assign_test_for() {
+        String tigerCode = "let var i := 0 in while 1 do  ( i := i; if i = 99 then break else i := i + 1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile(); 
+        System.out.println();
+        assertFalse(m.hasErrors());
+    }
+
+
 
 
 
