@@ -210,7 +210,7 @@ public class TranslateTest {
 
     @Test
     public void record_assign_test_for() {
-        String tigerCode = "let var i := 0 in while 1 do  ( i := i; if i = 99 then break else i := i + 1) end";
+        String tigerCode = "let var i := 11 in if i < 888 then while 1 do  ( i := i; if i = 99 then break else i := i + 1) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile(); 

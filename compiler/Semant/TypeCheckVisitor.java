@@ -198,7 +198,7 @@ public class TypeCheckVisitor implements AbsynVisitor {
 
     @Override
     public void visit(VarDec exp) {
-        // TODO Auto-generated method stub
+        
 
     }
 

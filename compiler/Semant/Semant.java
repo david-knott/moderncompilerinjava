@@ -1,16 +1,23 @@
 package Semant;
 
+import Absyn.AssignExp;
+import Absyn.BreakExp;
 import Absyn.DecList;
 import Absyn.ExpList;
 import Absyn.FieldList;
 import Absyn.FieldVar;
 import Absyn.FunctionDec;
+import Absyn.IfExp;
+import Absyn.IntExp;
 import Absyn.LetExp;
+import Absyn.OpExp;
 import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.SubscriptVar;
 import Absyn.TypeDec;
 import Absyn.VarDec;
+import Absyn.VarExp;
+import Absyn.WhileExp;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
 import ErrorMsg.FieldNotDefinedError;
@@ -611,7 +618,8 @@ public class Semant {
             etList.append(transExp(expList.head));
             expList = expList.tail;
         }
-        return new ExpTy(translate.seq(level, etList), etList.expTy.ty);
+        
+        return new ExpTy(translate.seq(level, etList), etList.last().expTy.ty);
     }
 
     /**
@@ -795,13 +803,56 @@ public class Semant {
         var rewriteAbsyn = new LetExp(
             0, 
             new DecList(
-                null,
+                forExp.var,
                 null
             ), 
             new SeqExp(
                 0, 
                 new ExpList(
-                    null, 
+                    new IfExp(
+                        0, 
+                        new OpExp(
+                            0, 
+                            new VarExp(0, new SimpleVar(0, Symbol.symbol("i")))/* i */, 
+                            OpExp.LT, 
+                            forExp.hi
+                        ), 
+                        new WhileExp(
+                            0, 
+                            new IntExp(0, 1) /* test */, 
+                            new SeqExp(/* body */
+                               0,
+                               new ExpList(
+                                    forExp.body/* for body */,
+                                    new ExpList(
+                                        new IfExp(
+                                            0,
+                                            new OpExp(
+                                               0,
+                                                new VarExp(0, new SimpleVar(0, Symbol.symbol("i")))/* i */, 
+                                               OpExp.EQ,
+                                               forExp.hi
+                                           ),
+                                           new BreakExp(0) /* true so break */,
+                                           new AssignExp(/* false so increment */
+                                               0,
+                                               new SimpleVar(0, Symbol.symbol("i"))/* i */,
+                                               new OpExp(
+                                                   0, 
+                                                   new VarExp(
+                                                       0, 
+                                                        new SimpleVar(0, Symbol.symbol("i"))
+                                                       ),
+                                                       OpExp.PLUS, 
+                                                       new IntExp(0, 1)
+                                                )
+                                           )
+                                        ), null
+                                    )
+                               )
+                            )
+                        )
+                    ), 
                     null
                 )
             )

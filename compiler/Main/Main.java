@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
+import Frame.Frame;
 import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
@@ -27,6 +28,7 @@ public class Main {
     private Semant semant;
     private ErrorMsg errorMsg;
     private Grm parser;
+    private Frame frame = new IntelFrame(null, null);
 
     public Main(final String filename) throws FileNotFoundException {
         this(filename, new java.io.FileInputStream(filename));
@@ -37,7 +39,7 @@ public class Main {
         this.inputStream = inputStream;
         this.errorMsg = new ErrorMsg(this.name);
         this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
-        this.semant = new Semant(errorMsg, new Level(new IntelFrame(null, null)));
+        this.semant = new Semant(errorMsg, new Level(frame));
     }
 
     public ErrorMsg getErrorMsg() {
@@ -82,7 +84,8 @@ public class Main {
 
     private void typeCheck() {
         new FindEscape(this.ast.absyn);
-        this.ast.absyn.accept(new TypeCheckVisitor());
+    //    this.ast.absyn.accept(new TypeCheckVisitor());
+        print();
         var frags = this.semant.transProg(this.ast.absyn);
     }
 
