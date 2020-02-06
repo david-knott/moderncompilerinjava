@@ -59,7 +59,13 @@ public class Translate {
         // is a type checking errpr
         if (body == null)
             return;
-        var statement1 = level.frame.procEntryExit1(body.unNx());
+        var exp = new Nx(
+            new MOVE(
+                new TEMP(level.frame.RV()),
+                body.unEx()
+            )
+        );
+        var statement1 = level.frame.procEntryExit1(exp.unNx());
         //TODO: Might be a bug here
         addFrag(new ProcFrag(statement1, null));
         new Tree.Print(System.out).prStm(statement1);
@@ -77,7 +83,7 @@ public class Translate {
      * @return a translated expression
      */
     public Exp simpleVar(Access access, Level level) {
-        var exp = staticLinkOffset(access, level);
+        var exp =  staticLinkOffset(access, level);
         return new Ex(access.acc.exp(exp));
     }
 
@@ -181,8 +187,8 @@ public class Translate {
         var difference = calleeLevel.depthDifference(callerLevel);
         Tree.Exp staticLink = null;
     //   callerLevel.frame
+        int staticLinkOffset = 0;
         if(difference < 0){
-            int staticLinkOffset = 0;
             staticLink = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(callerLevel.frame.FP())));
             while(difference < 0){
                 staticLink = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), staticLink));
@@ -191,8 +197,15 @@ public class Translate {
         } else if (difference > 0){
             staticLink = new TEMP(callerLevel.frame.FP());
         } else {
-            //recursive call.
-            staticLink = new TEMP(callerLevel.frame.FP());
+            //recursive call, use current frames static link
+            staticLink = new MEM(
+            new BINOP(
+                BINOP.PLUS, 
+                new CONST(staticLinkOffset), 
+                new TEMP(callerLevel.frame.FP())
+            )
+        );
+        
         }
         //add current frames frame pointer as parameter to call
         ExpList expList = new ExpList(staticLink, null);
@@ -476,6 +489,7 @@ public class Translate {
                 new TEMP(level.frame.FP())
             )
         );
+        
         var slinkLevel = level;
         while (slinkLevel != access.home) {
             exp = new MEM(
