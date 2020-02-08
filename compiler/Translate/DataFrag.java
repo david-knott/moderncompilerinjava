@@ -8,8 +8,8 @@ import Tree.Exp;
  **/
 public class DataFrag extends Frag {
 
-    Label label;
-    Exp stringFragment;
+    public final Label label;
+    public final Exp stringFragment;
 
 	public DataFrag(Label lbl, Exp frag) {
         label = lbl;

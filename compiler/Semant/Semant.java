@@ -390,7 +390,7 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.VarExp e) {
         final var transVar = transVar(e.var);
-        return new ExpTy(transVar.exp, transVar.ty);
+        return new ExpTy(translate.varExp(transVar), transVar.ty);
     }
 
     /**

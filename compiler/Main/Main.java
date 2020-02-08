@@ -13,7 +13,11 @@ import Parse.Yylex;
 import Semant.Semant;
 import Semant.TypeCheckVisitor;
 import Symbol.SymbolTable;
+import Translate.DataFrag;
+import Translate.Frag;
 import Translate.Level;
+import Translate.ProcFrag;
+import Tree.Print;
 import Types.Type;
 
 public class Main {
@@ -63,10 +67,6 @@ public class Main {
         return this.errorMsg.getCompilerErrors().size() != 0;
     }
 
-    public void print() {
-        new Absyn.Print(System.out).prExp(this.ast.absyn, 0);
-    }
-
     private void buildAst() {
         try {
             final java_cup.runtime.Symbol rootSymbol = parser.parse();
@@ -85,8 +85,19 @@ public class Main {
     private void typeCheck() {
         new FindEscape(this.ast.absyn);
     //    this.ast.absyn.accept(new TypeCheckVisitor());
-        print();
+      //  new Absyn.Print(System.out).prExp(this.ast.absyn, 0);
         var frags = this.semant.transProg(this.ast.absyn);
+        for(Frag frag = frags; frag != null; frag = frag.next){
+            if(frag instanceof ProcFrag){
+                System.out.println("Procedure Start");
+                new Print(System.out).prStm(((ProcFrag)frag).body);
+                System.out.println("Procedure End");
+            } else {
+                System.out.println("Data Start");
+                new Print(System.out).prExp(((DataFrag)frag).stringFragment);
+                System.out.println("Data End");
+            }
+        }
     }
 
 }

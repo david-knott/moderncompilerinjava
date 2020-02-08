@@ -17,7 +17,6 @@ public class Chap3PrecedenceTest {
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
-        m.print();
         assertFalse(m.hasErrors());
     }
 }

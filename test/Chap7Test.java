@@ -11,36 +11,93 @@ import Main.Main;
 public class Chap7Test {
 
     @Test
-    public void simple_var_translation() {
-        String tigerCode = "let var a:int := 1 var b:int := 1 var c:int := 2 in (c := a + b) end";
+    public void int_dec_translation() {
+        String tigerCode = "let var a:int := 1 in 1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
-        // need to get the layout and test
         assertFalse(m.hasErrors());
     }
 
     @Test
-    public void simple_var_translation_static_link() {
-        String tigerCode = "let var a:int := 44 function fa(aa:int):int = fa(aa - a) in fa(22) end";
+    public void string_dec_translation() {
+        String tigerCode = "let var a:string := \"david\" in 1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void int_array_dec_translation() {
+        String tigerCode = "let type intArray = array of int var row := intArray [2] of 2 in 1 end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void string_array_dec_translation() {
+        String tigerCode = "let type stringArray = array of string var row := stringArray [2] of \"david\" in 1 end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void record_dec() {
+        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=1} in 1 end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void record_in_record_dec() {
+        String tigerCode = "let type recInnerType = {id:int} var inner := recInnerType{id=1} type rectype = {name:string, age:int, inner: recInnerType} var rec1 := rectype {name=\"Nobody\", age=1, inner=inner} in 1 end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void static_link_first_argument_in_callee() {
+        String tigerCode = "let function fa(id:int) = () in (fa(2); 1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void static_link_variable_in_parent() {
+        String tigerCode = "let var a:int := 1 function fa(id:int) = (a + id) in (fa(2); 1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void static_link_variable() {
+        //String tigerCode = "let var a:int := 1 function fa(id:int):int = (id / a) function fb(id:int):int = let function fc(id: int):int = 3 in fc(id) end in fa(1) end";
+        String tigerCode = "let var a:int := 1 function fa(i:int):int = i + a in fa(1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+
 
     @Test
     public void subscript_var() {
-        String tigerCode = "let var N := 8 type intArray = array of int var row := intArray [ N ] of 0 in ( row[2] ) end";
-        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
-        Main m = new Main("chap6", inputStream);
-        m.compile();
-        assertFalse(m.hasErrors());
-    }
-
-    @Test
-    public void record_var() {
-        String tigerCode = "let type intype = int type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=1} in (rec1.name := \"Nobody\" ) end";
+        String tigerCode = "let type intArray = array of int var row := intArray [10] of 9 in row[0] end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

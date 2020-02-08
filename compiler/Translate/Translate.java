@@ -68,7 +68,6 @@ public class Translate {
         var statement1 = level.frame.procEntryExit1(exp.unNx());
         //TODO: Might be a bug here
         addFrag(new ProcFrag(statement1, null));
-        new Tree.Print(System.out).prStm(statement1);
     }
 
     /**
@@ -87,6 +86,22 @@ public class Translate {
         return new Ex(access.acc.exp(exp));
     }
 
+    /**
+     * Fetches value from location, either temporary or from frame
+     */
+    public Exp varExp(ExpTy varEp){
+        if(varEp.ty.coerceTo(Semant.INT)) {
+
+            return varEp.exp;
+        } else {
+        return new Ex(
+            new MEM(
+                varEp.exp.unEx()
+            )
+        );
+        }
+
+    }
     /**
      * Return the array element at index i. This can be found by getting the mem at
      * variable at offet k, this is a pointer to the array memory location on the
@@ -123,7 +138,15 @@ public class Translate {
      * @return
      */
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
-        return new Ex(new BINOP(BINOP.PLUS, exp.unEx(), new CONST(fieldIndex * level.frame.wordSize())));
+        return new Ex(
+            new BINOP(
+                BINOP.PLUS, 
+                exp.unEx(), 
+                new CONST(
+                    fieldIndex * level.frame.wordSize()
+                )
+            )
+        );
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {

@@ -7,7 +7,9 @@ import Tree.CONST;
 import Tree.ESEQ;
 import Tree.Exp;
 import Tree.ExpList;
+import Tree.LABEL;
 import Tree.MEM;
+import Tree.NAME;
 import Tree.Stm;
 import Tree.TEMP;
 import Util.BoolList;
@@ -115,9 +117,7 @@ public class IntelFrame extends Frame {
         //builds a string with a label definition
         //and IR code to make a word containing the string lenght
         //and code to emit character data
-        return new ESEQ(
-           null, null 
-        );
+        return new NAME(l);
     }
 
     @Override
