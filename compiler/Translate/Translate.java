@@ -90,17 +90,15 @@ public class Translate {
      * Fetches value from location, either temporary or from frame
      */
     public Exp varExp(ExpTy varEp){
-     //   if(varEp.ty.coerceTo(Semant.INT)) {
-
+        if(varEp.ty.coerceTo(Semant.INT)) {
             return varEp.exp;
-  //      } else {
-     //   return new Ex(
-       //     new MEM(
-         //       varEp.exp.unEx()
-           // )
-       // );
-    //    }
-
+        } else {
+        return new Ex(
+            new MEM(
+                varEp.exp.unEx()
+            )
+        );
+      }
     }
     /**
      * Return the array element at index i. This can be found by getting the mem at

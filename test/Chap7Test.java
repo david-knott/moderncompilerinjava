@@ -75,16 +75,16 @@ public class Chap7Test {
 
     @Test
     public void static_link_variable_in_parent() {
-        String tigerCode = "let var a:int := 1 function fa(id:int) = (a + id) in (fa(2); 1) end";
+        String tigerCode = "let var a:int := 1 function fa(id:int):int = (a + id) in (fa(2); 1) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
+        System.out.println();
         assertFalse(m.hasErrors());
     }
 
     @Test
     public void access_var_by_static_link() {
-        //String tigerCode = "let var a:int := 1 function fa(id:int):int = (id / a) function fb(id:int):int = let function fc(id: int):int = 3 in fc(id) end in fa(1) end";
         String tigerCode = "let var a:int := 1 function fa(i:int):int = i + a in fa(1) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
@@ -102,8 +102,36 @@ public class Chap7Test {
     }
 
     @Test
-    public void subscript_var() {
+    public void read_simple_var() {
+        String tigerCode = "let var a:int := 5 in a end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void write_simple_var() {
+        String tigerCode = "let var a:int := 5 in (a := 6; a) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+    @Test
+    public void read_subscript_var() {
         String tigerCode = "let type intArray = array of int var row := intArray [10] of 9 in row[0] end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void write_subscript_var() {
+        String tigerCode = "let type intArray = array of int var row := intArray [10] of 9 in (row[0] := 222; 1) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

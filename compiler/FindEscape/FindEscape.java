@@ -206,7 +206,6 @@ public class FindEscape {
 
     private void traverseVar(int depth, SimpleVar simpleVar){
         var sv = this.escEnv.get(simpleVar.name);
-        sv.setEscape();
         //we check for undefined variable in the semant phase
         if(sv != null && sv.depth < depth){
             sv.setEscape();
