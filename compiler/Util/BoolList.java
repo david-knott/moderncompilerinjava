@@ -5,7 +5,7 @@ public class BoolList {
   public BoolList tail;
 
   public BoolList(boolean h, BoolList t) {
-    head = true;// h;
+    head = h;
     tail = t;
   }
 

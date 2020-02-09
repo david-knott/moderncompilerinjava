@@ -83,7 +83,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void static_link_variable() {
+    public void access_var_by_static_link() {
         //String tigerCode = "let var a:int := 1 function fa(id:int):int = (id / a) function fb(id:int):int = let function fc(id: int):int = 3 in fc(id) end in fa(1) end";
         String tigerCode = "let var a:int := 1 function fa(i:int):int = i + a in fa(1) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
@@ -92,8 +92,14 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
-
-
+    @Test
+    public void access_var_by_static_link_local() {
+        String tigerCode = "let function fa(i:int):int = let var a:int := 10 var b:int := 20 in a + b end in fa(1) end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
 
     @Test
     public void subscript_var() {
@@ -196,7 +202,7 @@ public class Chap7Test {
 
     @Test
     public void record_assign(){
-        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=999} in () end";
+        String tigerCode = "let type rectype = {age:int} var rec1 := rectype {age=999} in rec1.age / 1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap7", inputStream);
         m.compile();
