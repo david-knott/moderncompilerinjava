@@ -90,15 +90,15 @@ public class Translate {
      * Fetches value from location, either temporary or from frame
      */
     public Exp varExp(ExpTy varEp){
-        if(varEp.ty.coerceTo(Semant.INT)) {
+       // if(varEp.ty.coerceTo(Semant.INT)) {
             return varEp.exp;
-        } else {
-        return new Ex(
-            new MEM(
-                varEp.exp.unEx()
-            )
-        );
-      }
+      //  } else {
+      //  return new Ex(
+        //    new MEM(
+          //      varEp.exp.unEx()
+            //)
+       // );
+  //    }
     }
     /**
      * Return the array element at index i. This can be found by getting the mem at
@@ -113,6 +113,7 @@ public class Translate {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
         return new Ex(
+            new MEM(
             new BINOP(
                 BINOP.PLUS, 
                 baseExp, 
@@ -121,7 +122,8 @@ public class Translate {
                     indexExp, 
                     new CONST(level.frame.wordSize())
                 )
-            )
+
+                            )                )
         );
     }
 
@@ -137,13 +139,15 @@ public class Translate {
      */
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
         return new Ex(
+            new MEM(
             new BINOP(
                 BINOP.PLUS, 
                 exp.unEx(), 
                 new CONST(
                     fieldIndex * level.frame.wordSize()
                 )
-            )
+     
+                       )           )
         );
     }
 
@@ -426,9 +430,10 @@ public class Translate {
     public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
         return new Nx(
             new MOVE(
-                new MEM(
+       //         new MEM(
                     transVar.exp.unEx()
-                ), 
+         //       )
+         , 
                 transExp.exp.unEx()
             )
         );
