@@ -112,7 +112,6 @@ public class Translate {
                         indexExp, 
                         new CONST(level.frame.wordSize())
                     )
-
                 )                
             )
         );
@@ -137,7 +136,6 @@ public class Translate {
                     new CONST(
                         fieldIndex * level.frame.wordSize()
                     )
-        
                 )           
             )
         );
@@ -159,7 +157,6 @@ public class Translate {
         return new Ex(new CONST(value));
     }
 
-    //TODO: String IR
     public Exp string(String literal, Level level) {
         Label label = new Label();
         var stringFragment = level.frame.string(label, literal);

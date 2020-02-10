@@ -141,7 +141,7 @@ public class Chap7Test {
 
     @Test
     public void write_subscript_var() {
-        String tigerCode = "let type intArray = array of int var row := intArray [10] of 9 in (row[0] := 222; 1) end";
+        String tigerCode = "let type intArray = array of int var row := intArray [10] of 9 in row[0] := 222 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
