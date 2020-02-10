@@ -55,19 +55,16 @@ public class Translate {
       * @param body the body of the function we are translating
       */
     public void procEntryExit(Level level, Exp body) {
-        // body could be null if there
-        // is a type checking errpr
         if (body == null)
             return;
-        var exp = new Nx(
-            new MOVE(
-                new TEMP(level.frame.RV()),
-                body.unEx()
-            )
-        );
-        var statement1 = level.frame.procEntryExit1(exp.unNx());
-        //TODO: Might be a bug here
-        addFrag(new ProcFrag(statement1, null));
+        if (body instanceof Ex) {
+            var exp = new Nx(new MOVE(new TEMP(level.frame.RV()), body.unEx()));
+            var statement = level.frame.procEntryExit1(exp.unNx());
+            addFrag(new ProcFrag(statement, null));
+        } else {
+            var statement = level.frame.procEntryExit1(body.unNx());
+            addFrag(new ProcFrag(statement, null));
+        }
     }
 
     /**
@@ -90,16 +87,9 @@ public class Translate {
      * Fetches value from location, either temporary or from frame
      */
     public Exp varExp(ExpTy varEp){
-       // if(varEp.ty.coerceTo(Semant.INT)) {
-            return varEp.exp;
-      //  } else {
-      //  return new Ex(
-        //    new MEM(
-          //      varEp.exp.unEx()
-            //)
-       // );
-  //    }
+        return varEp.exp;
     }
+
     /**
      * Return the array element at index i. This can be found by getting the mem at
      * variable at offet k, this is a pointer to the array memory location on the

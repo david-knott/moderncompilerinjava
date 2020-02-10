@@ -12,7 +12,7 @@ public class Chap7Test {
 
     @Test
     public void int_dec_translation() {
-        String tigerCode = "let var a:int := 1 in 1 end";
+        String tigerCode = "let var a:int := 1 in  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -21,7 +21,7 @@ public class Chap7Test {
 
     @Test
     public void string_dec_translation() {
-        String tigerCode = "let var a:string := \"david\" in 1 end";
+        String tigerCode = "let var a:string := \"david\" in  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -30,7 +30,7 @@ public class Chap7Test {
 
     @Test
     public void int_array_dec_translation() {
-        String tigerCode = "let type intArray = array of int var row := intArray [2] of 2 in 1 end";
+        String tigerCode = "let type intArray = array of int var row := intArray [2] of 2 in  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -57,12 +57,22 @@ public class Chap7Test {
 
     @Test
     public void record_in_record_dec() {
-        String tigerCode = "let type recInnerType = {id:int} var inner := recInnerType{id=1} type rectype = {name:string, age:int, inner: recInnerType} var rec1 := rectype {name=\"Nobody\", age=1, inner=inner} in 1 end";
+        String tigerCode = "let type recInnerType = {id:int} var inner := recInnerType{id=1} type rectype = {name:string, age:int, inner: recInnerType} var rec1 := rectype {name=\"Nobody\", age=1, inner=inner} in  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void record_in_record_read() {
+        String tigerCode = "let type recInnerType = {id:int} var inner := recInnerType{id=999} type rectype = {name:string, age:int, inner: recInnerType} var rec1 := rectype {name=\"Nobody\", age=46, inner=inner} in rec1.inner.id end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
 
     @Test
     public void static_link_first_argument_in_callee() {
