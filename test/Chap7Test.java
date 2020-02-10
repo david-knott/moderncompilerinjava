@@ -255,4 +255,25 @@ public class Chap7Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void type_def_cycle(){
+        String tigerCode = "let type a = b type b = d type c = a type d = a in  end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        System.out.println();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void type_def_legal_cycle(){
+        String tigerCode = "let type a = b type b = d type c = a type d = a in  end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        System.out.println();
+        assertFalse(m.hasErrors());
+    }
+
 }

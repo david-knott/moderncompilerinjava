@@ -310,6 +310,7 @@ public class Semant {
         // we assume that contiguous declarations may be recursive
         // process headers first to capture a reference to type name
         TypeDec next = e;
+        boolean illegalCycle = true;
         do {
             var namedType = new Types.NAME(next.name);
             // stick it into the type env with a null type binding
