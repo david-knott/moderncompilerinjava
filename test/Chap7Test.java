@@ -85,7 +85,7 @@ public class Chap7Test {
 
     @Test
     public void static_link_variable_in_parent() {
-        String tigerCode = "let var a:int := 1 function fa(id:int):int = (a + id) in (fa(2); 1) end";
+        String tigerCode = "let var a:int := 1 function fa(id:int):int = (a + id) in fa(2) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

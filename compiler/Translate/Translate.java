@@ -104,16 +104,17 @@ public class Translate {
         var indexExp = transIndexExp.exp.unEx();
         return new Ex(
             new MEM(
-            new BINOP(
-                BINOP.PLUS, 
-                baseExp, 
                 new BINOP(
-                    BINOP.MUL, 
-                    indexExp, 
-                    new CONST(level.frame.wordSize())
-                )
+                    BINOP.PLUS, 
+                    baseExp, 
+                    new BINOP(
+                        BINOP.MUL, 
+                        indexExp, 
+                        new CONST(level.frame.wordSize())
+                    )
 
-                            )                )
+                )                
+            )
         );
     }
 
@@ -130,14 +131,15 @@ public class Translate {
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
         return new Ex(
             new MEM(
-            new BINOP(
-                BINOP.PLUS, 
-                exp.unEx(), 
-                new CONST(
-                    fieldIndex * level.frame.wordSize()
-                )
-     
-                       )           )
+                new BINOP(
+                    BINOP.PLUS, 
+                    exp.unEx(), 
+                    new CONST(
+                        fieldIndex * level.frame.wordSize()
+                    )
+        
+                )           
+            )
         );
     }
 
