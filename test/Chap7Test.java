@@ -268,7 +268,7 @@ public class Chap7Test {
 
     @Test
     public void type_def_legal_cycle(){
-        String tigerCode = "let type a = b type b = d type c = a type d = a in  end";
+        String tigerCode = "let type rectype = {age:int,next:rectype} var rec1 := rectype {age=999,next=nil} in end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();

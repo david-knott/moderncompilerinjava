@@ -331,6 +331,13 @@ public class Semant {
             namedType.bind(mappedType);
             next = next.next;
         } while (next != null);
+        //check that all namedTypes have a binding
+        for(var o = e; o != null; o = o.next) {
+            var namedType = (NAME) env.tenv.get(o.name);
+            if(namedType.isLoop()){
+                throw new Error("Loop");
+            }
+        }
         return translate.Noop();
     }
 
@@ -990,7 +997,7 @@ public class Semant {
         // get transExp of initialising expression
         final var transExp = transExp(initExp);
         // compare type of field with type of expression
-        if (fieldType.actual() != transExp.ty.actual()) {
+        if(!transExp.ty.coerceTo(fieldType)){
             env.errorMsg.add(new TypeMismatchError(fel.pos, fieldType, transExp.ty));
         }
         return transExp;
