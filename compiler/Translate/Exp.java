@@ -36,7 +36,7 @@ class Ex extends Exp {
         // 0, then go to label t
         // if expression evaultest to
         // 1 the go to label f
-        return new Tree.CJUMP(Tree.CJUMP.EQ, this.unEx(), new Tree.CONST(0), t, f);
+        return new Tree.CJUMP(Tree.CJUMP.EQ, this.unEx(), new Tree.CONST(1), t, f);
     }
 }
 

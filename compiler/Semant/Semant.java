@@ -785,6 +785,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
+        /*
         env.tenv.beginScope();
         env.venv.beginScope();
         var translateAccess = level.allocLocal(false);
@@ -807,6 +808,7 @@ public class Semant {
         }
         env.venv.endScope();
         env.tenv.endScope();
+        */
         //lets rebuild the for loop into the abstract syntax for a while
         var rewriteAbsyn = new LetExp(
             0, 
@@ -865,7 +867,8 @@ public class Semant {
                 )
             )
         );
-        return new ExpTy(translate.forE(level, loopEnd, lowTy, hiTy, transBody), Semant.VOID);
+        return transExp(rewriteAbsyn);
+        //return new ExpTy(translate.forE(level, loopEnd, lowTy, hiTy, transBody), Semant.VOID);
     }
 
     /**

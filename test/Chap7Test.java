@@ -276,4 +276,27 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void translated_for(){
+        String tigerCode = "for i := 0 to 10 do 1";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        System.out.println();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void translated_while(){
+        String tigerCode = "while(1) do 1";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap5", inputStream);
+        m.compile();
+        System.out.println();
+        assertFalse(m.hasErrors());
+    }
+
+
+
+
 }
