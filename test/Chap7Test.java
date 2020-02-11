@@ -278,7 +278,7 @@ public class Chap7Test {
 
     @Test
     public void translated_for(){
-        String tigerCode = "for i := 0 to 10 do 1";
+        String tigerCode = "for i := 1 to 9 do ()";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
@@ -288,15 +288,11 @@ public class Chap7Test {
 
     @Test
     public void translated_while(){
-        String tigerCode = "while(1) do 1";
+        String tigerCode = "while(1) do ()";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
         System.out.println();
         assertFalse(m.hasErrors());
     }
-
-
-
-
 }

@@ -1,5 +1,6 @@
 package Translate;
 
+import Absyn.NilExp;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
