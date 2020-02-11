@@ -1017,12 +1017,6 @@ public class Semant {
             }
         }
         return boolList;
-        /*
-         * BoolList head = null; BoolList prev = null; for (Absyn.FieldList l = fields;
-         * l != null; l = l.tail) { final BoolList current = new BoolList(l.escape,
-         * null); if (head == null) head = current; else prev.tail = current; prev =
-         * current; } return head; Retuns null if no field type passed
-         */
     }
 
     private RECORD getRecordType(final FieldList fields) {
@@ -1038,14 +1032,6 @@ public class Semant {
             }
         }
         return recordType;
-
-        /*
-         * Types.RECORD head = null; Types.RECORD prev = null; for (Absyn.FieldList l =
-         * fields; l != null; l = l.tail) { final var cached = getType(l.typ, l.pos);
-         * final Types.RECORD current = new Types.RECORD(l.name, cached, null); if (head
-         * == null) head = current; else prev.tail = current; // insert the current item
-         * at the end of the previous prev = current; } return head;
-         */
     }
 
     private Types.Type getType(final Symbol sym, final int pos) {

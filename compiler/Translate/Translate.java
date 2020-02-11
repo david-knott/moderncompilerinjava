@@ -382,10 +382,6 @@ public class Translate {
                 new TEMP(recordPointer)));
     }
 
-    public Exp forE(Level level, Label loopEnd, ExpTy lowTy, ExpTy hiTy, ExpTy transBody) {
-        return new Ex(new Tree.CONST(5));
-    }
-
     public Exp whileL(Level level, Label loopEnd, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();
