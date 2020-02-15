@@ -6,10 +6,12 @@ import Temp.Label;
 import Temp.Temp;
 import Tree.BINOP;
 import Tree.CALL;
+import Tree.CJUMP;
 import Tree.CONST;
 import Tree.ESEQ;
 import Tree.ExpList;
 import Tree.JUMP;
+import Tree.LABEL;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.NAME;
@@ -92,9 +94,12 @@ public class Translate {
     }
 
     /**
-     * Return the array element at index i. This can be found by getting the mem at
-     * variable at offet k, this is a pointer to the array memory location on the
+     * Return the array element at index i. 
+     * This can be found by getting the mem at variable at offet k, 
+     * this is a pointer to the array memory location on the
      * heap. The element will be at the memory location + i * word size
+     * First word contains the size of the array
+     * Elements are at word * 2, word * 3, word * 4
      * @param translatedArrayVar
      * @param transIndexExp
      * @param level
@@ -103,6 +108,57 @@ public class Translate {
     public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar, Level level) {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
+        var gotoSegFault = new Label();
+        var gotoSubscript = new Label();
+        var check = new ESEQ(
+            new SEQ(
+                new CJUMP(
+                    CJUMP.GE, 
+                    indexExp, 
+                    new MEM(
+                        baseExp
+                    ),
+                    gotoSegFault,
+                    gotoSubscript
+                ),
+                new SEQ(
+                    new CJUMP(
+                        CJUMP.LT, 
+                        indexExp, 
+                        new CONST(0),
+                        gotoSegFault,
+                        gotoSubscript
+                    ),
+                    new SEQ(
+                        new LABEL(gotoSegFault),
+                        new SEQ(
+                            new MOVE( /* triggers a seg fault */
+                                new MEM(new CONST(0)),
+                                new CONST(0)
+                            ),
+                            new LABEL(gotoSubscript)
+                        )
+                    )
+                )
+            ),
+                new MEM(
+                    new BINOP(
+                        BINOP.PLUS, 
+                        baseExp, 
+                        new BINOP(
+                            BINOP.MUL, 
+                            new BINOP(
+                                BINOP.PLUS,
+                                indexExp, 
+                                new CONST(1)
+                            ),
+                            new CONST(level.frame.wordSize())
+                        )
+                    )                
+                )
+        );
+        return new Ex(check);
+        /*
         return new Ex(
             new MEM(
                 new BINOP(
@@ -110,12 +166,16 @@ public class Translate {
                     baseExp, 
                     new BINOP(
                         BINOP.MUL, 
-                        indexExp, 
+                        new BINOP(
+                            BINOP.PLUS,
+                            indexExp, 
+                            new CONST(1)
+                        ),
                         new CONST(level.frame.wordSize())
                     )
                 )                
             )
-        );
+        );*/
     }
 
     /**
@@ -306,8 +366,24 @@ public class Translate {
         return eseq;
     }
 
+    /**
+     * Allocates an array in the heap. Returns a pointer to the
+     * base address. The base address contains the size of the array
+     * stored as a word. The elements are stored contigously after the
+     * size
+     */
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
-        ExpList args = new ExpList(transSizeExp.exp.unEx(), new ExpList(transInitExp.exp.unEx(), null));
+        ExpList args = new ExpList(
+            new BINOP(
+                BINOP.PLUS, 
+                transSizeExp.exp.unEx(), 
+                new CONST(1)
+            ), 
+            new ExpList(
+                transInitExp.exp.unEx(), 
+                null
+            )
+        );
         Temp arrayPointer = new Temp();
         return new Ex(
             new ESEQ(

@@ -295,4 +295,15 @@ public class Chap7Test {
         System.out.println();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void array_bounds_check() {
+        String tigerCode = "let type intArray = array of int var row := intArray [2] of 2 in row[10] end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 }
