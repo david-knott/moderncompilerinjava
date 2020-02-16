@@ -305,5 +305,15 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
+    @Test
+    public void record_nil_check() {
+        String tigerCode = "let type rectype = {name:string, age:int} var rec := rectype {name=\"Nobody\", age=1} in rec.age  end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 
 }

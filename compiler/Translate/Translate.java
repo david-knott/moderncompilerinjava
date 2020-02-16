@@ -180,24 +180,50 @@ public class Translate {
 
     /**
      * Translates a field variable. Using the base reference and the field offset
-     * this returns the memory location of the field. If its an int, this will be
-     * the contents of the memory location, if its anything else, its the memory 
-     * location
+     * this returns the value at the computed memory location. 
+     * This method checks if the base reference is nil before dereferencing the field.
+     * If the value at the base reference is null we move 0 to the 
+     * 0 memory reference to cause a segmentation fault
      * @param exp base reference of the record
      * @param fieldIndex the field index, based on the order of the fields
      * @param level the level that the record is being called
      * @return
      */
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
+        var gotoSegFault = new Label();
+        var gotoSubscript = new Label();
         return new Ex(
-            new MEM(
-                new BINOP(
-                    BINOP.PLUS, 
-                    exp.unEx(), 
-                    new CONST(
-                        fieldIndex * level.frame.wordSize()
+            new ESEQ(
+                new SEQ(
+                    new CJUMP(
+                        CJUMP.EQ, 
+                        new MEM(
+                            exp.unEx()
+                        ), 
+                        new CONST(0), 
+                        gotoSegFault, 
+                        gotoSubscript
+                    ),
+                    new SEQ(
+                        new LABEL(gotoSegFault),
+                        new SEQ(
+                            new MOVE( /* triggers a seg fault */
+                                new MEM(new CONST(0)),
+                                new CONST(0)
+                            ),
+                            new LABEL(gotoSubscript)
+                        )
                     )
-                )           
+                ),
+                new MEM(
+                    new BINOP(
+                        BINOP.PLUS, 
+                        exp.unEx(), 
+                        new CONST(
+                            fieldIndex * level.frame.wordSize()
+                        )
+                    )           
+                )
             )
         );
     }
@@ -226,7 +252,7 @@ public class Translate {
     }
 
     public Exp Noop() {
-        return new Ex(new Tree.CONST(-1));
+        return new Ex(new Tree.CONST(0));
     }
 
     public Exp functionBody(Level level, ExpTy firstFunction) {
