@@ -2,7 +2,12 @@ package Main;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.PrintStream;
 
+import Canon.BasicBlocks;
+import Canon.Canon;
+import Canon.StmListList;
+import Canon.TraceSchedule;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
 import Frame.Frame;
@@ -12,12 +17,15 @@ import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
 import Symbol.SymbolTable;
+import Temp.DefaultMap;
+import Temp.TempMap;
 import Translate.DataFrag;
 import Translate.Frag;
 import Translate.Level;
 import Translate.ProcFrag;
 import Translate.Translate;
 import Tree.Print;
+import Tree.StmList;
 import Types.Type;
 
 public class Main {
@@ -33,6 +41,12 @@ public class Main {
     private ErrorMsg errorMsg;
     private Grm parser;
     private Frame frame = new IntelFrame(null, null);
+
+    static void prStmList(Tree.Print print, Tree.StmList stms) {
+        for (Tree.StmList l = stms; l != null; l = l.tail){
+            print.prStm(l.head);
+        }
+    }
 
     public Main(final String filename) throws FileNotFoundException {
         this(filename, new java.io.FileInputStream(filename));
@@ -57,7 +71,28 @@ public class Main {
         return semant.getEnv().getTEnv();
     }
 
+    private void emitProcFrag(PrintStream out, ProcFrag procFrag){
+        TempMap tempmap= new DefaultMap();
+        var print = new Print(out, tempmap);
+        out.println("# Before canonicalization: ");
+        print.prStm(procFrag.body);
+        StmList stms = Canon.linearize(procFrag.body);
+        out.println("# After canonicalization: ");
+        prStmList(print,stms);
+        out.println("# Basic Blocks: ");
+        BasicBlocks b = new BasicBlocks(stms);
+        for (StmListList l = b.blocks; l != null; l = l.tail) {
+           out.println("#");
+           prStmList(print,l.head);
+        }
+        print.prStm(new Tree.LABEL(b.done));
+        out.println("# Trace Scheduled: ");
+        StmList traced = (new TraceSchedule(b)).stms;
+        prStmList(print,traced);
+    }
+
     public int compile() {
+        PrintStream out = System.out; // java.io.PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
         try {
             java_cup.runtime.Symbol rootSymbol = parser.parse();
             this.ast = (Program) rootSymbol.value;
@@ -74,15 +109,12 @@ public class Main {
         var frags = this.semant.transProg(this.ast.absyn);
         for (Frag frag = frags; frag != null; frag = frag.next) {
             if (frag instanceof ProcFrag) {
-                System.out.println("Procedure Start");
-                new Print(System.out).prStm(((ProcFrag) frag).body);
-                System.out.println("Procedure End");
+                emitProcFrag(out, (ProcFrag)frag);
             } else {
-                System.out.println("Data Start");
-                new Print(System.out).prExp(((DataFrag) frag).stringFragment);
-                System.out.println("Data End");
+                new Print(out).prExp(((DataFrag) frag).stringFragment);
             }
         }
+        out.close();
         return 1;
     }
 

@@ -1,6 +1,5 @@
 package Translate;
 
-import Absyn.NilExp;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -63,10 +62,10 @@ public class Translate {
         if (body instanceof Ex) {
             var exp = new Nx(new MOVE(new TEMP(level.frame.RV()), body.unEx()));
             var statement = level.frame.procEntryExit1(exp.unNx());
-            addFrag(new ProcFrag(statement, null));
+            addFrag(new ProcFrag(statement, level.frame));
         } else {
             var statement = level.frame.procEntryExit1(body.unNx());
-            addFrag(new ProcFrag(statement, null));
+            addFrag(new ProcFrag(statement, level.frame));
         }
     }
 

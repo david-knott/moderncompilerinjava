@@ -12,7 +12,7 @@ public class Chap7Test {
 
     @Test
     public void int_dec_translation() {
-        String tigerCode = "let var a:int := 1 in  end";
+        String tigerCode = "let var a:int := 1 in a  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -21,7 +21,7 @@ public class Chap7Test {
 
     @Test
     public void string_dec_translation() {
-        String tigerCode = "let var a:string := \"david\" in  end";
+        String tigerCode = "let var a:string := \"david\" in a end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -30,7 +30,7 @@ public class Chap7Test {
 
     @Test
     public void int_array_dec_translation() {
-        String tigerCode = "let type intArray = array of int var row := intArray [2] of 2 in  end";
+        String tigerCode = "let type intArray = array of int var row := intArray [2] of 2 in row[0] end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -307,7 +307,7 @@ public class Chap7Test {
 
     @Test
     public void record_nil_check() {
-        String tigerCode = "let type rectype = {name:string, age:int} var rec := rectype {name=\"Nobody\", age=1} in rec.age  end";
+        String tigerCode = "let type rectype = {name:string, age:int} var rec := rectype {name=\"Nobody\", age=1} in rec.age end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
