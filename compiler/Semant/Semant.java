@@ -53,15 +53,15 @@ public class Semant {
     public static final Types.Type VOID = new Types.VOID();
     public static final Types.Type NIL = new Types.NIL();
 
-    public Semant(final ErrorMsg.ErrorMsg err, final Level lvl) {
-        this(new Env(err, lvl), null, lvl);
+    public Semant(final ErrorMsg.ErrorMsg err, final Level lvl, Translate trans) {
+        this(new Env(err, lvl), null, lvl, trans);
     }
 
-    Semant(final Env e, Label bsl, Level lev) {
+    Semant(final Env e, Label bsl, Level lev, Translate trans) {
         env = e;
         breakScopeLabel = bsl;
         level = lev;
-        translate = new Translate();
+        translate = trans;
     }
 
     /**
@@ -286,7 +286,7 @@ public class Semant {
                 env.venv.put(p.name, varEntry);
                 translateAccess = translateAccess.tail;
             }
-            var transBody = new Semant(env, breakScopeLabel, newLevel).transExp(current.body);
+            var transBody = new Semant(env, breakScopeLabel, newLevel, translate).transExp(current.body);
             if (firstFunction == null) {
                 firstFunction = transBody;
             }
@@ -825,7 +825,7 @@ public class Semant {
         // end of loop label
         var loopEnd = new Label();
         // pass in the end loop label so that breaks can jump to it
-        var transBody = new Semant(env, loopEnd, level).transExp(whileExp.body);
+        var transBody = new Semant(env, loopEnd, level, translate).transExp(whileExp.body);
         if (transBody.ty.actual() != Semant.VOID) {
             env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
         }

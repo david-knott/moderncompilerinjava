@@ -11,12 +11,12 @@ import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
-import Semant.TypeCheckVisitor;
 import Symbol.SymbolTable;
 import Translate.DataFrag;
 import Translate.Frag;
 import Translate.Level;
 import Translate.ProcFrag;
+import Translate.Translate;
 import Tree.Print;
 import Types.Type;
 
@@ -43,7 +43,7 @@ public class Main {
         this.inputStream = inputStream;
         this.errorMsg = new ErrorMsg(this.name);
         this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
-        this.semant = new Semant(errorMsg, new Level(frame));
+        this.semant = new Semant(errorMsg, new Level(frame), new Translate());
     }
 
     public ErrorMsg getErrorMsg() {
@@ -58,21 +58,11 @@ public class Main {
     }
 
     public int compile() {
-        this.buildAst();
-        this.typeCheck();
-        return 1;
-    }
-
-    public boolean hasErrors() {
-        return this.errorMsg.getCompilerErrors().size() != 0;
-    }
-
-    private void buildAst() {
         try {
-            final java_cup.runtime.Symbol rootSymbol = parser.parse();
+            java_cup.runtime.Symbol rootSymbol = parser.parse();
             this.ast = (Program) rootSymbol.value;
-        } catch (final Throwable e) {
-            throw new Error("Unable to translate", e);
+        } catch (Throwable e) {
+            throw new Error("Unable to parse, syntax error", e);
         } finally {
             try {
                 this.inputStream.close();
@@ -80,24 +70,23 @@ public class Main {
                 throw new Error(e.toString());
             }
         }
-    }
-
-    private void typeCheck() {
         new FindEscape(this.ast.absyn);
-    //    this.ast.absyn.accept(new TypeCheckVisitor());
-      //  new Absyn.Print(System.out).prExp(this.ast.absyn, 0);
         var frags = this.semant.transProg(this.ast.absyn);
-        for(Frag frag = frags; frag != null; frag = frag.next){
-            if(frag instanceof ProcFrag){
+        for (Frag frag = frags; frag != null; frag = frag.next) {
+            if (frag instanceof ProcFrag) {
                 System.out.println("Procedure Start");
-                new Print(System.out).prStm(((ProcFrag)frag).body);
+                new Print(System.out).prStm(((ProcFrag) frag).body);
                 System.out.println("Procedure End");
             } else {
                 System.out.println("Data Start");
-                new Print(System.out).prExp(((DataFrag)frag).stringFragment);
+                new Print(System.out).prExp(((DataFrag) frag).stringFragment);
                 System.out.println("Data End");
             }
         }
+        return 1;
     }
 
+    public boolean hasErrors() {
+        return this.errorMsg.getCompilerErrors().size() != 0;
+    }
 }
