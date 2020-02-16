@@ -30,7 +30,7 @@ public class Chap7Test {
 
     @Test
     public void int_array_dec_translation() {
-        String tigerCode = "let type intArray = array of int var row := intArray [2] of 2 in row[0] end";
+        String tigerCode = "let type intArray = array of int var row := intArray [10] of 2 in 1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -249,7 +249,7 @@ public class Chap7Test {
 
     @Test
     public void array_assign(){
-        String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [47] of 46 in () end";
+        String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [47] of 46 in arr1[0] end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();

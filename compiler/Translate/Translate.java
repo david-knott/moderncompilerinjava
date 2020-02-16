@@ -107,6 +107,24 @@ public class Translate {
     public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar, Level level) {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
+        return new Ex(
+            new MEM(
+                new BINOP(
+                    BINOP.PLUS, 
+                    baseExp, 
+                    new BINOP(
+                        BINOP.MUL, 
+                        new BINOP(
+                            BINOP.PLUS,
+                            indexExp, 
+                            new CONST(1)
+                        ),
+                        new CONST(level.frame.wordSize())
+                    )
+                )                
+            )
+        );
+        /*
         var gotoSegFault = new Label();
         var gotoSubscript = new Label();
         var check = new ESEQ(
@@ -131,7 +149,7 @@ public class Translate {
                     new SEQ(
                         new LABEL(gotoSegFault),
                         new SEQ(
-                            new MOVE( /* triggers a seg fault */
+                            new MOVE(
                                 new MEM(new CONST(0)),
                                 new CONST(0)
                             ),
@@ -156,25 +174,7 @@ public class Translate {
                     )                
                 )
         );
-        return new Ex(check);
-        /*
-        return new Ex(
-            new MEM(
-                new BINOP(
-                    BINOP.PLUS, 
-                    baseExp, 
-                    new BINOP(
-                        BINOP.MUL, 
-                        new BINOP(
-                            BINOP.PLUS,
-                            indexExp, 
-                            new CONST(1)
-                        ),
-                        new CONST(level.frame.wordSize())
-                    )
-                )                
-            )
-        );*/
+        return new Ex(check);*/
     }
 
     /**
@@ -251,7 +251,7 @@ public class Translate {
     }
 
     public Exp Noop() {
-        return new Ex(new Tree.CONST(0));
+        return new Ex(new CONST(0));
     }
 
     public Exp functionBody(Level level, ExpTy firstFunction) {
