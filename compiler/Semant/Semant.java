@@ -104,13 +104,6 @@ public class Semant {
             item = item.tail;
         }
         return record;
-        /*
-         * Types.RECORD prev = null; for (Absyn.FieldList l = t.fields.tail; l != null;
-         * l = l.tail) { cached = getType(l.typ, t.pos); final Types.RECORD current =
-         * new Types.RECORD(l.name, cached, null); if (head == null) head = current;
-         * else prev.tail = current; // insert the current item at the end of the
-         * previous prev = current; } return head;
-         */
     }
 
     /**
@@ -778,33 +771,6 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
         return transExp(rewriteForExp(forExp));
-        /*
-        env.tenv.beginScope();
-        env.venv.beginScope();
-        var indexVar = transDec(forExp.var);
-        
-        //var translateAccess = level.allocLocal(false);
-        //var startVarEntry = new VarEntry(INT, translateAccess);
-        //env.venv.put(forExp.var.name, startVarEntry);
-        var lowTy = transExp(forExp.var.init);
-        if (lowTy.ty.actual() != Semant.INT) {
-            env.errorMsg.add(new TypeNotIntError(forExp.var.pos, lowTy.ty.actual()));
-        }
-        VarEntry varEntry = (VarEntry) env.venv.get(forExp.var.name);
-        varEntry.readOnly = true;
-        var hiTy = transExp(forExp.hi);
-        if (hiTy.ty.actual() != Semant.INT) {
-            env.errorMsg.add(new TypeNotIntError(forExp.hi.pos, hiTy.ty.actual()));
-        }
-        var loopEnd = new Label();
-        var transBody = new Semant(env, loopEnd, level).transExp(forExp.body);
-        if (transBody.ty.actual() != Semant.VOID) {
-            env.errorMsg.add(new TypeNotVoidError(forExp.body.pos, transBody.ty.actual()));
-        }
-        env.venv.endScope();
-        env.tenv.endScope();
-        return new ExpTy(translate.forE(level, loopEnd, indexVar, lowTy, hiTy, transBody), Semant.VOID);
-        */
     }
 
     /**
@@ -826,7 +792,8 @@ public class Semant {
         var loopEnd = new Label();
         // pass in the end loop label so that breaks can jump to it
         var transBody = new Semant(env, loopEnd, level, translate).transExp(whileExp.body);
-        if (transBody.ty.actual() != Semant.VOID) {
+        //if (transBody.ty.actual() != Semant.VOID) {
+        if (transBody.ty.coerceTo(Semant.VOID)) {
             env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
         }
         env.venv.endScope();
