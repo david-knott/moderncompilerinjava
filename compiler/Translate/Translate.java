@@ -517,10 +517,7 @@ public class Translate {
     public Exp assign(Level level, ExpTy transVar, ExpTy transExp) {
         return new Nx(
             new MOVE(
-       //         new MEM(
-                    transVar.exp.unEx()
-         //       )
-         , 
+                transVar.exp.unEx(), 
                 transExp.exp.unEx()
             )
         );

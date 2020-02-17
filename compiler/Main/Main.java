@@ -44,7 +44,7 @@ public class Main {
 
     static void prStmList(Tree.Print print, Tree.StmList stms) {
         for (Tree.StmList l = stms; l != null; l = l.tail){
-            if(l.head != null)
+          //  if(l.head != null)
             print.prStm(l.head);
         }
     }
