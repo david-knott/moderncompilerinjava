@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
 
+import Assem.InstrList;
 import Frame.Access;
 import Frame.Frame;
 import Semant.Semant;
@@ -70,6 +71,12 @@ public class LevelTest {
 
         @Override
         public Stm procEntryExit3(Stm body) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public InstrList codegen(Stm head) {
             // TODO Auto-generated method stub
             return null;
         }

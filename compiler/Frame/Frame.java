@@ -1,7 +1,9 @@
 package Frame;
 
+import Assem.InstrList;
 import Temp.Label;
 import Temp.Temp;
+import Tree.Stm;
 
 public abstract class Frame {
     public Label name;
@@ -94,4 +96,6 @@ public abstract class Frame {
     abstract public Tree.Exp externalCall(String func, Tree.ExpList args);
 
     abstract public Tree.Exp string(Label l, String literal);
+
+	abstract public InstrList codegen(Stm head);
 }

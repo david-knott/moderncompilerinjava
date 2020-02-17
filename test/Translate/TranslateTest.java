@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 
 import org.junit.Test;
 
+import Assem.InstrList;
 import Main.Main;
 import Semant.Semant;
 import Temp.Label;
@@ -74,6 +75,12 @@ public class TranslateTest {
 
         @Override
         public Stm procEntryExit3(Stm body) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public InstrList codegen(Stm head) {
             // TODO Auto-generated method stub
             return null;
         }

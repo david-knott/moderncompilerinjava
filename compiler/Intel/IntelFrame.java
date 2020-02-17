@@ -11,6 +11,7 @@ import Tree.NAME;
 import Tree.Stm;
 import Tree.TEMP;
 import Util.BoolList;
+import Assem.InstrList;
 import Frame.*;
 
 /**
@@ -54,7 +55,7 @@ public class IntelFrame extends Frame {
         // should be allocated from right to left
         while (tmp != null) {
             var escape = i++ > 5 || tmp.head;
-           // escape = true;
+            // escape = true;
             // var escape = tmp.head;
             Access local;
             if (!escape) {
@@ -72,7 +73,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Access allocLocal(boolean escape) {
-        //System.out.println("Allocate local variable in frame " + this.toString());
+        // System.out.println("Allocate local variable in frame " + this.toString());
         localOffset = localOffset - WORD_SIZE;
         var ret = escape ? new InFrame(localOffset) : new InReg(new Temp());
         return ret;
@@ -112,14 +113,20 @@ public class IntelFrame extends Frame {
 
     @Override
     public Exp string(Label l, String literal) {
-        //builds a string with a label definition
-        //and IR code to make a word containing the string lenght
-        //and code to emit character data
+        // builds a string with a label definition
+        // and IR code to make a word containing the string lenght
+        // and code to emit character data
         return new NAME(l);
     }
 
     @Override
     public Stm procEntryExit3(Stm body) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public InstrList codegen(Stm head) {
         // TODO Auto-generated method stub
         return null;
     }

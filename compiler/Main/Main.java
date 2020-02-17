@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import Assem.InstrList;
 import Canon.BasicBlocks;
 import Canon.Canon;
 import Canon.StmListList;
@@ -43,8 +44,7 @@ public class Main {
     private Frame frame = new IntelFrame(null, null);
 
     static void prStmList(Tree.Print print, Tree.StmList stms) {
-        for (Tree.StmList l = stms; l != null; l = l.tail){
-          //  if(l.head != null)
+        for (Tree.StmList l = stms; l != null; l = l.tail) {
             print.prStm(l.head);
         }
     }
@@ -72,24 +72,44 @@ public class Main {
         return semant.getEnv().getTEnv();
     }
 
-    private void emitProcFrag(PrintStream out, ProcFrag procFrag){
-        TempMap tempmap= new DefaultMap();
+    private void emitProcFrag(PrintStream out, ProcFrag procFrag) {
+        TempMap tempmap = new DefaultMap();
         var print = new Print(out, tempmap);
         out.println("# Before canonicalization: ");
         print.prStm(procFrag.body);
         StmList stms = Canon.linearize(procFrag.body);
         out.println("# After canonicalization: ");
-        prStmList(print,stms);
+        prStmList(print, stms);
         out.println("# Basic Blocks: ");
         BasicBlocks b = new BasicBlocks(stms);
         for (StmListList l = b.blocks; l != null; l = l.tail) {
-           out.println("#");
-           prStmList(print,l.head);
+            out.println("#");
+            prStmList(print, l.head);
         }
         print.prStm(new Tree.LABEL(b.done));
         out.println("# Trace Scheduled: ");
         StmList traced = (new TraceSchedule(b)).stms;
-        prStmList(print,traced);
+        prStmList(print, traced);
+        Assem.InstrList instrs = codegen(procFrag.frame, traced);
+        out.println("# Instructions: ");
+        for (Assem.InstrList p = instrs; p != null; p = p.tail)
+            out.print(p.head.format(tempmap));
+
+    }
+
+    private InstrList codegen(Frame f, StmList stms) {
+        Assem.InstrList first = null, last = null;
+        for (Tree.StmList s = stms; s != null; s = s.tail) {
+            Assem.InstrList i = f.codegen(s.head);
+            if (last == null) {
+                first = last = i;
+            } else {
+                while (last.tail != null)
+                    last = last.tail;
+                last = last.tail = i;
+            }
+        }
+        return first;
     }
 
     public int compile() {
