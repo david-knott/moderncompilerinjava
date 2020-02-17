@@ -414,12 +414,14 @@ public class Translate {
             new ESEQ(
                 new MOVE(
                     new TEMP(arrayPointer), 
+                    /*
                     new CALL(
                         new NAME(
                             new Label("initArray")
                         ),
                         args 
-                    )
+                    )*/
+                    level.frame.externalCall("initArray", args)
                 ), 
                 new TEMP(arrayPointer)
             )
@@ -479,8 +481,19 @@ public class Translate {
         for (var s = expTyList; s != null; s = s.tail) total++;
         int size = level.frame.wordSize() * total;
         return new Ex(new ESEQ(
-                new SEQ(new MOVE(new TEMP(recordPointer),
-                        new CALL(new NAME(new Label("malloc")), new ExpList(new CONST(size), null))), stm),
+                new SEQ(
+                    new MOVE(
+                        new TEMP(recordPointer),
+                        level.frame.externalCall(
+                            "malloc", 
+                            new ExpList(
+                                new CONST(size), 
+                                null
+                            )
+                        )
+                    ), 
+                    stm
+                ),
                 new TEMP(recordPointer)));
     }
 

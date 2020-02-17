@@ -73,7 +73,6 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
-
     @Test
     public void static_link_first_argument_in_callee() {
         String tigerCode = "let function fa(id:int) = () in (fa(2); 1) end";
@@ -128,7 +127,6 @@ public class Chap7Test {
         m.compile();
         assertFalse(m.hasErrors());
     }
-
 
     @Test
     public void read_subscript_var() {
@@ -230,7 +228,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void int_assign(){
+    public void int_assign() {
         String tigerCode = "let var a:int := 1 in (a := a - 10) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap7", inputStream);
@@ -239,7 +237,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void record_assign(){
+    public void record_assign() {
         String tigerCode = "let type rectype = {age:int} var rec1 := rectype {age=999} in rec1.age / 1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap7", inputStream);
@@ -248,7 +246,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void array_assign(){
+    public void array_assign() {
         String tigerCode = "let type arrtype1 = array of int var arr1 := arrtype1 [47] of 46 in arr1[0] end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
@@ -257,7 +255,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void type_def_cycle(){
+    public void type_def_cycle() {
         String tigerCode = "let type a = b type b = d type c = a type d = a in  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
@@ -267,7 +265,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void type_def_legal_cycle(){
+    public void type_def_legal_cycle() {
         String tigerCode = "let type rectype = {age:int,next:rectype} var rec1 := rectype {age=999,next=nil} in rec1.age end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
@@ -277,7 +275,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void translated_for(){
+    public void translated_for() {
         String tigerCode = "for i := 1 to 9 do ()";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
@@ -287,7 +285,7 @@ public class Chap7Test {
     }
 
     @Test
-    public void translated_while(){
+    public void translated_while() {
         String tigerCode = "while(1) do ()";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
@@ -314,6 +312,12 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
-
-
+    @Test
+    public void def_func() {
+        String tigerCode = "exit(1)";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
 }
