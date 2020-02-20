@@ -88,7 +88,7 @@ public abstract class Frame implements TempMap {
      * Either procEntryExit2 should scan the body and record this information in some new component of the frame type, 
      * or procEntryExit3 should use the maximum legal value.
      */
-    abstract public Tree.Stm procEntryExit3(Tree.Stm body);
+    abstract public Proc procEntryExit3(Tree.Stm body);
     
 
     /**

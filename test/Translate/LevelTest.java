@@ -9,6 +9,7 @@ import org.junit.Test;
 import Assem.InstrList;
 import Frame.Access;
 import Frame.Frame;
+import Frame.Proc;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -70,7 +71,7 @@ public class LevelTest {
         }
 
         @Override
-        public Stm procEntryExit3(Stm body) {
+        public Proc procEntryExit3(Stm body) {
             // TODO Auto-generated method stub
             return null;
         }

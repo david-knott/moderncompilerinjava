@@ -2,13 +2,17 @@ package Intel;
 
 import Temp.Label;
 import Temp.Temp;
+import Temp.TempList;
 import Tree.BINOP;
 import Tree.CALL;
 import Tree.CONST;
 import Tree.Exp;
 import Tree.ExpList;
+import Tree.LABEL;
 import Tree.MEM;
+import Tree.MOVE;
 import Tree.NAME;
+import Tree.SEQ;
 import Tree.Stm;
 import Tree.TEMP;
 import Util.BoolList;
@@ -34,6 +38,7 @@ public class IntelFrame extends Frame {
     private static Temp rv = new Temp();
     private static Temp fp = new Temp();
     private Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
+    private static TempList returnSink = new TempList(new Temp(), new TempList(new Temp(), null));
 
     public IntelFrame(Label nm, BoolList frml) {
         tmap.put(rv, "rv");
@@ -102,17 +107,20 @@ public class IntelFrame extends Frame {
         return new NAME(l);
     }
 
+    public Assem.InstrList procEntryExit2(Assem.InstrList body){
+        return append(body, new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
+    }
+
     @Override
-    public Stm procEntryExit3(Stm body) {
-        // TODO Auto-generated method stub
-        return null;
+    public Proc procEntryExit3(Stm body) {
+        return new Proc(
+            "PROC " + "name", body, "END" + "name"
+        );
     }
 
     @Override
     public InstrList codegen(Stm head) {
-
-        // TODO Auto-generated method stub
-        return null;
+        return (new Codegen.Codegen(this)).codegen(head);
     }
 
     @Override
@@ -123,6 +131,16 @@ public class IntelFrame extends Frame {
             return tmap.get(t);
         else
             return t.toString();
+    }
+
+    private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b){
+        if(a == null) return b;
+        else {
+            Assem.InstrList p;
+            for(p = a; p.tail != null; p = p.tail);
+            p.tail = b;
+            return a;
+        }
     }
 }
 

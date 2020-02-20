@@ -74,7 +74,7 @@ public class TranslateTest {
         }
 
         @Override
-        public Stm procEntryExit3(Stm body) {
+        public Frame.Proc procEntryExit3(Stm body) {
             // TODO Auto-generated method stub
             return null;
         }
