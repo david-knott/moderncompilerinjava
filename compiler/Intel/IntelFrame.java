@@ -31,8 +31,8 @@ public class IntelFrame extends Frame {
 
     private int localOffset = WORD_SIZE;
     private static final int WORD_SIZE = 8;
-    private Temp rv = new Temp();
-    private Temp fp = new Temp();
+    private static Temp rv = new Temp();
+    private static Temp fp = new Temp();
     private Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
 
     public IntelFrame(Label nm, BoolList frml) {

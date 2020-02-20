@@ -30,10 +30,10 @@ public class Level {
       //  for (var fml = fmls; fml != null; fml = fml.tail) {
         while(frameFormals != null){
             if(formals == null){
-                formals = new AccessList(new Access(prnt, frameFormals.head));
+                formals = new AccessList(new Access(this, frameFormals.head));
             //    current = formals;
             } else {
-                formals.append(new Access(prnt, frameFormals.head));
+                formals.append(new Access(this, frameFormals.head));
              //   previous = current;
              //   current = new AccessList(new Access(prnt, frameFormals.head));
              //   previous.tail = current;

@@ -94,8 +94,8 @@ public class Chap7Test {
 
     @Test
     public void access_var_by_static_link() {
-        //String tigerCode = "let function fp(a:int,b:int,c:int,d:int,e:int,f:int):int = let function fc(): int = f * f in fc() end  in fp(1,2,3,4,5,99) end";
-        String tigerCode = "let function fp(a:int,b:int,c:int,d:int,e:int,f:int,g:int,h:int):int = h in fp(1,2,3,4,5,6,99,999) end";
+        String tigerCode = "let function fp(a:int,b:int,c:int,d:int,e:int,f:int):int = let function fc(): int = f * f in fc() end  in fp(1,2,3,4,5,99) end";
+     //   String tigerCode = "let function fp(a:int,b:int,c:int,d:int,e:int,f:int,g:int,h:int):int = h in fp(1,2,3,4,5,6,99,999) end";
      //   String tigerCode = "let function fp(ff:int):int = ff * ff in fp(99) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
