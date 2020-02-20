@@ -14,51 +14,53 @@ import Tree.TEMP;
 import Util.BoolList;
 import Assem.InstrList;
 import Frame.*;
+import java.util.Hashtable;
 
 /**
  * Intel activation frame The formals field contains a list of K accesses
  * denoting the locations where the formal paramters will be kept at runtime as
- * seen from inside the callee. 
+ * seen from inside the callee.
  * 
- * For caller on intel procs, for outgoing function arguments for functions 
- * from arg0 -> arg5 into registers 
- * from arg6 -> into the stack
+ * For caller on intel procs, for outgoing function arguments for functions from
+ * arg0 -> arg5 into registers from arg6 -> into the stack
  * 
- * For callee, function arguments are placed into the expected place in the translate
- * code. The frame assumes that arguments will be placed correctly.
+ * For callee, function arguments are placed into the expected place in the
+ * translate code. The frame assumes that arguments will be placed correctly.
  */
 public class IntelFrame extends Frame {
 
-    private int localOffset = 0;
+    private int localOffset = WORD_SIZE;
     private static final int WORD_SIZE = 8;
-    private static Temp rv = new Temp();
-    private static Temp fp = new Temp();
+    private Temp rv = new Temp();
+    private Temp fp = new Temp();
+    private Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
 
     public IntelFrame(Label nm, BoolList frml) {
-        BoolList tmp = frml;
-        AccessList al = null;
-        AccessList prev = null;
+        tmap.put(rv, "rv");
+        tmap.put(fp, "fp");
         int i = 0;
-        // should be allocated from right to left
-        while (tmp != null) {
-            var escape = i++ > 5 || tmp.head;
+        while (frml != null) {
+            // first arg is static link in frame, net 6 in registers,
+            var escape = i == 0 || i > 6 || frml.head;
             Access local;
             if (!escape) {
                 local = new InReg(new Temp());
             } else {
-                localOffset = localOffset + WORD_SIZE;
+                localOffset = localOffset - WORD_SIZE;
                 local = new InFrame((localOffset));
             }
-            al = new AccessList(local, prev);
-            prev = al;
-            tmp = tmp.tail;
+            if (formals == null)
+                formals = new AccessList(local, null);
+            else
+                formals.append(local);
+            frml = frml.tail;
+            i++;
         }
-        formals = al;
     }
 
     @Override
     public Access allocLocal(boolean escape) {
-        localOffset =- WORD_SIZE;
+        localOffset = -WORD_SIZE;
         return escape ? new InFrame(localOffset) : new InReg(new Temp());
     }
 
@@ -89,12 +91,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Exp externalCall(String func, ExpList args) {
-        return new CALL(
-            new NAME(
-                new Label(func)
-            ), 
-            args
-        );
+        return new CALL(new NAME(new Label(func)), args);
     }
 
     @Override
@@ -113,8 +110,19 @@ public class IntelFrame extends Frame {
 
     @Override
     public InstrList codegen(Stm head) {
+
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public String tempMap(Temp t) {
+
+        boolean f = tmap.containsKey(t);
+        if (f)
+            return tmap.get(t);
+        else
+            return t.toString();
     }
 }
 

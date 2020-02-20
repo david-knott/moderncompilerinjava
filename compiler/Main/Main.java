@@ -73,21 +73,21 @@ public class Main {
     }
 
     private void emitProcFrag(PrintStream out, ProcFrag procFrag) {
-        TempMap tempmap = new DefaultMap();
+        TempMap tempmap= new Temp.CombineMap(procFrag.frame,new Temp.DefaultMap());
         var print = new Print(out, tempmap);
-        out.println("# Before canonicalization: ");
-        print.prStm(procFrag.body);
+   //     out.println("# Before canonicalization: ");
+   //     print.prStm(procFrag.body);
         StmList stms = Canon.linearize(procFrag.body);
-        out.println("# After canonicalization: ");
-        prStmList(print, stms);
-        out.println("# Basic Blocks: ");
+   //     out.println("# After canonicalization: ");
+   //     prStmList(print, stms);
+   //     out.println("# Basic Blocks: ");
         BasicBlocks b = new BasicBlocks(stms);
         for (StmListList l = b.blocks; l != null; l = l.tail) {
-            out.println("#");
-            prStmList(print, l.head);
+     //       out.println("#");
+       //     prStmList(print, l.head);
         }
-        print.prStm(new Tree.LABEL(b.done));
-        out.println("# Trace Scheduled: ");
+//        print.prStm(new Tree.LABEL(b.done));
+       out.println("# Trace Scheduled: ");
         StmList traced = (new TraceSchedule(b)).stms;
         prStmList(print, traced);
         Assem.InstrList instrs = codegen(procFrag.frame, traced);

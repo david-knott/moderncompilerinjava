@@ -3,9 +3,10 @@ package Frame;
 import Assem.InstrList;
 import Temp.Label;
 import Temp.Temp;
+import Temp.TempMap;
 import Tree.Stm;
 
-public abstract class Frame {
+public abstract class Frame implements TempMap {
     public Label name;
     public AccessList formals;
 

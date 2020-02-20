@@ -84,7 +84,7 @@ public class Chap7Test {
 
     @Test
     public void static_link_variable_in_parent() {
-        String tigerCode = "let var a:int := 1 function fa(id:int):int = (a + id) in fa(2) end";
+        String tigerCode = "let var a:int := 1 function fa(id:int, id2:int, id3:int, id4:int, id5:int):int = (a + id) in fa(2, 3, 4, 5, 6) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -94,7 +94,9 @@ public class Chap7Test {
 
     @Test
     public void access_var_by_static_link() {
-        String tigerCode = "let var a:int := 1 function fa(i:int):int = i + a in fa(1) end";
+        //String tigerCode = "let function fp(a:int,b:int,c:int,d:int,e:int,f:int):int = let function fc(): int = f * f in fc() end  in fp(1,2,3,4,5,99) end";
+        String tigerCode = "let function fp(a:int,b:int,c:int,d:int,e:int,f:int,g:int,h:int):int = h in fp(1,2,3,4,5,6,99,999) end";
+     //   String tigerCode = "let function fp(ff:int):int = ff * ff in fp(99) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -103,7 +105,7 @@ public class Chap7Test {
 
     @Test
     public void access_var_by_static_link_local() {
-        String tigerCode = "let function fa(i:int):int = let var a:int := 10 var b:int := 20 in a + b end in fa(1) end";
+        String tigerCode = "let function fa(i:int, j:int):int = let var a:int := 10 var b:int := 20 in a + b end in fa(1, 2) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -202,7 +204,7 @@ public class Chap7Test {
 
     @Test
     public void if_then_else_and_seq() {
-        String tigerCode = "if (10 < 11 & 20 > 23) then 3 else 4";
+        String tigerCode = "let in if (10 < 11 & 20 > 23) then 3 else 4 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap7", inputStream);
         m.compile();

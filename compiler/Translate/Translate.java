@@ -635,4 +635,13 @@ public class Translate {
             )
         );
 	}
+
+    /**
+     * Removes static link from formal list, used by Semant
+     * @param formals
+     * @return
+     */
+	public AccessList formals(AccessList formals) {
+		return formals != null ? formals.tail : null;
+	}
 }

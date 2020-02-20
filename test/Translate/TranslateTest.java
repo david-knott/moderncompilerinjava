@@ -84,6 +84,12 @@ public class TranslateTest {
             // TODO Auto-generated method stub
             return null;
         }
+
+        @Override
+        public String tempMap(Temp t) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     public class TestAcess extends Frame.Access{

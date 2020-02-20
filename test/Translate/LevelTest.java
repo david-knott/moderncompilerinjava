@@ -80,6 +80,12 @@ public class LevelTest {
             // TODO Auto-generated method stub
             return null;
         }
+
+        @Override
+        public String tempMap(Temp t) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     @Test
