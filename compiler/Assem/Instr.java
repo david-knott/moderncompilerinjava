@@ -23,6 +23,11 @@ public abstract class Instr {
       return nthLabel(l.tail, i - 1);
   }
 
+  /**
+   * Special formatting function that writes out assembly
+   * @param m
+   * @return
+   */
   public String format(Temp.TempMap m) {
     Temp.TempList dst = def();
     Temp.TempList src = use();
@@ -59,5 +64,4 @@ public abstract class Instr {
 
     return s.toString();
   }
-
 }

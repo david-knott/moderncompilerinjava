@@ -7,6 +7,7 @@ import Temp.Temp;
 import Temp.TempList;
 import Tree.BINOP;
 import Tree.CALL;
+import Tree.CJUMP;
 import Tree.CONST;
 import Tree.Exp;
 import Tree.ExpList;
@@ -59,6 +60,9 @@ public class Codegen {
             munchStm((SEQ) stm);
         } else if (stm instanceof JUMP) {
             munchStm((JUMP) stm);
+        } else if (stm instanceof CJUMP) {
+            munchStm((CJUMP) stm);
+
         } else
             throw new RuntimeException(stm + " unsupported");
     }
@@ -66,6 +70,12 @@ public class Codegen {
     void munchStm(JUMP jmp) {
         munchExp(jmp.exp);
     }
+
+    void munchStm(CJUMP jmp) {
+      
+    }
+
+
 
     void munchStm(SEQ seq) {
         munchStm(seq.left);
@@ -79,9 +89,12 @@ public class Codegen {
         if (move.dst instanceof MEM && move.src instanceof MEM) {
             emit(new OPER("STORE", null, null));
         }
-        if (move.dst instanceof TEMP && move.src instanceof Exp) {
-            emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp(move.src), null)));
+        if (move.dst instanceof TEMP && move.src instanceof CONST) {
+            emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp((CONST)(move.src)), null)));
         }
+       // if (move.dst instanceof TEMP && move.src instanceof Exp) {
+         //   emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp(move.src), null)));
+      //  }
     }
 
     void munchStm(LABEL label) {

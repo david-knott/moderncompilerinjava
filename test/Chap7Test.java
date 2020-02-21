@@ -12,7 +12,7 @@ public class Chap7Test {
 
     @Test
     public void int_dec_translation() {
-        String tigerCode = "let var a:int := 1 in a  end";
+        String tigerCode = "let var a:int := 1 in a end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

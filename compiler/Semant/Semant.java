@@ -791,7 +791,7 @@ public class Semant {
         // pass in the end loop label so that breaks can jump to it
         var transBody = new Semant(env, loopEnd, level, translate).transExp(whileExp.body);
         //if (transBody.ty.actual() != Semant.VOID) {
-        if (transBody.ty.coerceTo(Semant.VOID)) {
+        if (!transBody.ty.coerceTo(Semant.VOID)) {
             env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
         }
         env.venv.endScope();
