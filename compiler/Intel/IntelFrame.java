@@ -45,7 +45,7 @@ public class IntelFrame extends Frame {
         tmap.put(fp, "fp");
         int i = 0;
         while (frml != null) {
-            // first arg is static link in frame, net 6 in registers,
+            // first arg is static link in frame, next 6 in registers,
             var escape = i == 0 || i > 6 || frml.head;
             Access local;
             if (!escape) {
@@ -80,13 +80,13 @@ public class IntelFrame extends Frame {
     }
 
     @Override
-    public int wordSize() {
-        return WORD_SIZE;
+    public Temp RV() {
+        return rv;
     }
 
     @Override
-    public Temp RV() {
-        return rv;
+    public int wordSize() {
+        return WORD_SIZE;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class IntelFrame extends Frame {
     }
 
     @Override
-    public Proc procEntryExit3(Stm body) {
+    public Proc procEntryExit3(Assem.InstrList body) {
         return new Proc(
             "PROC " + "name", body, "END" + "name"
         );

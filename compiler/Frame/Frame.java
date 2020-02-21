@@ -74,10 +74,10 @@ public abstract class Frame implements TempMap {
     abstract public Tree.Stm procEntryExit1(Tree.Stm body);
     
     /**
-     * Wrap the assembly body of a procedure with entry/exit after code generation.
+     * This function appends a sink addres to the function body. This is used in the
+     * register allocation
      */
-    //abstract public Assem.InstrList procEntryExit2(Assem.InstrList body); 
-    
+    abstract public Assem.InstrList procEntryExit2(Assem.InstrList body);
     
     /**
      * Creates the procedure prologue and epilogue assembly language. 
@@ -88,7 +88,7 @@ public abstract class Frame implements TempMap {
      * Either procEntryExit2 should scan the body and record this information in some new component of the frame type, 
      * or procEntryExit3 should use the maximum legal value.
      */
-    abstract public Proc procEntryExit3(Tree.Stm body);
+    abstract public Proc procEntryExit3(Assem.InstrList body);
     
 
     /**

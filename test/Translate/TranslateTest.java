@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import org.junit.Test;
 
 import Assem.InstrList;
+import Frame.Proc;
 import Main.Main;
 import Semant.Semant;
 import Temp.Label;
@@ -73,11 +74,6 @@ public class TranslateTest {
             return null;
         }
 
-        @Override
-        public Frame.Proc procEntryExit3(Stm body) {
-            // TODO Auto-generated method stub
-            return null;
-        }
 
         @Override
         public InstrList codegen(Stm head) {
@@ -87,6 +83,18 @@ public class TranslateTest {
 
         @Override
         public String tempMap(Temp t) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public InstrList procEntryExit2(InstrList body) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Proc procEntryExit3(InstrList body) {
             // TODO Auto-generated method stub
             return null;
         }

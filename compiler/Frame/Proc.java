@@ -1,9 +1,9 @@
 package Frame;
 
-import Tree.Stm;
+import Assem.InstrList;
 
 public class Proc {
 
-	public Proc(String string, Stm body, String string2) {
+	public Proc(String string, InstrList body, String string2) {
 	}
 }

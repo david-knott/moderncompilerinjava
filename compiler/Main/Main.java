@@ -73,27 +73,30 @@ public class Main {
     }
 
     private void emitProcFrag(PrintStream out, ProcFrag procFrag) {
-        TempMap tempmap= new Temp.CombineMap(procFrag.frame,new Temp.DefaultMap());
+        TempMap tempmap = new Temp.CombineMap(procFrag.frame, new Temp.DefaultMap());
         var print = new Print(out, tempmap);
-   //     out.println("# Before canonicalization: ");
-   //     print.prStm(procFrag.body);
+        // out.println("# Before canonicalization: ");
+        // print.prStm(procFrag.body);
         StmList stms = Canon.linearize(procFrag.body);
-   //     out.println("# After canonicalization: ");
-   //     prStmList(print, stms);
-   //     out.println("# Basic Blocks: ");
+        // out.println("# After canonicalization: ");
+        // prStmList(print, stms);
+        // out.println("# Basic Blocks: ");
         BasicBlocks b = new BasicBlocks(stms);
         for (StmListList l = b.blocks; l != null; l = l.tail) {
-     //       out.println("#");
-       //     prStmList(print, l.head);
+            // out.println("#");
+            // prStmList(print, l.head);
         }
-//        print.prStm(new Tree.LABEL(b.done));
-       out.println("# Trace Scheduled: ");
+        // print.prStm(new Tree.LABEL(b.done));
+        out.println("# Trace Scheduled: ");
         StmList traced = (new TraceSchedule(b)).stms;
         prStmList(print, traced);
         Assem.InstrList instrs = codegen(procFrag.frame, traced);
+        instrs = procFrag.frame.procEntryExit2(instrs);
         out.println("# Instructions: ");
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
             out.print(p.head.format(tempmap));
+
+        var procs = procFrag.frame.procEntryExit3(instrs);
 
     }
 
@@ -130,7 +133,7 @@ public class Main {
         var frags = this.semant.transProg(this.ast.absyn);
         for (Frag frag = frags; frag != null; frag = frag.next) {
             if (frag instanceof ProcFrag) {
-                emitProcFrag(out, (ProcFrag)frag);
+                emitProcFrag(out, (ProcFrag) frag);
             } else {
                 new Print(out).prExp(((DataFrag) frag).stringFragment);
             }

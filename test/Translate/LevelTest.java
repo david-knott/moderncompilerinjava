@@ -70,11 +70,6 @@ public class LevelTest {
             return null;
         }
 
-        @Override
-        public Proc procEntryExit3(Stm body) {
-            // TODO Auto-generated method stub
-            return null;
-        }
 
         @Override
         public InstrList codegen(Stm head) {
@@ -84,6 +79,18 @@ public class LevelTest {
 
         @Override
         public String tempMap(Temp t) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public InstrList procEntryExit2(InstrList body) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Proc procEntryExit3(InstrList body) {
             // TODO Auto-generated method stub
             return null;
         }
