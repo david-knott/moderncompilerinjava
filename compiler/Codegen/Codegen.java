@@ -1,8 +1,11 @@
 package Codegen;
 
+import Assem.Instr;
 import Frame.Frame;
 import Tree.BINOP;
 import Tree.CONST;
+import Tree.Exp;
+import Tree.JUMP;
 import Tree.LABEL;
 import Tree.MEM;
 import Tree.MOVE;
@@ -20,7 +23,7 @@ public class Codegen {
 
     private Assem.InstrList iList = null, last = null;
 
-    private void emit(Assem.Instr instr) {
+    private void emit(Instr instr) {
         if (last != null) {
             last = last.tail = new Assem.InstrList(instr, null);
         } else {
@@ -37,19 +40,34 @@ public class Codegen {
     }
 
     void munchStm(Stm stm) {
-        
+        if (stm instanceof LABEL) {
+            munchStm((LABEL) stm);
+        } else if (stm instanceof MOVE) {
+            munchStm((MOVE) stm);
+        } else if (stm instanceof JUMP) {
+            munchStm((JUMP) stm);
+        } else
+            throw new RuntimeException(stm + " unsupported");
+    }
+
+    void munchStm(JUMP jmp) {
+        munchExp(jmp.exp);
+    }
+
+    private void munchExp(Exp exp) {
     }
 
     void munchStm(SEQ seq) {
-        
+
     }
 
     void munchStm(MOVE move) {
-        
+        munchExp(move.dst);
+        munchExp(move.src);
     }
 
     void munchStm(LABEL label) {
-        
+
     }
 
     void munchExp(MEM mem) {
@@ -60,11 +78,11 @@ public class Codegen {
 
     }
 
-    void munchExp(CONST cnst){
+    void munchExp(CONST cnst) {
 
     }
 
-    void munchExp(TEMP temp){
+    void munchExp(TEMP temp) {
 
     }
 
