@@ -75,42 +75,45 @@ public class Codegen {
       
     }
 
-
-
     void munchStm(SEQ seq) {
         munchStm(seq.left);
         munchStm(seq.right);
     }
 
     void munchStm(MOVE move) {
+
+        emit(new OPER("STORE `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
         if (move.dst instanceof MEM && move.src instanceof Exp) {
-            emit(new OPER("STORE", null, null));
+      //      emit(new OPER("STORE `d0 <- M[`s0]", null, null));
         }
         if (move.dst instanceof MEM && move.src instanceof MEM) {
-            emit(new OPER("STORE", null, null));
+        //    emit(new OPER("STORE", null, null));
         }
         if (move.dst instanceof TEMP && move.src instanceof CONST) {
-            emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp((CONST)(move.src)), null)));
+         //   emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp((CONST)(move.src)), null)));
         }
+
        // if (move.dst instanceof TEMP && move.src instanceof Exp) {
          //   emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp(move.src), null)));
       //  }
     }
 
     void munchStm(LABEL label) {
-        emit(new Assem.LABEL(label.label.toString() + ":", label.label));
+        emit(new Assem.LABEL(label.label.toString() + ":\n", label.label));
     }
 
     void munchStm(CALL call) {
         Temp r = munchExp(call.func);
         TempList l = munchArgs(0, call.args);
-        emit(new OPER("CALL", calldefs, L(r, l)));
+        emit(new OPER("CALL `s0\n", calldefs, L(r, l)));
     }
 
     private TempList munchArgs(int i, ExpList args) {
-        return null;
+        if(i == 0) {
+            return L(new Temp(), null);
+        }
+        return L(new Temp(), munchArgs(i - 1, args));
     }
-
 
     Temp munchExp(Exp exp) {
         if (exp instanceof TEMP)
@@ -119,7 +122,8 @@ public class Codegen {
             return munchExp((CONST) exp);
         if (exp instanceof NAME)
             return munchExp((NAME) exp);
-
+        if (exp instanceof MEM)
+            return munchExp((MEM) exp);
         throw new RuntimeException(exp + " unsupported");
     }
 
@@ -129,7 +133,7 @@ public class Codegen {
 
     Temp munchExp(MEM mem) {
         Temp r = new Temp();
-        emit(new OPER("LOAD", L(r, null), L(munchExp(mem.exp), null)));
+        emit(new OPER("LOAD `d0 <- M[`s0]\n", L(new Temp(), null), L(munchExp(mem.exp), null)));
         return r;
     }
 
