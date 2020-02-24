@@ -52,6 +52,31 @@ public class Codegen {
     }
 
     void munchStm(Stm stm) {
+if (stm instanceof LABEL) {
+            munchStm((LABEL) stm);
+            return;
+}
+if (stm instanceof MOVE && ((MOVE)stm).dst instanceof TEMP) {
+        //    munchStm((MOVE) stm);
+        emit(new OPER("mov `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
+            return;
+}
+//if (stm instanceof JUMP && ((JUMP)stm).exp instanceof TEMP) {
+if (stm instanceof JUMP) {
+        //    munchStm((MOVE) stm);
+        
+        emit(new OPER("jmp `j0\n",null, null, ((JUMP)stm).targets));
+            return;
+}
+
+
+
+        emit(new OPER("movq `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
+
+
+        return;
+
+        /*
         if (stm instanceof LABEL) {
             munchStm((LABEL) stm);
         } else if (stm instanceof MOVE) {
@@ -65,6 +90,7 @@ public class Codegen {
 
         } else
             throw new RuntimeException(stm + " unsupported");
+            */
     }
 
     void munchStm(JUMP jmp) {
