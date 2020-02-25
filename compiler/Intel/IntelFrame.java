@@ -37,12 +37,64 @@ public class IntelFrame extends Frame {
     private static final int WORD_SIZE = 8;
     private static Temp rv = new Temp();
     private static Temp fp = new Temp();
-    private Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
-    private static TempList returnSink = new TempList(new Temp(), new TempList(new Temp(), null));
+    private static Temp sp = new Temp();
+    public static Temp rbx = new Temp();//callee save
+    public static Temp rcx = new Temp();//4th argu
+    public static Temp rdx = new Temp();//3rd argu
+    public static Temp rsi = new Temp();//2lrd argu
+    public static Temp rdi = new Temp();//2rd argu
+    public static Temp rbp = new Temp();//callee saved
+    public static Temp r8= new Temp();//5th argup
+    public static Temp r9= new Temp();//6th argup
+    public static Temp r10= new Temp();//scratch
+    public static Temp r11= new Temp();//scratch
+    public static Temp r12= new Temp();//callee
+    public static Temp r13= new Temp();//callee
+    public static Temp r14= new Temp();//callee
+    public static Temp r15= new Temp();//callee
+    public static TempList specialRegs = new TempList(
+        rv, new TempList(
+            fp, new TempList(
+                sp, null )));
+    public static TempList calleeSaves = new TempList(
+        rbx, new TempList(
+            rbp, new TempList(
+                r12, new TempList(
+                    r13, new TempList(
+                        r14, new TempList(
+                            r15, null
+                            )
+                            )
+                            )
+                            )
+                            )
+                            );
+    public static TempList argRegs = new TempList(rdi, new TempList(rsi, new TempList(rdx, new TempList(rcx, new TempList(r8, new TempList(r9, null))))));
+    public static TempList callerSaves = new TempList(
+        rcx, new TempList(
+            rdx, new TempList(
+                rdi, new TempList(
+                    rsi, new TempList(
+                        sp, new TempList(
+                            r8, new TempList(
+                                r9, new TempList(
+                                    r10, new TempList(
+                                        r11, null
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    );
+    private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
+    private static TempList returnSink = new TempList(sp, calleeSaves);
 
     public IntelFrame(Label nm, BoolList frml) {
-        tmap.put(rv, "rv");
-        tmap.put(fp, "fp");
+        tmap.put(rv, "rax");
+        tmap.put(fp, "rbp");
         int i = 0;
         while (frml != null) {
             // first arg is static link in frame, next 6 in registers,
@@ -108,7 +160,9 @@ public class IntelFrame extends Frame {
     }
 
     public Assem.InstrList procEntryExit2(Assem.InstrList body){
-        return append(body, new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
+        return append(
+            body, 
+            new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
     }
 
     @Override
