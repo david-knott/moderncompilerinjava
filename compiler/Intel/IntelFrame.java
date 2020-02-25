@@ -35,14 +35,14 @@ public class IntelFrame extends Frame {
 
     private int localOffset = WORD_SIZE;
     private static final int WORD_SIZE = 8;
-    private static Temp rv = new Temp();
-    private static Temp fp = new Temp();
-    private static Temp sp = new Temp();
+    public static Temp rv = new Temp();
+    public static Temp fp = new Temp();
+    public static Temp sp = new Temp();
     public static Temp rbx = new Temp();//callee save
     public static Temp rcx = new Temp();//4th argu
     public static Temp rdx = new Temp();//3rd argu
     public static Temp rsi = new Temp();//2lrd argu
-    public static Temp rdi = new Temp();//2rd argu
+    public static Temp rdi = new Temp();//1st argu
     public static Temp rbp = new Temp();//callee saved
     public static Temp r8= new Temp();//5th argup
     public static Temp r9= new Temp();//6th argup
@@ -55,7 +55,10 @@ public class IntelFrame extends Frame {
     public static TempList specialRegs = new TempList(
         rv, new TempList(
             fp, new TempList(
-                sp, null )));
+                sp, null
+            )
+        )
+    );
     public static TempList calleeSaves = new TempList(
         rbx, new TempList(
             rbp, new TempList(
@@ -63,13 +66,25 @@ public class IntelFrame extends Frame {
                     r13, new TempList(
                         r14, new TempList(
                             r15, null
-                            )
-                            )
-                            )
-                            )
-                            )
-                            );
-    public static TempList argRegs = new TempList(rdi, new TempList(rsi, new TempList(rdx, new TempList(rcx, new TempList(r8, new TempList(r9, null))))));
+                        )
+                    )
+                )
+            )
+        )
+    );
+    public static TempList argRegs = new TempList(
+        rdi, new TempList(
+            rsi, new TempList(
+                rdx, new TempList(
+                    rcx, new TempList(
+                        r8, new TempList(
+                            r9, null
+                        )
+                    )
+                )
+            )
+        )
+    );
     public static TempList callerSaves = new TempList(
         rcx, new TempList(
             rdx, new TempList(
@@ -92,16 +107,57 @@ public class IntelFrame extends Frame {
     private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
     private static TempList returnSink = new TempList(sp, calleeSaves);
 
-    public IntelFrame(Label nm, BoolList frml) {
+    static {
         tmap.put(rv, "rax");
         tmap.put(fp, "rbp");
-        int i = 0;
+        tmap.put(sp, "sp");
+        tmap.put(rbx, "rbx");
+        tmap.put(rcx, "rcx");
+        tmap.put(rdx, "rdx");
+        tmap.put(rsi, "rsi");
+        tmap.put(rdi, "rdi");
+        tmap.put(rbp, "rbp");
+        tmap.put(r8, "r8");
+        tmap.put(r9, "r9");
+        tmap.put(r10, "r10");
+        tmap.put(r11, "r11");
+        tmap.put(r12, "r12");
+        tmap.put(r13, "r13");
+        tmap.put(r14, "r14");
+        tmap.put(r15, "r15");
+    }
+
+    public IntelFrame(Label nm, BoolList frml) {
+       int i = 0;
         while (frml != null) {
-            // first arg is static link in frame, next 6 in registers,
+            // first arg is static link 
             var escape = i == 0 || i > 6 || frml.head;
             Access local;
             if (!escape) {
-                local = new InReg(new Temp());
+                Temp temp;
+                switch(i) {
+                    case 0:
+                    temp = rdi;
+                    break;
+                    case 1:
+                    temp = rsi;
+                    break;
+                    case 2:
+                    temp = rdx;
+                    break;
+                    case 3:
+                    temp = rcx;
+                    break;
+                    case 4:
+                    temp = r8;
+                    break;
+                    case 5:
+                    temp = r9;
+                    break;
+                    default:
+                    throw new Error("Unsupported");
+                }
+                local = new InReg(temp);
             } else {
                 localOffset = localOffset - WORD_SIZE;
                 local = new InFrame((localOffset));
@@ -179,16 +235,14 @@ public class IntelFrame extends Frame {
 
     @Override
     public String tempMap(Temp t) {
-
-        boolean f = tmap.containsKey(t);
-        if (f)
-            return tmap.get(t);
-        else
-            return t.toString();
+        return tmap.containsKey(t) 
+        ? tmap.get(t) 
+        : t.toString();
     }
 
     private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b){
-        if(a == null) return b;
+        if(a == null) 
+            return b;
         else {
             Assem.InstrList p;
             for(p = a; p.tail != null; p = p.tail);
@@ -202,7 +256,6 @@ class InFrame extends Access {
     int offset;
 
     InFrame(int os) {
-        System.out.println("bp[" + os + "]");
         offset = os;
     }
 
@@ -216,7 +269,6 @@ class InReg extends Access {
     Temp temp;
 
     InReg(Temp tmp) {
-        System.out.println("reg:" + tmp);
         temp = tmp;
     }
 

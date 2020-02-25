@@ -3,12 +3,14 @@ package Codegen;
 import Assem.Instr;
 import Assem.OPER;
 import Frame.Frame;
+import Intel.IntelFrame;
 import Temp.Temp;
 import Temp.TempList;
 import Tree.BINOP;
 import Tree.CALL;
 import Tree.CJUMP;
 import Tree.CONST;
+import Tree.EXP;
 import Tree.Exp;
 import Tree.ExpList;
 import Tree.JUMP;
@@ -29,7 +31,12 @@ public class Codegen {
     }
 
     private Assem.InstrList iList = null, last = null;
-    private TempList calldefs;
+    //registers that call will trash. The caller
+    //saves are expected to be saved by the caller
+    //and the return value
+    private TempList calldefs = new TempList(
+        IntelFrame.rv, IntelFrame.callerSaves
+    );
 
     private TempList L(Temp h, TempList t) {
         return new TempList(h, t);
@@ -52,26 +59,36 @@ public class Codegen {
     }
 
     void munchStm(Stm stm) {
-if (stm instanceof LABEL) {
-            munchStm((LABEL) stm);
+        //write out label
+        if (stm instanceof LABEL) {
+            var label = ((LABEL) stm);
+            emit(new Assem.LABEL(label.label.toString() + ":\n", label.label));
             return;
-}
-if (stm instanceof MOVE && ((MOVE)stm).dst instanceof TEMP) {
-        //    munchStm((MOVE) stm);
-        emit(new OPER("mov `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
+        }
+        //move -> dest = temp, src = munched expression
+        if (stm instanceof MOVE 
+        && ((MOVE)stm).dst instanceof TEMP
+        ) {
+            var t1 = (TEMP)(((MOVE)stm).dst);
+            var t2 = munchExp(((MOVE)stm).src);
+            emit(new Assem.MOVE("movq %`s0, %`d0\n", t1.temp, t2));
             return;
-}
-//if (stm instanceof JUMP && ((JUMP)stm).exp instanceof TEMP) {
-if (stm instanceof JUMP) {
-        //    munchStm((MOVE) stm);
-        
-        emit(new OPER("jmp `j0\n",null, null, ((JUMP)stm).targets));
+        }
+        //jump to label
+        if (stm instanceof JUMP) {
+            emit(new OPER("jmp `j0\n",null, null, ((JUMP)stm).targets));
             return;
-}
+        }
+        if(stm instanceof EXP){
+            if(((EXP)stm).exp instanceof CALL){
+                //Temp t = munchExp(((EXP)stm).exp);
+            }
+        }
 
 
 
-        emit(new OPER("movq `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
+
+//        emit(new OPER("movq `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
 
 
         return;
@@ -93,10 +110,6 @@ if (stm instanceof JUMP) {
             */
     }
 
-    void munchStm(JUMP jmp) {
-        munchExp(jmp.exp);
-    }
-
     void munchStm(CJUMP jmp) {
       
     }
@@ -107,7 +120,8 @@ if (stm instanceof JUMP) {
     }
 
     void munchStm(MOVE move) {
-
+        throw new RuntimeException("unsupported");
+        /*
         emit(new OPER("STORE `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
         if (move.dst instanceof MEM && move.src instanceof Exp) {
       //      emit(new OPER("STORE `d0 <- M[`s0]", null, null));
@@ -122,10 +136,7 @@ if (stm instanceof JUMP) {
        // if (move.dst instanceof TEMP && move.src instanceof Exp) {
          //   emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp(move.src), null)));
       //  }
-    }
-
-    void munchStm(LABEL label) {
-        emit(new Assem.LABEL(label.label.toString() + ":\n", label.label));
+      */
     }
 
     void munchStm(CALL call) {
@@ -170,6 +181,7 @@ if (stm instanceof JUMP) {
 
     Temp munchExp(CONST cnst) {
         Temp r = new Temp();
+        emit(new OPER("movq $" + cnst.value + ", %`d0 \n", L(r, null), null, null));
         return r;
     }
 
