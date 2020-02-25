@@ -204,7 +204,14 @@ public class IntelFrame extends Frame {
 
     @Override
     public Exp externalCall(String func, ExpList args) {
-        return new CALL(new NAME(new Label(func)), args);
+        return new CALL(
+            new NAME(
+                new Label(
+                    func
+                )
+            ), 
+            args
+        );
     }
 
     @Override
