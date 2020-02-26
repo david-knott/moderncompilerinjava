@@ -58,7 +58,7 @@ public class Codegen {
         return l;
     }
 
-    void munchStm(Stm stm) {
+    private void munchStm(Stm stm) {
         //write out label
         if (stm instanceof LABEL) {
             var label = ((LABEL) stm);
@@ -68,12 +68,37 @@ public class Codegen {
         //move -> dest = temp, src = munched expression
         if (stm instanceof MOVE 
         && ((MOVE)stm).dst instanceof TEMP
+        && ((MOVE)stm).src instanceof TEMP
         ) {
             var t1 = (TEMP)(((MOVE)stm).dst);
             var t2 = munchExp(((MOVE)stm).src);
             emit(new Assem.MOVE("movq %`s0, %`d0\n", t1.temp, t2));
             return;
         }
+        //move -> dest = temp, src = mem
+        if (stm instanceof MOVE 
+        && ((MOVE)stm).dst instanceof TEMP
+        && ((MOVE)stm).src instanceof MEM
+        ) {
+            var t1 = (TEMP)(((MOVE)stm).dst);
+            var t2 = munchExp(((MOVE)stm).src);
+            emit(new Assem.MOVE("movq (`s0), %`d0\n", t1.temp, t2));
+            return;
+        }
+        //move -> src = temp, dest = mem
+        if (stm instanceof MOVE 
+        && ((MOVE)stm).dst instanceof MEM
+        && ((MOVE)stm).src instanceof TEMP 
+        ) {
+            var t2 = (TEMP)(((MOVE)stm).dst);
+            var t1 = munchExp(((MOVE)stm).src);
+            emit(new Assem.MOVE("movq (`s0), %`d0\n", t1, t2.temp));
+            return;
+        }
+
+
+
+
         //jump to label
         if (stm instanceof JUMP) {
             emit(new OPER("jmp `j0\n",null, null, ((JUMP)stm).targets));
@@ -81,7 +106,13 @@ public class Codegen {
         }
         if(stm instanceof EXP){
             if(((EXP)stm).exp instanceof CALL){
+                CALL call = (CALL)((EXP)stm).exp;
                 //Temp t = munchExp(((EXP)stm).exp);
+Temp r = munchExp(call.func);
+        TempList l = munchArgs(0, call.args);
+        emit(new OPER("call `s0\n", calldefs, L(r, l)));
+
+                return;
             }
         }
 
@@ -142,14 +173,14 @@ public class Codegen {
     void munchStm(CALL call) {
         Temp r = munchExp(call.func);
         TempList l = munchArgs(0, call.args);
-        emit(new OPER("CALL `s0\n", calldefs, L(r, l)));
+        emit(new OPER("call `s0\n", calldefs, L(r, l)));
     }
 
     private TempList munchArgs(int i, ExpList args) {
         if(i == 0) {
-            return L(new Temp(), null);
+            return L(munchExp(args.head), null);
         }
-        return L(new Temp(), munchArgs(i - 1, args));
+        return L(munchExp(args.head), munchArgs(i - 1, args));
     }
 
     Temp munchExp(Exp exp) {
@@ -161,6 +192,10 @@ public class Codegen {
             return munchExp((NAME) exp);
         if (exp instanceof MEM)
             return munchExp((MEM) exp);
+        if (exp instanceof CALL)
+            return munchExp((CALL) exp);
+        if (exp instanceof BINOP)
+            return munchExp((BINOP) exp);
         throw new RuntimeException(exp + " unsupported");
     }
 
@@ -176,6 +211,7 @@ public class Codegen {
 
     Temp munchExp(BINOP binop) {
         Temp r = new Temp();
+        emit(new OPER("add %`s0 %`d0 \n", L(r, null), L(r, null), null));
         return r;
     }
 
@@ -188,5 +224,13 @@ public class Codegen {
     Temp munchExp(NAME cnst) {
         Temp r = new Temp();
         return r;
+    }
+
+    Temp munchExp(CALL call) {
+        Temp r1 = new Temp();
+        Temp r = munchExp(call.func);
+        TempList l = munchArgs(0, call.args);
+        emit(new OPER("call `s0\n", calldefs, L(r, l)));
+        return r1;
     }
 }

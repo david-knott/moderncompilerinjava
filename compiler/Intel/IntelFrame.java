@@ -134,7 +134,8 @@ public class IntelFrame extends Frame {
             var escape = i == 0 || i > 6 || frml.head;
             Access local;
             if (!escape) {
-                Temp temp;
+                Temp temp = new Temp();
+                /*
                 switch(i) {
                     case 0:
                     temp = rdi;
@@ -156,7 +157,7 @@ public class IntelFrame extends Frame {
                     break;
                     default:
                     throw new Error("Unsupported");
-                }
+                }*/
                 local = new InReg(temp);
             } else {
                 localOffset = localOffset - WORD_SIZE;
