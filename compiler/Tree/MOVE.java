@@ -21,4 +21,9 @@ public class MOVE extends Stm {
     else
       return new MOVE(dst, kids.head);
   }
+
+  @Override
+  void accept(TreeVisitor treeVisitor) {
+    treeVisitor.visit(this);
+  }
 }

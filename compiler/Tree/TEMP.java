@@ -1,8 +1,7 @@
 package Tree;
 
 /**
- * Temporary is abstract machine similar
- * to a register in a real machine.
+ * Temporary is abstract machine similar to a register in a real machine.
  */
 public class TEMP extends Exp {
   public Temp.Temp temp;
@@ -17,5 +16,10 @@ public class TEMP extends Exp {
 
   public Exp build(ExpList kids) {
     return this;
+  }
+
+  @Override
+  void accept(TreeVisitor treeVisitor) {
+    treeVisitor.visit(this);
   }
 }

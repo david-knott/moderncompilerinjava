@@ -14,4 +14,10 @@ public class MEM extends Exp {
   public Exp build(ExpList kids) {
     return new MEM(kids.head);
   }
+
+  @Override
+  void accept(TreeVisitor treeVisitor) {
+    treeVisitor.visit(this);
+
+  }
 }

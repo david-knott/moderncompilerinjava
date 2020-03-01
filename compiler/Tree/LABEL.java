@@ -1,12 +1,26 @@
 package Tree;
+
 import Temp.Temp;
 import Temp.Label;
-public class LABEL extends Stm { 
+
+public class LABEL extends Stm {
   public Label label;
-  public LABEL(Label l) {label=l;}
-  public ExpList kids() {return null;}
+
+  public LABEL(Label l) {
+    label = l;
+  }
+
+  public ExpList kids() {
+    return null;
+  }
+
   public Stm build(ExpList kids) {
     return this;
   }
-}
 
+  @Override
+  void accept(TreeVisitor treeVisitor) {
+    treeVisitor.visit(this);
+
+  }
+}

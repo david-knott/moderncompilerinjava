@@ -16,4 +16,9 @@ public class ESEQ extends Exp {
   public Exp build(ExpList kids) {
     throw new Error("build() not applicable to ESEQ");
   }
+
+  @Override
+  void accept(TreeVisitor treeVisitor) {
+    treeVisitor.visit(this);
+  }
 }

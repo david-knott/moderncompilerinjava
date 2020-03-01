@@ -31,12 +31,10 @@ public class Codegen {
     }
 
     private Assem.InstrList iList = null, last = null;
-    //registers that call will trash. The caller
-    //saves are expected to be saved by the caller
-    //and the return value
-    private TempList calldefs = new TempList(
-        IntelFrame.rv, IntelFrame.callerSaves
-    );
+    // registers that call will trash. The caller
+    // saves are expected to be saved by the caller
+    // and the return value
+    private TempList calldefs = new TempList(IntelFrame.rv, IntelFrame.callerSaves);
 
     private TempList L(Temp h, TempList t) {
         return new TempList(h, t);
@@ -58,91 +56,74 @@ public class Codegen {
         return l;
     }
 
+    private void munchMove(MOVE stm){
+
+        //move a temp to another temp
+        if (stm.dst instanceof TEMP && stm.src instanceof TEMP) {
+            var t1 = (TEMP) (stm.dst);
+            var t2 = munchExp(stm.src);
+            emit(new Assem.MOVE("movq %`s0, %`d0\n", t1.temp, t2));
+            return;
+        }
+        if (stm.dst instanceof TEMP && stm.src instanceof MEM) {
+            var t1 = (TEMP) (stm.dst);
+            var t2 = munchExp(stm.src);
+            emit(new Assem.MOVE("movq (`s0), %`d0\n", t1.temp, t2));
+            return;
+        }
+        if (stm.dst instanceof MEM && stm.src instanceof TEMP) {
+            var t2 = (TEMP) (stm.dst);
+            var t1 = munchExp(stm.src);
+            emit(new Assem.MOVE("movq (`s0), %`d0\n", t1, t2.temp));
+            return;
+        }
+    }
+
     private void munchStm(Stm stm) {
-        //write out label
+        // write out label
         if (stm instanceof LABEL) {
             var label = ((LABEL) stm);
             emit(new Assem.LABEL(label.label.toString() + ":\n", label.label));
             return;
         }
-        //move -> dest = temp, src = munched expression
-        if (stm instanceof MOVE 
-        && ((MOVE)stm).dst instanceof TEMP
-        && ((MOVE)stm).src instanceof TEMP
-        ) {
-            var t1 = (TEMP)(((MOVE)stm).dst);
-            var t2 = munchExp(((MOVE)stm).src);
-            emit(new Assem.MOVE("movq %`s0, %`d0\n", t1.temp, t2));
-            return;
+        //handle move
+        if (stm instanceof MOVE) {
+            munchMove((MOVE)stm);
         }
-        //move -> dest = temp, src = mem
-        if (stm instanceof MOVE 
-        && ((MOVE)stm).dst instanceof TEMP
-        && ((MOVE)stm).src instanceof MEM
-        ) {
-            var t1 = (TEMP)(((MOVE)stm).dst);
-            var t2 = munchExp(((MOVE)stm).src);
-            emit(new Assem.MOVE("movq (`s0), %`d0\n", t1.temp, t2));
-            return;
-        }
-        //move -> src = temp, dest = mem
-        if (stm instanceof MOVE 
-        && ((MOVE)stm).dst instanceof MEM
-        && ((MOVE)stm).src instanceof TEMP 
-        ) {
-            var t2 = (TEMP)(((MOVE)stm).dst);
-            var t1 = munchExp(((MOVE)stm).src);
-            emit(new Assem.MOVE("movq (`s0), %`d0\n", t1, t2.temp));
-            return;
-        }
-
-
-
-
-        //jump to label
+        // jump to label
         if (stm instanceof JUMP) {
-            emit(new OPER("jmp `j0\n",null, null, ((JUMP)stm).targets));
+            emit(new OPER("jmp `j0\n", null, null, ((JUMP) stm).targets));
             return;
         }
-        if(stm instanceof EXP){
-            if(((EXP)stm).exp instanceof CALL){
-                CALL call = (CALL)((EXP)stm).exp;
-                //Temp t = munchExp(((EXP)stm).exp);
-Temp r = munchExp(call.func);
-        TempList l = munchArgs(0, call.args);
-        emit(new OPER("call `s0\n", calldefs, L(r, l)));
+        if (stm instanceof EXP) {
+            if (((EXP) stm).exp instanceof CALL) {
+                CALL call = (CALL) ((EXP) stm).exp;
+                // Temp t = munchExp(((EXP)stm).exp);
+                Temp r = munchExp(call.func);
+                TempList l = munchArgs(0, call.args);
+                emit(new OPER("call `s0\n", calldefs, L(r, l)));
 
                 return;
             }
         }
 
-
-
-
-//        emit(new OPER("movq `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
-
+        // emit(new OPER("movq `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(),
+        // null)));
 
         return;
 
         /*
-        if (stm instanceof LABEL) {
-            munchStm((LABEL) stm);
-        } else if (stm instanceof MOVE) {
-            munchStm((MOVE) stm);
-        } else if (stm instanceof SEQ) {
-            munchStm((SEQ) stm);
-        } else if (stm instanceof JUMP) {
-            munchStm((JUMP) stm);
-        } else if (stm instanceof CJUMP) {
-            munchStm((CJUMP) stm);
-
-        } else
-            throw new RuntimeException(stm + " unsupported");
-            */
+         * if (stm instanceof LABEL) { munchStm((LABEL) stm); } else if (stm instanceof
+         * MOVE) { munchStm((MOVE) stm); } else if (stm instanceof SEQ) { munchStm((SEQ)
+         * stm); } else if (stm instanceof JUMP) { munchStm((JUMP) stm); } else if (stm
+         * instanceof CJUMP) { munchStm((CJUMP) stm);
+         * 
+         * } else throw new RuntimeException(stm + " unsupported");
+         */
     }
 
     void munchStm(CJUMP jmp) {
-      
+
     }
 
     void munchStm(SEQ seq) {
@@ -153,21 +134,18 @@ Temp r = munchExp(call.func);
     void munchStm(MOVE move) {
         throw new RuntimeException("unsupported");
         /*
-        emit(new OPER("STORE `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(), null)));
-        if (move.dst instanceof MEM && move.src instanceof Exp) {
-      //      emit(new OPER("STORE `d0 <- M[`s0]", null, null));
-        }
-        if (move.dst instanceof MEM && move.src instanceof MEM) {
-        //    emit(new OPER("STORE", null, null));
-        }
-        if (move.dst instanceof TEMP && move.src instanceof CONST) {
-         //   emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp((CONST)(move.src)), null)));
-        }
-
-       // if (move.dst instanceof TEMP && move.src instanceof Exp) {
-         //   emit(new OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp(move.src), null)));
-      //  }
-      */
+         * emit(new OPER("STORE `d0 <- M[`s0]\n", L(new Temp(), null), L(new Temp(),
+         * null))); if (move.dst instanceof MEM && move.src instanceof Exp) { //
+         * emit(new OPER("STORE `d0 <- M[`s0]", null, null)); } if (move.dst instanceof
+         * MEM && move.src instanceof MEM) { // emit(new OPER("STORE", null, null)); }
+         * if (move.dst instanceof TEMP && move.src instanceof CONST) { // emit(new
+         * OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp((CONST)(move.src)),
+         * null))); }
+         * 
+         * // if (move.dst instanceof TEMP && move.src instanceof Exp) { // emit(new
+         * OPER("ADD", L(((TEMP) move.dst).temp, null), L(munchExp(move.src), null)));
+         * // }
+         */
     }
 
     void munchStm(CALL call) {
@@ -177,7 +155,7 @@ Temp r = munchExp(call.func);
     }
 
     private TempList munchArgs(int i, ExpList args) {
-        if(i == 0) {
+        if (i == 0) {
             return L(munchExp(args.head), null);
         }
         return L(munchExp(args.head), munchArgs(i - 1, args));

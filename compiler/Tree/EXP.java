@@ -14,4 +14,9 @@ public class EXP extends Stm {
     public Stm build(ExpList kids) {
         return new EXP(kids.head);
     }
+
+    @Override
+    void accept(TreeVisitor treeVisitor) {
+        treeVisitor.visit(this);
+    }
 }

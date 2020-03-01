@@ -17,4 +17,10 @@ public class CONST extends Exp {
   public Exp build(ExpList kids) {
     return this;
   }
+
+  @Override
+  void accept(TreeVisitor treeVisitor) {
+    treeVisitor.visit(this);
+
+  }
 }
