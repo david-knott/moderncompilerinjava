@@ -1,5 +1,7 @@
 package Canon;
 
+import Tree.TreeVisitor;
+
 class MoveCall extends Tree.Stm {
     Tree.TEMP dst;
     Tree.CALL src;
@@ -16,6 +18,12 @@ class MoveCall extends Tree.Stm {
     public Tree.Stm build(Tree.ExpList kids) {
         return new Tree.MOVE(dst, src.build(kids));
     }
+
+    @Override
+    public void accept(TreeVisitor treeVisitor) {
+        // TODO Auto-generated method stub
+
+    }
 }
 
 class ExpCall extends Tree.Stm {
@@ -31,6 +39,12 @@ class ExpCall extends Tree.Stm {
 
     public Tree.Stm build(Tree.ExpList kids) {
         return new Tree.EXP(call.build(kids));
+    }
+
+    @Override
+    public void accept(TreeVisitor treeVisitor) {
+        // TODO Auto-generated method stub
+
     }
 }
 

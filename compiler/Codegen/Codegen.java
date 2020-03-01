@@ -10,6 +10,7 @@ import Tree.BINOP;
 import Tree.CALL;
 import Tree.CJUMP;
 import Tree.CONST;
+import Tree.ESEQ;
 import Tree.EXP;
 import Tree.Exp;
 import Tree.ExpList;
@@ -21,7 +22,91 @@ import Tree.NAME;
 import Tree.SEQ;
 import Tree.Stm;
 import Tree.TEMP;
+import Tree.TreeVisitor;
 
+class CodegenVisitor implements TreeVisitor {
+
+    @Override
+    public void visit(BINOP op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(CALL op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(CONST op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(ESEQ op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(EXP op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(JUMP op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(LABEL op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(MEM op) {
+        System.out.println("MEM");
+
+    }
+
+    @Override
+    public void visit(MOVE move) {
+        //found a move node
+        //find a matching tile
+
+        System.out.println("MOVE");
+    }
+
+    @Override
+    public void visit(NAME op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(SEQ op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(TEMP op) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void visit(CJUMP cjump) {
+        // TODO Auto-generated method stub
+
+    }
+
+}
 public class Codegen {
 
     Frame frame;
@@ -30,6 +115,7 @@ public class Codegen {
         frame = f;
     }
 
+    //List to hold the items
     private Assem.InstrList iList = null, last = null;
     // registers that call will trash. The caller
     // saves are expected to be saved by the caller
@@ -50,7 +136,8 @@ public class Codegen {
 
     public Assem.InstrList codegen(Tree.Stm stm) {
         Assem.InstrList l;
-        munchStm(stm);
+       // munchStm(stm);
+       stm.accept(new CodegenVisitor());
         l = iList;
         iList = last = null;
         return l;
@@ -58,23 +145,16 @@ public class Codegen {
 
     private void munchMove(MOVE stm){
 
-        //move a temp to another temp
-        if (stm.dst instanceof TEMP && stm.src instanceof TEMP) {
-            var t1 = (TEMP) (stm.dst);
-            var t2 = munchExp(stm.src);
-            emit(new Assem.MOVE("movq %`s0, %`d0\n", t1.temp, t2));
-            return;
-        }
         if (stm.dst instanceof TEMP && stm.src instanceof MEM) {
             var t1 = (TEMP) (stm.dst);
             var t2 = munchExp(stm.src);
             emit(new Assem.MOVE("movq (`s0), %`d0\n", t1.temp, t2));
             return;
         }
-        if (stm.dst instanceof MEM && stm.src instanceof TEMP) {
-            var t2 = (TEMP) (stm.dst);
-            var t1 = munchExp(stm.src);
-            emit(new Assem.MOVE("movq (`s0), %`d0\n", t1, t2.temp));
+        if (stm.dst instanceof TEMP) {
+            var t1 = (TEMP) (stm.dst);
+            var t2 = munchExp(stm.src);
+            emit(new Assem.MOVE("movq %`s0, %`d0\n", t1.temp, t2));
             return;
         }
     }
@@ -89,6 +169,7 @@ public class Codegen {
         //handle move
         if (stm instanceof MOVE) {
             munchMove((MOVE)stm);
+            return;
         }
         // jump to label
         if (stm instanceof JUMP) {
@@ -155,10 +236,26 @@ public class Codegen {
     }
 
     private TempList munchArgs(int i, ExpList args) {
-        if (i == 0) {
-            return L(munchExp(args.head), null);
+        var argTemp = munchExp(args.head);
+        Temp finalPos = null;
+        switch(i){
+            case 0:
+            finalPos = IntelFrame.rdi;
+            break;
+            case 1:
+            finalPos = IntelFrame.rsi;
+            break;
+            default:
+            //item is pushed onto the stack
+            //movq 
+            //frame.allocLocal(true)
+            break;
         }
-        return L(munchExp(args.head), munchArgs(i - 1, args));
+  //      emit(new Assem.MOVE("movq %`s0, %`d0\n", null, t2));
+        if (i == 0) {
+            return L(argTemp, null);
+        }
+        return L(argTemp, munchArgs(i - 1, args.tail));
     }
 
     Temp munchExp(Exp exp) {

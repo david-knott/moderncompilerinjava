@@ -2,29 +2,29 @@ package Tree;
 
 public interface TreeVisitor {
 
-    void visit(BINOP op);
+    public void visit(BINOP op);
 
-    void visit(CALL op);
+    public void visit(CALL op);
 
-    void visit(CONST op);
+    public void visit(CONST op);
 
-    void visit(ESEQ op);
+    public void visit(ESEQ op);
 
-    void visit(EXP op);
+    public void visit(EXP op);
 
-    void visit(JUMP op);
+    public void visit(JUMP op);
 
-    void visit(LABEL op);
+    public void visit(LABEL op);
 
-    void visit(MEM op);
+    public void visit(MEM op);
 
-    void visit(MOVE op);
+    public void visit(MOVE op);
 
-    void visit(NAME op);
+    public void visit(NAME op);
 
-    void visit(SEQ op);
+    public void visit(SEQ op);
 
-    void visit(TEMP op);
+    public void visit(TEMP op);
 
-	void visit(CJUMP cjump);
+	public void visit(CJUMP cjump);
 }

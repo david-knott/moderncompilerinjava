@@ -5,5 +5,5 @@ abstract public class Stm {
 
 	abstract public Stm build(ExpList kids);
 
-	abstract void accept(TreeVisitor treeVisitor);
+	abstract public void accept(TreeVisitor treeVisitor);
 }
