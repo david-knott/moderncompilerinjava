@@ -5,5 +5,5 @@ abstract public class Exp {
 
 	abstract public Exp build(ExpList kids);
 
-	abstract void accept(TreeVisitor treeVisitor);
+	abstract public void accept(TreeVisitor treeVisitor);
 }

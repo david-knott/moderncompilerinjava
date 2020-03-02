@@ -10,7 +10,6 @@ import Tree.BINOP;
 import Tree.CALL;
 import Tree.CJUMP;
 import Tree.CONST;
-import Tree.ESEQ;
 import Tree.EXP;
 import Tree.Exp;
 import Tree.ExpList;
@@ -22,91 +21,9 @@ import Tree.NAME;
 import Tree.SEQ;
 import Tree.Stm;
 import Tree.TEMP;
-import Tree.TreeVisitor;
 
-class CodegenVisitor implements TreeVisitor {
 
-    @Override
-    public void visit(BINOP op) {
-        // TODO Auto-generated method stub
 
-    }
-
-    @Override
-    public void visit(CALL op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(CONST op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(ESEQ op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(EXP op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(JUMP op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(LABEL op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(MEM op) {
-        System.out.println("MEM");
-
-    }
-
-    @Override
-    public void visit(MOVE move) {
-        //found a move node
-        //find a matching tile
-
-        System.out.println("MOVE");
-    }
-
-    @Override
-    public void visit(NAME op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(SEQ op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(TEMP op) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(CJUMP cjump) {
-        // TODO Auto-generated method stub
-
-    }
-
-}
 public class Codegen {
 
     Frame frame;
@@ -137,10 +54,11 @@ public class Codegen {
     public Assem.InstrList codegen(Tree.Stm stm) {
         Assem.InstrList l;
        // munchStm(stm);
-       stm.accept(new CodegenVisitor());
+       var cg = new CodegenVisitor();
+       stm.accept(cg);
         l = iList;
         iList = last = null;
-        return l;
+        return cg.iList;
     }
 
     private void munchMove(MOVE stm){

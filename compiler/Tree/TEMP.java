@@ -19,7 +19,7 @@ public class TEMP extends Exp {
   }
 
   @Override
-  void accept(TreeVisitor treeVisitor) {
+  public void accept(TreeVisitor treeVisitor) {
     treeVisitor.visit(this);
   }
 }
