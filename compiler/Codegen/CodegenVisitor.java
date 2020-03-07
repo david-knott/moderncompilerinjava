@@ -51,16 +51,16 @@ class CodegenVisitor implements TreeVisitor {
         var argTemp = temp;
         Temp finalPos = null;
         switch (i) {
-            case 0:
+            case 1:
                 finalPos = IntelFrame.rdi;
                 break;
-            case 1:
+            case 2:
                 finalPos = IntelFrame.rsi;
                 break;
-            case 2:
+            case 3:
                 finalPos = IntelFrame.rdx;
                 break;
-            case 3:
+            case 4:
                 finalPos = IntelFrame.rcx;
                 break;
             case 5:
@@ -71,15 +71,14 @@ class CodegenVisitor implements TreeVisitor {
                 break;
             default:
                 // item is pushed onto the stack
-                
-
-
                 break;
         }
         if (finalPos != null) {
             emit(new Assem.MOVE("movq %`s0, %`d0\n", finalPos, argTemp));
         } else {
-            emit(new Assem.MOVE("push %`s0\n", null, argTemp));
+            //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
+            emit(new Assem.MOVE("movq %`s0, " + (i * frame.wordSize()) + "(%`d0)\n", IntelFrame.sp, argTemp));
+
         }
         if (args.tail == null) {
             return L(argTemp, null);
