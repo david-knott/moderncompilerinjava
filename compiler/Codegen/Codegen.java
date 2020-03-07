@@ -54,7 +54,7 @@ public class Codegen {
     public Assem.InstrList codegen(Tree.Stm stm) {
         Assem.InstrList l;
        // munchStm(stm);
-       var cg = new CodegenVisitor();
+       var cg = new CodegenVisitor(frame);
        stm.accept(cg);
         l = iList;
         iList = last = null;

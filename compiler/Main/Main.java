@@ -96,7 +96,7 @@ public class Main {
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
             out.print(p.head.format(tempmap));
 
-        var procs = procFrag.frame.procEntryExit3(instrs);
+        //var procs = procFrag.frame.procEntryExit3(instrs);
 
     }
 

@@ -57,7 +57,7 @@ public class Chap7Test {
 
     @Test
     public void record_in_record_dec() {
-        String tigerCode = "let type recInnerType = {id:int} var inner := recInnerType{id=1} type rectype = {name:string, age:int, inner: recInnerType} var rec1 := rectype {name=\"Nobody\", age=1, inner=inner} in  end";
+        String tigerCode = "let type recInnerType = {id:int} var inner := recInnerType{id=1} type rectype = {name:string, age:int, inner: recInnerType} var rec1 := rectype {name=\"Nobody\", age=1, inner=inner} in rec1.age end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -75,7 +75,7 @@ public class Chap7Test {
 
     @Test
     public void static_link_first_argument_in_callee() {
-        String tigerCode = "let function fa(id:int) = () in (fa(2); 1) end";
+        String tigerCode = "let function fa(id:int):int = id in fa(2) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
