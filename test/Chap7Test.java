@@ -165,6 +165,26 @@ public class Chap7Test {
     }
 
     @Test
+    public void binop_mult() {
+        String tigerCode = "10 * 10";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void binop_div() {
+        String tigerCode = "14 / 13";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+
+    @Test
     public void binop_minus_minus_ir() {
         String tigerCode = "10 + 8 - 3 - 1";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));

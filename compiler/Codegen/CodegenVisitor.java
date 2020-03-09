@@ -78,7 +78,6 @@ class CodegenVisitor implements TreeVisitor {
         } else {
             //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
             emit(new Assem.MOVE("movq %`s0, " + (i * frame.wordSize()) + "(%`d0)\n", IntelFrame.sp, argTemp));
-
         }
         if (args.tail == null) {
             return L(argTemp, null);
@@ -91,26 +90,31 @@ class CodegenVisitor implements TreeVisitor {
         op.left.accept(this);
         var leftTemp = temp;
         op.right.accept(this);
+        var rightTemp = temp;
         switch (op.binop) {
             case BINOP.AND:
                 break;
             case BINOP.ARSHIFT:
                 break;
             case BINOP.DIV:
-                emit(new OPER("div %`s0 %`d0 \n", L(temp, null), L(leftTemp, null), null));
+                emit(new Assem.MOVE("movq %`s0, %`d0\n", leftTemp, IntelFrame.rv));
+                emit(new OPER("div  %`s0; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null), null));
+                emit(new Assem.MOVE("movq %`s0, %`d0\n", rightTemp, IntelFrame.rv));
                 break;
             case BINOP.LSHIFT:
                 break;
             case BINOP.MINUS:
-                emit(new OPER("sub %`s0 %`d0 \n", L(temp, null), L(leftTemp, null), null));
+                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, null), null));
                 break;
             case BINOP.MUL:
-                emit(new OPER("mul %`s0 %`d0 \n", L(temp, null), L(leftTemp, null), null));
+                emit(new Assem.MOVE("movq %`s0, %`d0\n", leftTemp, IntelFrame.rv));
+                emit(new OPER("mul %`s0; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null), null));
+                emit(new Assem.MOVE("movq %`s0, %`d0\n", rightTemp, IntelFrame.rv));
                 break;
             case BINOP.OR:
                 break;
             case BINOP.PLUS:
-                emit(new OPER("add %`s0 %`d0 \n", L(temp, null), L(leftTemp, null), null));
+                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, null), null));
                 break;
             case BINOP.RSHIFT:
                 break;
@@ -118,7 +122,6 @@ class CodegenVisitor implements TreeVisitor {
                 break;
             default:
                 throw new Error("Unsupported operation");
-
         }
     }
 
