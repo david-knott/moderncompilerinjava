@@ -220,7 +220,7 @@ public class Chap7Test {
 
     @Test
     public void binop_and() {
-        String tigerCode = "25 & 26";
+        String tigerCode = "let in if 2 < 3 & 4 < 5 then 100 else 101 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -229,7 +229,7 @@ public class Chap7Test {
 
     @Test
     public void binop_or() {
-        String tigerCode = "let in if 2 < 3 & 4 < 5 then 1 else 0 end";
+        String tigerCode = "let in if 2 < 3 | 4 < 5 then 100 else 101 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
