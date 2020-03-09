@@ -93,6 +93,7 @@ class CodegenVisitor implements TreeVisitor {
         var rightTemp = temp;
         switch (op.binop) {
             case BINOP.AND:
+                emit(new OPER("and %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, null), null));
                 break;
             case BINOP.ARSHIFT:
                 break;
@@ -112,6 +113,7 @@ class CodegenVisitor implements TreeVisitor {
                 emit(new Assem.MOVE("movq %`s0, %`d0\n", rightTemp, IntelFrame.rv));
                 break;
             case BINOP.OR:
+                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, null), null));
                 break;
             case BINOP.PLUS:
                 emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, null), null));
@@ -269,7 +271,7 @@ class CodegenVisitor implements TreeVisitor {
             case CJUMP.ULT:
             break;
         }
-        emit(new OPER("jmp `j0\n", null, null, new LabelList(cjump.iffalse, null)));
+        emit(new OPER("cjmp `j0\n", null, null, new LabelList(cjump.iffalse, null)));
         // emit(new OPER("jmpy `j0\n", null, null, null));
     }
 }

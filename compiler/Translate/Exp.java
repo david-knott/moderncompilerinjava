@@ -31,12 +31,7 @@ class Ex extends Exp {
 
     @Override
     Stm unCx(Label t, Label f) {
-        // labels t and f are used
-        // the expresion evaluates to
-        // 0, then go to label t
-        // if expression evaultest to
-        // 1 the go to label f
-        return new Tree.CJUMP(Tree.CJUMP.EQ, this.unEx(), new Tree.CONST(1), t, f);
+        return new Tree.CJUMP(Tree.CJUMP.EQ, this.exp, new Tree.CONST(1), t, f);
     }
 }
 
@@ -113,7 +108,7 @@ class RelCx extends Cx {
     Tree.Exp left;
     int operator;
 
-    RelCx(Tree.Exp r, Tree.Exp l, int op) {
+    RelCx(Tree.Exp l, Tree.Exp r, int op) {
         right = r;
         left = l;
         operator = op;
@@ -165,8 +160,8 @@ class IfThenElseExp extends Exp {
                         new Tree.LABEL(t), // add label t
                         new Tree.SEQ( // eval then expression
                                 new Tree.MOVE( // move ex result into r
-                                        new Tree.TEMP(r), 
-                                        a.unEx()
+                                    new Tree.TEMP(r), 
+                                    a.unEx()
                                 ),
                                 new Tree.SEQ(
                                     new Tree.JUMP(join), 
@@ -190,14 +185,27 @@ class IfThenElseExp extends Exp {
 
     @Override
     Stm unNx() {
-        return new Tree.SEQ(new Tree.SEQ(cond.unCx(t, f), // eval cx with labels t and f
-                new Tree.SEQ(new Tree.LABEL(t), // add label t
-                        new Tree.SEQ( // eval then express
-                                a.unNx(), new Tree.SEQ(new Tree.JUMP(join), new Tree.SEQ(new Tree.LABEL(f), // add label
-                                                                                                            // f
-                                        new Tree.SEQ(b.unNx() // into register r
-                                                , new Tree.JUMP(join))))))),
-                new Tree.LABEL(join));
+        return new Tree.SEQ(
+            new Tree.SEQ(
+                cond.unCx(t, f), // eval cx with labels t and f
+                new Tree.SEQ(
+                    new Tree.LABEL(t), // add label t
+                    new Tree.SEQ( // eval then express
+                        a.unNx(), 
+                        new Tree.SEQ(
+                            new Tree.JUMP(join), 
+                            new Tree.SEQ(
+                                new Tree.LABEL(f), // add label
+                                    new Tree.SEQ(
+                                        b.unNx(), // into register r
+                                        new Tree.JUMP(join))
+                            )
+                        )
+                    )
+                )
+            ),
+            new Tree.LABEL(join)
+        );
     }
 
     /**
@@ -206,13 +214,24 @@ class IfThenElseExp extends Exp {
      */
     @Override
     Stm unCx(Label tt, Label ff) {
-        return new Tree.SEQ(cond.unCx(t, f), // eval cx with labels t and f
-                new Tree.SEQ(new Tree.LABEL(t), // add label t
-                        new Tree.SEQ( // eval then express
-                                a.unCx(tt, ff), new Tree.SEQ(new Tree.JUMP(join), new Tree.SEQ(new Tree.LABEL(f), // add
-                                                                                                                  // label
-                                                                                                                  // f
-                                        new Tree.SEQ(b.unCx(tt, ff) // into register r
-                                                , new Tree.JUMP(join)))))));
+        return new Tree.SEQ(
+            cond.unCx(t, f), // eval cx with labels t and f
+            new Tree.SEQ(
+                new Tree.LABEL(t), // add label t
+                    new Tree.SEQ( // eval then express
+                        a.unCx(tt, ff), 
+                        new Tree.SEQ(
+                            new Tree.JUMP(join), 
+                            new Tree.SEQ(
+                                new Tree.LABEL(f), // add
+                                new Tree.SEQ(
+                                    b.unCx(tt, ff), // into register r
+                                    new Tree.JUMP(join)
+                                )
+                            )
+                        )
+                    )
+                )
+        );
     }
 }

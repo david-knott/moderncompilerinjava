@@ -421,6 +421,10 @@ public class Semant {
         return new ExpTy(irLet, irBody.ty);
     }
 
+
+
+    public final static int PLUS = 0, MINUS = 1, MUL = 2, DIV = 3, AND = 4, OR = 5, LSHIFT = 6, RSHIFT = 7, ARSHIFT = 8;
+    public final static int EQ = 0, NE = 1, LT = 2, GT = 3, LE = 4, GE = 5, ULT = 6, ULE = 7, UGT = 8, UGE = 9;
     /**
      * Returns an operator expression
      * 
@@ -439,7 +443,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(0, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.binaryOperator(PLUS, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MINUS:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -448,7 +452,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(1, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.binaryOperator(MINUS, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MUL:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -457,7 +461,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(2, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.binaryOperator(MUL, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.DIV:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -466,7 +470,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.binaryOperator(3, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.binaryOperator(DIV, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LE:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -475,7 +479,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.relativeOperator(4, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.relativeOperator(LE, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GE:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -484,7 +488,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.relativeOperator(5, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.relativeOperator(GE, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LT:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -493,7 +497,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.relativeOperator(6, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.relativeOperator(LT, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GT:
             if (!transExpLeft.ty.coerceTo(Semant.INT)) {
@@ -502,7 +506,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(Semant.INT)) {
                 env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
             }
-            return new ExpTy(translate.relativeOperator(7, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.relativeOperator(GT, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.EQ:
             // the order here is important,
@@ -511,7 +515,7 @@ public class Semant {
             if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
                 env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
             }
-            return new ExpTy(translate.equalsOperator(8, transExpLeft, transExpRight), INT);
+            return new ExpTy(translate.equalsOperator(EQ, transExpLeft, transExpRight), INT);
         }
         throw new Error("OpExp - Unknown operator " + e.oper);
     }
