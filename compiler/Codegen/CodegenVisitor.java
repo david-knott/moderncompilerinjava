@@ -248,30 +248,38 @@ class CodegenVisitor implements TreeVisitor {
         var leftTemp = temp;
         cjump.right.accept(this);
         var rightTemp = temp;
+        emit(new OPER("cmp `s0, `d0\n", L(leftTemp, null), L(rightTemp, null), null));
         switch(cjump.relop) {
             case CJUMP.EQ:
-            emit(new OPER("cmp `s0, `d0\n", L(leftTemp, null), L(rightTemp, null), null));
+                emit(new OPER("je `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.GE:
+                emit(new OPER("jge `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.GT:
+                emit(new OPER("jg `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.LE:
+                emit(new OPER("jle `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.LT:
+                emit(new OPER("jl `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.NE:
+                emit(new OPER("js `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.UGE:
+                emit(new OPER("jae `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.UGT:
+                emit(new OPER("ja `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.ULE:
+                emit(new OPER("jbe `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
             case CJUMP.ULT:
+                emit(new OPER("jb `j0\n", null, null, new LabelList(cjump.iftrue, null)));
             break;
         }
-        emit(new OPER("cjmp `j0\n", null, null, new LabelList(cjump.iffalse, null)));
-        // emit(new OPER("jmpy `j0\n", null, null, null));
     }
 }
