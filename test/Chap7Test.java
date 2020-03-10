@@ -175,7 +175,7 @@ public class Chap7Test {
 
     @Test
     public void binop_div() {
-        String tigerCode = "14 / 13";
+        String tigerCode = "let in 14 / 13 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -240,7 +240,7 @@ public class Chap7Test {
 
     @Test
     public void binop_minus_minus_ir() {
-        String tigerCode = "10 + 8 - 3 - 1";
+        String tigerCode = "let in 10 + 8 - 3 - 1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -267,7 +267,7 @@ public class Chap7Test {
 
     @Test
     public void if_then_else_and() {
-        String tigerCode = "if 1 & 2 then (3) else (4)";
+        String tigerCode = "let in if 1 & 2 then (3) else (4) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

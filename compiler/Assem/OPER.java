@@ -4,7 +4,10 @@ public class OPER extends Instr {
    public Temp.TempList dst;   
    public Temp.TempList src;
    public Targets jump;
-
+   public String comments;
+   public OPER(String a, Temp.TempList d, Temp.TempList s, Temp.LabelList j, String comments) {
+      assem=a; dst=d; src=s; jump=new Targets(j);
+   }
    public OPER(String a, Temp.TempList d, Temp.TempList s, Temp.LabelList j) {
       assem=a; dst=d; src=s; jump=new Targets(j);
    }
