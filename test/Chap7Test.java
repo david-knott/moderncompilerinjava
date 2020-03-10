@@ -184,7 +184,7 @@ public class Chap7Test {
 
     @Test
     public void binop_less_eq() {
-        String tigerCode = "25 <= 26";
+        String tigerCode = "let in 25 <= 26 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
