@@ -414,13 +414,6 @@ public class Translate {
             new ESEQ(
                 new MOVE(
                     new TEMP(arrayPointer), 
-                    /*
-                    new CALL(
-                        new NAME(
-                            new Label("initArray")
-                        ),
-                        args 
-                    )*/
                     level.frame.externalCall("initArray", args)
                 ), 
                 new TEMP(arrayPointer)

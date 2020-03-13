@@ -47,26 +47,28 @@ class CodegenVisitor implements TreeVisitor {
     }
 
     private TempList munchArgs(int i, ExpList args) {
+        if(args == null)
+         return null;
         args.head.accept(this);
         var argTemp = temp;
         Temp finalPos = null;
         switch (i) {
-            case 1:
+            case 0:
                 finalPos = IntelFrame.rdi;
                 break;
-            case 2:
+            case 1:
                 finalPos = IntelFrame.rsi;
                 break;
-            case 3:
+            case 2:
                 finalPos = IntelFrame.rdx;
                 break;
-            case 4:
+            case 3:
                 finalPos = IntelFrame.rcx;
                 break;
-            case 5:
+            case 4:
                 finalPos = IntelFrame.r8;
                 break;
-            case 6:
+            case 5:
                 finalPos = IntelFrame.r9;
                 break;
             default:
@@ -77,7 +79,7 @@ class CodegenVisitor implements TreeVisitor {
             emit(new Assem.MOVE("movq %`s0, %`d0\n", finalPos, argTemp));
         } else {
             //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
-            emit(new Assem.MOVE("movq %`s0, " + (i * frame.wordSize()) + "(%`d0)\n", IntelFrame.sp, argTemp));
+            emit(new Assem.MOVE("movq %`s0, " + (i * frame.wordSize()) + "(%`d0)\t; " + i + " argument\n", IntelFrame.sp, argTemp));
         }
         if (args.tail == null) {
             return L(argTemp, null);
@@ -105,18 +107,18 @@ class CodegenVisitor implements TreeVisitor {
             case BINOP.LSHIFT:
                 break;
             case BINOP.MINUS:
-                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, null), null));
+                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
                 break;
             case BINOP.MUL:
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", leftTemp, IntelFrame.rv));
-                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null), null));
+                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rv, null)), null));
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
                 break;
             case BINOP.OR:
-                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, null), null));
+                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, L(leftTemp, null)), null));
                 break;
             case BINOP.PLUS:
-                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, null), null));
+                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
                 break;
             case BINOP.RSHIFT:
                 break;
@@ -129,16 +131,16 @@ class CodegenVisitor implements TreeVisitor {
 
     @Override
     public void visit(CALL call) {
-        call.func.accept(this);
-        var callFuncTemp = temp;
+//        call.func.accept(this);
+        var name = (NAME)call.func;
         TempList l = munchArgs(0, call.args);
-        emit(new OPER("call `s0\n", calldefs, L(callFuncTemp, l)));
+        emit(new OPER("call " + name.label + "\n", calldefs, l));
     }
 
     @Override
     public void visit(CONST cnst) {
         temp = new Temp();
-        emit(new OPER("movq $" + cnst.value + ", %`d0\t; move left into rax \n", L(temp, null), null, null));
+        emit(new OPER("movq $" + cnst.value + ", %`d0\t;\n", L(temp, null), null, null));
     }
 
     @Override
@@ -172,63 +174,150 @@ class CodegenVisitor implements TreeVisitor {
         op.exp.accept(this);
     }
 
+    private void munchMove(TEMP dst, Tree.Exp src){
+        //default case
+        src.accept(this);
+        var mem = temp;
+        emit(new Assem.MOVE("movq %`s0, %`d0\t; Exp src -> TEMP dst\n", dst.temp, mem));
+    }
+
+    private void munchMove(TEMP dst, MEM src){
+        if(src.exp instanceof BINOP){
+            var binop = (BINOP)src.exp;
+            if(binop.left instanceof CONST && binop.binop == BINOP.PLUS){
+                var cons = (CONST)binop.left;
+                //process right element
+                binop.right.accept(this);
+                var right = temp;
+                emit(new Assem.MOVE("movq " + cons.value + "(`s0), %`d0\t;\n", dst.temp, right));
+                return;
+            }
+            if(binop.right instanceof CONST && binop.binop == BINOP.PLUS){
+                var cons = (CONST)binop.right;
+                //process right element
+                binop.left.accept(this);
+                var left = temp;
+                emit(new Assem.MOVE("movq " + cons.value + "(`s0), %`d0\t;\n", dst.temp, left));
+                return;
+            }
+        }
+        //default case
+        src.accept(this);
+        var mem = temp;
+        emit(new Assem.MOVE("movq (`s0), %`d0\t;\n", dst.temp, mem));
+    }
+
+    private void munchMove(MEM dst, Tree.Exp src){
+        if(dst.exp instanceof BINOP){
+            var binop = (BINOP)dst.exp;
+            if(binop.left instanceof CONST && binop.binop == BINOP.PLUS){
+                var cons = (CONST)binop.left;
+                //process right element
+                binop.right.accept(this);
+                var right = temp;
+                src.accept(this);
+                var exp = temp;
+                emit(new Assem.MOVE("movq `s0, " + cons.value + "(%`d0)\t;mem 1\n", right, exp));
+                return;
+            }
+            if(binop.right instanceof CONST && binop.binop == BINOP.PLUS){
+                var cons = (CONST)binop.right;
+                //process right element
+                binop.left.accept(this);
+                var left = temp;
+                src.accept(this);
+                var exp = temp;
+                emit(new Assem.MOVE("movq `s0, " + cons.value + "(%`d0)\t;mem 2\n", left, exp));
+                return;
+            }
+
+        }
+        //default case
+        dst.accept(this);
+        var mem = temp;
+        src.accept(this);
+        var exp = temp;
+        emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", mem, exp));
+    }
+
+    private void munchMove(MEM dst, MEM src){
+        if(dst.exp instanceof BINOP && src.exp instanceof BINOP) {
+            var dstBinop = (BINOP)dst.exp;
+            var srcBinop = (BINOP)src.exp;
+            if(dstBinop.left instanceof CONST && dstBinop.binop == BINOP.PLUS 
+            && srcBinop.left instanceof CONST && srcBinop.binop == BINOP.PLUS
+            ){
+                var dstCons = (CONST)dstBinop.left;
+                var srcCons = (CONST)srcBinop.left;
+                //process right element
+                dstBinop.right.accept(this);
+                var dstRight = temp;
+                srcBinop.right.accept(this);
+                var srcRight = temp;
+                emit(new Assem.MOVE("movq " + srcCons + "(%`s0), " + dstCons.value + "(%`d0)\t;\n", dstRight, srcRight));
+                return;
+            }
+            if(dstBinop.right instanceof CONST && dstBinop.binop == BINOP.PLUS
+            && srcBinop.right instanceof CONST && srcBinop.binop == BINOP.PLUS
+            ){
+                var dstCons = (CONST)dstBinop.right;
+                var srcCons = (CONST)srcBinop.right;
+                //process right element
+                dstBinop.left.accept(this);
+                var dstLeft = temp;
+                srcBinop.left.accept(this);
+                var srcLeft = temp;
+                emit(new Assem.MOVE("movq " + srcCons + "(%`s0), " + dstCons.value + "(%`d0)\t;\n", dstLeft, srcLeft));
+                return;
+            }
+        }
+        //default case
+        dst.accept(this);
+        var mem = temp;
+        src.accept(this);
+        var exp = temp;
+        emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", mem, exp));
+
+    }
+
     @Override
     public void visit(MOVE move) {
         if (move.dst instanceof TEMP && move.src instanceof CALL) {
             move.src.accept(this);
             TEMP dstTemp = (TEMP) move.dst;
             // move function temp result into dst temp
-            emit(new Assem.MOVE("movq %`s0, %`d0\t; move temp into temp\n", dstTemp.temp, temp));
+            emit(new Assem.MOVE("movq %`s0, %`d0\t;\n", dstTemp.temp, temp));
             return;
         }
         // move src exp to memory exp with offset
-        if (move.dst instanceof MEM) {
-            MEM memDst = (MEM) move.dst;
-            memDst.exp.accept(this);
-            var memDstTemp = temp;
-            if (memDst.exp instanceof BINOP) {
-                BINOP memDstBinop = (BINOP) memDst.exp;
-                if (memDstBinop.binop == 0) {
-                    if (memDstBinop.right instanceof CONST) {
-                        memDstBinop.left.accept(this);
-                        var leftTemp = temp;
-                        var memDstBinopRight = (CONST) memDstBinop.right;
-                        emit(new Assem.MOVE("movq `s0, " + memDstBinopRight.value + "(%`d0)\t; move temp into memory offset\n", memDstTemp, leftTemp));
-                        return;
-                    }
-                    if (memDstBinop.left instanceof CONST) {
-                        memDstBinop.right.accept(this);
-                        var rightTemp = temp;
-                        var memDstBinopLeft = (CONST) memDstBinop.left;
-                        emit(new Assem.MOVE("movq `s0, " + memDstBinopLeft.value + "(%`d0)\t; move temp into memory offset\n", memDstTemp, rightTemp));
-                        return;
-                    }
-                }
-            }
-            move.src.accept(this);
-            var srcTemp = temp;
-            emit(new Assem.MOVE("movq (`s0) %`d0\t; move temp into memory temp ??\n", memDstTemp, srcTemp));
+        if (move.dst instanceof MEM && move.src instanceof TEMP) {
+            munchMove((MEM)move.dst, (TEMP)move.src);
             return;
         }
         if (move.dst instanceof TEMP && move.src instanceof MEM) {
-            var t1 = (TEMP) (move.dst);
-            move.src.accept(this);
-            emit(new Assem.MOVE("movq (`s0), %`d0\t; move value in mem into temp\n", t1.temp, temp));
+            munchMove((TEMP)move.dst, (MEM)move.src);
+            return;
+        }
+        if (move.dst instanceof MEM && move.src instanceof MEM) {
+            munchMove((MEM)move.dst, (MEM)move.src);
+            return;
+        }
+        if (move.dst instanceof MEM) {
+            munchMove((MEM)move.dst, move.src);
             return;
         }
         if (move.dst instanceof TEMP) {
-            var t1 = (TEMP) (move.dst);
-            move.src.accept(this);
-            emit(new Assem.MOVE("movq %`s0, %`d0\t; move exp into temp\n", t1.temp, temp));
+            munchMove((TEMP)move.dst, move.src);
             return;
         }
-        throw new Error();
+        throw new Error("Unable to handle" + move.dst + " " + move.src);
     }
 
     @Override
     public void visit(NAME name) {
-        this.temp = new Temp();
-        emit(new Assem.MOVE("movq " + name.label + ", %`d0\t; move label into temp \n", temp, null));
+        //this.temp = new Temp();
+        //emit(new Assem.MOVE("movq " + name.label + ", %`d0\t; move label into temp \n", temp, null));
+        throw new Error();
     }
 
     @Override

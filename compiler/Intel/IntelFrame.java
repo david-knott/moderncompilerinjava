@@ -128,33 +128,10 @@ public class IntelFrame extends Frame {
        int i = 0;
         while (frml != null) {
             // first arg is static link 
-            var escape = i == 0 || i > 6 || frml.head;
+            var escape = /*i == 0 ||*/ i > 6 || frml.head;
             Access local;
             if (!escape) {
                 Temp temp = new Temp();
-                /*
-                switch(i) {
-                    case 0:
-                    temp = rdi;
-                    break;
-                    case 1:
-                    temp = rsi;
-                    break;
-                    case 2:
-                    temp = rdx;
-                    break;
-                    case 3:
-                    temp = rcx;
-                    break;
-                    case 4:
-                    temp = r8;
-                    break;
-                    case 5:
-                    temp = r9;
-                    break;
-                    default:
-                    throw new Error("Unsupported");
-                }*/
                 local = new InReg(temp);
             } else {
                 localOffset = localOffset - WORD_SIZE;
