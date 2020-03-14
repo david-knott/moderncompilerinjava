@@ -82,54 +82,148 @@ class CodegenVisitor2 implements TreeVisitor {
         return L(argTemp, munchArgs(i + 1, args.tail));
     }
 
-    public CodegenVisitor2(Frame frame) {
-        this.frame = frame;
+    private void registerTreePatterns(){
         var tb = new TreePatternBuilder();
-        var tp = tb.addRoot(new MoveNode("move")).build();
-        tpl = new TreePatternList();
-        tpl.add(tp, treePattern -> {
-            var move = (MOVE)treePattern.getNamedMatch("move");
-            //emit move instruction
-            this.visit(move);
+        /*
+        tpl.add(
+            tb.addRoot(
+                new ExpNode()
+            ).addChild(
+                new CallNode("call1")   
+            ).build(), treePattern -> {
+                System.out.println("ggs");
+            //emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", dstTemp, srcTemp));
         });
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).build(), treePattern -> {
+            var move = (MOVE)treePattern.getNamedMatch("move");
+            move.src.accept(this);
+            var srcTemp = temp;
+            move.dst.accept(this);
+            var dstTemp = temp;
+            emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", dstTemp, srcTemp));
+        });
+
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new TempNode("temp")
+            ).build(), treePattern -> {
+            var move = (MOVE)treePattern.getNamedMatch("move");
+            var tmp = (MOVE)treePattern.getNamedMatch("tmp");
+            //emit move instruction
+        });
+*/
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new TempNode("t1")
+            ).getParent().addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == 1;})
+            ).addChild(
+                new TempNode("t2")
+            ).addSibling(
+                new ExpNode("exp")
+            )
+            .build(), treePattern -> {
+            //emit move instruction
+            var temp1 = (TEMP)treePattern.getNamedMatch("t1");
+            var temp2 = (TEMP)treePattern.getNamedMatch("t2");
+            var const1 = (CONST)treePattern.getNamedMatch("c1");
+            emit(new Assem.MOVE("movq " + const1.value + "(`s0), %`d0\t;\n", temp1.temp, temp2.temp));
+        }
+    );
+
+/*
+
         var tt = tb.addRoot(new TempNode("temp")).build();
         tpl.add(tt, treePattern -> {
             var temp = (TEMP)treePattern.getNamedMatch("temp");
             this.visit(temp);
         });
+        */
+    }
+
+    public CodegenVisitor2(Frame frame) {
+        this.frame = frame;
+        tpl = new TreePatternList();
+        registerTreePatterns();
     }
 
     @Override
     public void visit(BINOP op) {
+        op.left.accept(this);
+        var leftTemp = temp;
+        op.right.accept(this);
+        var rightTemp = temp;
+        switch (op.binop) {
+            case BINOP.AND:
+                emit(new OPER("and %`s0, %`d0 ; \n", L(leftTemp, null), L(rightTemp, L(leftTemp, null)), null));
+                break;
+            case BINOP.ARSHIFT:
+                break;
+            case BINOP.DIV:
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax \n", leftTemp, IntelFrame.rv));
+                emit(new OPER("div  %`s0\t; divide rax by value in right \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null), null));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
+                break;
+            case BINOP.LSHIFT:
+                break;
+            case BINOP.MINUS:
+                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
+                break;
+            case BINOP.MUL:
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", leftTemp, IntelFrame.rv));
+                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rv, null)), null));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
+                break;
+            case BINOP.OR:
+                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, L(leftTemp, null)), null));
+                break;
+            case BINOP.PLUS:
+                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
+                break;
+            case BINOP.RSHIFT:
+                break;
+            case BINOP.XOR:
+                break;
+            default:
+                throw new Error("Unsupported operation");
+        }
     }
 
     @Override
-    public void visit(CALL op) {
-        // TODO Auto-generated method stub
-
+    public void visit(CALL call) {
+        var name = (NAME)call.func;
+        TempList l = munchArgs(0, call.args);
+        emit(new OPER("call " + name.label + "\n", calldefs, l));
     }
 
     @Override
-    public void visit(CONST op) {
-        // TODO Auto-generated method stub
-
+    public void visit(CONST cnst) {
+        temp = new Temp();
+        emit(new OPER("movq $" + cnst.value + ", %`d0\t;\n", L(temp, null), null, null));
     }
 
     @Override
     public void visit(ESEQ op) {
-        // TODO Auto-generated method stub
-
+        throw new Error();
     }
 
     @Override
-    public void visit(EXP op) {
-        // TODO Auto-generated method stub
-
+    public void visit(EXP exp) {
+        exp.exp.accept(this);
     }
 
     @Override
     public void visit(JUMP op) {
-        // TODO Auto-generated method stub
+        emit(new OPER("jmp `j0\n", null, null, op.targets));
 
     }
 
@@ -140,19 +234,28 @@ class CodegenVisitor2 implements TreeVisitor {
 
     @Override
     public void visit(MEM op) {
-        // TODO Auto-generated method stub
-
+        if(!tpl.match(op)) {
+            op.exp.accept(this);
+            var mem = temp;
+            temp = new Temp();
+            emit(new Assem.MOVE("movq `s0, %`d0\t;\n", mem, temp));
+        }
     }
 
     @Override
     public void visit(MOVE op) {
-        //look for matches and proceed using best match
-        tpl.match(op);
+        if(!tpl.match(op)) {
+            op.dst.accept(this);
+            var mem = temp;
+            op.src.accept(this);
+            var exp = temp;
+            emit(new Assem.MOVE("movq `s0, %`d0\t;\n", mem, exp));
+        }
     }
 
     @Override
     public void visit(NAME op) {
-        throw new Error("Name should not be called");
+        throw new Error("Name should not be called directly");
 
     }
 
@@ -165,7 +268,6 @@ class CodegenVisitor2 implements TreeVisitor {
     @Override
     public void visit(TEMP op) {
         this.temp = op.temp;
-
     }
 
     @Override
