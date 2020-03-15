@@ -13,6 +13,7 @@ import Tree.CJUMP;
 import Tree.CONST;
 import Tree.ESEQ;
 import Tree.EXP;
+import Tree.Exp;
 import Tree.ExpList;
 import Tree.JUMP;
 import Tree.LABEL;
@@ -84,70 +85,81 @@ class CodegenVisitor2 implements TreeVisitor {
 
     private void registerTreePatterns(){
         var tb = new TreePatternBuilder();
-        /*
+        //handle call
         tpl.add(
             tb.addRoot(
-                new ExpNode()
+                new EXPNode("exp")
             ).addChild(
                 new CallNode("call1")   
             ).build(), treePattern -> {
-                System.out.println("ggs");
-            //emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", dstTemp, srcTemp));
+            var call = (CALL)treePattern.getNamedMatch("call");
+            call.accept(this);
         });
-        tpl.add(
-            tb.addRoot(
-                new MoveNode("move")
-            ).build(), treePattern -> {
-            var move = (MOVE)treePattern.getNamedMatch("move");
-            move.src.accept(this);
-            var srcTemp = temp;
-            move.dst.accept(this);
-            var dstTemp = temp;
-            emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", dstTemp, srcTemp));
-        });
-
+        //handle move
         tpl.add(
             tb.addRoot(
                 new MoveNode("move")
             ).addChild(
-                new TempNode("temp")
-            ).build(), treePattern -> {
-            var move = (MOVE)treePattern.getNamedMatch("move");
-            var tmp = (MOVE)treePattern.getNamedMatch("tmp");
-            //emit move instruction
-        });
-*/
-        tpl.add(
-            tb.addRoot(
-                new MoveNode("move")
-            ).addChild(
-                new TempNode("t1")
-            ).getParent().addChild(
                 new MemNode("m1")
             ).addChild(
-                new BinopNode("b1", x -> {return x.binop == 1;})
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
             ).addChild(
-                new TempNode("t2")
+                new ExpNode("exp")
+            ).addSibling(
+                new ConstNode("c1")
+            )
+            .build(), treePattern -> {
+                var move = (MOVE)treePattern.getNamedMatch("move");
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                exp.accept(this);
+                var dst = temp;
+                move.src.accept(this);
+                var src = temp;
+                var cnst = (CONST)treePattern.getNamedMatch("c1");
+                emit(new Assem.MOVE("movq `s0, " + cnst.value + "(%`d0)\t;move src to memory location\n", dst, src));
+            }
+        );
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ConstNode("c1")
             ).addSibling(
                 new ExpNode("exp")
             )
             .build(), treePattern -> {
-            //emit move instruction
-            var temp1 = (TEMP)treePattern.getNamedMatch("t1");
-            var temp2 = (TEMP)treePattern.getNamedMatch("t2");
-            var const1 = (CONST)treePattern.getNamedMatch("c1");
-            emit(new Assem.MOVE("movq " + const1.value + "(`s0), %`d0\t;\n", temp1.temp, temp2.temp));
-        }
-    );
-
-/*
-
-        var tt = tb.addRoot(new TempNode("temp")).build();
-        tpl.add(tt, treePattern -> {
-            var temp = (TEMP)treePattern.getNamedMatch("temp");
-            this.visit(temp);
-        });
-        */
+                var move = (MOVE)treePattern.getNamedMatch("move");
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                exp.accept(this);
+                var dst = temp;
+                move.src.accept(this);
+                var src = temp;
+                var cnst = (CONST)treePattern.getNamedMatch("c1");
+                emit(new Assem.MOVE("movq `s0, " + cnst.value + "(%`d0)\t;move src to memory location 2\n", dst, src));
+            }
+        );
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new MemNode("m1")
+            ).addSibling(
+                new MemNode("m2")
+            )
+            .build(), treePattern -> {
+                var mem1 = (MEM)treePattern.getNamedMatch("m1");
+                var mem2 = (MEM)treePattern.getNamedMatch("m2");
+                mem1.accept(this);
+                var dst = temp;
+                mem2.accept(this);
+                var src = temp;
+                emit(new Assem.MOVE("movq (`s0), (%`d0)\t;move mem -> mem\n", dst, src));
+            }
+        );
     }
 
     public CodegenVisitor2(Frame frame) {
@@ -179,6 +191,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
                 break;
             case BINOP.MUL:
+                emit(new OPER(";comment\n", null, null));
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", leftTemp, IntelFrame.rv));
                 emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rv, null)), null));
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
@@ -213,18 +226,19 @@ class CodegenVisitor2 implements TreeVisitor {
 
     @Override
     public void visit(ESEQ op) {
-        throw new Error();
+        throw new Error("Not implemented.");
     }
 
     @Override
     public void visit(EXP exp) {
-        exp.exp.accept(this);
+        if(!tpl.match(exp)) {
+            exp.exp.accept(this);
+        }
     }
 
     @Override
     public void visit(JUMP op) {
         emit(new OPER("jmp `j0\n", null, null, op.targets));
-
     }
 
     @Override
@@ -255,7 +269,7 @@ class CodegenVisitor2 implements TreeVisitor {
 
     @Override
     public void visit(NAME op) {
-        throw new Error("Name should not be called directly");
+  //      throw new Error("Name should not be called directly");
 
     }
 

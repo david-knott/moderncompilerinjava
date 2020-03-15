@@ -1,12 +1,13 @@
 package Codegen;
 
+import Tree.EXP;
 import Tree.Exp;
 import Tree.ExpList;
 import Tree.Stm;
 
-class ExpNode extends TreeNode {
+class EXPNode extends TreeNode {
 
-    public ExpNode(String named) {
+    public EXPNode(String named) {
         super(named);
     }
 
@@ -22,12 +23,12 @@ class ExpNode extends TreeNode {
 
     @Override
     public ExpList kids(Stm stm) {
-        throw new Error();
+        EXP x = (EXP)stm;
+        return new ExpList(x.exp, null);
     }
 
     @Override
     public ExpList kids(Exp exp) {
-    //    return new ExpList(exp, null);
         return null;
     }
 }

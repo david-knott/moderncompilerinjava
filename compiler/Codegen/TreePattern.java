@@ -3,7 +3,6 @@ package Codegen;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-
 import Tree.Stm;
 
 class TreePattern {
@@ -18,7 +17,6 @@ class TreePattern {
 
     boolean traverse(Tree.Exp exp, TreeNode treeNode) {
         if (treeNode.isMatch(exp)) {
-            //var expChildren = exp.kids();
             var expChildren = treeNode.kids(exp);
             for (TreeNode pt : this.getChildren(treeNode)) {
                 if (expChildren == null || !traverse(expChildren.head, pt))
@@ -38,7 +36,6 @@ class TreePattern {
 
     boolean traverse(Stm exp, TreeNode treeNode) {
         if (treeNode.isMatch(exp)) {
-            //var expChildren = exp.kids();
             var expChildren = treeNode.kids(exp);
             for (TreeNode pt : this.getChildren(treeNode)) {
                 if (expChildren == null || !traverse(expChildren.head, pt))

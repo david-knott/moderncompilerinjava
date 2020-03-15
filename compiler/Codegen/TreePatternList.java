@@ -1,8 +1,10 @@
 package Codegen;
 
 import Codegen.TreePatternList.Item;
+import Tree.EXP;
 import Tree.MEM;
 import Tree.MOVE;
+import Tree.Stm;
 
 class TreePatternList {
 
@@ -31,14 +33,18 @@ class TreePatternList {
         return this;
     }
 
-    boolean match(MOVE move) {
+    boolean doMatch(Stm stm){
         for(var item = items; item != null; item = item.next){
-            if(item.treePattern.isMatch(move)){
+            if(item.treePattern.isMatch(stm)){
                 item.action.execute(item.treePattern);
                 return true;
             }
         }
         return false;
+    }
+
+    boolean match(MOVE move) {
+        return doMatch(move);
     }
 
     boolean match(MEM mem) {
@@ -51,6 +57,7 @@ class TreePatternList {
         return false;
     }
 
-
-
+    boolean match(EXP mem) {
+        return doMatch(mem);
+    }
 }

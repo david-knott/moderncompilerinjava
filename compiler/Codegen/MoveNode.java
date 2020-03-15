@@ -27,7 +27,7 @@ class MoveNode extends TreeNode {
     @Override
     public Tree.ExpList kids(Stm stm){
         MOVE move = (MOVE)stm;
-        return new Tree.ExpList(move.src, new Tree.ExpList(move.dst, null));
+        return new Tree.ExpList(move.dst, new Tree.ExpList(move.src, null));
     }
 
     @Override
