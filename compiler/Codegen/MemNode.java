@@ -7,23 +7,14 @@ import Tree.Stm;
 
 class MemNode extends TreeNode {
 
-    private TreeNodeValueFunction<MEM> treeNodeValueFunction;
-
     public MemNode(String named) {
         super(named);
-    }
-
-    public MemNode(TreeNodeValueFunction<MEM> treeNodeValueFunction, String named) {
-        super(named);
-        this.treeNodeValueFunction = treeNodeValueFunction;
     }
 
     @Override
     public boolean isMatch(Exp exp) {
         if (exp instanceof MEM) {
-            if (this.treeNodeValueFunction.compareValue((MEM) exp)) {
-                return true;
-            }
+            return true;
         }
         return false;
     }

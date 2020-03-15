@@ -13,12 +13,12 @@ class EXPNode extends TreeNode {
 
     @Override
     public boolean isMatch(Exp exp) {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isMatch(Stm stm) {
-        return false;
+        return stm instanceof EXP;
     }
 
     @Override

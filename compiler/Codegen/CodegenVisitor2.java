@@ -263,7 +263,7 @@ class CodegenVisitor2 implements TreeVisitor {
             var mem = temp;
             op.src.accept(this);
             var exp = temp;
-            emit(new Assem.MOVE("movq `s0, %`d0\t;\n", mem, exp));
+            emit(new Assem.MOVE("movq `s0, %`d0\t;single tile move\n", mem, exp));
         }
     }
 

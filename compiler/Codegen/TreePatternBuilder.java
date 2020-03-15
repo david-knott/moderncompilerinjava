@@ -6,6 +6,12 @@ import Tree.CALL;
 import Tree.TEMP;
 
 
+/**
+ * Contains a list of all tree patterns
+ * TODO: Order item by node count
+ * TODO: Ensure that we only attempt matches 
+ * where the roots are equals
+ */
 public class TreePatternBuilder {
 
     private TreeNode tree;

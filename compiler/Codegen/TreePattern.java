@@ -5,6 +5,17 @@ import java.util.Hashtable;
 import java.util.List;
 import Tree.Stm;
 
+class StmTreePattern {
+
+}
+
+class ExpTreePattern {
+
+}
+
+/**
+ * A tree pattern that represents specific target instruction
+ */
 class TreePattern {
 
     private TreeNode treeNode;
