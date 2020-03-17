@@ -296,14 +296,14 @@ class CodegenVisitor2 implements TreeVisitor {
             var mem = temp;
             op.src.accept(this);
             var exp = temp;
-            emit(new Assem.MOVE("movq `s0, %`d0\t;single tile move\n", mem, exp));
+            emit(new Assem.MOVE("movq %`s0, %`d0\t;default move\n", mem, exp));
         }
     }
 
     @Override
     public void visit(NAME op) {
-  //      throw new Error("Name should not be called directly");
-
+        temp = new Temp();
+        emit(new Assem.MOVE("movq " + op.label + ", %`d0\t;move label to new temp\n", temp, null));
     }
 
     @Override

@@ -21,7 +21,7 @@ public class Chap7Test {
 
     @Test
     public void string_dec_translation() {
-        String tigerCode = "let var a:string := \"david\" in print(a) end";
+        String tigerCode = "let var a:string := \"david\" in a end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
