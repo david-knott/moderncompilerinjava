@@ -48,7 +48,7 @@ public class Chap7Test {
 
     @Test
     public void record_dec() {
-        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=1} in 1 end";
+        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=999} in  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

@@ -1,5 +1,6 @@
 package Translate;
 
+import Intel.IntelFrame;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -409,7 +410,7 @@ public class Translate {
                 null
             )
         );
-        Temp arrayPointer = new Temp();
+        Temp arrayPointer = IntelFrame.rv; //new Temp();
         return new Ex(
             new ESEQ(
                 new MOVE(
@@ -468,7 +469,8 @@ public class Translate {
     }
 
     public Exp record(Level level, ExpTyList expTyList) {
-        Temp recordPointer = new Temp();
+        Temp recordPointer = IntelFrame.rv;//new Temp();
+        //Temp recordPointer = new Temp();
         Stm stm = fieldList(recordPointer, expTyList, level);
         int total = 0;
         for (var s = expTyList; s != null; s = s.tail) total++;
