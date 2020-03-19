@@ -1,7 +1,9 @@
 package Codegen;
 
 import Codegen.TreePatternList.Item;
+import Tree.BINOP;
 import Tree.EXP;
+import Tree.Exp;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.Stm;
@@ -33,6 +35,17 @@ class TreePatternList {
         return this;
     }
 
+    boolean doMatch(Exp stm){
+        for(var item = items; item != null; item = item.next){
+            if(item.treePattern.isMatch(stm)){
+                item.action.execute(item.treePattern);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     boolean doMatch(Stm stm){
         for(var item = items; item != null; item = item.next){
             if(item.treePattern.isMatch(stm)){
@@ -58,6 +71,10 @@ class TreePatternList {
     }
 
     boolean match(EXP mem) {
+        return doMatch(mem);
+    }
+
+    boolean match(BINOP mem) {
         return doMatch(mem);
     }
 }

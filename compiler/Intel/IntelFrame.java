@@ -3,15 +3,11 @@ package Intel;
 import Temp.Label;
 import Temp.Temp;
 import Temp.TempList;
-import Tree.BINOP;
 import Tree.CALL;
-import Tree.CONST;
 import Tree.Exp;
 import Tree.ExpList;
-import Tree.MEM;
 import Tree.NAME;
 import Tree.Stm;
-import Tree.TEMP;
 import Util.BoolList;
 import Assem.InstrList;
 import Frame.*;
@@ -102,6 +98,7 @@ public class IntelFrame extends Frame {
         )
     );
     private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
+    private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
     private static TempList returnSink = new TempList(sp, calleeSaves);
 
     static {
@@ -177,13 +174,17 @@ public class IntelFrame extends Frame {
         return body;
     }
 
+
     @Override
     public Exp externalCall(String func, ExpList args) {
+        Label l = externalCalls.containsKey(func) ? externalCalls.get(func) : null;
+        if(l == null) {
+            l = new Label(func);
+            externalCalls.put(func, l);
+        }
         return new CALL(
             new NAME(
-                new Label(
-                    func
-                )
+                l
             ), 
             args
         );
@@ -231,31 +232,5 @@ public class IntelFrame extends Frame {
             p.tail = b;
             return a;
         }
-    }
-}
-
-class InFrame extends Access {
-    int offset;
-
-    InFrame(int os) {
-        offset = os;
-    }
-
-    @Override
-    public Exp exp(Exp framePtr) {
-        return new MEM(new BINOP(BINOP.PLUS, framePtr, new CONST(offset)));
-    }
-}
-
-class InReg extends Access {
-    Temp temp;
-
-    InReg(Temp tmp) {
-        temp = tmp;
-    }
-
-    @Override
-    public Exp exp(Exp framePtr) {
-        return new TEMP(temp);
     }
 }
