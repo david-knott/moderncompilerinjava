@@ -11,6 +11,26 @@ import Main.Main;
 public class Chap7Test {
 
     @Test
+    public void flush() {
+        String tigerCode = "let in flush() end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void getchar() {
+        String tigerCode = "let var a:string := \"\" in a := getchar() end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
+
+    @Test
     public void int_dec_translation() {
         String tigerCode = "let var a:int := 1 in a end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));

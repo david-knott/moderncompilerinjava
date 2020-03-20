@@ -20,26 +20,26 @@ public class Env {
         // initialize function values
         venv = new GenericTable<Entry>();
         venv.put(Symbol.symbol("print"),
-                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.VOID));
-        venv.put(Symbol.symbol("flush"), new FunEntry(outerMost, new Label(), null, Semant.VOID));
-        venv.put(Symbol.symbol("getchar"), new FunEntry(outerMost, new Label(), null, Semant.STRING));
-        venv.put(Symbol.symbol("ord"), new FunEntry(outerMost, new Label(),
+                new FunEntry(outerMost, new Label("print"), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.VOID));
+        venv.put(Symbol.symbol("flush"), new FunEntry(outerMost, new Label("flush"), null, Semant.VOID));
+        venv.put(Symbol.symbol("getchar"), new FunEntry(outerMost, new Label("getchar"), null, Semant.STRING));
+        venv.put(Symbol.symbol("ord"), new FunEntry(outerMost, new Label("ord"),
                 new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.INT));
-        venv.put(Symbol.symbol("chr"), new FunEntry(outerMost, new Label(),
+        venv.put(Symbol.symbol("chr"), new FunEntry(outerMost, new Label("chr"),
                 new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.STRING));
         venv.put(Symbol.symbol("size"),
-                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.INT));
-        venv.put(Symbol.symbol("substring"), new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("s"),
+                new FunEntry(outerMost, new Label("size"), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.INT));
+        venv.put(Symbol.symbol("substring"), new FunEntry(outerMost, new Label("substring"), new RECORD(Symbol.symbol("s"),
                 Semant.STRING,
                 new RECORD(Symbol.symbol("first"), Semant.INT, new RECORD(Symbol.symbol("n"), Semant.INT, null))),
                 Semant.STRING));
-        venv.put(Symbol.symbol("concat"), new FunEntry(outerMost, new Label(),
+        venv.put(Symbol.symbol("concat"), new FunEntry(outerMost, new Label("concat"),
                 new RECORD(Symbol.symbol("s1"), Semant.STRING, new RECORD(Symbol.symbol("s2"), Semant.STRING, null)),
                 Semant.STRING));
         venv.put(Symbol.symbol("not"),
-                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.INT));
+                new FunEntry(outerMost, new Label("not"), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.INT));
         venv.put(Symbol.symbol("exit"),
-                new FunEntry(outerMost, new Label(), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.VOID));
+                new FunEntry(outerMost, new Label("exit"), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.VOID));
         // initialize types table
         tenv = new GenericTable<Type>();
         tenv.put(Symbol.symbol("int"), Semant.INT);
