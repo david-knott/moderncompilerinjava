@@ -75,7 +75,9 @@ public abstract class Frame implements TempMap {
     
     /**
      * This function appends a sink addres to the function body. This is used in the
-     * register allocation
+     * register allocation. An empty instruction is added that contains source
+     * registers. This way we know that certain registers are live at the end of the 
+     * last instruction 
      */
     abstract public Assem.InstrList procEntryExit2(Assem.InstrList body);
     
