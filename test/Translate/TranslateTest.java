@@ -69,7 +69,7 @@ public class TranslateTest {
         }
 
         @Override
-        public Exp string(Label l, String literal) {
+        public String string(Label l, String literal) {
             // TODO Auto-generated method stub
             return null;
         }

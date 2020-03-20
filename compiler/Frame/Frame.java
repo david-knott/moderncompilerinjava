@@ -96,7 +96,7 @@ public abstract class Frame implements TempMap {
      */
     abstract public Tree.Exp externalCall(String func, Tree.ExpList args);
 
-    abstract public Tree.Exp string(Label l, String literal);
+    abstract public String string(Label l, String literal);
 
 	abstract public InstrList codegen(Stm head);
 }

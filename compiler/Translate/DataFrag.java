@@ -8,11 +8,13 @@ import Tree.Exp;
  **/
 public class DataFrag extends Frag {
 
-    public final Label label;
-    public final Exp stringFragment;
+	private final String data;
 
-	public DataFrag(Label lbl, Exp frag) {
-        label = lbl;
-        stringFragment = frag;
+	public DataFrag(String data) {
+		this.data = data;
+	}
+
+	public String toString() {
+		return this.data;
 	}
 }

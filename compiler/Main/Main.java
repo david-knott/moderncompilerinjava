@@ -41,7 +41,10 @@ public class Main {
     private Semant semant;
     private ErrorMsg errorMsg;
     private Grm parser;
+    //frame implementation
     private Frame frame = new IntelFrame(null, null);
+    //static nesting level
+    private Level topLevel = new Level(frame);
 
     static void prStmList(Tree.Print print, Tree.StmList stms) {
         for (Tree.StmList l = stms; l != null; l = l.tail) {
@@ -58,7 +61,7 @@ public class Main {
         this.inputStream = inputStream;
         this.errorMsg = new ErrorMsg(this.name);
         this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
-        this.semant = new Semant(errorMsg, new Level(frame), new Translate());
+        this.semant = new Semant(errorMsg, topLevel, new Translate());
     }
 
     public ErrorMsg getErrorMsg() {
@@ -93,6 +96,7 @@ public class Main {
         Assem.InstrList instrs = codegen(procFrag.frame, traced);
         instrs = procFrag.frame.procEntryExit2(instrs);
         out.println("# Instructions: ");
+            out.println("section .text");
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
             out.print(p.head.format(tempmap));
 
@@ -133,11 +137,14 @@ public class Main {
         var frags = this.semant.transProg(this.ast.absyn);
         for (Frag frag = frags; frag != null; frag = frag.next) {
             if (frag instanceof ProcFrag) {
+                
                 emitProcFrag(out, (ProcFrag) frag);
             } else {
-                new Print(out).prExp(((DataFrag) frag).stringFragment);
+            out.println("section .data");
+               out.println(frag);
             }
         }
+
         out.close();
         return 1;
     }

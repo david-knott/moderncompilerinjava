@@ -28,8 +28,6 @@ public class Chap7Test {
         assertFalse(m.hasErrors());
     }
 
-
-
     @Test
     public void int_dec_translation() {
         String tigerCode = "let var a:int := 1 in a end";

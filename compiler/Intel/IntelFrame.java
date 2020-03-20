@@ -190,12 +190,12 @@ public class IntelFrame extends Frame {
         );
     }
 
+    /**
+     * Returns a string of assembly
+     */
     @Override
-    public Exp string(Label l, String literal) {
-        // builds a string with a label definition
-        // and IR code to make a word containing the string lenght
-        // and code to emit character data
-        return new NAME(l);
+    public String string(Label l, String literal) {
+        return l + "  db " + literal.length() +  ",'" + literal + "'";
     }
 
     public Assem.InstrList procEntryExit2(Assem.InstrList body){

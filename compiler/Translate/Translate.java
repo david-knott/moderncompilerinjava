@@ -247,7 +247,7 @@ public class Translate {
     public Exp string(String literal, Level level) {
         Label label = new Label();
         var stringFragment = level.frame.string(label, literal);
-        addFrag(new DataFrag(label, stringFragment));
+        addFrag(new DataFrag(stringFragment));
         return new Ex(new NAME(label));
     }
 
