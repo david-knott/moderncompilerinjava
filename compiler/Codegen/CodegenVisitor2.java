@@ -149,14 +149,14 @@ class CodegenVisitor2 implements TreeVisitor {
                 new MemNode("m1")
             ).addChild(
                 new ConstNode("c1")
-            ).getParent().addChild(
+            ).getParent().getParent().addChild(
                 new ConstNode("c2")
             )
             .build(), treePattern -> {
                // var mem1 = (MEM)treePattern.getNamedMatch("m1");
                 var c1 = (CONST)treePattern.getNamedMatch("c1");
                 var c2 = (CONST)treePattern.getNamedMatch("c2");
-                emit(new Assem.MOVE("movq $" + c2 + ", (%" + c1 + ")\t;move constant value to address mem(const)\n", null, null));
+                emit(new Assem.MOVE("movq $" + c2.value + ", (%" + c1.value + ")\t;move constant value to address mem(const)\n", null, null));
             }
         );
         tpl.add(

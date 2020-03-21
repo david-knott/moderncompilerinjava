@@ -30,7 +30,7 @@ public class Chap7Test {
 
     @Test
     public void int_dec_translation() {
-        String tigerCode = "let var a:int := 1 in a end";
+        String tigerCode = "let var a:int := 1 var b:int:= 2 in a + b end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
@@ -66,7 +66,7 @@ public class Chap7Test {
 
     @Test
     public void record_dec() {
-        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=999} in  end";
+        String tigerCode = "let type rectype = {name:string, age:int} var rec1 := rectype {name=\"Nobody\", age=999} in rec1.name  end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
