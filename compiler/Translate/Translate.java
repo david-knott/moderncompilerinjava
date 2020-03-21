@@ -108,6 +108,7 @@ public class Translate {
     public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar, Level level) {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
+        /*
         return new Ex(
             new MEM(
                 new BINOP(
@@ -125,8 +126,9 @@ public class Translate {
                 )                
             )
         );
-        /*
+        */
         var gotoSegFault = new Label();
+        var gotoAnd = new Label();
         var gotoSubscript = new Label();
         var check = new ESEQ(
             new SEQ(
@@ -137,45 +139,48 @@ public class Translate {
                         baseExp
                     ),
                     gotoSegFault,
-                    gotoSubscript
+                    gotoAnd
                 ),
                 new SEQ(
-                    new CJUMP(
-                        CJUMP.LT, 
-                        indexExp, 
-                        new CONST(0),
-                        gotoSegFault,
-                        gotoSubscript
-                    ),
+                    new LABEL(gotoAnd),
                     new SEQ(
-                        new LABEL(gotoSegFault),
+                        new CJUMP(
+                            CJUMP.LT, 
+                            indexExp, 
+                            new CONST(0),
+                            gotoSegFault,
+                            gotoSubscript
+                        ),
                         new SEQ(
-                            new MOVE(
-                                new MEM(new CONST(0)),
-                                new CONST(0)
-                            ),
-                            new LABEL(gotoSubscript)
+                            new LABEL(gotoSegFault),
+                            new SEQ(
+                                new MOVE(
+                                    new MEM(new CONST(8)),
+                                    new CONST(9) /* TODO: assembly is a bit weird */
+                                ),
+                                new LABEL(gotoSubscript) /* not needed as a seg fauly will happen */
+                            )
                         )
                     )
                 )
             ),
-                new MEM(
+            new MEM(
+                new BINOP(
+                    BINOP.PLUS, 
+                    baseExp, 
                     new BINOP(
-                        BINOP.PLUS, 
-                        baseExp, 
+                        BINOP.MUL, 
                         new BINOP(
-                            BINOP.MUL, 
-                            new BINOP(
-                                BINOP.PLUS,
-                                indexExp, 
-                                new CONST(1)
-                            ),
-                            new CONST(level.frame.wordSize())
-                        )
-                    )                
-                )
+                            BINOP.PLUS,
+                            indexExp, 
+                            new CONST(1)
+                        ),
+                        new CONST(level.frame.wordSize())
+                    )
+                )                
+            )
         );
-        return new Ex(check);*/
+        return new Ex(check);
     }
 
     /**
@@ -410,16 +415,17 @@ public class Translate {
                 null
             )
         );
-        Temp arrayPointer = IntelFrame.rv; //new Temp();
+        Temp arrayPointer = new Temp();
         return new Ex(
             new ESEQ(
                 new MOVE(
                     new TEMP(arrayPointer), 
-                    level.frame.externalCall("initArray", args)
+                    level.frame.externalCall("initArray", args) /* return a call tree */
                 ), 
                 new TEMP(arrayPointer)
             )
         );
+
     }
 
     private Stm fieldList(Temp recordPointer,ExpTyList expTyList, Level level){

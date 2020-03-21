@@ -116,7 +116,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 move.src.accept(this);
                 var src = temp;
                 var cnst = (CONST)treePattern.getNamedMatch("c1");
-                emit(new Assem.MOVE("movq `s0, " + cnst.value + "(%`d0)\t;move src to memory location\n", dst, src));
+                emit(new Assem.MOVE("movq %`s0, " + cnst.value + "(%`d0)\t;move src to offset memory location\n", dst, src));
             }
         );
         tpl.add(
@@ -139,7 +139,24 @@ class CodegenVisitor2 implements TreeVisitor {
                 move.src.accept(this);
                 var src = temp;
                 var cnst = (CONST)treePattern.getNamedMatch("c1");
-                emit(new Assem.MOVE("movq `s0, " + cnst.value + "(%`d0)\t;move src to memory location 2\n", dst, src));
+                emit(new Assem.MOVE("movq `%s0, " + cnst.value + "(%`d0)\t;move src temp to memory location 2\n", dst, src));
+            }
+        );
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new MemNode("m1")
+            ).addChild(
+                new ConstNode("c1")
+            ).getParent().addChild(
+                new ConstNode("c2")
+            )
+            .build(), treePattern -> {
+               // var mem1 = (MEM)treePattern.getNamedMatch("m1");
+                var c1 = (CONST)treePattern.getNamedMatch("c1");
+                var c2 = (CONST)treePattern.getNamedMatch("c2");
+                emit(new Assem.MOVE("movq $" + c2 + ", (%" + c1 + ")\t;move constant value to address mem(const)\n", null, null));
             }
         );
         tpl.add(
@@ -305,7 +322,7 @@ class CodegenVisitor2 implements TreeVisitor {
             op.exp.accept(this);
             var mem = temp;
             temp = new Temp();
-            emit(new Assem.MOVE("movq %`s0, %`d0\t;default mem\n", mem, temp));
+            emit(new Assem.MOVE("movq (%`s0), %`d0\t;move value at source to new temp\n", temp, mem));
         }
     }
 
@@ -343,7 +360,7 @@ class CodegenVisitor2 implements TreeVisitor {
         var leftTemp = temp;
         cjump.right.accept(this);
         var rightTemp = temp;
-        emit(new OPER("cmp `s0, `d0\n", L(leftTemp, null), L(rightTemp, null), null));
+        emit(new OPER("cmp %`s0, %`d0\n", L(rightTemp, null), L(leftTemp, null), null));
         switch(cjump.relop) {
             case CJUMP.EQ:
                 emit(new OPER("je `j0\n", null, null, new LabelList(cjump.iftrue, null)));
