@@ -191,6 +191,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 emit(new Assem.MOVE("movq $" +c1.value +  ", %`d0\t;move const -> temp\n", t1.temp, null));
             }
         );
+        /*
         tpl.add(
             tb.addRoot(
                 new MemNode("m1")
@@ -210,6 +211,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;mem node\n", temp, src));
             }
         );
+        */
         tpl.add(
             tb.addRoot(
                 new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
@@ -226,6 +228,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 emit(new Assem.OPER("add $" + cnst1.value + ", %`d0\t;add literal\n", L(expR, null), L(expR, null)));
             }
         );
+        /*
         tpl.add(
             tb.addRoot(
                 new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
@@ -248,7 +251,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 var expR = temp;
                 emit(new Assem.OPER("add $" + cnst1.value + " " + cnst2.value + ", %`d0\t;add memory offset\n", L(expR, null), L(expR, null)));
             }
-        );
+        );*/
     }
 
     public CodegenVisitor2(Frame frame) {
