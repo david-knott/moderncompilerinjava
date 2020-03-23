@@ -47,10 +47,9 @@ public class FunctionTests {
         assertFalse(m.hasErrors());
     }
 
-
     @Test
     public void while_test() {
-        String tigerCode = "let function fa(a:int) = while a < 0  do a := a - 1 in fa(1) end";
+        String tigerCode = "let function fa(a:int) = while a > 0 do a := a - 3 in fa(2) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();

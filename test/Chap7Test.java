@@ -21,7 +21,7 @@ public class Chap7Test {
 
     @Test
     public void getchar() {
-        String tigerCode = "let var a:string := \"\" in a := getchar() end";
+        String tigerCode = "let var a:string := \"dabid test\" in a := getchar() end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();

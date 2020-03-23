@@ -43,8 +43,9 @@ public class Main {
     private Grm parser;
     //frame implementation
     private Frame frame = new IntelFrame(null, null);
-    //static nesting level
     private Level topLevel = new Level(frame);
+    private boolean allVarsEscape = true;
+    private FindEscape findEscape = new FindEscape(allVarsEscape);
 
     static void prStmList(Tree.Print print, Tree.StmList stms) {
         for (Tree.StmList l = stms; l != null; l = l.tail) {
@@ -78,8 +79,8 @@ public class Main {
     private void emitProcFrag(PrintStream out, ProcFrag procFrag) {
         TempMap tempmap = new Temp.CombineMap(procFrag.frame, new Temp.DefaultMap());
         var print = new Print(out, tempmap);
-        out.println("# Before canonicalization: ");
-        print.prStm(procFrag.body);
+    //    out.println("# Before canonicalization: ");
+     //   print.prStm(procFrag.body);
         StmList stms = Canon.linearize(procFrag.body);
         // out.println("# After canonicalization: ");
         // prStmList(print, stms);
@@ -132,7 +133,7 @@ public class Main {
                 throw new Error(e.toString());
             }
         }
-        new FindEscape(this.ast.absyn);
+        findEscape.traverse(this.ast.absyn);
         var frags = this.semant.transProg(this.ast.absyn);
         for (Frag frag = frags; frag != null; frag = frag.next) {
             if (frag instanceof ProcFrag) {
@@ -143,9 +144,8 @@ public class Main {
                out.println(frag);
             }
         }
-
         out.close();
-        return 1;
+        return 0;
     }
 
     public boolean hasErrors() {

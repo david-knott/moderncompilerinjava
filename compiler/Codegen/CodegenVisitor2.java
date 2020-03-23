@@ -226,6 +226,29 @@ class CodegenVisitor2 implements TreeVisitor {
                 emit(new Assem.OPER("add $" + cnst1.value + ", %`d0\t;add literal\n", L(expR, null), L(expR, null)));
             }
         );
+        tpl.add(
+            tb.addRoot(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b2", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ConstNode("c1")
+            ).addSibling(
+                new ExpNode("exp")
+            ).getParent().getParent().getParent().addChild(
+                new ConstNode("c2")
+            )
+            .build(), treePattern -> {
+                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
+                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                exp.accept(this);
+                var expR = temp;
+                emit(new Assem.OPER("add $" + cnst1.value + " " + cnst2.value + ", %`d0\t;add memory offset\n", L(expR, null), L(expR, null)));
+            }
+        );
     }
 
     public CodegenVisitor2(Frame frame) {

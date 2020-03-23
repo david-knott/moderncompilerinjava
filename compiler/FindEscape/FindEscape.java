@@ -56,8 +56,13 @@ class VarEscape extends Escape {
 public class FindEscape {
 
     public final Symbol.GenericTable<Escape> escEnv = new Symbol.GenericTable<Escape>();
+    private boolean allVarsEscape = false;
 
-    public FindEscape(Absyn.Exp e) {
+    public FindEscape(boolean allVarsEscape) {
+        this.allVarsEscape = allVarsEscape;
+    }
+
+    public void traverse(Absyn.Exp e){
         traverseExp(0, e);
     }
 
@@ -137,7 +142,7 @@ public class FindEscape {
     }
 
     private void traverseExp(int depth, Absyn.Exp e) {
-        if(e == null)
+        if (e == null)
             return;
         if (e instanceof Absyn.VarExp)
             traverseExp(depth, (Absyn.VarExp) e);
@@ -191,8 +196,6 @@ public class FindEscape {
     private void traverseDec(int depth, Absyn.TypeDec e) {
     }
 
-
-
     private void traverseDec(int depth, Absyn.Dec e) {
         if (e instanceof Absyn.VarDec)
             traverseDec(depth, (Absyn.VarDec) e);
@@ -204,19 +207,19 @@ public class FindEscape {
             throw new Error("Not Implemented " + e.getClass().getName());
     }
 
-    private void traverseVar(int depth, SimpleVar simpleVar){
+    private void traverseVar(int depth, SimpleVar simpleVar) {
         var sv = this.escEnv.get(simpleVar.name);
-        //we check for undefined variable in the semant phase
-        if(sv != null && sv.depth < depth){
+        // we check for undefined variable in the semant phase
+        if (this.allVarsEscape || (sv != null && sv.depth < depth)) {
             sv.setEscape();
         }
     }
 
-    private void traverseVar(int depth, FieldVar fieldVar){
+    private void traverseVar(int depth, FieldVar fieldVar) {
         traverseVar(depth, fieldVar.var);
     }
 
-    private void traverseVar(int depth, SubscriptVar subscriptVar){
+    private void traverseVar(int depth, SubscriptVar subscriptVar) {
         traverseVar(depth, subscriptVar.var);
     }
 
@@ -228,6 +231,6 @@ public class FindEscape {
         } else if (v instanceof Absyn.SubscriptVar) {
             traverseVar(depth, (Absyn.SubscriptVar) v);
         } else
-        throw new Error("Not Implemented " + v.getClass().getName());
+            throw new Error("Not Implemented " + v.getClass().getName());
     }
 }
