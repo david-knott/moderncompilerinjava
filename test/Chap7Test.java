@@ -30,12 +30,32 @@ public class Chap7Test {
 
     @Test
     public void int_dec_translation() {
-        String tigerCode = "let var a:int := 1 var b:int:= 2 in a + b end";
+        String tigerCode = "let var a:int := 1 in a end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap6", inputStream);
         m.compile();
         assertFalse(m.hasErrors());
     }
+
+    @Test
+    public void int_2dec_translation() {
+        String tigerCode = "let var a:int := 1 var b:int := 2 in a + b end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+    @Test
+    public void int_3dec_translation() {
+        String tigerCode = "let var a:int := 1 var b:int := 2 var c:int := 3 in a + b + c end";
+        InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
+        Main m = new Main("chap6", inputStream);
+        m.compile();
+        assertFalse(m.hasErrors());
+    }
+
+
 
     @Test
     public void string_dec_translation() {

@@ -145,7 +145,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Access allocLocal(boolean escape) {
-        localOffset = -WORD_SIZE;
+        localOffset = localOffset - WORD_SIZE;
         return escape ? new InFrame(localOffset) : new InReg(new Temp());
     }
 
