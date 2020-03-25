@@ -137,6 +137,27 @@ class CodegenVisitor2 implements TreeVisitor {
             ).addChild(
                 new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
             ).addChild(
+                new ConstNode("cnst")
+            ).addSibling(
+                new ExpNode("exp")
+            )
+            .build(), treePattern -> {
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                var cnst = (CONST)treePattern.getNamedMatch("cnst");
+                exp.accept(this);
+                var src = temp;
+                temp = new Temp();
+                var dst = temp;
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t; mem(binop(k + exp) -> temp\n", 
+                    dst, src));
+            }
+        );
+        tpl.add(
+            tb.addRoot(
+                new MemNode("mem")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
                 new ExpNode("exp")
             ).addSibling(
                 new ConstNode("cnst")
@@ -148,8 +169,8 @@ class CodegenVisitor2 implements TreeVisitor {
                 var src = temp;
                 temp = new Temp();
                 var dst = temp;
-                emit(new Assem.MOVE("movq $" + cnst.value + ", %`d0\t;\n", 
-                    dst, src)));
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;\n", 
+                    dst, src));
             }
         );
     }
