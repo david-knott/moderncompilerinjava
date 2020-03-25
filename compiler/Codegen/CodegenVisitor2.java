@@ -75,7 +75,7 @@ class CodegenVisitor2 implements TreeVisitor {
             emit(new Assem.MOVE("movq %`s0, %`d0;\tmove argument " + i + " into register\n", finalPos, argTemp));
         } else {
             //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
-            emit(new Assem.MOVE("movq %`s0, " + (i * frame.wordSize()) + "(%`d0)\t;move " + i + " argument into frame\n", IntelFrame.sp, argTemp));
+            emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)\t;move argument " + i + " into frame\n", IntelFrame.sp, argTemp));
         }
         if (args.tail == null) {
             return L(argTemp, null);

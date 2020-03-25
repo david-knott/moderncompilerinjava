@@ -31,7 +31,7 @@ public class FindEscapeTest {
 
     @Test
     public void test_more_than_6_arguments() {
-        String tigerCode = "let function fa(a: int, b:int, c:int, d:int, e:int, f:int, g:int, h:int):int = (1) in (fa(0,1,2,3,4,5,6,7)) end";
+        String tigerCode = "let function fa(a: int, b:int, c:int, d:int, e:int, f:int, g:int, h:int):int = (9) in (fa(0,1,2,3,4,5,6,7)) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
