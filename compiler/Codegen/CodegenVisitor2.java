@@ -83,6 +83,137 @@ class CodegenVisitor2 implements TreeVisitor {
         return L(argTemp, munchArgs(i + 1, args.tail));
     }
 
+    private void registerMoveTreePatterns(){
+        var tb = new TreePatternBuilder();
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new TempNode("temp")
+            ).addSibling(
+                new ConstNode("c1")
+            ).getParent().getParent().getParent().addChild(
+                new ConstNode("c2")
+            )
+            .build(), treePattern -> {
+                var temp = (TEMP)treePattern.getNamedMatch("temp");
+                var cnst = (CONST)treePattern.getNamedMatch("c1");
+                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
+                emit(new Assem.MOVE("movq %" + cnst2.value + ", " + cnst.value + "(%`d0)\t;j -> mem(binop(temp + k))\n", temp.temp, null));
+            }
+        );
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new TempNode("temp1")
+            ).getParent().addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new TempNode("temp2")
+            ).addSibling(
+                new ConstNode("c1")
+            )
+            .build(), treePattern -> {
+                var temp1 = (TEMP)treePattern.getNamedMatch("temp1");
+                var temp2 = (TEMP)treePattern.getNamedMatch("temp2");
+                var cnst = (CONST)treePattern.getNamedMatch("c1");
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;mem(binop(temp + k)) -> temp\n", temp1.temp, temp2.temp));
+            }
+        );
+    }
+
+    private void registerMemTreePatterns(){
+        var tb = new TreePatternBuilder();
+        tpl.add(
+            tb.addRoot(
+                new MemNode("mem")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ExpNode("exp")
+            ).addSibling(
+                new ConstNode("cnst")
+            )
+            .build(), treePattern -> {
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                var cnst = (CONST)treePattern.getNamedMatch("cnst");
+                exp.accept(this);
+                var src = temp;
+                temp = new Temp();
+                var dst = temp;
+                emit(new Assem.MOVE("movq $" + cnst.value + ", %`d0\t;\n", 
+                    dst, src));
+            }
+        );
+    }
+     
+    private void registerBinopTreePatterns(){
+        var tb = new TreePatternBuilder();
+        tpl.add(
+            tb.addRoot(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ConstNode("c1")
+            ).addSibling(
+                new ExpNode("exp")
+            )
+            .build(), treePattern -> {
+                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                exp.accept(this);
+                var expR = temp;
+                emit(new Assem.OPER("add $" + cnst1.value + ", %`d0\t;add literal\n", L(expR, null), L(expR, null)));
+            }
+        );
+        /*
+        tpl.add(
+            tb.addRoot(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b2", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ConstNode("c1")
+            ).addSibling(
+                new ExpNode("exp")
+            ).getParent().getParent().getParent().addChild(
+                new ConstNode("c2")
+            )
+            .build(), treePattern -> {
+                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
+                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                exp.accept(this);
+                var expR = temp;
+                emit(new Assem.OPER("add $" + cnst1.value + " " + cnst2.value + ", %`d0\t;add memory offset\n", L(expR, null), L(expR, null)));
+            }
+        );
+        */
+    }
+
+    private void registerExpTreePatterns(){
+        var tb = new TreePatternBuilder();
+        //handle call
+        tpl.add(
+            tb.addRoot(
+                new EXPNode("exp")
+            ).addChild(
+                new CallNode("call1")   
+            ).build(), treePattern -> {
+            var call = (CALL)treePattern.getNamedMatch("call1");
+            call.accept(this);
+        });
+     
+
+    }
     private void registerTreePatterns(){
         var tb = new TreePatternBuilder();
         //handle call
@@ -179,21 +310,6 @@ class CodegenVisitor2 implements TreeVisitor {
         );
         tpl.add(
             tb.addRoot(
-                new MoveNode("move")
-            ).addChild(
-                new TempNode("t1")
-            ).addSibling(
-                new ConstNode("c1")
-            )
-            .build(), treePattern -> {
-                var t1 = (TEMP)treePattern.getNamedMatch("t1");
-                var c1= (CONST)treePattern.getNamedMatch("c1");
-                emit(new Assem.MOVE("movq $" +c1.value +  ", %`d0\t;move const -> temp\n", t1.temp, null));
-            }
-        );
-        /*
-        tpl.add(
-            tb.addRoot(
                 new MemNode("m1")
             ).addChild(
                 new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
@@ -208,56 +324,51 @@ class CodegenVisitor2 implements TreeVisitor {
                 exp.accept(this);
                 var src = temp;
                 temp = new Temp();
-                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;mem node\n", temp, src));
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;mem with offet to tmp 2\n", temp, src));
             }
         );
-        */
         tpl.add(
             tb.addRoot(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new ConstNode("c1")
-            ).addSibling(
-                new ExpNode("exp")
-            )
-            .build(), treePattern -> {
-                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
-                var exp = (Exp)treePattern.getNamedMatch("exp");
-                exp.accept(this);
-                var expR = temp;
-                emit(new Assem.OPER("add $" + cnst1.value + ", %`d0\t;add literal\n", L(expR, null), L(expR, null)));
-            }
-        );
-        /*
-        tpl.add(
-            tb.addRoot(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
                 new MemNode("m1")
             ).addChild(
-                new BinopNode("b2", x -> {return x.binop == BINOP.PLUS;})
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
             ).addChild(
-                new ConstNode("c1")
-            ).addSibling(
                 new ExpNode("exp")
-            ).getParent().getParent().getParent().addChild(
-                new ConstNode("c2")
+            ).addSibling(
+                new ConstNode("c1")
             )
             .build(), treePattern -> {
-                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
-                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
+                var cnst = (CONST)treePattern.getNamedMatch("c1");
                 var exp = (Exp)treePattern.getNamedMatch("exp");
                 exp.accept(this);
-                var expR = temp;
-                emit(new Assem.OPER("add $" + cnst1.value + " " + cnst2.value + ", %`d0\t;add memory offset\n", L(expR, null), L(expR, null)));
+                var src = temp;
+                temp = new Temp();
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;mem with offet to tmp 1\n", temp, src));
             }
-        );*/
+        );
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new TempNode("t1")
+            ).addSibling(
+                new ConstNode("c1")
+            )
+            .build(), treePattern -> {
+                var t1 = (TEMP)treePattern.getNamedMatch("t1");
+                var c1= (CONST)treePattern.getNamedMatch("c1");
+                emit(new Assem.MOVE("movq $" +c1.value +  ", %`d0\t;move const -> temp\n", t1.temp, null));
+            }
+        );
     }
 
     public CodegenVisitor2(Frame frame) {
         this.frame = frame;
         tpl = new TreePatternList();
-        registerTreePatterns();
+        registerExpTreePatterns();
+        registerMoveTreePatterns();
+        registerMemTreePatterns();
+        registerBinopTreePatterns();
     }
 
     @Override

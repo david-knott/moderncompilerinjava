@@ -605,6 +605,28 @@ public class Translate {
      * @return a Tree.Exp containing MEM expressions.
      */
     public Tree.Exp staticLinkOffset(Access access, Level level) {
+        //variable is defined at same level as use,
+        //just return the fp as framePointer
+        Tree.Exp exp = new TEMP(level.frame.FP());
+        if(level == access.home){
+            return exp;
+        } else {
+            var slinkLevel = level;
+            int staticLinkOffset = 0;
+            while (slinkLevel != access.home) {
+                exp = new MEM(
+                    new BINOP(
+                        BINOP.PLUS, 
+                        new CONST(staticLinkOffset), 
+                        exp
+                    )
+                );
+                slinkLevel = slinkLevel.parent;
+            }
+            return exp;
+        }
+
+        /*
         int staticLinkOffset = 0;
         Tree.Exp exp = new MEM(
             new BINOP(
@@ -626,6 +648,7 @@ public class Translate {
             slinkLevel = slinkLevel.parent;
         }
         return exp;
+        */
     }
 
 	public Exp transDec(Level level, Access translateAccess, Exp exp) {

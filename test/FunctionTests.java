@@ -1,7 +1,6 @@
 import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 

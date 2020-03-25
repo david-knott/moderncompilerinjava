@@ -11,10 +11,17 @@ class InFrame extends Access {
 
     InFrame(int os) {
         offset = os;
+        System.out.println(this + " new inframe access " + os + "(rbp)");
     }
 
+    /**
+     * Returns the memory access for this variable relative
+     * to the frame pointer. If this access is being accessed
+     * from a nested function, we use a frame pointer calculated
+     * from the static links.
+     */
     @Override
     public Exp exp(Exp framePtr) {
-        return new MEM(new BINOP(BINOP.PLUS, framePtr, new CONST(offset)));
+       return new MEM(new BINOP(BINOP.PLUS, framePtr, new CONST(offset)));
     }
 }
