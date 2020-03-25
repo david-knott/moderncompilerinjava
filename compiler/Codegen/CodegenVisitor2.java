@@ -149,13 +149,14 @@ class CodegenVisitor2 implements TreeVisitor {
                 temp = new Temp();
                 var dst = temp;
                 emit(new Assem.MOVE("movq $" + cnst.value + ", %`d0\t;\n", 
-                    dst, src));
+                    dst, src)));
             }
         );
     }
      
     private void registerBinopTreePatterns(){
         var tb = new TreePatternBuilder();
+        /*
         tpl.add(
             tb.addRoot(
                 new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
@@ -172,6 +173,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 emit(new Assem.OPER("add $" + cnst1.value + ", %`d0\t;add literal\n", L(expR, null), L(expR, null)));
             }
         );
+        */
         /*
         tpl.add(
             tb.addRoot(
