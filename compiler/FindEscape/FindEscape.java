@@ -124,9 +124,9 @@ public class FindEscape {
     }
 
     private void traverseExp(int depth, ForExp forExp) {
+        traverseDec(depth, forExp.var);
         traverseExp(depth, forExp.body);
         traverseExp(depth, forExp.hi);
-        traverseDec(depth, forExp.var);
     }
 
     private void traverseExp(int depth, IfExp ifExp) {
