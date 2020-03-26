@@ -238,6 +238,15 @@ public class Translate {
     }
 
     public Exp relativeOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        if(transExpLeft == null)
+            throw new Error("transExpLeft is null");
+        if(transExpRight == null)
+            throw new Error("transExpRight is null");
+         if(transExpLeft.exp == null)
+            throw new Error("transExpLeft.exp is null");
+        if(transExpRight.exp == null)
+            throw new Error("transExpRight.exp is null");
+            
         return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
     }
 

@@ -16,7 +16,7 @@ public class VarDec extends Dec {
    }
 
    public String toString() {
-      return "{ VarRec name='" + name + "', type='" + typ.name + "'}";
+      return "{ VarDec name='" + name + "', type='" + typ.name + "'}";
    }
 
    @Override

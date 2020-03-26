@@ -949,6 +949,7 @@ public class Semant {
     }
 
     private LetExp rewriteForExp(ForExp forExp){
+        
         return new LetExp(
             forExp.pos,
             new DecList(
@@ -977,7 +978,7 @@ public class Semant {
                                 forExp.pos, 
                                 new SimpleVar(
                                     forExp.pos, 
-                                    Symbol.symbol("i")
+forExp.var.name
                                 )
                             ), 
                             OpExp.LE, 
@@ -1005,7 +1006,7 @@ public class Semant {
                                                     0, 
                                                     new SimpleVar(
                                                        0, 
-                                                       Symbol.symbol("i")
+                                                        forExp.var.name
                                                     )
                                                 ), 
                                                 OpExp.EQ,
@@ -1022,7 +1023,7 @@ public class Semant {
                                                 0,
                                                 new SimpleVar(
                                                     0, 
-                                                    Symbol.symbol("i")
+forExp.var.name
                                                 ),
                                                 new OpExp(
                                                     0, 
@@ -1030,7 +1031,7 @@ public class Semant {
                                                         0, 
                                                         new SimpleVar(
                                                             0, 
-                                                            Symbol.symbol("i")
+forExp.var.name
                                                         )
                                                     ),
                                                     OpExp.PLUS, 
