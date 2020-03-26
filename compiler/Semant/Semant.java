@@ -978,7 +978,7 @@ public class Semant {
                                 forExp.pos, 
                                 new SimpleVar(
                                     forExp.pos, 
-forExp.var.name
+                                    forExp.var.name
                                 )
                             ), 
                             OpExp.LE, 
@@ -1023,7 +1023,7 @@ forExp.var.name
                                                 0,
                                                 new SimpleVar(
                                                     0, 
-forExp.var.name
+                                                    forExp.var.name
                                                 ),
                                                 new OpExp(
                                                     0, 
@@ -1031,7 +1031,7 @@ forExp.var.name
                                                         0, 
                                                         new SimpleVar(
                                                             0, 
-forExp.var.name
+                                                            forExp.var.name
                                                         )
                                                     ),
                                                     OpExp.PLUS, 

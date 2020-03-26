@@ -31,6 +31,15 @@ class Ex extends Exp {
 
     @Override
     Stm unCx(Label t, Label f) {
+        if(exp instanceof Tree.CONST){
+            var c = (Tree.CONST)exp;
+            if(c.value == 0){
+                return new Tree.JUMP(f);
+            }
+            if(c.value == 1){
+                return new Tree.JUMP(t);
+            }
+        }
         return new Tree.CJUMP(Tree.CJUMP.EQ, this.exp, new Tree.CONST(1), t, f);
     }
 }

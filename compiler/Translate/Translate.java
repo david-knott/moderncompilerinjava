@@ -386,7 +386,6 @@ public class Translate {
             return new ESEQ(firstEx.unNx(), expTyList.tail.expTy.exp.unEx());
         }
         ESEQ eseq = null;
-        //still a bug here if only 2 items in list
         SEQ seq = new SEQ(firstEx.unNx(), null);
         expTyList = expTyList.tail;
         while(expTyList != null){
