@@ -16,6 +16,7 @@ import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
+import RegAlloc.InterferenceGraph;
 import Semant.Semant;
 import Symbol.SymbolTable;
 import Temp.DefaultMap;
@@ -41,7 +42,7 @@ public class Main {
     private Semant semant;
     private ErrorMsg errorMsg;
     private Grm parser;
-    //frame implementation
+    // frame implementation
     private Frame frame = new IntelFrame(null, null);
     private Level topLevel = new Level(frame);
     private boolean allVarsEscape = true;
@@ -69,6 +70,16 @@ public class Main {
         return this.errorMsg;
     }
 
+    public InterferenceGraph buildInterferenceGraph(Assem.InstrList instrs) {
+        InterferenceGraph graph = null;
+        for (Assem.InstrList p = instrs; p != null; p = p.tail) {
+            var definitions = p.head.def();
+            var usages = p.head.use();
+            var jumps = p.head.jumps();
+        }
+        return graph;
+    }
+
     /**
      * Returns the symbol table for types. Used for testing
      */
@@ -79,8 +90,8 @@ public class Main {
     private void emitProcFrag(PrintStream out, ProcFrag procFrag) {
         TempMap tempmap = new Temp.CombineMap(procFrag.frame, new Temp.DefaultMap());
         var print = new Print(out, tempmap);
-    //    out.println("# Before canonicalization: ");
-     //   print.prStm(procFrag.body);
+        // out.println("# Before canonicalization: ");
+        // print.prStm(procFrag.body);
         StmList stms = Canon.linearize(procFrag.body);
         // out.println("# After canonicalization: ");
         // prStmList(print, stms);
@@ -97,9 +108,12 @@ public class Main {
         Assem.InstrList instrs = codegen(procFrag.frame, traced);
         instrs = procFrag.frame.procEntryExit2(instrs);
         out.println("# Instructions: ");
-            out.println("section .text");
+        out.println("section .text");
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
             out.print(p.head.format(tempmap));
+
+        buildInterferenceGraph(instrs);
+
         var procs = procFrag.frame.procEntryExit3(instrs);
 
     }
@@ -137,11 +151,11 @@ public class Main {
         var frags = this.semant.transProg(this.ast.absyn);
         for (Frag frag = frags; frag != null; frag = frag.next) {
             if (frag instanceof ProcFrag) {
-                
+
                 emitProcFrag(out, (ProcFrag) frag);
             } else {
-            out.println("section .data");
-               out.println(frag);
+                out.println("section .data");
+                out.println(frag);
             }
         }
         out.close();
