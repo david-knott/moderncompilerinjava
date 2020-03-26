@@ -70,16 +70,6 @@ public class Main {
         return this.errorMsg;
     }
 
-    public InterferenceGraph buildInterferenceGraph(Assem.InstrList instrs) {
-        InterferenceGraph graph = null;
-        for (Assem.InstrList p = instrs; p != null; p = p.tail) {
-            var definitions = p.head.def();
-            var usages = p.head.use();
-            var jumps = p.head.jumps();
-        }
-        return graph;
-    }
-
     /**
      * Returns the symbol table for types. Used for testing
      */
@@ -118,6 +108,11 @@ public class Main {
 
     }
 
+    public boolean hasErrors() {
+        return this.errorMsg.getCompilerErrors().size() != 0;
+    }
+
+
     private InstrList codegen(Frame f, StmList stms) {
         Assem.InstrList first = null, last = null;
         for (Tree.StmList s = stms; s != null; s = s.tail) {
@@ -147,13 +142,15 @@ public class Main {
                 throw new Error(e.toString());
             }
         }
+        //find escaping variables
         findEscape.traverse(this.ast.absyn);
         var frags = this.semant.transProg(this.ast.absyn);
         for (Frag frag = frags; frag != null; frag = frag.next) {
             if (frag instanceof ProcFrag) {
-
+                //write function data
                 emitProcFrag(out, (ProcFrag) frag);
             } else {
+                //write string data
                 out.println("section .data");
                 out.println(frag);
             }
@@ -162,7 +159,35 @@ public class Main {
         return 0;
     }
 
-    public boolean hasErrors() {
-        return this.errorMsg.getCompilerErrors().size() != 0;
+    /**
+     * Reverses instruction list
+     */
+    private Assem.InstrList reverse(Assem.InstrList instrs) {
+        if(instrs == null)
+            return null;
+        Assem.InstrList rev = new Assem.InstrList(instrs.head, null);
+        instrs = instrs.tail;
+        while(instrs != null) {
+            rev = new Assem.InstrList(instrs.head, rev);
+            instrs = instrs.tail;
+        }
+        return rev;
     }
+
+    private InterferenceGraph buildInterferenceGraph(Assem.InstrList instrs) {
+        InterferenceGraph graph = null;
+        for (Assem.InstrList p = instrs; p != null; p = p.tail) {
+            System.out.println("Examine instruction " + p.head);
+            var definitions = p.head.def();
+            var usages = p.head.use();
+            var jumps = p.head.jumps();
+        }
+        System.out.println("-----");
+        for(var p = reverse(instrs); p != null; p = p.tail) {
+            System.out.println("Examine instruction " + p.head);
+        }
+        return graph;
+    }
+
+
 }
