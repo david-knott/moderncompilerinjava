@@ -5,6 +5,12 @@ public class MOVE extends Instr {
    public Temp.Temp src;
 
    public MOVE(String a, Temp.Temp d, Temp.Temp s) {
+      if (a == null)
+         throw new Error("a");
+      if (d == null)
+         throw new Error("d");
+      if (s == null)
+         throw new Error("s");
       assem = a;
       dst = d;
       src = s;

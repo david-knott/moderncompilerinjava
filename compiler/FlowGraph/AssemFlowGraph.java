@@ -11,41 +11,40 @@ import Temp.TempList;
 public class AssemFlowGraph extends FlowGraph {
 
     private Hashtable<Node, Assem.Instr> nodeMap = new Hashtable<Node, Assem.Instr>();
-    private Hashtable<Label, Node> labels= new Hashtable<Label, Node>();
+    private Hashtable<Label, Instr> labelInstr = new Hashtable<Label, Instr>();
 
     public AssemFlowGraph(Assem.InstrList instrs) {
-        //get labels first so they are present 
+        //add all the labels too a hashtable first
         for (Assem.InstrList p = instrs; p != null; p = p.tail) {
-            if(p.head instanceof LABEL) {
-                //create new node for label
-                var node = this.newNode();
-                nodeMap.put(node, instrs.head);
-                var label = (LABEL)p.head;
-                //insert into labels hash
-                labels.put(label.label, node);
+            if(p.head instanceof LABEL){
+                var l = ((LABEL)p.head).label;
+                labelInstr.put(l, p.head);
             }
         }
-        Node previous = this.newNode();
-        nodeMap.put(previous, instrs.head);
+        //
+        Node prevNode = this.newNode();
+        Instr prevInstr = instrs.head;
+        nodeMap.put(prevNode, prevInstr);
         instrs = instrs.tail;
         for (Assem.InstrList p = instrs; p != null; p = p.tail) {
-            //its a label, do we need to
-            //create a link for it ?
-            var node = this.newNode();
-            nodeMap.put(node, p.head);
-            var targets = p.head.jumps();
-            if (targets == null) {
-                this.addEdge(previous, node);                
-                previous = node;
-            } else {
-                this.addEdge(previous, node);                
-                previous = node;
+            var targets = prevInstr.jumps();
+            Node node = null;
+            if(targets != null) {
+                node = this.newNode();
+                nodeMap.put(node, p.head);
                 for (var t = targets.labels; t != null; t = t.tail) {
-                    var label = t.head;
-                    Node branch = labels.get(label);
-                    this.addEdge(previous, branch);
+                    var jnode = this.newNode();
+                    var jinstr = labelInstr.get(t.head);
+                    nodeMap.put(jnode, jinstr);
+                    this.addEdge(node, jnode);
                 }
+            } else {
+                node = this.newNode();
+                nodeMap.put(node, p.head);
+                this.addEdge(prevNode, node);                
+                prevInstr = p.head;
             }
+            prevNode = node;
         }
     }
 

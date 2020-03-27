@@ -103,7 +103,8 @@ class CodegenVisitor2 implements TreeVisitor {
                 var temp = (TEMP)treePattern.getNamedMatch("temp");
                 var cnst = (CONST)treePattern.getNamedMatch("c1");
                 var cnst2 = (CONST)treePattern.getNamedMatch("c2");
-                emit(new Assem.MOVE("movq %" + cnst2.value + ", " + cnst.value + "(%`d0)\t;j -> mem(binop(temp + k))\n", temp.temp, null));
+                //special move where there is no src register
+                emit(new Assem.OPER("movq %" + cnst2.value + ", " + cnst.value + "(%`d0)\t;j -> mem(binop(temp + k))\n", L(temp.temp, null), null));
             }
         );
         tpl.add(
