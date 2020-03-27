@@ -302,23 +302,6 @@ class CodegenVisitor2 implements TreeVisitor {
                 new MoveNode("move")
             ).addChild(
                 new MemNode("m1")
-            ).addChild(
-                new ConstNode("c1")
-            ).getParent().getParent().addChild(
-                new ConstNode("c2")
-            )
-            .build(), treePattern -> {
-               // var mem1 = (MEM)treePattern.getNamedMatch("m1");
-                var c1 = (CONST)treePattern.getNamedMatch("c1");
-                var c2 = (CONST)treePattern.getNamedMatch("c2");
-                emit(new Assem.MOVE("movq $" + c2.value + ", (%" + c1.value + ")\t;move constant value to address mem(const)\n", null, null));
-            }
-        );
-        tpl.add(
-            tb.addRoot(
-                new MoveNode("move")
-            ).addChild(
-                new MemNode("m1")
             ).addSibling(
                 new MemNode("m2")
             )
@@ -381,7 +364,7 @@ class CodegenVisitor2 implements TreeVisitor {
             .build(), treePattern -> {
                 var t1 = (TEMP)treePattern.getNamedMatch("t1");
                 var c1= (CONST)treePattern.getNamedMatch("c1");
-                emit(new Assem.MOVE("movq $" +c1.value +  ", %`d0\t;move const -> temp\n", t1.temp, null));
+                emit(new Assem.OPER("movq $" +c1.value +  ", %`d0\t;move const -> temp\n", L(t1.temp, null), null));
             }
         );
     }
