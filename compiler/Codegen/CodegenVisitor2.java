@@ -501,7 +501,7 @@ class CodegenVisitor2 implements TreeVisitor {
     @Override
     public void visit(NAME op) {
         temp = new Temp();
-        emit(new Assem.MOVE("movq " + op.label + ", %`d0\t;move label to new temp\n", temp, null));
+        emit(new Assem.OPER("movq " + op.label + ", %`d0\t;move label to new temp\n", L(temp, null), null));
     }
 
     @Override
