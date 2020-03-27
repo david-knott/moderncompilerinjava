@@ -11,6 +11,7 @@ import Canon.StmListList;
 import Canon.TraceSchedule;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
+import FlowGraph.AssemFlowGraph;
 import Frame.Frame;
 import Intel.IntelFrame;
 import Parse.Grm;
@@ -176,16 +177,8 @@ public class Main {
 
     private InterferenceGraph buildInterferenceGraph(Assem.InstrList instrs) {
         InterferenceGraph graph = null;
-        for (Assem.InstrList p = instrs; p != null; p = p.tail) {
-            System.out.println("Examine instruction " + p.head);
-            var definitions = p.head.def();
-            var usages = p.head.use();
-            var jumps = p.head.jumps();
-        }
-        System.out.println("-----");
-        for(var p = reverse(instrs); p != null; p = p.tail) {
-            System.out.println("Examine instruction " + p.head);
-        }
+        var flowGraph = new AssemFlowGraph(instrs);
+        flowGraph.show(System.out);
         return graph;
     }
 
