@@ -1,12 +1,13 @@
 package RegAlloc;
 
 import Graph.Node;
+import Temp.Temp;
 import Graph.Graph;
 
 abstract public class InterferenceGraph extends Graph {
-   abstract public Node tnode(Temp.Temp temp);
+   abstract public Node tnode(Temp temp);
 
-   abstract public Temp.Temp gtemp(Node node);
+   abstract public Temp gtemp(Node node);
 
    abstract public MoveList moves();
 

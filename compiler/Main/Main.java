@@ -46,7 +46,7 @@ public class Main {
     // frame implementation
     private Frame frame = new IntelFrame(null, null);
     private Level topLevel = new Level(frame);
-    private boolean allVarsEscape = true;
+    private boolean allVarsEscape = false;
     private FindEscape findEscape = new FindEscape(allVarsEscape);
 
     static void prStmList(Tree.Print print, Tree.StmList stms) {
