@@ -17,6 +17,7 @@ import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
+import RegAlloc.BitArrayInterferenceGraphImpl;
 import RegAlloc.InterferenceGraph;
 import Semant.Semant;
 import Symbol.SymbolTable;
@@ -176,11 +177,9 @@ public class Main {
     }
 
     private InterferenceGraph buildInterferenceGraph(Assem.InstrList instrs) {
-        InterferenceGraph graph = null;
         var flowGraph = new AssemFlowGraph(instrs);
+        var interferenceGraph = new BitArrayInterferenceGraphImpl(flowGraph);
         flowGraph.show(System.out);
-        return graph;
+        return interferenceGraph;
     }
-
-
 }
