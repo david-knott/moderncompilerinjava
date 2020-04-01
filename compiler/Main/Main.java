@@ -178,8 +178,9 @@ public class Main {
 
     private InterferenceGraph buildInterferenceGraph(Assem.InstrList instrs) {
         var flowGraph = new AssemFlowGraph(instrs);
-        var interferenceGraph = new BitArrayInterferenceGraphImpl(flowGraph);
         flowGraph.show(System.out);
+        var interferenceGraph = new BitArrayInterferenceGraphImpl(flowGraph);
+        interferenceGraph.show(System.out);
         return interferenceGraph;
     }
 }

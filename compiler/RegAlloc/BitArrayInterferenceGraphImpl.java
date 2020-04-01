@@ -94,7 +94,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             for(; tempList != null; tempList = tempList.tail) {
                 for(var defs = flowGraph.def(n); defs != null; defs = defs.tail) {
                     if(!flowGraph.isMove(n)) {
-                        System.out.println("adding " + defs.head + " to " + tempList.head);
                         Node from = this.newNode();
                         nodeTempMap.put(from, defs.head);
                         tempNodeMap.put(defs.head, from);
@@ -104,7 +103,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                         this.addEdge(from, to);
                     } else {
                         if(defs.head != tempList.head) {
-                            System.out.println("adding " + defs.head + " to " + tempList.head);
                             Node from = this.newNode();
                             nodeTempMap.put(from, defs.head);
                             tempNodeMap.put(defs.head, from);
