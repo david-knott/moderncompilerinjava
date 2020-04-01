@@ -27,11 +27,19 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
     }
 
     private Hashtable<Node, TempList> liveMap;
+    private Hashtable<Integer, Temp> tempMap;
     private Hashtable<Node, BitArraySet> liveInMap = new Hashtable<Node, BitArraySet>();
     private Hashtable<Node, BitArraySet> liveOutMap = new Hashtable<Node, BitArraySet>();
 
     public BitArrayInterferenceGraphImpl(FlowGraph flowGraph) {
         liveMap = new Hashtable<Node, TempList>();
+        tempMap = new Hashtable<Integer, Temp>();
+        for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+            var node = nodes.head;
+            for (var tl = flowGraph.def(node); tl != null; tl = tl.tail){
+                tempMap.put(tl.head.hashCode(), tl.head);
+            }
+        }
         int capacity = getCapacity(flowGraph);
         // initialise
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
@@ -53,31 +61,33 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                     BitArraySet liveInSucc = liveInMap.get(succ.head);
                     liveOut = liveOut.union(liveInSucc);
                 }
-                System.out.println("---->>");
-                System.out.println(liveOut);
-                System.out.println("<<------");
                 // save liveIn and liveOut in hash map for node
                 liveInMap.put(node, liveIn);
                 liveOutMap.put(node, liveOut);
-             //   System.out.println("--------------");
                 changed = changed || (!liveIn.equals(liveInPrev) || !liveOut.equals(liveOutPrev));
-               // System.out.println("--------------");
             }
             if (!changed) {
                 break;
             }
         } while (true);
         //populate live map with live out variables
-        System.out.println("Live Out Map..");
         for(Node n : liveOutMap.keySet()){
             var bitMap = liveOutMap.get(n);
-            System.out.println(bitMap);
             for(int i = 0; i < capacity; i++) {
                 if(bitMap.getBit(i)) {
-                    //System.out.println(bitMap);
+                    System.out.println(i);
+                    TempList tempList = liveMap.get(n);
+                    if(tempList != null) {
+                        tempList = new TempList(tempMap.get(i), tempList);
+                        liveMap.put(n, tempList);
+                    } else {
+                        tempList = new TempList(tempMap.get(i), null);
+                        liveMap.put(n, tempList);
+                    }
                 }
             }
         }
+        System.out.println("done");
     }
 
     @Override
@@ -97,5 +107,4 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         // TODO Auto-generated method stub
         return null;
     }
-
 }
