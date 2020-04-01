@@ -26,6 +26,8 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         return capacity;
     }
 
+    private Hashtable<Node, Temp> nodeTempMap = new Hashtable<Node, Temp>();
+    private Hashtable<Temp, Node> tempNodeMap = new Hashtable<Temp, Node>();
     private Hashtable<Node, TempList> liveMap;
     private Hashtable<Integer, Temp> tempMap;
     private Hashtable<Node, BitArraySet> liveInMap = new Hashtable<Node, BitArraySet>();
@@ -75,7 +77,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             var bitMap = liveOutMap.get(n);
             for(int i = 0; i < capacity; i++) {
                 if(bitMap.getBit(i)) {
-                    System.out.println(i);
                     TempList tempList = liveMap.get(n);
                     if(tempList != null) {
                         tempList = new TempList(tempMap.get(i), tempList);
@@ -86,6 +87,36 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                     }
                 }
             }
+        }
+        //from the liveMap, construct the interference graph
+        for(Node n : liveMap.keySet()){
+            TempList tempList = liveMap.get(n);
+            for(; tempList != null; tempList = tempList.tail) {
+                for(var defs = flowGraph.def(n); defs != null; defs = defs.tail) {
+                    if(!flowGraph.isMove(n)) {
+                        System.out.println("adding " + defs.head + " to " + tempList.head);
+                        Node from = this.newNode();
+                        nodeTempMap.put(from, defs.head);
+                        tempNodeMap.put(defs.head, from);
+                        Node to = this.newNode();
+                        nodeTempMap.put(to, tempList.head);
+                        tempNodeMap.put(tempList.head, to);
+                        this.addEdge(from, to);
+                    } else {
+                        if(defs.head != tempList.head) {
+                            System.out.println("adding " + defs.head + " to " + tempList.head);
+                            Node from = this.newNode();
+                            nodeTempMap.put(from, defs.head);
+                            tempNodeMap.put(defs.head, from);
+                            Node to = this.newNode();
+                            nodeTempMap.put(to, tempList.head);
+                            tempNodeMap.put(tempList.head, to);
+                            this.addEdge(from, to);
+                        }
+                    }
+                }
+            }
+
         }
         System.out.println("done");
     }
