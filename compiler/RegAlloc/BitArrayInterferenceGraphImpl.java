@@ -20,70 +20,10 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             var node = nodes.head;
             for (var tl = flowGraph.def(node); tl != null; tl = tl.tail)
-                capacity++;
+                capacity = Math.max(capacity, tl.head.hashCode());
         }
+        System.out.println("capacity " + capacity);
         return capacity;
-    }
-
-    class BitArraySet {
-
-        private static final int ALL_ONES = 0xFFFFFFFF;
-        private static final int WORD_SIZE = 32;
-
-        private int bits[] = null;
-
-        public BitArraySet(int size) {
-            // bits = new int[capacity];
-            bits = new int[size / WORD_SIZE + (size % WORD_SIZE == 0 ? 0 : 1)];
-        }
-
-        public BitArraySet(TempList tempList, int capacity) {
-            this(capacity);
-            for (var tp = tempList; tp != null; tp = tp.tail) {
-                var temp = tp.head;
-                var pos = temp.hashCode();
-                setBit(pos, true);
-            }
-        }
-
-        public boolean getBit(int pos) {
-            return (bits[pos / WORD_SIZE] & (1 << (pos % WORD_SIZE))) != 0;
-        }
-
-        public void setBit(int pos, boolean b) {
-            int word = bits[pos / WORD_SIZE];
-            int posBit = 1 << (pos % WORD_SIZE);
-            if (b) {
-                word |= posBit;
-            } else {
-                word &= (ALL_ONES - posBit);
-            }
-            bits[pos / WORD_SIZE] = word;
-        }
-
-        public BitArraySet add(TempList tempList) {
-            return this;
-        }
-
-        public BitArraySet union(BitArraySet bitArraySet) {
-            return null;
-        }
-
-        public BitArraySet difference(BitArraySet bitArraySet) {
-            return null;
-        }
-
-        public BitArraySet intersection(BitArraySet bitArraySet) {
-            return null;
-        }
-
-        public boolean equals(BitArraySet other) {
-            return false;
-        }
-
-        public BitArraySet clone() {
-            return null;
-        }
     }
 
     private Hashtable<Node, TempList> liveMap;
@@ -92,7 +32,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
 
     public BitArrayInterferenceGraphImpl(FlowGraph flowGraph) {
         liveMap = new Hashtable<Node, TempList>();
-        boolean changed = false;
         int capacity = getCapacity(flowGraph);
         // initialise
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
@@ -100,27 +39,45 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             liveOutMap.put(nodes.head, new BitArraySet(capacity));
         }
         do {
-            changed = false;
+            boolean changed = false;
             for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
                 var node = nodes.head;
                 BitArraySet liveInPrev = liveInMap.get(node);
                 BitArraySet liveOutPrev = liveOutMap.get(node);
+                var t = new BitArraySet(flowGraph.use(node), capacity);
+                //System.out.println(t);
                 BitArraySet liveIn = new BitArraySet(flowGraph.use(node), capacity)
                         .union(liveOutPrev.difference(new BitArraySet(flowGraph.def(node), capacity)));
                 BitArraySet liveOut = new BitArraySet(capacity);
                 for (var succ = node.succ(); succ != null; succ = succ.tail) {
-                    BitArraySet liveInSucc = null;
+                    BitArraySet liveInSucc = liveInMap.get(succ.head);
                     liveOut = liveOut.union(liveInSucc);
                 }
+                System.out.println("---->>");
+                System.out.println(liveOut);
+                System.out.println("<<------");
                 // save liveIn and liveOut in hash map for node
                 liveInMap.put(node, liveIn);
                 liveOutMap.put(node, liveOut);
-                changed |= (!liveIn.equals(liveInPrev) || !liveOut.equals(liveOutPrev));
+             //   System.out.println("--------------");
+                changed = changed || (!liveIn.equals(liveInPrev) || !liveOut.equals(liveOutPrev));
+               // System.out.println("--------------");
             }
             if (!changed) {
                 break;
             }
         } while (true);
+        //populate live map with live out variables
+        System.out.println("Live Out Map..");
+        for(Node n : liveOutMap.keySet()){
+            var bitMap = liveOutMap.get(n);
+            System.out.println(bitMap);
+            for(int i = 0; i < capacity; i++) {
+                if(bitMap.getBit(i)) {
+                    //System.out.println(bitMap);
+                }
+            }
+        }
     }
 
     @Override

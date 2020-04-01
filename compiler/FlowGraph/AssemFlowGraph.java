@@ -29,7 +29,7 @@ public class AssemFlowGraph extends FlowGraph {
         for (Assem.InstrList p = instrs; p != null; p = p.tail) {
             var targets = prevInstr.jumps();
             Node node = null;
-            if(targets != null) {
+            if(targets != null && targets.labels!= null && targets.labels.head != null) {
                 node = this.newNode();
                 nodeMap.put(node, p.head);
                 for (var t = targets.labels; t != null; t = t.tail) {
