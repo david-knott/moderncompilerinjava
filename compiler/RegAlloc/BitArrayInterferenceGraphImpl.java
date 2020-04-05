@@ -53,19 +53,18 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             }
         }
         System.out.println("capacity = " + capacity);
-        // initialise
+        // initialise maps with empty bit sets
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             liveInMap.put(nodes.head, new BitArraySet(capacity));
             liveOutMap.put(nodes.head, new BitArraySet(capacity));
         }
+        //calculate live ranges using liveness equations
         do {
             boolean changed = false;
             for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
                 var node = nodes.head;
                 BitArraySet liveInPrev = liveInMap.get(node);
                 BitArraySet liveOutPrev = liveOutMap.get(node);
-                var t = new BitArraySet(flowGraph.use(node), capacity);
-                //System.out.println(t);
                 BitArraySet liveIn = new BitArraySet(flowGraph.use(node), capacity)
                         .union(liveOutPrev.difference(new BitArraySet(flowGraph.def(node), capacity)));
                 BitArraySet liveOut = new BitArraySet(capacity);
@@ -82,6 +81,7 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                 break;
             }
         } while (true);
+        // add live ranges as tempLists to liveOutmap
         for(Node n : liveOutMap.keySet()){
             var bitMap = liveOutMap.get(n);
             for(int i = 0; i < capacity; i++) {
@@ -106,6 +106,7 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             for(; tempList != null; tempList = tempList.tail) {
                 for(var defs = flowGraph.def(n); defs != null; defs = defs.tail) {
                     if(!flowGraph.isMove(n)) {
+                        //not a move, add an interference edge
                         Node from = this.newNode();
                         nodeTempMap.put(from, defs.head);
                         tempNodeMap.put(defs.head, from);
@@ -114,6 +115,7 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                         tempNodeMap.put(tempList.head, to);
                         this.addEdge(from, to);
                     } else {
+                        //liveness check on move
                         if(defs.head != tempList.head) {
                             Node from = this.newNode();
                             nodeTempMap.put(from, defs.head);
