@@ -75,6 +75,7 @@ class CodegenVisitor2 implements TreeVisitor {
             emit(new Assem.MOVE("movq %`s0, %`d0;\tmove argument " + i + " into register\n", finalPos, argTemp));
         } else {
             //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
+            //TODO: where dest is MEM location of stack pointer with offset ?
             emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)\t;move argument " + i + " into frame\n", IntelFrame.sp, argTemp));
         }
         if (args.tail == null) {
@@ -170,7 +171,7 @@ class CodegenVisitor2 implements TreeVisitor {
                 var src = temp;
                 temp = new Temp();
                 var dst = temp;
-                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;\n", 
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t; mem(binop(+, exp, const)) -> temp\n", 
                     dst, src));
             }
         );
@@ -389,31 +390,31 @@ class CodegenVisitor2 implements TreeVisitor {
         var rightTemp = temp;
         switch (op.binop) {
             case BINOP.AND:
-                emit(new OPER("and %`s0, %`d0 ; \n", L(leftTemp, null), L(rightTemp, L(leftTemp, null)), null));
+                emit(new OPER("and %`s0, %`d0 ; \n", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
                 break;
             case BINOP.ARSHIFT:
                 break;
             case BINOP.DIV:
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax \n", IntelFrame.rv, leftTemp));
-                emit(new OPER("div  %`s0\t; divide rax by value in right \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null), null));
+                emit(new OPER("div  %`s0\t; divide rax by value in right \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null) ));
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
                 break;
             case BINOP.LSHIFT:
                 break;
             case BINOP.MINUS:
-                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
+                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
                 break;
             case BINOP.MUL:
                 emit(new OPER(";comment\n", null, null));
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", IntelFrame.rv, leftTemp));
-                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rv, null)), null));
+                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rv, null))));
                 emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
                 break;
             case BINOP.OR:
-                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, L(leftTemp, null)), null));
+                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
                 break;
             case BINOP.PLUS:
-                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
+                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
                 break;
             case BINOP.RSHIFT:
                 break;
@@ -435,7 +436,7 @@ class CodegenVisitor2 implements TreeVisitor {
     @Override
     public void visit(CONST cnst) {
         temp = new Temp();
-        emit(new OPER("movq $" + cnst.value + ", %`d0\t;\n", L(temp, null), null, null));
+        emit(new OPER("movq $" + cnst.value + ", %`d0\t;\n", L(temp, null), null));
     }
 
     @Override
@@ -504,37 +505,37 @@ class CodegenVisitor2 implements TreeVisitor {
         var leftTemp = temp;
         cjump.right.accept(this);
         var rightTemp = temp;
-        emit(new OPER("cmp %`s0, %`d0\n", L(rightTemp, null), L(leftTemp, null), null));
+        emit(new OPER("cmp %`s0, %`d0\n", L(rightTemp, null), L(leftTemp, null)));
         switch(cjump.relop) {
             case CJUMP.EQ:
-                emit(new OPER("je `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("je `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.GE:
-                emit(new OPER("jge `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jge `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.GT:
-                emit(new OPER("jg `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jg `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.LE:
-                emit(new OPER("jle `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jle `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.LT:
-                emit(new OPER("jl `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jl `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.NE:
-                emit(new OPER("jne `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jne `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.UGE:
-                emit(new OPER("jae `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jae `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.UGT:
-                emit(new OPER("ja `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("ja `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.ULE:
-                emit(new OPER("jbe `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jbe `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.ULT:
-                emit(new OPER("jb `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jb `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
         }
     }

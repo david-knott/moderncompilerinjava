@@ -11,38 +11,44 @@ import Temp.TempList;
 public class AssemFlowGraph extends FlowGraph {
 
     private Hashtable<Node, Assem.Instr> nodeMap = new Hashtable<Node, Assem.Instr>();
+    private Hashtable<Assem.Instr, Node> invNodeMap = new Hashtable<Assem.Instr, Node>();
     private Hashtable<Label, Instr> labelInstr = new Hashtable<Label, Instr>();
 
+    public Node getOrCreate(Instr instr) {
+        if(invNodeMap.containsKey(instr)) {
+            return invNodeMap.get(instr);
+        }
+        Node node = this.newNode();
+        nodeMap.put(node, instr);
+        invNodeMap.put(instr, node);
+        return node;
+    }
+
     public AssemFlowGraph(Assem.InstrList instrs) {
-        //add all the labels too a hashtable first
+        //add all the labels to a hashtable first
+        //add the labels to the node map
         for (Assem.InstrList p = instrs; p != null; p = p.tail) {
             if(p.head instanceof LABEL){
                 var l = ((LABEL)p.head).label;
                 labelInstr.put(l, p.head);
+                //this.getOrCreate(p.head);
             }
         }
-        //
-        Node prevNode = this.newNode();
-        Instr prevInstr = instrs.head;
-        nodeMap.put(prevNode, prevInstr);
-        instrs = instrs.tail;
-        for (Assem.InstrList p = instrs; p != null; p = p.tail) {
+        Assem.InstrList p = instrs;
+        Node prevNode = this.getOrCreate(p.head);
+        p = p.tail;
+        for (; p != null; p = p.tail) {
+            Node node = this.getOrCreate(p.head);
+            var prevInstr = instr(prevNode);
             var targets = prevInstr.jumps();
-            Node node = null;
-            if(targets != null && targets.labels!= null && targets.labels.head != null) {
-                node = this.newNode();
-                nodeMap.put(node, p.head);
+            if(targets != null) {
                 for (var t = targets.labels; t != null; t = t.tail) {
-                    var jnode = this.newNode();
                     var jinstr = labelInstr.get(t.head);
-                    nodeMap.put(jnode, jinstr);
-                    this.addEdge(node, jnode);
+                    Node jNode = this.getOrCreate(jinstr);
+                    this.addEdge(prevNode, jNode);
                 }
             } else {
-                node = this.newNode();
-                nodeMap.put(node, p.head);
                 this.addEdge(prevNode, node);                
-                prevInstr = p.head;
             }
             prevNode = node;
         }
