@@ -116,6 +116,14 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                         this.addEdge(from, to);
                     } else {
                         //liveness check on move
+                        //move presents a problem,
+                        //if a <- c
+                        //we will have interference
+                        //even though a and c could
+                        //be assigned to the same 
+                        //register. We should only
+                        //add an interference edge
+                        //if....
                         if(defs.head != tempList.head) {
                             Node from = this.newNode();
                             nodeTempMap.put(from, defs.head);
