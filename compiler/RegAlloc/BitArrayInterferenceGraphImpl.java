@@ -34,10 +34,20 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
     private Hashtable<Node, BitArraySet> liveOutMap = new Hashtable<Node, BitArraySet>();
 
     private Temp getTemp(Integer i) {
-        if(tempMap.containsKey(i)) {
+        if (tempMap.containsKey(i)) {
             return tempMap.get(i);
         }
         return null;
+    }
+
+    private Node getOrCreate(Temp temp) {
+        if (tempNodeMap.containsKey(temp)) {
+            return tempNodeMap.get(temp);
+        }
+        var newNode = this.newNode();
+        nodeTempMap.put(newNode, temp);
+        tempNodeMap.put(temp, newNode);
+        return newNode;
     }
 
     public BitArrayInterferenceGraphImpl(FlowGraph flowGraph) {
@@ -46,8 +56,8 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         int capacity = 0;
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             var node = nodes.head;
-            for (var tl = flowGraph.def(node); tl != null; tl = tl.tail){
-                System.out.println("adding "+ tl.head.hashCode() + " to tempMap");
+            for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
+                System.out.println("adding " + tl.head.hashCode() + " to tempMap");
                 tempMap.put(tl.head.hashCode(), tl.head);
                 capacity = Math.max(capacity, tl.head.hashCode());
             }
@@ -58,7 +68,7 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             liveInMap.put(nodes.head, new BitArraySet(capacity));
             liveOutMap.put(nodes.head, new BitArraySet(capacity));
         }
-        //calculate live ranges using liveness equations
+        // calculate live ranges using liveness equations
         do {
             boolean changed = false;
             for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
@@ -82,14 +92,14 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             }
         } while (true);
         // add live ranges as tempLists to liveOutmap
-        for(Node n : liveOutMap.keySet()){
+        for (Node n : liveOutMap.keySet()) {
             var bitMap = liveOutMap.get(n);
-            for(int i = 0; i < capacity; i++) {
-                if(bitMap.getBit(i)) {
+            for (int i = 0; i < capacity; i++) {
+                if (bitMap.getBit(i)) {
                     TempList tempList = liveMap.get(n);
                     Temp temp = getTemp(i);
-                    if(temp != null) {
-                        if(tempList != null) {
+                    if (temp != null) {
+                        if (tempList != null) {
                             tempList = new TempList(temp, tempList);
                             liveMap.put(n, tempList);
                         } else {
@@ -97,42 +107,35 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                             liveMap.put(n, tempList);
                         }
                     }
-               }
+                }
             }
         }
-        //from the liveMap, construct the interference graph
-        for(Node n : liveMap.keySet()){
+
+        for (Node n : liveMap.keySet()) {
             TempList tempList = liveMap.get(n);
-            for(; tempList != null; tempList = tempList.tail) {
-                for(var defs = flowGraph.def(n); defs != null; defs = defs.tail) {
-                    if(!flowGraph.isMove(n)) {
-                        //not a move, add an interference edge
-                        Node from = this.newNode();
-                        nodeTempMap.put(from, defs.head);
-                        tempNodeMap.put(defs.head, from);
-                        Node to = this.newNode();
-                        nodeTempMap.put(to, tempList.head);
-                        tempNodeMap.put(tempList.head, to);
-                        this.addEdge(from, to);
-                    } else {
-                        //liveness check on move
-                        //move presents a problem,
-                        //if a <- c
-                        //we will have interference
-                        //even though a and c could
-                        //be assigned to the same 
-                        //register. We should only
-                        //add an interference edge
-                        //if....
-                        if(defs.head != tempList.head) {
-                            Node from = this.newNode();
-                            nodeTempMap.put(from, defs.head);
-                            tempNodeMap.put(defs.head, from);
-                            Node to = this.newNode();
-                            nodeTempMap.put(to, tempList.head);
-                            tempNodeMap.put(tempList.head, to);
+            var defs = flowGraph.def(n);
+            var uses = flowGraph.use(n);
+            if (flowGraph.isMove(n)) {
+                // for each use temp that is not equals to liveout temp create edge
+                for (; uses != null; uses = uses.tail) { // dont need this loop, as only 1 use per moe ?
+                    for (; tempList != null; tempList = tempList.tail) {
+                        // we can assume moves only have 1 src and 1 dest
+                        if (uses.head.hashCode() != tempList.head.hashCode()) {
+                            Node from = this.getOrCreate(defs.head);
+                            Node to = this.getOrCreate(tempList.head);
                             this.addEdge(from, to);
+                            System.out.println("Added move interference edge " + defs.head + " " + tempList.head);
                         }
+                    }
+                }
+            } else {
+                // for each def temp and liveout temp create edge
+                for (; defs != null; defs = defs.tail) {
+                    Node from = this.getOrCreate(defs.head);
+                    for (; tempList != null; tempList = tempList.tail) {
+                        Node to = this.getOrCreate(tempList.head);
+                        this.addEdge(from, to);
+                        System.out.println("Added interference edge " + defs.head + " " + tempList.head);
                     }
                 }
             }
