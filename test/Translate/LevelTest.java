@@ -13,6 +13,7 @@ import Frame.Proc;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
+import Temp.TempList;
 import Tree.Exp;
 import Tree.ExpList;
 import Tree.Stm;
@@ -92,6 +93,11 @@ public class LevelTest {
         @Override
         public Proc procEntryExit3(InstrList body) {
             // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+	    public TempList registers(){
             return null;
         }
     }

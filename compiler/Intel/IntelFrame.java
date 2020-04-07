@@ -97,6 +97,40 @@ public class IntelFrame extends Frame {
             )
         )
     );
+
+    public static TempList registers = new TempList(
+        rcx, new TempList(
+            rdx, new TempList(
+                rdi, new TempList(
+                    rsi, new TempList(
+                        sp, new TempList(
+                            r8, new TempList(
+                                r9, new TempList(
+                                    r10, new TempList(
+                                        r11, new TempList(
+                                            rbx, new TempList(
+                                                rbp, new TempList(
+                                                    r12, new TempList(
+                                                        r13, new TempList(
+                                                            r14, new TempList(
+                                                                r15, specialRegs
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    );
+
+
     private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
     private static TempList returnSink = new TempList(sp, calleeSaves);
@@ -221,6 +255,11 @@ public class IntelFrame extends Frame {
         return tmap.containsKey(t) 
         ? tmap.get(t) 
         : t.toString();
+    }
+
+    @Override
+	public TempList registers() {
+        return registers;
     }
 
     private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b){

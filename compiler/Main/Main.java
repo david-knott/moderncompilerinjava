@@ -19,6 +19,7 @@ import Parse.Program;
 import Parse.Yylex;
 import RegAlloc.BitArrayInterferenceGraphImpl;
 import RegAlloc.InterferenceGraph;
+import RegAlloc.RegAlloc;
 import Semant.Semant;
 import Symbol.SymbolTable;
 import Temp.DefaultMap;
@@ -101,8 +102,9 @@ public class Main {
         instrs = procFrag.frame.procEntryExit2(instrs);
         out.println("# Instructions: ");
         out.println("section .text");
+        RegAlloc regAlloc = new RegAlloc(frame, instrs);
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
-            out.print(p.head.format(tempmap));
+            out.print(p.head.format(regAlloc));
 
         buildInterferenceGraph(instrs);
 

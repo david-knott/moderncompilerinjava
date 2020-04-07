@@ -3,6 +3,7 @@ package Frame;
 import Assem.InstrList;
 import Temp.Label;
 import Temp.Temp;
+import Temp.TempList;
 import Temp.TempMap;
 import Tree.Stm;
 
@@ -101,4 +102,6 @@ public abstract class Frame implements TempMap {
     abstract public String string(Label l, String literal);
 
 	abstract public InstrList codegen(Stm head);
+
+	abstract public TempList registers();
 }

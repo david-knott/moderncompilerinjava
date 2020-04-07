@@ -14,6 +14,7 @@ import Main.Main;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
+import Temp.TempList;
 import Tree.BINOP;
 import Tree.CONST;
 import Tree.Exp;
@@ -96,6 +97,11 @@ public class TranslateTest {
         @Override
         public Proc procEntryExit3(InstrList body) {
             // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+	    public TempList registers(){
             return null;
         }
     }
