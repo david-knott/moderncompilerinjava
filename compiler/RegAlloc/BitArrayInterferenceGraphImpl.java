@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import FlowGraph.FlowGraph;
 import Graph.Node;
+import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 
@@ -120,7 +121,7 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                 for (; uses != null; uses = uses.tail) { // dont need this loop, as only 1 use per moe ?
                     for (; tempList != null; tempList = tempList.tail) {
                         // we can assume moves only have 1 src and 1 dest
-                        if (uses.head.hashCode() != tempList.head.hashCode()) {
+                        if (uses.head != tempList.head && defs.head != tempList.head) {
                             Node from = this.getOrCreate(defs.head);
                             Node to = this.getOrCreate(tempList.head);
                             this.addEdge(from, to);
@@ -131,11 +132,13 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
             } else {
                 // for each def temp and liveout temp create edge
                 for (; defs != null; defs = defs.tail) {
-                    Node from = this.getOrCreate(defs.head);
                     for (; tempList != null; tempList = tempList.tail) {
-                        Node to = this.getOrCreate(tempList.head);
-                        this.addEdge(from, to);
-                        System.out.println("Added interference edge " + defs.head + " " + tempList.head);
+                        if(tempList.head != defs.head) {
+                            Node to = this.getOrCreate(tempList.head);
+                            Node from = this.getOrCreate(defs.head);
+                            this.addEdge(from, to);
+                            System.out.println("Added interference edge " + defs.head + " " + tempList.head);
+                        }
                     }
                 }
             }
@@ -145,19 +148,33 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
 
     @Override
     public Node tnode(Temp temp) {
-        // TODO Auto-generated method stub
-        return null;
+        return this.tempNodeMap.get(temp);
     }
 
     @Override
     public Temp gtemp(Node node) {
-        // TODO Auto-generated method stub
-        return null;
+        return this.nodeTempMap.get(node);
     }
 
     @Override
     public MoveList moves() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void show(java.io.PrintStream out) {
+		for (NodeList p = nodes(); p != null; p = p.tail) {
+			Node n = p.head;
+			out.print(n.toString());
+			out.print(": ");
+            out.print(this.gtemp(n));
+            out.print(" interferes with:");
+			for (NodeList q = n.succ(); q != null; q = q.tail) {
+                out.print(this.gtemp(q.head));
+				out.print(" ");
+			}
+			out.println();
+        }
     }
 }
