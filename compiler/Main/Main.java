@@ -20,87 +20,13 @@ import RegAlloc.RegAlloc;
 import Semant.Semant;
 import Symbol.SymbolTable;
 import Temp.TempMap;
-import Translate.DataFrag;
 import Translate.Frag;
 import Translate.Level;
 import Translate.ProcFrag;
 import Translate.Translate;
 import Tree.Print;
-import Tree.Stm;
 import Tree.StmList;
 import Types.Type;
-
-
-
-/**
- * Encapsulates the code generation phase
- */
-class CodeGeneration {
-
-    public CodeGeneration(Frame frame, StmListList traces) {
-//        Assem.InstrList instrs = this.codegen(frame, traced);
-    }
-
-    /**
-     * Returns a assemby translation for the supplied statement list stms
-     * and activation record f
-     * @param f
-     * @param stms
-     * @return
-     */
-    private InstrList codegen(Frame f, StmList stms) {
-        Assem.InstrList first = null, last = null;
-        for (Tree.StmList s = stms; s != null; s = s.tail) {
-            Assem.InstrList i = f.codegen(s.head);
-            if (last == null) {
-                first = last = i;
-            } else {
-                while (last.tail != null)
-                    last = last.tail;
-                last = last.tail = i;
-            }
-        }
-        return first;
-    }
-}
-
-/**
- * Encapsulates the canonicalisation phase
- */
-class Canonicalizer {
-
-    private Frag frags;
-
-    public Canonicalizer(Frag frags) {
-        this.frags = frags;
-    }
-
-    private StmList convert(Stm stm) {
-        StmList stms = Canon.linearize(stm);
-        BasicBlocks b = new BasicBlocks(stms);
-        StmList traced = (new TraceSchedule(b)).stms;
-        return traced;
-    }
-
-    private void process()  {
-        StmListList stmListList = null;
-        for (Frag frag = frags; frag != null; frag = frag.next) {
-            StmList sl = null;
-            if (frag instanceof ProcFrag) {
-                var procFrag = (ProcFrag) frag;
-                sl = convert(procFrag.body);
-            } else {
-                var dataFrag = (DataFrag)frag;
-                //TODO: Data Frag Statement
-            }
-            if(stmListList == null) {
-                stmListList  = new StmListList(sl, null);
-            } else {
-                stmListList.append(sl);
-            }
-        }
-    }
-}
 
 public class Main {
 
