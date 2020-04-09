@@ -11,18 +11,14 @@ import Canon.StmListList;
 import Canon.TraceSchedule;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
-import FlowGraph.AssemFlowGraph;
 import Frame.Frame;
 import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
-import RegAlloc.BitArrayInterferenceGraphImpl;
-import RegAlloc.InterferenceGraph;
 import RegAlloc.RegAlloc;
 import Semant.Semant;
 import Symbol.SymbolTable;
-import Temp.DefaultMap;
 import Temp.TempMap;
 import Translate.DataFrag;
 import Translate.Frag;
@@ -30,8 +26,81 @@ import Translate.Level;
 import Translate.ProcFrag;
 import Translate.Translate;
 import Tree.Print;
+import Tree.Stm;
 import Tree.StmList;
 import Types.Type;
+
+
+
+/**
+ * Encapsulates the code generation phase
+ */
+class CodeGeneration {
+
+    public CodeGeneration(Frame frame, StmListList traces) {
+//        Assem.InstrList instrs = this.codegen(frame, traced);
+    }
+
+    /**
+     * Returns a assemby translation for the supplied statement list stms
+     * and activation record f
+     * @param f
+     * @param stms
+     * @return
+     */
+    private InstrList codegen(Frame f, StmList stms) {
+        Assem.InstrList first = null, last = null;
+        for (Tree.StmList s = stms; s != null; s = s.tail) {
+            Assem.InstrList i = f.codegen(s.head);
+            if (last == null) {
+                first = last = i;
+            } else {
+                while (last.tail != null)
+                    last = last.tail;
+                last = last.tail = i;
+            }
+        }
+        return first;
+    }
+}
+
+/**
+ * Encapsulates the canonicalisation phase
+ */
+class Canonicalizer {
+
+    private Frag frags;
+
+    public Canonicalizer(Frag frags) {
+        this.frags = frags;
+    }
+
+    private StmList convert(Stm stm) {
+        StmList stms = Canon.linearize(stm);
+        BasicBlocks b = new BasicBlocks(stms);
+        StmList traced = (new TraceSchedule(b)).stms;
+        return traced;
+    }
+
+    private void process()  {
+        StmListList stmListList = null;
+        for (Frag frag = frags; frag != null; frag = frag.next) {
+            StmList sl = null;
+            if (frag instanceof ProcFrag) {
+                var procFrag = (ProcFrag) frag;
+                sl = convert(procFrag.body);
+            } else {
+                var dataFrag = (DataFrag)frag;
+                //TODO: Data Frag Statement
+            }
+            if(stmListList == null) {
+                stmListList  = new StmListList(sl, null);
+            } else {
+                stmListList.append(sl);
+            }
+        }
+    }
+}
 
 public class Main {
 
@@ -106,7 +175,7 @@ public class Main {
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
             out.print(p.head.format(regAlloc));
 
-        buildInterferenceGraph(instrs);
+        // buildInterferenceGraph(instrs);
 
         var procs = procFrag.frame.procEntryExit3(instrs);
 
@@ -115,7 +184,6 @@ public class Main {
     public boolean hasErrors() {
         return this.errorMsg.getCompilerErrors().size() != 0;
     }
-
 
     private InstrList codegen(Frame f, StmList stms) {
         Assem.InstrList first = null, last = null;
@@ -146,43 +214,20 @@ public class Main {
                 throw new Error(e.toString());
             }
         }
-        //find escaping variables
+        // find escaping variables
         findEscape.traverse(this.ast.absyn);
         var frags = this.semant.transProg(this.ast.absyn);
         for (Frag frag = frags; frag != null; frag = frag.next) {
             if (frag instanceof ProcFrag) {
-                //write function data
+                // write function data
                 emitProcFrag(out, (ProcFrag) frag);
             } else {
-                //write string data
+                // write string data
                 out.println("section .data");
                 out.println(frag);
             }
         }
         out.close();
         return 0;
-    }
-
-    /**
-     * Reverses instruction list
-     */
-    private Assem.InstrList reverse(Assem.InstrList instrs) {
-        if(instrs == null)
-            return null;
-        Assem.InstrList rev = new Assem.InstrList(instrs.head, null);
-        instrs = instrs.tail;
-        while(instrs != null) {
-            rev = new Assem.InstrList(instrs.head, rev);
-            instrs = instrs.tail;
-        }
-        return rev;
-    }
-
-    private InterferenceGraph buildInterferenceGraph(Assem.InstrList instrs) {
-        var flowGraph = new AssemFlowGraph(instrs);
-        flowGraph.show(System.out);
-        var interferenceGraph = new BitArrayInterferenceGraphImpl(flowGraph);
-        interferenceGraph.show(System.out);
-        return interferenceGraph;
     }
 }

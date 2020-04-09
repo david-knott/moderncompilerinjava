@@ -97,7 +97,7 @@ public class TranslateTest {
         @Override
         public Proc procEntryExit3(InstrList body) {
             // TODO Auto-generated method stub
-            return null;
+            return new Proc("", body, "");
         }
 
         @Override

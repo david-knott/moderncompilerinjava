@@ -122,6 +122,21 @@ class RegAllocImpl {
 
     }
 
+    /**
+     * Reverses instruction list
+     */
+    private Assem.InstrList reverse(Assem.InstrList instrs) {
+        if (instrs == null)
+            return null;
+        Assem.InstrList rev = new Assem.InstrList(instrs.head, null);
+        instrs = instrs.tail;
+        while (instrs != null) {
+            rev = new Assem.InstrList(instrs.head, rev);
+            instrs = instrs.tail;
+        }
+        return rev;
+    }
+
 }
 
 public class RegAlloc implements TempMap {
