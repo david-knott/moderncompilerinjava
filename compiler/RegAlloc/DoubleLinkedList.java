@@ -1,7 +1,5 @@
 package RegAlloc;
 
-import RegAlloc.DoubleLinkedList.Item;
-
 /**
  * Double linked list implementation of a sequence
  */

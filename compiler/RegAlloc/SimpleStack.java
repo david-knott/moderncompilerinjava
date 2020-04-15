@@ -1,7 +1,5 @@
 package RegAlloc;
 
-import RegAlloc.SimpleStack.Item;
-
 /**
  * Single linked list implementation of a stack
  * @param <T>
