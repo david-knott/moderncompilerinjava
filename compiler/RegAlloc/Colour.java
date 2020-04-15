@@ -8,6 +8,7 @@ class Colour implements TempMap {
     InterferenceGraph ig;
     TempMap initial;
     TempList registers;
+    RegAllocImpl regAllocImpl;
 
     /**
      * Constructor for a Colour. This class implements the TempMap
@@ -27,6 +28,7 @@ class Colour implements TempMap {
         this.ig = ig;
         this.initial = initial;
         this.registers = registers;
+        this.regAllocImpl = new RegAllocImpl();
     }
 
     public TempList spills() {
@@ -36,6 +38,7 @@ class Colour implements TempMap {
     @Override
     public String tempMap(Temp t) {
         // TODO Auto-generated method stub
+        //this.regAllocImpl.main();
         return null;
     }
 }

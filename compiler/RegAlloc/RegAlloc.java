@@ -20,9 +20,9 @@ public class RegAlloc implements TempMap {
 
     private InterferenceGraph buildInterferenceGraph() {
         var flowGraph = new AssemFlowGraph(this.instrs);
-        flowGraph.show(System.out);
+       // flowGraph.show(System.out);
         var interferenceGraph = new BitArrayInterferenceGraphImpl(flowGraph);
-        interferenceGraph.show(System.out);
+      //  interferenceGraph.show(System.out);
         return interferenceGraph;
     }
 
