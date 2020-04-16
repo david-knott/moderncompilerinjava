@@ -28,6 +28,9 @@ import Tree.Print;
 import Tree.StmList;
 import Types.Type;
 
+/**
+ * Main class that executes the compiler.
+ */
 public class Main {
 
     public static void main(final String[] args) throws FileNotFoundException {
@@ -126,6 +129,18 @@ public class Main {
         return first;
     }
 
+    /**
+     * Compiles the program. Using the parser we parse the source code
+     * and create an abstract syntax tree. The abstract syntax tree is
+     * traversed and we mark variables as escaping ( in frame ) or non
+     * escaping ( in register ). Semantic analysis is performed to check
+     * for type consistency and semantic meaning that cannot be infered
+     * from the grammar. The semantic analysis phase then produces an
+     * internediate form of the language that can be converted into assembly.
+     * The intermediate form is a list of fragments, either data fragment for strings
+     * or code fragment for a function. 
+     * @return
+     */
     public int compile() {
         PrintStream out = System.out; // java.io.PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
         try {

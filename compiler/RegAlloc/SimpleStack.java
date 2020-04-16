@@ -7,8 +7,7 @@ package RegAlloc;
 class SimpleStack<T> {
     
     private Item head;
-
-    class Item {
+    private class Item {
         T t;
         Item tail;
 
@@ -38,5 +37,4 @@ class SimpleStack<T> {
             head = new Item(t, head);
         }
     }
-
 }

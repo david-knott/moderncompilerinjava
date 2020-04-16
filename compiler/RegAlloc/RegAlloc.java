@@ -8,6 +8,7 @@ public class RegAlloc implements TempMap {
 
     public Assem.InstrList instrs;
     public Frame.Frame frame;
+    private TempMap tempMap;
 
     public RegAlloc(Frame.Frame f, Assem.InstrList il) {
         if (f == null)
@@ -16,6 +17,7 @@ public class RegAlloc implements TempMap {
             throw new Error("il cannot be null");
         this.frame = f;
         this.instrs = il;
+        this.tempMap = new Colour(buildInterferenceGraph(), this.frame, this.frame.registers());
     }
 
     private InterferenceGraph buildInterferenceGraph() {
@@ -28,7 +30,7 @@ public class RegAlloc implements TempMap {
 
     @Override
     public String tempMap(Temp t) {
-        return new Colour(buildInterferenceGraph(), this.frame, this.frame.registers()).tempMap(t);
+        return this.tempMap.tempMap(t);
     }
 
 }
