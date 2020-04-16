@@ -1,20 +1,25 @@
 package RegAlloc;
 
+
+enum NodeWorkList { PRECOLOURED, INITIAL, SIMPLIFY, FREEZE, SPILL, SPILLED, COALESCED, COLOURED};
+enum MoveWorkList { COALESCED, CONSTRAINED, FROZEN, WORKLIST, ACTIVE};
+
 /**
  * Double linked list implementation of a sequence
  */
 class DoubleLinkedList<T> {
 
+    //TODO - these should be private
     Item HEADER = new Item();
     Item TRAILER = new Item();
 
     class Item {
         T t;
+        //TODO - these should be private
         Item next;
         Item prev;
 
-        private Item() {
-        }
+        private Item() {}
 
         public Item(T t, Item prev, Item next) {
             this.prev = prev;

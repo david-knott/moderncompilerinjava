@@ -209,7 +209,22 @@ class RegAllocImpl {
 
     }
 
+    public Node getAlias(Node n) {
+        //if n is element in coalesce list, then  return getAlias(alias[n]) else
+        return n;
+    }
+
     public void assignColours() {
+        while(!this.selectStack.isEmpty()) {
+            //get the top node
+            var n = this.selectStack.pop();
+            //okColor = {0 .. K - 1}
+            for(var adj = this.interferenceGraph.tnode(n).adj(); adj != null; adj = adj.tail) {
+                
+
+            }
+
+        }
 
     }
 

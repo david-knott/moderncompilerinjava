@@ -18,7 +18,14 @@ class SimpleStack<T> {
         }
     }
 
+    boolean isEmpty() {
+        return this.head == null;
+    }
+
     T pop() {
+        if(this.isEmpty()) {
+            throw new Error("Stack is empty");
+        }
         Item last = this.head;
         this.head = this.head.tail;
         return last.t;

@@ -11,3 +11,5 @@ Another motivation for this is that I am not sure if we should run the register 
 Investigate if data frags, assembly which contains string literals, can be held in same list as proc frags.
 
 Current implementation has lots of print streams interleved with business logic. This makes refactoring hard
+
+Started worklist generation and asociated unit test

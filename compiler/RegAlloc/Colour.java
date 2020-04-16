@@ -38,7 +38,7 @@ class Colour implements TempMap {
     @Override
     public String tempMap(Temp t) {
         // TODO Auto-generated method stub
-        //this.regAllocImpl.main();
+        this.regAllocImpl.main();
         return null;
     }
 }
