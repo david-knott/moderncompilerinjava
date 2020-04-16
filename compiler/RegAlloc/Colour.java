@@ -97,8 +97,8 @@ class Colour implements TempMap {
     @Override
     public String tempMap(Temp t) {
         var node = this.ig.tnode(t);
-        if(this.color.containsKey(node)) {
-            return this.color.get(node).toString();
+        if(node != null && this.color.containsKey(node)) {
+            return "ta" + this.color.get(node).toString();
         }
         return t.toString();
     }
