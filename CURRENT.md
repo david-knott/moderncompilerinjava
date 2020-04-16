@@ -1,8 +1,17 @@
 # Current Tasks 
 
+Started basic graph colouring on interference graph. This only colours the temporaries that interfere
+with each other. Items that do not interfer are not reciving any colours. Presumably these can be assigned
+to something ? But what ??
+
+
+--------------------------------------------
+
 Refactoring canonicaliation & codegen phases
 
 Need to document the current functionality from end of the ranslate to ir phase to the start of register allocation. This all  in the Main.java file. 
+
+Ideally, the compiler could be a service that could be called as a jar file.
 
 Once complete, I can refactor. 
 
@@ -12,4 +21,4 @@ Investigate if data frags, assembly which contains string literals, can be held 
 
 Current implementation has lots of print streams interleved with business logic. This makes refactoring hard
 
-Started worklist generation and asociated unit test
+
