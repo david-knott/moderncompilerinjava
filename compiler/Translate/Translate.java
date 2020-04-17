@@ -405,7 +405,7 @@ public class Translate {
      * @return an tree expression
      */
     private Tree.Exp expSeq(Level level, ExpTyList expTyList) {
-        //invariant check
+        //invariant check, shouldn't happen
         if(expTyList.expTy == null && expTyList.tail == null){
             return null;
         }
@@ -413,6 +413,11 @@ public class Translate {
         var firstEx = expTyList.expTy.exp;
         if(expTyList.tail == null){
             return firstEx.unEx();
+        }
+        //only two items in list so, return first and last
+        if(expTyList.tail.tail == null) {
+            expTyList = expTyList.tail;
+            return new ESEQ(firstEx.unNx(), expTyList.expTy.exp.unEx());
         }
         //build list with n - 1 items
         ExpTyList allExceptLast = new ExpTyList(expTyList.expTy);
@@ -430,43 +435,7 @@ public class Translate {
         ExpTy last = expTyList.expTy;
         Stm statement = this.buildSeq(allExceptLast);
         return new ESEQ(statement, last.exp.unEx());
-
-        //more that one item
-        //build sequence from 1 -> n - 1
-
-        //build eseq from sequence & n
-        /*
-        if(expTyList.expTy == null && expTyList.tail == null){
-            return null;
-        }
-        var firstEx = expTyList.expTy.exp;
-        if(expTyList.tail == null){
-            return firstEx.unEx();
-        }
-        if(expTyList.tail.tail == null){
-            return new ESEQ(firstEx.unNx(), expTyList.tail.expTy.exp.unEx());
-        }
-        ESEQ eseq = null;
-        SEQ seq = new SEQ(firstEx.unNx(), null);
-        expTyList = expTyList.tail;
-        while(expTyList != null){
-            if(expTyList.tail == null){
-                eseq = new ESEQ(seq, expTyList.expTy.exp.unEx());
-            }else{
-                if(expTyList.tail.tail == null){
-                    seq.right = expTyList.expTy.exp.unNx();
-                } else {
-                    throw new Error("Fix this !");
-                  //  SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
-                  //  seq.right = seq1;
-                  //  seq = seq1;
-                }
-           }
-            expTyList = expTyList.tail;
-        }
-        return eseq;
-        */
-    }
+   }
 
     /**
      * Allocates an array in the heap. Returns a pointer to the
