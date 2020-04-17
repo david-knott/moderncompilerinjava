@@ -81,8 +81,8 @@ public class Main {
     private void emitProcFrag(PrintStream out, ProcFrag procFrag) {
         TempMap tempmap = new Temp.CombineMap(procFrag.frame, new Temp.DefaultMap());
         var print = new Print(out, tempmap);
-        // out.println("# Before canonicalization: ");
-        // print.prStm(procFrag.body);
+         out.println("# Before canonicalization: ");
+         print.prStm(procFrag.body);
         StmList stms = Canon.linearize(procFrag.body);
         // out.println("# After canonicalization: ");
         // prStmList(print, stms);

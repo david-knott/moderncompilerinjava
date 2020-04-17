@@ -5,6 +5,9 @@ with each other. Items that do not interfer are not reciving any colours. Presum
 to something ? But what ??
 
 
+Bug in translate expSeq
+
+
 --------------------------------------------
 
 Refactoring canonicaliation & codegen phases

@@ -155,8 +155,8 @@ public class Translate {
                             new LABEL(gotoSegFault),
                             new SEQ(
                                 new MOVE(
-                                    new MEM(new CONST(8)),
-                                    new CONST(9) /* TODO: assembly is a bit weird */
+                                    new MEM(new CONST(0)),
+                                    new CONST(0) /* TODO: assembly is a bit weird */
                                 ),
                                 new LABEL(gotoSubscript) /* not needed as a seg fauly will happen */
                             )
@@ -374,7 +374,58 @@ public class Translate {
         return seq;
     }
 
+    private Tree.Stm buildSeq(ExpTyList expTyList) {
+        //shouldn't happen
+        if(expTyList.expTy == null) {
+            return null;
+        }
+        if(expTyList.tail != null) {
+            return new SEQ(expTyList.expTy.exp.unNx(), buildSeq(expTyList.tail));
+        }
+        return expTyList.expTy.exp.unNx();
+    }
+
+    /**
+     * Returns a new ESEQ ( Expression Sequence), where the statements
+     * are evaluated first and the the expression is returned. If there is
+     * only one item in the list, that item is returned as an expression. 
+     * If there is more than one iten in the list, we create an ESEQ with the
+     * first n - 1 items as statements and the nth item as a expression
+     * @param level
+     * @param expTyList
+     * @return an tree expression
+     */
     private Tree.Exp expSeq(Level level, ExpTyList expTyList) {
+        //invariant check
+        if(expTyList.expTy == null && expTyList.tail == null){
+            return null;
+        }
+        //only one item in list, so just return it as expression
+        var firstEx = expTyList.expTy.exp;
+        if(expTyList.tail == null){
+            return firstEx.unEx();
+        }
+        //build list with n - 1 items
+        ExpTyList allExceptLast = new ExpTyList(expTyList.expTy);
+        for(; expTyList != null; expTyList = expTyList.tail) {
+            //the last item is next, update reference to expTypList
+            //and exit the loop
+            if(expTyList.tail.tail == null) {
+                expTyList = expTyList.tail;
+                break;
+            }
+            allExceptLast.append(expTyList.expTy);
+        }
+        //set the last item
+        ExpTy last = expTyList.expTy;
+        Stm statement = this.buildSeq(allExceptLast);
+        return new ESEQ(statement, last.exp.unEx());
+
+        //more that one item
+        //build sequence from 1 -> n - 1
+
+        //build eseq from sequence & n
+        /*
         if(expTyList.expTy == null && expTyList.tail == null){
             return null;
         }
@@ -395,14 +446,16 @@ public class Translate {
                 if(expTyList.tail.tail == null){
                     seq.right = expTyList.expTy.exp.unNx();
                 } else {
-                    SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
-                    seq.right = seq1;
-                    seq = seq1;
+                    throw new Error("Fix this !");
+                  //  SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
+                  //  seq.right = seq1;
+                  //  seq = seq1;
                 }
            }
             expTyList = expTyList.tail;
         }
         return eseq;
+        */
     }
 
     /**

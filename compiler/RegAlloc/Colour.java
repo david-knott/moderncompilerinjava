@@ -38,18 +38,17 @@ class Colour implements TempMap {
         this.initial = initial;
         this.registers = registers;
         this.regAllocImpl = new RegAllocImpl();
-
         //data structures to hold colouring data
         Hashtable<Node, Integer> degree = new Hashtable<Node, Integer>();
         Set<Node> simplifyWorklist = new HashSet<Node>();
         Set<Node> coloured = new HashSet<Node>();
         Stack<Node> selectStack = new Stack<Node>();
+        //add interfering nodes to simply work list
         for(NodeList nl = ig.nodes(); nl != null; nl = nl.tail) {
             simplifyWorklist.add(nl.head);
             degree.put(nl.head, nl.head.degree());
         }
         //simplify graph by pushing onto the stack
-        //for (Node node: simplifyWorklist) {
         while(!simplifyWorklist.isEmpty()) {
             var node = simplifyWorklist.iterator().next();
             simplifyWorklist.remove(node);
@@ -69,6 +68,9 @@ class Colour implements TempMap {
             colors.add(0);
             colors.add(1);
             colors.add(2);
+            colors.add(3);
+            colors.add(4);
+            colors.add(5);
             for(NodeList w = n.adj(); w != null; w = w.tail) {
                 //node w is in coloured set, remove its assigned color from colors set
                 if(coloured.contains(w.head)) {

@@ -13,7 +13,7 @@ public class LivenessTest {
 
     @Test
     public void sameLevelTest() {
-        String tigerCode = "let var z:int := 10 var a:int := 1 var b:int := 0  var c:int := 0 in (b := a + 1; c := c + b; c := b * 2; z := c; z ) end";
+        String tigerCode = "let var z:int := 11 var a:int := 7 var b:int := 66  var c:int := 22 in (b := a + 1; c := c + b; c := b * 2; z := c; z ) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();
