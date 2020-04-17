@@ -4,9 +4,9 @@ Started basic graph colouring on interference graph. This only colours the tempo
 with each other. Items that do not interfer are not reciving any colours. Presumably these can be assigned
 to something ? But what ??
 
-
-Bug in translate expSeq
-
+Sort out precoloured nodes. At the moment all registers including the
+precoloured ones are being included colouring. They shouldn't be as they
+are precoloured.
 
 --------------------------------------------
 
