@@ -416,6 +416,7 @@ public class Translate {
         }
         //build list with n - 1 items
         ExpTyList allExceptLast = new ExpTyList(expTyList.expTy);
+        expTyList = expTyList.tail;
         for(; expTyList != null; expTyList = expTyList.tail) {
             //the last item is next, update reference to expTypList
             //and exit the loop

@@ -24,7 +24,7 @@ class Colour implements TempMap {
      * interface, which provides a TempMap that contains all the
      * colour for the programs temporaries. 
      * @param ig the temporary inteference graph for the program
-     * @param initial the pre coloured temp map
+     * @param initial the pre coloured temp map, provided by frame
      * @param registers the list of temporaries that are to be coloured
      */
     public Colour(InterferenceGraph ig, TempMap initial, TempList registers) {
@@ -102,6 +102,6 @@ class Colour implements TempMap {
         if(node != null && this.color.containsKey(node)) {
             return "ta" + this.color.get(node).toString();
         }
-        return t.toString();
+        return this.initial.tempMap(t);
     }
 }
