@@ -374,6 +374,15 @@ public class Translate {
         return seq;
     }
 
+    /**
+     * Returns a Tree Stm from a Translated Expression List.
+     * If there is only one Translated Expression in the list
+     * that expression is returned as a statement. If there is
+     * more than one item, a Tree Seqence is returned. This function
+     * calls itself recursivly.
+     * @param expTyList
+     * @return
+     */
     private Tree.Stm buildSeq(ExpTyList expTyList) {
         //shouldn't happen
         if(expTyList.expTy == null) {
@@ -416,7 +425,7 @@ public class Translate {
             }
             allExceptLast.append(expTyList.expTy);
         }
-        //set the last item
+        //using the sequence and the last item build eseq
         ExpTy last = expTyList.expTy;
         Stm statement = this.buildSeq(allExceptLast);
         return new ESEQ(statement, last.exp.unEx());
