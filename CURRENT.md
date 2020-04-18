@@ -1,5 +1,7 @@
 # Current Tasks 
 
+Function return value was commented out as it was causing problems moving variables into their positions.
+
 Started basic graph colouring on interference graph. This only colours the temporaries that interfere
 with each other. Items that do not interfer are not reciving any colours. Presumably these can be assigned
 to something ? But what ??

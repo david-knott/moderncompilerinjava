@@ -53,21 +53,24 @@ public class Translate {
     }
 
      /**
-      * This function has the side effect of remembering a ProcFrag
+      * This function has the side effect of remembering a ProcFrag. It
+      * adds a move to the return value reqister if the procedure returns a value
       * @param level the current static function level
       * @param body the body of the function we are translating
       */
     public void procEntryExit(Level level, Exp body) {
         if (body == null)
             return;
+        var statement = level.frame.procEntryExit1(body.unNx());
         if (body instanceof Ex) {
-            var exp = new Nx(new MOVE(new TEMP(level.frame.RV()), body.unEx()));
-            var statement = level.frame.procEntryExit1(exp.unNx());
-            addFrag(new ProcFrag(statement, level.frame));
+           // var exp = new Nx(new MOVE(new TEMP(level.frame.RV()), body.unEx()));
+           // var statement = level.frame.procEntryExit1(exp.unNx());
+         //  statement = new MOVE(new TEMP(level.frame.RV()), statement.unEx());
+          //  addFrag(new ProcFrag(statement, level.frame));
         } else {
-            var statement = level.frame.procEntryExit1(body.unNx());
-            addFrag(new ProcFrag(statement, level.frame));
+           // var statement = level.frame.procEntryExit1(body.unNx());
         }
+        addFrag(new ProcFrag(statement, level.frame));
     }
 
     /**
@@ -108,25 +111,6 @@ public class Translate {
     public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar, Level level) {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
-        /*
-        return new Ex(
-            new MEM(
-                new BINOP(
-                    BINOP.PLUS, 
-                    baseExp, 
-                    new BINOP(
-                        BINOP.MUL, 
-                        new BINOP(
-                            BINOP.PLUS,
-                            indexExp, 
-                            new CONST(1)
-                        ),
-                        new CONST(level.frame.wordSize())
-                    )
-                )                
-            )
-        );
-        */
         var gotoSegFault = new Label();
         var gotoAnd = new Label();
         var gotoSubscript = new Label();
@@ -314,13 +298,12 @@ public class Translate {
         } else {
             //recursive call, use current frames static link
             staticLink = new MEM(
-            new BINOP(
-                BINOP.PLUS, 
-                new CONST(staticLinkOffset), 
-                new TEMP(callerLevel.frame.FP())
-            )
-        );
-        
+                new BINOP(
+                    BINOP.PLUS, 
+                    new CONST(staticLinkOffset), 
+                    new TEMP(callerLevel.frame.FP())
+                )
+            );
         }
         //add current frames frame pointer as parameter to call
         ExpList expList = new ExpList(staticLink, null);
@@ -328,6 +311,7 @@ public class Translate {
             expList.append(expTyList.expTy.exp.unEx());
             expTyList = expTyList.tail;
         }
+        //TODO: Why are these the same
         if(result.coerceTo(Semant.VOID)){
             return new Ex(new CALL(new NAME(functionLabel), expList));
         } else {
@@ -369,29 +353,6 @@ public class Translate {
             return new SEQ(expTyList.expTy.exp.unNx(), buildSeq(expTyList.tail));
         }
         return expTyList.expTy.exp.unNx();
-    }
-
-    private Stm stmSeq(Level level, ExpTyList expTyList) {
-        if(expTyList.expTy == null && expTyList.tail == null){
-            return null;
-        }
-        var firstStm = expTyList.expTy.exp.unNx();
-        if(expTyList.tail == null){
-            return firstStm;
-        }
-        SEQ seq = new SEQ(firstStm, null);
-        expTyList = expTyList.tail;
-        while(expTyList != null){
-            if(expTyList.tail == null){
-                seq.right = expTyList.expTy.exp.unNx();
-            }else{
-                SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
-                seq.right = seq1;
-                seq = seq1;
-            }
-            expTyList = expTyList.tail;
-        }
-        return seq;
     }
 
     /**

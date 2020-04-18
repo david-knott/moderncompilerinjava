@@ -14,6 +14,7 @@ import Parse.Yylex;
 import Semant.Semant;
 import Symbol.SymbolTable;
 import Translate.Frag;
+import Translate.FragProcessor;
 import Translate.Level;
 import Translate.Translate;
 import Types.Type;
@@ -102,9 +103,9 @@ public class Main {
         // find and mark escaping variables
         findEscape.traverse(this.ast.absyn);
         // get the IR function fragments
-        var frags = this.semant.transProg(this.ast.absyn);
+        var frags = this.semant.getTreeFragments(this.ast.absyn);
         //process all the frags and convert them into assembly
-        frags.processAll(out);
+        frags.processAll(new FragProcessor(out));
         //close output stream
         out.close();
         return 0;

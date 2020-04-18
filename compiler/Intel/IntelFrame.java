@@ -7,7 +7,9 @@ import Tree.CALL;
 import Tree.Exp;
 import Tree.ExpList;
 import Tree.NAME;
+import Tree.SEQ;
 import Tree.Stm;
+import Tree.StmList;
 import Util.BoolList;
 import Assem.InstrList;
 import Frame.*;
@@ -155,6 +157,36 @@ public class IntelFrame extends Frame {
         tmap.put(r15, "r15");
     }
 
+    private StmList callingConventions;
+
+    private void moveIntoPosition(Temp src, int i) {
+        Temp dest;
+        switch (i) {
+            case 0:
+                dest = rdi;
+                break;
+            case 1:
+                dest = rsi;
+                break;
+            case 2:
+                dest = rdx;
+                break;
+            case 3:
+                dest = rcx;
+                break;
+            case 4:
+                dest = r8;
+                break;
+            case 5:
+                dest = r9;
+                break;
+            default:
+                throw new Error("move temp into stack frame location");
+        }
+        this.callingConventions = new StmList(new Tree.MOVE(new Tree.TEMP(src), new Tree.TEMP(dest)),
+                this.callingConventions);
+    }
+
     /**
      * Initialises a new instance of an Intel Frame activation record
      * @param nm the label for the related function
@@ -164,10 +196,11 @@ public class IntelFrame extends Frame {
        int i = 0;
         while (frml != null) {
             // first arg is static link 
-            var escape = /*i == 0 ||*/ i > 6 || frml.head;
+            var escape = /*i == 0 ||*/ i > 5 || frml.head;
             Access local;
             if (!escape) {
                 Temp temp = new Temp();
+                moveIntoPosition(temp, i);
                 local = new InReg(temp);
             } else {
                 localOffset = localOffset - WORD_SIZE;
@@ -210,8 +243,29 @@ public class IntelFrame extends Frame {
 
     @Override
     public Stm procEntryExit1(Stm body) {
-        return body;
+        if (this.callingConventions == null)
+            return body;
+        return new SEQ(buildSeq(this.callingConventions), body);
     }
+
+    /**
+     * The return sink is an empty operation added to the end of a function.
+     * It is used by the flow analysis to ensure that certain precoloured
+     * temporaries are marked as live on exit from the function
+     */
+    public Assem.InstrList procEntryExit2(Assem.InstrList body){
+        return append(
+            body, 
+            new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
+    }
+
+    @Override
+    public Proc procEntryExit3(Assem.InstrList body) {
+        return new Proc(
+            "PROC " + "name", body, "END" + "name"
+        );
+    }
+
 
 
     @Override
@@ -237,24 +291,6 @@ public class IntelFrame extends Frame {
         return l + "  db " + literal.length() +  ",'" + literal + "'";
     }
 
-    /**
-     * The return sink is an empty operation added to the end of a function.
-     * It is used by the flow analysis to ensure that certain precoloured
-     * temporaries are marked as live on exit from the function
-     */
-    public Assem.InstrList procEntryExit2(Assem.InstrList body){
-        return append(
-            body, 
-            new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
-    }
-
-    @Override
-    public Proc procEntryExit3(Assem.InstrList body) {
-        return new Proc(
-            "PROC " + "name", body, "END" + "name"
-        );
-    }
-
     @Override
     public InstrList codegen(Stm head) {
         return (new Codegen.Codegen(this)).codegen(head);
@@ -272,12 +308,24 @@ public class IntelFrame extends Frame {
         return registers;
     }
 
-    private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b){
-        if(a == null) 
+    private Tree.Stm buildSeq(StmList list) {
+        // shouldn't happen
+        if (list == null) {
+            return null;
+        }
+        if (list.tail != null) {
+            return new SEQ(list.head, buildSeq(list.tail));
+        }
+        return list.head;
+    }
+
+    private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b) {
+        if (a == null)
             return b;
         else {
             Assem.InstrList p;
-            for(p = a; p.tail != null; p = p.tail);
+            for (p = a; p.tail != null; p = p.tail)
+                ;
             p.tail = b;
             return a;
         }

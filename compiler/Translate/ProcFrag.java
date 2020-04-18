@@ -34,11 +34,12 @@ public class ProcFrag extends Frag {
     }
 
     @Override
-    public void process(PrintStream out) {
+    public void process(FragProcessor processor) {
+		PrintStream out = processor.getOut();
         TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
-        var print = new Print(out, tempmap);
-        out.println("# Before canonicalization: ");
-        print.prStm(this.body);
+      //  var print = new Print(out, tempmap);
+    //    out.println("# Before canonicalization: ");
+    //    print.prStm(this.body);
         StmList stms = Canon.linearize(this.body);
         // out.println("# After canonicalization: ");
         // prStmList(print, stms);
@@ -49,9 +50,9 @@ public class ProcFrag extends Frag {
             // prStmList(print, l.head);
         }
         // print.prStm(new Tree.LABEL(b.done));
-        out.println("# Trace Scheduled: ");
+    //    out.println("# Trace Scheduled: ");
         StmList traced = (new TraceSchedule(b)).stms;
-        prStmList(print, traced);
+    //    prStmList(print, traced);
         Assem.InstrList instrs = codegen(this.frame, traced);
         instrs = this.frame.procEntryExit2(instrs);
         out.println("# Instructions: ");
@@ -60,7 +61,7 @@ public class ProcFrag extends Frag {
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
             out.print(p.head.format(regAlloc));
         // buildInterferenceGraph(instrs);
-        var procs = this.frame.procEntryExit3(instrs);
+      //  var procs = this.frame.procEntryExit3(instrs);
 
     }
 

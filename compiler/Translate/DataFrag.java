@@ -18,7 +18,8 @@ public class DataFrag extends Frag {
 	}
 
 	@Override
-	public void process(PrintStream out) {
+	public void process(FragProcessor processor) {
+		PrintStream out = processor.getOut();
 		out.println("section .data");
 		out.println(this);
 	}
