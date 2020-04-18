@@ -345,10 +345,30 @@ public class Translate {
             return expTyList.expTy.exp;
         }
         if(expTyList.last().expTy.ty != Semant.VOID){
-            return new Ex(expSeq(level, expTyList));
+            return new Ex(expSeq(expTyList));
         } else {
-            return new Nx(stmSeq(level, expTyList));
+            return new Nx(buildSeq(expTyList));
         }
+    }
+
+    /**
+     * Returns a Tree Stm from a Translated Expression List.
+     * If there is only one Translated Expression in the list
+     * that expression is returned as a statement. If there is
+     * more than one item, a Tree Seqence is returned. This function
+     * calls itself recursivly.
+     * @param expTyList
+     * @return
+     */
+    private Tree.Stm buildSeq(ExpTyList expTyList) {
+        //shouldn't happen
+        if(expTyList.expTy == null) {
+            return null;
+        }
+        if(expTyList.tail != null) {
+            return new SEQ(expTyList.expTy.exp.unNx(), buildSeq(expTyList.tail));
+        }
+        return expTyList.expTy.exp.unNx();
     }
 
     private Stm stmSeq(Level level, ExpTyList expTyList) {
@@ -375,26 +395,6 @@ public class Translate {
     }
 
     /**
-     * Returns a Tree Stm from a Translated Expression List.
-     * If there is only one Translated Expression in the list
-     * that expression is returned as a statement. If there is
-     * more than one item, a Tree Seqence is returned. This function
-     * calls itself recursivly.
-     * @param expTyList
-     * @return
-     */
-    private Tree.Stm buildSeq(ExpTyList expTyList) {
-        //shouldn't happen
-        if(expTyList.expTy == null) {
-            return null;
-        }
-        if(expTyList.tail != null) {
-            return new SEQ(expTyList.expTy.exp.unNx(), buildSeq(expTyList.tail));
-        }
-        return expTyList.expTy.exp.unNx();
-    }
-
-    /**
      * Returns a new ESEQ ( Expression Sequence), where the statements
      * are evaluated first and the the expression is returned. If there is
      * only one item in the list, that item is returned as an expression. 
@@ -404,7 +404,7 @@ public class Translate {
      * @param expTyList
      * @return an tree expression
      */
-    private Tree.Exp expSeq(Level level, ExpTyList expTyList) {
+    private Tree.Exp expSeq(ExpTyList expTyList) {
         //invariant check, shouldn't happen
         if(expTyList.expTy == null && expTyList.tail == null){
             return null;
@@ -515,7 +515,7 @@ public class Translate {
     }
 
     public Exp record(Level level, ExpTyList expTyList) {
-        Temp recordPointer = IntelFrame.rv;//new Temp();
+        Temp recordPointer = IntelFrame.rax;//new Temp();
         //Temp recordPointer = new Temp();
         Stm stm = fieldList(recordPointer, expTyList, level);
         int total = 0;

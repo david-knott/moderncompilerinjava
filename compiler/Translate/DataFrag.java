@@ -1,7 +1,6 @@
 package Translate;
 
-import Temp.Label;
-import Tree.Exp;
+import java.io.PrintStream;
 
 /**
  * Stores string literal data
@@ -16,5 +15,11 @@ public class DataFrag extends Frag {
 
 	public String toString() {
 		return this.data;
+	}
+
+	@Override
+	public void process(PrintStream out) {
+		out.println("section .data");
+		out.println(this);
 	}
 }

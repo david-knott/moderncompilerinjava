@@ -15,6 +15,7 @@ import Temp.TempList;
 import Temp.TempMap;
 
 class Colour implements TempMap {
+
     InterferenceGraph ig;
     TempMap initial;
     TempList registers;
@@ -92,10 +93,6 @@ class Colour implements TempMap {
                 color.put(n, nc);
             }
         }
-
-
-        System.out.println("");
-
     }
 
     public TempList spills() {
@@ -104,10 +101,12 @@ class Colour implements TempMap {
 
     @Override
     public String tempMap(Temp t) {
+        //should map the temporary t to the mapped value
+       // System.out.println("looking for string for temp " + t);
         //eturn new CombineMap(this.initial, this).tempMap(t);
         var node = this.ig.tnode(t);
         if(node != null && this.color.containsKey(node)) {
-      //      return "ta" + this.color.get(node).toString();
+      //      t = this.color.get(node);
         }
         return this.initial.tempMap(t);
     }

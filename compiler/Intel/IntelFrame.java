@@ -28,7 +28,7 @@ public class IntelFrame extends Frame {
 
     private int localOffset = WORD_SIZE;
     private static final int WORD_SIZE = 8;
-    public static Temp rv = new Temp();
+    public static Temp rax = new Temp();
     public static Temp fp = new Temp();
     public static Temp sp = new Temp();
     public static Temp rbx = new Temp();//callee save
@@ -46,7 +46,7 @@ public class IntelFrame extends Frame {
     public static Temp r14= new Temp();//callee
     public static Temp r15= new Temp();//callee
     public static TempList specialRegs = new TempList(
-        rv, new TempList(
+        rax, new TempList(
             fp, new TempList(
                 sp, null
             )
@@ -103,27 +103,27 @@ public class IntelFrame extends Frame {
             rdx, new TempList(
                 rdi, new TempList(
                     rsi, new TempList(
-                        sp, new TempList(
+                        //sp, new TempList(
                             r8, new TempList(
                                 r9, new TempList(
                                     r10, new TempList(
                                         r11, new TempList(
-                                            rbx, new TempList(
-                                                rbp, new TempList(
+                                            //rbx, new TempList(
+                                               // rbp, new TempList(
                                                     r12, new TempList(
                                                         r13, new TempList(
-                                                            r14, new TempList(
+                                                            r14/*, new TempList(
                                                                 r15, specialRegs
-                                                            )
+                                                            )*/, null
                                                         )
-                                                    )
-                                                )
+                                                 //   )
+                                             //   )
                                             )
                                         )
                                     )
                                 )
                             )
-                        )
+                        //)
                     )
                 )
             )
@@ -136,7 +136,7 @@ public class IntelFrame extends Frame {
     private static TempList returnSink = new TempList(sp, calleeSaves);
 
     static {
-        tmap.put(rv, "rax");
+        tmap.put(rax, "rax");
         tmap.put(fp, "rbp");
         tmap.put(sp, "sp");
         tmap.put(rbx, "rbx");
@@ -155,6 +155,11 @@ public class IntelFrame extends Frame {
         tmap.put(r15, "r15");
     }
 
+    /**
+     * Initialises a new instance of an Intel Frame activation record
+     * @param nm the label for the related function
+     * @param frml the formal list, where true indicates the argument escapes
+     */
     public IntelFrame(Label nm, BoolList frml) {
        int i = 0;
         while (frml != null) {
@@ -195,7 +200,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Temp RV() {
-        return rv;
+        return rax;
     }
 
     @Override
@@ -232,6 +237,11 @@ public class IntelFrame extends Frame {
         return l + "  db " + literal.length() +  ",'" + literal + "'";
     }
 
+    /**
+     * The return sink is an empty operation added to the end of a function.
+     * It is used by the flow analysis to ensure that certain precoloured
+     * temporaries are marked as live on exit from the function
+     */
     public Assem.InstrList procEntryExit2(Assem.InstrList body){
         return append(
             body, 

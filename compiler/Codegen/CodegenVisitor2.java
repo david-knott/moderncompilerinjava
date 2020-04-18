@@ -31,7 +31,7 @@ class CodegenVisitor2 implements TreeVisitor {
     Assem.InstrList iList = null, last = null;
     private Temp temp;
     private Frame frame;
-    private TempList calldefs = new TempList(IntelFrame.rv, IntelFrame.callerSaves);
+    private TempList calldefs = new TempList(IntelFrame.rax, IntelFrame.callerSaves);
 
 	private TempList L(Temp h, TempList t) {
         return new TempList(h, t);
@@ -395,9 +395,9 @@ class CodegenVisitor2 implements TreeVisitor {
             case BINOP.ARSHIFT:
                 break;
             case BINOP.DIV:
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax \n", IntelFrame.rv, leftTemp));
-                emit(new OPER("div  %`s0\t; divide rax by value in right \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null) ));
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax \n", IntelFrame.rax, leftTemp));
+                emit(new OPER("div  %`s0\t; divide rax by value in right \n", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, null) ));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rax));
                 break;
             case BINOP.LSHIFT:
                 break;
@@ -406,9 +406,9 @@ class CodegenVisitor2 implements TreeVisitor {
                 break;
             case BINOP.MUL:
                 emit(new OPER(";comment\n", null, null));
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", IntelFrame.rv, leftTemp));
-                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rv, null))));
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", IntelFrame.rax, leftTemp));
+                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rax));
                 break;
             case BINOP.OR:
                 emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
@@ -429,7 +429,7 @@ class CodegenVisitor2 implements TreeVisitor {
     public void visit(CALL call) {
         var name = (NAME)call.func;
         TempList l = munchArgs(0, call.args);
-        temp = IntelFrame.rv;
+        temp = IntelFrame.rax;
         emit(new OPER("call " + name.label + "\n",  calldefs, l));
     }
 

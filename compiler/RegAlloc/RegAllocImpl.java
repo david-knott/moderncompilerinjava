@@ -4,7 +4,8 @@ import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Temp.Temp;
-
+import Util.SimpleStack;
+import Util.DoubleLinkedList;
 /**
  * Represents a basic implementation of the register allocation
  * algorithm that does not support spilling or coalescing
@@ -117,21 +118,13 @@ class RegAllocImpl {
      * Creates a worklist using the interference graph
      */
     public void makeWorklist() {
+        /*
         for(var i = initial.first(); i != initial.TRAILER; i = i.next) {
             Temp n = i.t;
-            //unlink i from the list
             var prev = i.prev;
             var next = i.next;
             prev.next= i.next;
             next.prev = i.prev;
-            /**
-             * If degree(n) >= K then
-             * spillWorkList = spillWorklist union n
-             * else if moveRelated(n) then
-             * freezeWorklist = freezeWorklist union n
-             * else
-             * simplifyWorklist = simplifyWorklist union n
-             */
             if(this.degree(n) >= K) {
                 throw new Error("spill - not implemeneted");
             } else if(this.moveRelated(n)) {
@@ -139,7 +132,7 @@ class RegAllocImpl {
             } else {
                 this.simplifyWorklist.addToEnd(this.interferenceGraph.tnode(n));
             }
-        }
+        }*/
     }
 
     private boolean moveRelated(Temp n) {
@@ -155,8 +148,8 @@ class RegAllocImpl {
      * and then looking for further oppurtunities to simplify.
      */
     public void simpify() {
+        /*
         for(var i = this.simplifyWorklist.first(); i != this.simplifyWorklist.TRAILER; i = i.next) {
-            //unlink i from the list
             var prev = i.prev;
             var next = i.next;
             prev.next= i.next;
@@ -165,7 +158,7 @@ class RegAllocImpl {
             for(var m = this.adjacent(i.t).first(); m != this.adjacent(i.t).TRAILER; m = m.next) {
                 this.decrementDegree(m.t);
             }
-        }
+        }*/
     }
 
     private void decrementDegree(Node t) {
@@ -215,17 +208,13 @@ class RegAllocImpl {
     }
 
     public void assignColours() {
+        /*
         while(!this.selectStack.isEmpty()) {
-            //get the top node
             var n = this.selectStack.pop();
-            //okColor = {0 .. K - 1}
             for(var adj = this.interferenceGraph.tnode(n).adj(); adj != null; adj = adj.tail) {
-                
-
             }
-
         }
-
+        */
     }
 
     public void rewriteProgram() {

@@ -1,13 +1,13 @@
-package RegAlloc;
+package Util;
 
 
-enum NodeWorkList { PRECOLOURED, INITIAL, SIMPLIFY, FREEZE, SPILL, SPILLED, COALESCED, COLOURED};
-enum MoveWorkList { COALESCED, CONSTRAINED, FROZEN, WORKLIST, ACTIVE};
+//enum NodeWorkList { PRECOLOURED, INITIAL, SIMPLIFY, FREEZE, SPILL, SPILLED, COALESCED, COLOURED};
+//enum MoveWorkList { COALESCED, CONSTRAINED, FROZEN, WORKLIST, ACTIVE};
 
 /**
  * Double linked list implementation of a sequence
  */
-class DoubleLinkedList<T> {
+public class DoubleLinkedList<T> {
 
     //TODO - these should be private
     Item HEADER = new Item();
@@ -33,25 +33,25 @@ class DoubleLinkedList<T> {
         TRAILER.prev = HEADER;
     }
 
-    Item first() {
+    public Item first() {
         return HEADER.next;
     }
 
-    void addToStart(T t) {
+    public void addToStart(T t) {
         Item i = new Item(t, HEADER, HEADER.next);
         HEADER.next = i;
     }
 
-    void addToEnd(T t) {
+    public void addToEnd(T t) {
         Item i = new Item(t, TRAILER, TRAILER.prev);
         TRAILER.prev = i;
     }
     
-    T removeFromStart() {
+    public T removeFromStart() {
         return null;
     }
 
-    T removeFromEnd() {
+    public T removeFromEnd() {
         return null;
     }
 }

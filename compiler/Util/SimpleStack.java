@@ -1,10 +1,10 @@
-package RegAlloc;
+package Util;
 
 /**
  * Single linked list implementation of a stack
  * @param <T>
  */
-class SimpleStack<T> {
+public class SimpleStack<T> {
     
     private Item head;
     private class Item {
