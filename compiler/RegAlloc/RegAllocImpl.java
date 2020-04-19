@@ -4,7 +4,7 @@ import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Temp.Temp;
-import Util.SimpleStack;
+import Util.LinkedListStack;
 import Util.DoubleLinkedList;
 /**
  * Represents a basic implementation of the register allocation
@@ -30,7 +30,7 @@ class RegAllocImpl {
     //colouredNodes - nodes succesfully coloured
     private DoubleLinkedList<Node> colouredNodes;
     //selectStack - stack containing temporaries removed from graph.
-    private SimpleStack<Temp> selectStack;
+    private LinkedListStack<Temp> selectStack;
     //8 registers
     private int K = 8;
     //contains the degrees of all nodes within our interference graph.
@@ -51,7 +51,7 @@ class RegAllocImpl {
         this.spilledNodes =  new DoubleLinkedList<Node>();
         this.coalescedNodes =  new DoubleLinkedList<Node>();
         this.colouredNodes =  new DoubleLinkedList<Node>();
-        this.selectStack = new SimpleStack<Temp>();
+        this.selectStack = new LinkedListStack<Temp>();
         this.degrees = new int[]{};
     }
 

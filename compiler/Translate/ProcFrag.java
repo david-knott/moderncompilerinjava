@@ -8,13 +8,14 @@ import Canon.Canon;
 import Canon.StmListList;
 import Canon.TraceSchedule;
 import Frame.Frame;
-import RegAlloc.RegAlloc;
+import RegAlloc.RegisterAllocator;
 import Temp.TempMap;
 import Tree.Print;
 import Tree.StmList;
 
 /**
- * Function fragment which contains the frame for the procedure, with
+ * Function assembly fragment which also contains the frame for the procedure.
+ * The frame layout contains 
  * information about locals and variables. The body contains the IL code, which
  * is returned from the procEntryExit1
  */
@@ -57,10 +58,11 @@ public class ProcFrag extends Frag {
         Assem.InstrList instrs = codegen(this.frame, traced);
         instrs = this.frame.procEntryExit2(instrs);
         out.println("section .text");
-        RegAlloc regAlloc = new RegAlloc(frame, instrs);
-        TempMap tempmap2 = new Temp.CombineMap(this.frame, regAlloc);
-        for (Assem.InstrList p = instrs; p != null; p = p.tail)
-            out.print(p.head.format(tempmap2));
+        RegisterAllocator regAlloc = new RegisterAllocator(frame, instrs);
+        regAlloc.allocate();
+     //   TempMap tempmap2 = new Temp.CombineMap(this.frame, regAlloc);
+    //    for (Assem.InstrList p = instrs; p != null; p = p.tail)
+    //        out.print(p.head.format(tempmap2));
         // buildInterferenceGraph(instrs);
         // var procs = this.frame.procEntryExit3(instrs);
 

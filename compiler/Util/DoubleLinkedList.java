@@ -1,8 +1,6 @@
 package Util;
 
 
-//enum NodeWorkList { PRECOLOURED, INITIAL, SIMPLIFY, FREEZE, SPILL, SPILLED, COALESCED, COLOURED};
-//enum MoveWorkList { COALESCED, CONSTRAINED, FROZEN, WORKLIST, ACTIVE};
 
 /**
  * Double linked list implementation of a sequence

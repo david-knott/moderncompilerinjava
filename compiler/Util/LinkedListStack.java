@@ -4,7 +4,7 @@ package Util;
  * Single linked list implementation of a stack
  * @param <T>
  */
-public class SimpleStack<T> {
+public class LinkedListStack<T> {
     
     private Item head;
     private class Item {
@@ -17,11 +17,11 @@ public class SimpleStack<T> {
         }
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return this.head == null;
     }
 
-    T pop() {
+    public T pop() {
         if(this.isEmpty()) {
             throw new Error("Stack is empty");
         }
@@ -30,7 +30,7 @@ public class SimpleStack<T> {
         return last.t;
     }
 
-    void push(T t) {
+    public void push(T t) {
         if(head == null) {
             head = new Item(t, null);
         } else {
