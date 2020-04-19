@@ -24,7 +24,7 @@ import Tree.SEQ;
 import Tree.TEMP;
 import Tree.TreeVisitor;
 
-class CodegenVisitor2 implements TreeVisitor {
+class CodegenVisitor implements TreeVisitor {
 
     private TreePatternList tpl;
 
@@ -81,8 +81,6 @@ class CodegenVisitor2 implements TreeVisitor {
         if (finalPos != null) {
             emit(new Assem.MOVE("movq %`s0, %`d0;\tmove argument " + i + " into register\n", finalPos, argTemp));
         } else {
-            //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
-            //TODO: where dest is MEM location of stack pointer with offset ?
             emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)\t;move argument " + i + " into frame\n", IntelFrame.rsp, argTemp));
         }
         if (args.tail == null) {
@@ -377,7 +375,7 @@ class CodegenVisitor2 implements TreeVisitor {
         );
     }
 
-    public CodegenVisitor2(Frame frame) {
+    public CodegenVisitor(Frame frame) {
         this.frame = frame;
         tpl = new TreePatternList();
         registerExpTreePatterns();

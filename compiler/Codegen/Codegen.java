@@ -2,7 +2,6 @@ package Codegen;
 
 import Frame.Frame;
 
-
 public class Codegen {
 
     Frame frame;
@@ -11,15 +10,9 @@ public class Codegen {
         frame = f;
     }
 
-    private Assem.InstrList iList = null, last = null;
-
     public Assem.InstrList codegen(Tree.Stm stm) {
-        Assem.InstrList l;
-       // munchStm(stm);
-       var cg = new CodegenVisitor2(frame);
-       stm.accept(cg);
-        l = iList;
-        iList = last = null;
+        var cg = new CodegenVisitor(frame);
+        stm.accept(cg);
         return cg.iList;
     }
 }
