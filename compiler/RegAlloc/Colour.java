@@ -113,7 +113,7 @@ class Colour implements TempMap {
         //eturn new CombineMap(this.initial, this).tempMap(t);
         var node = this.ig.tnode(t);
         if(node != null && this.color.containsKey(node)) {
-      //      t = this.color.get(node);
+           t = this.color.get(node);
         }
         return this.initial.tempMap(t);
     }

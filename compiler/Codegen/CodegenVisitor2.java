@@ -83,7 +83,7 @@ class CodegenVisitor2 implements TreeVisitor {
         } else {
             //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
             //TODO: where dest is MEM location of stack pointer with offset ?
-            emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)\t;move argument " + i + " into frame\n", IntelFrame.sp, argTemp));
+            emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)\t;move argument " + i + " into frame\n", IntelFrame.rsp, argTemp));
         }
         if (args.tail == null) {
             return L(argTemp, null);

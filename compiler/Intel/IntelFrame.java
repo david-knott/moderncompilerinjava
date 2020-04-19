@@ -31,26 +31,25 @@ public class IntelFrame extends Frame {
     private int localOffset = WORD_SIZE;
     private static final int WORD_SIZE = 8;
     public static Temp rax = new Temp();
-    public static Temp fp = new Temp();
-    public static Temp sp = new Temp();
-    public static Temp rbx = new Temp();//callee save
-    public static Temp rcx = new Temp();//4th argu
-    public static Temp rdx = new Temp();//3rd argu
-    public static Temp rsi = new Temp();//2lrd argu
-    public static Temp rdi = new Temp();//1st argu
-    public static Temp rbp = new Temp();//callee saved
-    public static Temp r8= new Temp();//5th argup
-    public static Temp r9= new Temp();//6th argup
-    public static Temp r10= new Temp();//scratch
-    public static Temp r11= new Temp();//scratch
-    public static Temp r12= new Temp();//callee
-    public static Temp r13= new Temp();//callee
-    public static Temp r14= new Temp();//callee
-    public static Temp r15= new Temp();//callee
+    public static Temp rsp = new Temp();
+    public static Temp rbx = new Temp();// callee save
+    public static Temp rcx = new Temp();// 4th argu
+    public static Temp rdx = new Temp();// 3rd argu
+    public static Temp rsi = new Temp();// 2lrd argu
+    public static Temp rdi = new Temp();// 1st argu
+    public static Temp rbp = new Temp();// callee saved
+    public static Temp r8 = new Temp();// 5th argup
+    public static Temp r9 = new Temp();// 6th argup
+    public static Temp r10 = new Temp();// scratch
+    public static Temp r11 = new Temp();// scratch
+    public static Temp r12 = new Temp();// callee
+    public static Temp r13 = new Temp();// callee
+    public static Temp r14 = new Temp();// callee
+    public static Temp r15 = new Temp();// callee
     public static TempList specialRegs = new TempList(
-            rbp, new TempList(
-                sp, null
-            )
+        rbp, new TempList(
+            rsp, null
+        )
     );
     /**
      * A linked list of temporaries that represent
@@ -120,27 +119,27 @@ public class IntelFrame extends Frame {
                 rdx, new TempList(
                     rdi, new TempList(
                         rsi, new TempList(
-                            //sp, new TempList(
+                            rsp, new TempList(
                                 r8, new TempList(
                                     r9, new TempList(
                                         r10, new TempList(
                                             r11, new TempList(
-                                                //rbx, new TempList(
-                                                // rbp, new TempList(
+                                                rbx, new TempList(
+                                                 rbp, new TempList(
                                                         r12, new TempList(
                                                             r13, new TempList(
-                                                                r14/*, new TempList(
+                                                                r14, new TempList(
                                                                     r15, specialRegs
-                                                                )*/, null
+                                                                ) 
                                                             )
-                                                    //   )
-                                                //   )
+                                                       )
+                                                   )
                                                 )
                                             )
                                         )
                                     )
                                 )
-                            //)
+                            )
                         )
                     )
                 )
@@ -151,11 +150,11 @@ public class IntelFrame extends Frame {
 
     private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
-    private static TempList returnSink = new TempList(sp, calleeSaves);
+    private static TempList returnSink = new TempList(rsp, calleeSaves);
 
     static {
         tmap.put(rax, "rax");
-        tmap.put(sp, "rsp");
+        tmap.put(rsp, "rsp");
         tmap.put(rbp, "rbp");
         tmap.put(rbx, "rbx");
         tmap.put(rcx, "rcx");
