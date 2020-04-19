@@ -10,6 +10,7 @@ import java.util.Stack;
 
 import Graph.Node;
 import Graph.NodeList;
+import Intel.IntelFrame;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
@@ -19,6 +20,7 @@ class Colour implements TempMap {
     InterferenceGraph ig;
     TempMap initial;
     TempList registers;
+    TempList precoloured;
     RegAllocImpl regAllocImpl;
 
     Hashtable<Node, Temp> color = new Hashtable<Node, Temp>();
@@ -38,7 +40,7 @@ class Colour implements TempMap {
      * @param initial a TempMap that contains the pre coloured registers, provided by frame
      * @param registers the list of all the machine registers
      */
-    public Colour(InterferenceGraph ig, TempMap initial, TempList registers) {
+    public Colour(InterferenceGraph ig, TempMap initial, TempList registers, TempList precoloured) {
         if (ig == null)
             throw new Error("ig cannot be null");
         if (initial == null)
@@ -48,39 +50,42 @@ class Colour implements TempMap {
         this.ig = ig;
         this.initial = initial;
         this.registers = registers;
+        this.precoloured = precoloured;
         this.regAllocImpl = new RegAllocImpl();
         //data structures to hold colouring data
         Hashtable<Node, Integer> degree = new Hashtable<Node, Integer>();
         Set<Node> simplifyWorklist = new HashSet<Node>();
         Set<Node> coloured = new HashSet<Node>();
-        Set<Node> precoloured = new HashSet<Node>();
         Stack<Node> selectStack = new Stack<Node>();
         //add interfering nodes to simply work list
         for(NodeList nl = ig.nodes(); nl != null; nl = nl.tail) {
             simplifyWorklist.add(nl.head);
             degree.put(nl.head, nl.head.degree());
         }
+        var allColours = this.linkedListToCollection(this.registers);
+        var allPrecoloured = this.linkedListToCollection(this.precoloured);
         //simplify graph by pushing onto the stack
         while(!simplifyWorklist.isEmpty()) {
             var node = simplifyWorklist.iterator().next();
             simplifyWorklist.remove(node);
             selectStack.push(node);
+            /*
             for(NodeList anl = node.adj(); anl != null; anl = anl.tail) {
                 var d = degree.get(anl.head) - 1;
                 degree.put(anl.head, d);
-                if(d == 3) {
+                if(d == allColours.size()) {
                     simplifyWorklist.add(anl.head);
                 }
-            }
+            }*/
         }
         //assign colours
         while(!selectStack.empty()) {
             Node n = selectStack.pop();
             var okColours = new HashSet<Temp>();
-            okColours.addAll(this.linkedListToCollection(this.registers));
+            okColours.addAll(allColours);
             for(NodeList w = n.adj(); w != null; w = w.tail) {
                 //node w is in coloured set, remove its assigned color from okColours set
-                if(coloured.contains(w.head) || precoloured.contains(w.head)) {
+                if(coloured.contains(w.head) || allPrecoloured.contains(ig.gtemp(w.head))) {
                     okColours.remove(color.get(w.head));
                 }
             }
@@ -90,9 +95,11 @@ class Colour implements TempMap {
             } else {
                 coloured.add(n);
                 var nc = okColours.iterator().next();
+                System.out.println("assigning " + this.ig.gtemp(n) + " color " + nc);
                 color.put(n, nc);
             }
         }
+        System.out.println("done");
     }
 
     public TempList spills() {

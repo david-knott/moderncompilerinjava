@@ -103,5 +103,7 @@ public abstract class Frame implements TempMap {
 
 	abstract public InstrList codegen(Stm head);
 
-	abstract public TempList registers();
+    abstract public TempList registers();
+
+	abstract public TempList precoloured();
 }

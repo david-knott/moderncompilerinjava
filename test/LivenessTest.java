@@ -85,7 +85,7 @@ public class LivenessTest {
 
     @Test
     public void moveFunctionArguments() {
-        String tigerCode = "let function add(a:int, b:int):int = a + b in add(1,2) end";
+        String tigerCode = "let var c:int := 3 function add(a:int, b:int):int = a + b in (c := add(1,2) + c; c) end";
      //   String tigerCode = "let var z:int := 11 in (z := z + 3; z ) end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);

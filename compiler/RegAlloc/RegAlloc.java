@@ -17,7 +17,7 @@ public class RegAlloc implements TempMap {
             throw new Error("il cannot be null");
         this.frame = f;
         this.instrs = il;
-        this.colour = new Colour(buildInterferenceGraph(), this.frame, this.frame.registers());
+        this.colour = new Colour(buildInterferenceGraph(), this.frame, this.frame.registers(), this.frame.precoloured());
     }
 
     private InterferenceGraph buildInterferenceGraph() {

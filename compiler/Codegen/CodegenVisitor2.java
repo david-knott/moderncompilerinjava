@@ -31,6 +31,13 @@ class CodegenVisitor2 implements TreeVisitor {
     Assem.InstrList iList = null, last = null;
     private Temp temp;
     private Frame frame;
+    /**
+     * A linked list of temporaries that are used in liveness
+     * analysis to flag caller saved registers ( registers that caller must manage )
+     * as being destination nodes or defs. This means they are defined at the point 
+     * the callee is invoked, this in turn means they are live across the function call.
+     * Which means they will interfere with all other temporaries within that function.
+     */
     private TempList calldefs = new TempList(IntelFrame.rax, IntelFrame.callerSaves);
 
 	private TempList L(Temp h, TempList t) {

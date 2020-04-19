@@ -104,6 +104,12 @@ public class TranslateTest {
 	    public TempList registers(){
             return null;
         }
+
+        @Override
+        public TempList precoloured() {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     public class TestAcess extends Frame.Access{

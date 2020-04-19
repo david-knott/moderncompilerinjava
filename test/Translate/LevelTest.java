@@ -100,6 +100,12 @@ public class LevelTest {
 	    public TempList registers(){
             return null;
         }
+
+        @Override
+        public TempList precoloured() {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     @Test

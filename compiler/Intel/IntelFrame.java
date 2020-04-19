@@ -48,25 +48,33 @@ public class IntelFrame extends Frame {
     public static Temp r14= new Temp();//callee
     public static Temp r15= new Temp();//callee
     public static TempList specialRegs = new TempList(
-        rax, new TempList(
-            fp, new TempList(
+            rbp, new TempList(
                 sp, null
             )
-        )
     );
+    /**
+     * A linked list of temporaries that represent
+     * registers that are saved upon entry and restored
+     * upon exit by the callee function. The caller
+     * can be guaranteed that these registers will contain
+     * the same values when the callee returns. 
+     */
     public static TempList calleeSaves = new TempList(
         rbx, new TempList(
-            rbp, new TempList(
-                r12, new TempList(
-                    r13, new TempList(
-                        r14, new TempList(
-                            r15, null
-                        )
+            r12, new TempList(
+                r13, new TempList(
+                    r14, new TempList(
+                        r15, null
                     )
                 )
             )
         )
     );
+
+    /**
+     * A linked list of temporaries that are used to
+     * pass arguments to functions.
+     */
     public static TempList argRegs = new TempList(
         rdi, new TempList(
             rsi, new TempList(
@@ -80,12 +88,19 @@ public class IntelFrame extends Frame {
             )
         )
     );
+
+    /**
+     * A linked list of temporaries that represent
+     * registers that are saved by the caller and restored
+     * by the caller. The callee is free to clobber the 
+     * values in these registers and not worry about restoring 
+     * them.
+     */
     public static TempList callerSaves = new TempList(
         rcx, new TempList(
             rdx, new TempList(
                 rdi, new TempList(
                     rsi, new TempList(
-                        sp, new TempList(
                             r8, new TempList(
                                 r9, new TempList(
                                     r10, new TempList(
@@ -94,38 +109,39 @@ public class IntelFrame extends Frame {
                                 )
                             )
                         )
-                    )
                 )
             )
         )
     );
 
     public static TempList registers = new TempList(
-        rcx, new TempList(
-            rdx, new TempList(
-                rdi, new TempList(
-                    rsi, new TempList(
-                        //sp, new TempList(
-                            r8, new TempList(
-                                r9, new TempList(
-                                    r10, new TempList(
-                                        r11, new TempList(
-                                            //rbx, new TempList(
-                                               // rbp, new TempList(
-                                                    r12, new TempList(
-                                                        r13, new TempList(
-                                                            r14/*, new TempList(
-                                                                r15, specialRegs
-                                                            )*/, null
-                                                        )
-                                                 //   )
-                                             //   )
+        rax, new TempList(
+            rcx, new TempList(
+                rdx, new TempList(
+                    rdi, new TempList(
+                        rsi, new TempList(
+                            //sp, new TempList(
+                                r8, new TempList(
+                                    r9, new TempList(
+                                        r10, new TempList(
+                                            r11, new TempList(
+                                                //rbx, new TempList(
+                                                // rbp, new TempList(
+                                                        r12, new TempList(
+                                                            r13, new TempList(
+                                                                r14/*, new TempList(
+                                                                    r15, specialRegs
+                                                                )*/, null
+                                                            )
+                                                    //   )
+                                                //   )
+                                                )
                                             )
                                         )
                                     )
                                 )
-                            )
-                        //)
+                            //)
+                        )
                     )
                 )
             )
@@ -139,14 +155,13 @@ public class IntelFrame extends Frame {
 
     static {
         tmap.put(rax, "rax");
-        tmap.put(fp, "rbp");
-        tmap.put(sp, "sp");
+        tmap.put(sp, "rsp");
+        tmap.put(rbp, "rbp");
         tmap.put(rbx, "rbx");
         tmap.put(rcx, "rcx");
         tmap.put(rdx, "rdx");
         tmap.put(rsi, "rsi");
         tmap.put(rdi, "rdi");
-        tmap.put(rbp, "rbp");
         tmap.put(r8, "r8");
         tmap.put(r9, "r9");
         tmap.put(r10, "r10");
@@ -228,7 +243,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Temp FP() {
-        return fp;
+        return rbp;
     }
 
     @Override
@@ -305,6 +320,11 @@ public class IntelFrame extends Frame {
 
     @Override
 	public TempList registers() {
+        return registers;
+    }
+
+    @Override
+	public TempList precoloured() {
         return registers;
     }
 
