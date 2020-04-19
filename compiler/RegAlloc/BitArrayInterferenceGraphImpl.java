@@ -63,9 +63,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                 capacity = Math.max(capacity, tl.head.hashCode());
             }
         }
-        if(capacity == 0)
-        return;
-      //  System.out.println("capacity = " + capacity);
         // initialise maps with empty bit sets
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             liveInMap.put(nodes.head, new BitArraySet(capacity));

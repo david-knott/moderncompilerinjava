@@ -12,9 +12,6 @@ Sort out precoloured nodes. At the moment all registers including the
 precoloured ones are being included colouring. They shouldn't be as they
 are precoloured.
 
-
-Bug in interference graph generation.
-
 --------------------------------------------
 
 Refactoring canonicaliation & codegen phases
