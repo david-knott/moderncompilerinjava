@@ -73,7 +73,8 @@ public class Semant {
     }
 
     /**
-     * Main method to translate and type check ast
+     * Main method to translate and type check ast.
+     * We also must translate the top level implicit function
      * 
      * @param absyn
      * @return

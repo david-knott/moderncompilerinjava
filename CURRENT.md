@@ -1,6 +1,8 @@
 # Current Tasks 
 
-Function return value was commented out as it was causing problems moving variables into their positions.
+Write tests that check SEQ and ESEQ translations. I think there is a bug here. Create a tree equivalence algorithm to to ensure the generated code
+is what we expect. Ideally, we pass is in a ExpTyList and test that a 
+the correct SEQ or ESEQ is produced.
 
 Started basic graph colouring on interference graph. This only colours the temporaries that interfere
 with each other. Items that do not interfer are not reciving any colours. Presumably these can be assigned
@@ -9,6 +11,9 @@ to something ? But what ??
 Sort out precoloured nodes. At the moment all registers including the
 precoloured ones are being included colouring. They shouldn't be as they
 are precoloured.
+
+
+Bug in interference graph generation.
 
 --------------------------------------------
 

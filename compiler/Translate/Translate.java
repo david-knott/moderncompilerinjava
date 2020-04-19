@@ -58,20 +58,11 @@ public class Translate {
       * @param level the current static function level
       * @param body the body of the function we are translating
       */
-    public void procEntryExit(Level level, Exp body) {
-        if (body == null)
-            return;
-        var statement = level.frame.procEntryExit1(body.unNx());
-        if (body instanceof Ex) {
-           // var exp = new Nx(new MOVE(new TEMP(level.frame.RV()), body.unEx()));
-           // var statement = level.frame.procEntryExit1(exp.unNx());
-         //  statement = new MOVE(new TEMP(level.frame.RV()), statement.unEx());
-          //  addFrag(new ProcFrag(statement, level.frame));
-        } else {
-           // var statement = level.frame.procEntryExit1(body.unNx());
-        }
-        addFrag(new ProcFrag(statement, level.frame));
-    }
+     public void procEntryExit(Level level, Exp body) {
+         if (body == null)
+             return;
+         addFrag(new ProcFrag(level.frame.procEntryExit1(body.unNx()), level.frame));
+     }
 
     /**
      * Returns a IR expression of a simple variable. This comprises of an offset
@@ -253,8 +244,20 @@ public class Translate {
         return new Ex(new CONST(0));
     }
 
+    /**
+     * Returns a translated function body. If the function returns
+     * a value, an additional move is appended to move the expression
+     * result into the RV register.
+     * @param level the static nesting level of the function
+     * @param firstFunction the function body expression and return type
+     * @return an expression
+     */
     public Exp functionBody(Level level, ExpTy firstFunction) {
-        return firstFunction.exp;
+        if(!firstFunction.ty.coerceTo(Semant.VOID)) {
+            return new Nx(new MOVE(new TEMP(level.frame.RV()), firstFunction.exp.unEx()));
+        } else {
+            return firstFunction.exp;
+        }
     }
 
     public Exp nil() {

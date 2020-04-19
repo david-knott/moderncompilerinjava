@@ -25,6 +25,7 @@ public class ProcFrag extends Frag {
 
     /**
      * Initialises a new instance of a ProcFrag
+     * 
      * @param bdt the function body
      * @param frm the activation record for this function
      */
@@ -35,38 +36,38 @@ public class ProcFrag extends Frag {
 
     @Override
     public void process(FragProcessor processor) {
-		PrintStream out = processor.getOut();
+        PrintStream out = processor.getOut();
         TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
-      //  var print = new Print(out, tempmap);
-    //    out.println("# Before canonicalization: ");
-    //    print.prStm(this.body);
+        var print = new Print(out, tempmap);
+        out.println("# Before canonicalization: ");
+        print.prStm(this.body);
         StmList stms = Canon.linearize(this.body);
-        // out.println("# After canonicalization: ");
-        // prStmList(print, stms);
-        // out.println("# Basic Blocks: ");
+        out.println("# After canonicalization: ");
+        prStmList(print, stms);
+        out.println("# Basic Blocks: ");
         BasicBlocks b = new BasicBlocks(stms);
         for (StmListList l = b.blocks; l != null; l = l.tail) {
-            // out.println("#");
-            // prStmList(print, l.head);
+            out.println("#");
+            prStmList(print, l.head);
         }
-        // print.prStm(new Tree.LABEL(b.done));
-    //    out.println("# Trace Scheduled: ");
+        print.prStm(new Tree.LABEL(b.done));
+        out.println("# Trace Scheduled: ");
         StmList traced = (new TraceSchedule(b)).stms;
-    //    prStmList(print, traced);
+        prStmList(print, traced);
         Assem.InstrList instrs = codegen(this.frame, traced);
         instrs = this.frame.procEntryExit2(instrs);
-        out.println("# Instructions: ");
         out.println("section .text");
-        RegAlloc regAlloc = new RegAlloc(frame, instrs);
+       RegAlloc regAlloc = new RegAlloc(frame, instrs);
         for (Assem.InstrList p = instrs; p != null; p = p.tail)
-            out.print(p.head.format(regAlloc));
+            out.print(p.head.format(tempmap));
         // buildInterferenceGraph(instrs);
-      //  var procs = this.frame.procEntryExit3(instrs);
+        // var procs = this.frame.procEntryExit3(instrs);
 
     }
 
     /**
      * Generates assembly code from the IR tree
+     * 
      * @param f
      * @param stms
      * @return

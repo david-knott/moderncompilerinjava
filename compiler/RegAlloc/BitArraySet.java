@@ -10,6 +10,8 @@ public class BitArraySet {
     private int capacity;
 
     public BitArraySet(int size) {
+        if(size == 0)
+        throw new Error("size cannot be zero");
         capacity = size;
         //calculates the number of ints we need to store size bits,
         //where each int is 1 word in length

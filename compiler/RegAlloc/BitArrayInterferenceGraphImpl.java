@@ -58,11 +58,13 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             var node = nodes.head;
             for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
-                System.out.println("adding " + tl.head.hashCode() + " to tempMap");
+              //  System.out.println("adding " + tl.head.hashCode() + " to tempMap");
                 tempMap.put(tl.head.hashCode(), tl.head);
                 capacity = Math.max(capacity, tl.head.hashCode());
             }
         }
+        if(capacity == 0)
+        return;
       //  System.out.println("capacity = " + capacity);
         // initialise maps with empty bit sets
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {

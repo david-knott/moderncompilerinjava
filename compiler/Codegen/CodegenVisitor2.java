@@ -448,6 +448,9 @@ class CodegenVisitor2 implements TreeVisitor {
     public void visit(EXP exp) {
         if(!tpl.match(exp)) {
             exp.exp.accept(this);
+            var expTemp = temp;
+            temp = new Temp();
+            emit(new Assem.MOVE("movq %`s0, %`d0\t; exp \n", temp, expTemp));
         }
     }
 
