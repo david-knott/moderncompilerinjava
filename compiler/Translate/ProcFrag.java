@@ -58,8 +58,8 @@ public class ProcFrag extends Frag {
         Assem.InstrList instrs = codegen(this.frame, traced);
         instrs = this.frame.procEntryExit2(instrs);
         out.println("section .text");
-        RegisterAllocator regAlloc = new RegisterAllocator(frame, instrs);
-        regAlloc.allocate();
+    //    RegisterAllocator regAlloc = new RegisterAllocator(frame, instrs);
+      //  regAlloc.allocate();
      //   TempMap tempmap2 = new Temp.CombineMap(this.frame, regAlloc);
     //    for (Assem.InstrList p = instrs; p != null; p = p.tail)
     //        out.print(p.head.format(tempmap2));
