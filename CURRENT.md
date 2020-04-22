@@ -1,16 +1,10 @@
 # Current Tasks 
 
-Write tests that check SEQ and ESEQ translations. I think there is a bug here. Create a tree equivalence algorithm to to ensure the generated code
-is what we expect. Ideally, we pass is in a ExpTyList and test that a 
-the correct SEQ or ESEQ is produced.
+Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 
-Started basic graph colouring on interference graph. This only colours the temporaries that interfere
-with each other. Items that do not interfer are not reciving any colours. Presumably these can be assigned
-to something ? But what ??
+For register allocation we need to build the interference graph using all the code blocks, 
+not one by one. I am have created a simple GraphColouring class, but I need to refactor before I can proceed with register allocation.
 
-Sort out precoloured nodes. At the moment all registers including the
-precoloured ones are being included colouring. They shouldn't be as they
-are precoloured.
 
 --------------------------------------------
 

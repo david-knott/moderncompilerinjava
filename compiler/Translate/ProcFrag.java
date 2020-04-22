@@ -13,6 +13,11 @@ import Temp.TempMap;
 import Tree.Print;
 import Tree.StmList;
 
+interface CodeGenerator {
+
+    public InstrList codegen(Frame f, StmList stms);
+}
+
 /**
  * Function assembly fragment which also contains the frame for the procedure.
  * The frame layout contains 
@@ -21,7 +26,13 @@ import Tree.StmList;
  */
 public class ProcFrag extends Frag {
 
+    /**
+     * Intermediate representation function body
+     */
     public final Tree.Stm body;
+    /**
+     * Activation record for this function
+     */
     public final Frame frame;
 
     /**
@@ -35,6 +46,19 @@ public class ProcFrag extends Frag {
         frame = frm;
     }
 
+    public Object codeGen(CodeGenerator codeGenerator) {
+        //StatementList = canon.linearize(this.body)
+
+        codeGenerator.codegen(this.frame, null);
+        return null;
+    }
+
+    /**
+     * Applies canonicalization, blocks and traces algorithms
+     * to the contained IR tree. The produces a list of sequences without
+     * side affects and with the correct flow which can be easily 
+     * translated into assembly.
+     */
     @Override
     public void process(FragProcessor processor) {
         PrintStream out = processor.getOut();
@@ -55,9 +79,12 @@ public class ProcFrag extends Frag {
         out.println("# Trace Scheduled: ");
         StmList traced = (new TraceSchedule(b)).stms;
         prStmList(print, traced);
+        // generate assembly code, perhaps this shouldn't be done here ?
         Assem.InstrList instrs = codegen(this.frame, traced);
+        // append instruction sink for liveness analysis
         instrs = this.frame.procEntryExit2(instrs);
         out.println("section .text");
+        //create interference graph
     //    RegisterAllocator regAlloc = new RegisterAllocator(frame, instrs);
       //  regAlloc.allocate();
      //   TempMap tempmap2 = new Temp.CombineMap(this.frame, regAlloc);
