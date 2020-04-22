@@ -14,9 +14,8 @@ import Temp.TempMap;
 /**
  * Register allocator class.
  */
-public class RegisterAllocator implements TempMap {
+public class SimpleGraphColouring implements TempMap {
 
-    private Graph graph;
     private NodeList precoloured;
     private NodeList colours;
     private Set<Node> colouredNodes = new HashSet<Node>();
@@ -25,23 +24,13 @@ public class RegisterAllocator implements TempMap {
     private Hashtable<Node, Integer> degrees = new Hashtable<Node, Integer>();
     private Hashtable<Node, Node> nodeColours = new Hashtable<Node, Node>();
 
-    public RegisterAllocator(Graph graph, NodeList precoloured, NodeList colours) {
-        this.graph = graph;
+    public SimpleGraphColouring(NodeList precoloured, NodeList colours) {
         this.precoloured = precoloured;
         //add precoloured nodes to our colouredNodes set
         for(var pc = precoloured; pc != null; pc = pc.tail) {
             this.setNodeColour(pc.head, pc.head);
         }
         this.colours = colours;
-    }
-
-    /**
-     * Gets the graph we are colouring.
-     * 
-     * @return
-     */
-    Graph getGraph() {
-        return this.graph;
     }
 
     /**
@@ -62,9 +51,9 @@ public class RegisterAllocator implements TempMap {
      * 
      * @return
      */
-    Set<Node> getInitialNodes() {
+    Set<Node> getInitialNodes(Graph graph) {
         Set<Node> s = new HashSet<Node>();
-        for(var nodes = this.graph.nodes(); nodes != null; nodes = nodes.tail) {
+        for(var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
             s.add(nodes.head);
         }
         return s;
@@ -94,7 +83,9 @@ public class RegisterAllocator implements TempMap {
 
     
     /**
-     * Returns all the nodes that have been spilled
+     * Returns all the nodes that have been spilled. The caller
+     * can then modify the instruction code, regenerate the 
+     * interference graph and rerun the register allocation.
      * 
      * @return
      */
@@ -102,15 +93,13 @@ public class RegisterAllocator implements TempMap {
         return this.spilledNodes;
     }
 
-    
-
     /**
      * Returns a count of all the nodes in the graph.
      * @return
      */
-    int nodeCount() {
+    int nodeCount(Graph graph) {
         int count = 0;
-        for (var nodes = this.graph.nodes(); nodes != null; nodes = nodes.tail) {
+        for (var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
             count++;
         }
         return count;
@@ -148,13 +137,13 @@ public class RegisterAllocator implements TempMap {
     /**
      * Runs the allocation algorithm.
      */
-    public void allocate() {
+    public void allocate(Graph graph) {
         // store node degrees in a hash table
-        for (var nodes = this.graph.nodes(); nodes != null; nodes = nodes.tail) {
+        for (var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
             degrees.put(nodes.head, nodes.head.degree());
         }
         // Adds nodes to stack and decrement their adjcacent node degrees
-        var simplifyWorklist = this.getInitialNodes();
+        var simplifyWorklist = this.getInitialNodes(graph);
         //remove precoloured items from simplify step
         simplifyWorklist.removeIf(x -> this.getPrecolouredNodes().contains(x));
         while(!simplifyWorklist.isEmpty()) {

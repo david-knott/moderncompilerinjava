@@ -8,7 +8,7 @@ import Canon.Canon;
 import Canon.StmListList;
 import Canon.TraceSchedule;
 import Frame.Frame;
-import RegAlloc.RegisterAllocator;
+import RegAlloc.SimpleGraphColouring;
 import Temp.TempMap;
 import Tree.Print;
 import Tree.StmList;
