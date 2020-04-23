@@ -1,7 +1,6 @@
 package Translate;
 
 import Assem.InstrList;
-import Canon.CanonFacadeImpl;
 import Canon.Canonicalization;
 import Frame.Frame;
 import Tree.StmList;
@@ -19,7 +18,6 @@ interface CodeGenerator {
  */
 public class ProcFrag extends Frag {
 
-    private final Canonicalization canonFacade = new CanonFacadeImpl();
     /**
      * Intermediate representation function body
      */
@@ -41,8 +39,6 @@ public class ProcFrag extends Frag {
     }
 
     public Object codeGen(CodeGenerator codeGenerator) {
-        //StatementList = canon.linearize(this.body)
-
         codeGenerator.codegen(this.frame, null);
         return null;
     }
@@ -54,8 +50,8 @@ public class ProcFrag extends Frag {
      * translated into assembly.
      */
     @Override
-    public void process(FragProcessor processor) {
-        StmList stmList = this.canonFacade.canon(this.body);
+    public void process(Canonicalization canonicalization, FragProcessor processor) {
+        StmList stmList = canonicalization.canon(this.body);
         Assem.InstrList instrs = codegen(this.frame, stmList);
         // append instruction sink for liveness analysis
         instrs = this.frame.procEntryExit2(instrs);

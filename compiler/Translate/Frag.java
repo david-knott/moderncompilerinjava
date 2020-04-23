@@ -1,5 +1,7 @@
 package Translate;
 
+import Canon.Canonicalization;
+
 /**
  * An abstract code fragment. This contains
  * either a function body IR tree or a string 
@@ -10,16 +12,6 @@ public abstract class Frag {
 
     public Frag next;
 
-    public abstract void process(FragProcessor fragProcessor);
+    public abstract void process(Canonicalization canonicalization, FragProcessor fragProcessor);
 
-    /**
-     * Process all fragments
-     * 
-     * @param out PrintStream to write to
-     */
-    public void processAll(FragProcessor fragProcessor) {
-        for (Frag frag = this; frag != null; frag = frag.next) {
-            frag.process(fragProcessor);
-        }
-    }
 }

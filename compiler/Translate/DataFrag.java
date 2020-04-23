@@ -2,6 +2,8 @@ package Translate;
 
 import java.io.PrintStream;
 
+import Canon.Canonicalization;
+
 /**
  * Stores string literal data
  **/
@@ -18,7 +20,7 @@ public class DataFrag extends Frag {
 	}
 
 	@Override
-	public void process(FragProcessor processor) {
+	public void process(Canonicalization canonicalization, FragProcessor processor) {
 		PrintStream out = processor.getOut();
 		out.println("section .data");
 		out.println(this);

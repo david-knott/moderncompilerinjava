@@ -1,6 +1,15 @@
 # Current Tasks 
 
-Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
+## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
+Created new Canonicalisation facade which abstracts the tree canonicalisation functions
+
+Create new TreeContainer. This takes in a Fragment linked list, the Canonicalisation facade
+and a FragProcessor ( not sure if this is required ) and processes each Fragment. Still to do
+is to create a new linked list of ProcessedFragments, which can be passed on to the Code Generation
+phase.
+
+
+## Later
 
 For register allocation we need to build the interference graph using all the code blocks, 
 not one by one. I am have created a simple GraphColouring class, but I need to refactor before I can proceed with register allocation.

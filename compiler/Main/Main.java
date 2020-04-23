@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import Canon.Canonicalization;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
 import Frame.Frame;
@@ -12,6 +13,7 @@ import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
+import Translate.Frag;
 import Translate.FragProcessor;
 import Translate.Level;
 import Translate.Translate;
@@ -95,10 +97,35 @@ public class Main {
         findEscape.traverse(this.ast.absyn);
         // get the IR function fragments
         var frags = this.semant.getTreeFragments(this.ast.absyn);
-        //process all the frags and convert them into assembly
-        frags.processAll(new FragProcessor(out));
-        //close output stream
+        // put the IR fragments into the IR Processors
         out.close();
         return 0;
+    }
+}
+
+class TreeContainer {
+
+    private final Frag frags;
+    private final Canonicalization canonicalization;
+    private final FragProcessor fragProcessor;
+
+    public TreeContainer(FragProcessor fragProcessor, Frag frags, Canonicalization canonicalization) {
+        this.frags = frags;
+        this.canonicalization = canonicalization;
+        this.fragProcessor = fragProcessor;
+    }
+
+    /**
+     * Iterate through all the fragments calling their process method.
+     * This will apply canonicalization to the IR tree is the Frag is 
+     * a text Frag. Data Frags, which only contain String data are not 
+     * affected by this. 
+     * Calling this method builds up a link of processed fragments which
+     * can be passed on to the code generation phase.
+     */
+    public void process() {
+        for (Frag frag = this.frags; frag != null; frag = frag.next) {
+            frag.process(this.canonicalization, this.fragProcessor);
+        }
     }
 }
