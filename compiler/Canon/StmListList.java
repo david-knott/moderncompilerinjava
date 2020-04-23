@@ -2,7 +2,7 @@ package Canon;
 
 import Tree.StmList;
 
-public class StmListList {
+class StmListList {
   public Tree.StmList head;
   public StmListList tail;
 

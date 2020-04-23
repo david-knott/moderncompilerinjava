@@ -1,16 +1,9 @@
 package Translate;
 
-import java.io.PrintStream;
-
 import Assem.InstrList;
-import Canon.BasicBlocks;
-import Canon.Canon;
-import Canon.StmListList;
-import Canon.TraceSchedule;
+import Canon.CanonFacadeImpl;
+import Canon.Canonicalization;
 import Frame.Frame;
-import RegAlloc.SimpleGraphColouring;
-import Temp.TempMap;
-import Tree.Print;
 import Tree.StmList;
 
 interface CodeGenerator {
@@ -26,6 +19,7 @@ interface CodeGenerator {
  */
 public class ProcFrag extends Frag {
 
+    private final Canonicalization canonFacade = new CanonFacadeImpl();
     /**
      * Intermediate representation function body
      */
@@ -61,6 +55,22 @@ public class ProcFrag extends Frag {
      */
     @Override
     public void process(FragProcessor processor) {
+        StmList stmList = this.canonFacade.canon(this.body);
+        Assem.InstrList instrs = codegen(this.frame, stmList);
+        // append instruction sink for liveness analysis
+        instrs = this.frame.procEntryExit2(instrs);
+    //    out.println("section .text");
+        //create interference graph
+    //    RegisterAllocator regAlloc = new RegisterAllocator(frame, instrs);
+      //  regAlloc.allocate();
+     //   TempMap tempmap2 = new Temp.CombineMap(this.frame, regAlloc);
+    //    for (Assem.InstrList p = instrs; p != null; p = p.tail)
+    //        out.print(p.head.format(tempmap2));
+        // buildInterferenceGraph(instrs);
+        // var procs = this.frame.procEntryExit3(instrs);*/
+
+
+        /*
         PrintStream out = processor.getOut();
         TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
         var print = new Print(out, tempmap);
@@ -91,7 +101,7 @@ public class ProcFrag extends Frag {
     //    for (Assem.InstrList p = instrs; p != null; p = p.tail)
     //        out.print(p.head.format(tempmap2));
         // buildInterferenceGraph(instrs);
-        // var procs = this.frame.procEntryExit3(instrs);
+        // var procs = this.frame.procEntryExit3(instrs);*/
 
     }
 

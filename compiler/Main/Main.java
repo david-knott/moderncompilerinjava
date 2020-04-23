@@ -12,12 +12,9 @@ import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
-import Symbol.SymbolTable;
-import Translate.Frag;
 import Translate.FragProcessor;
 import Translate.Level;
 import Translate.Translate;
-import Types.Type;
 
 /**
  * Main class that executes the compiler.
@@ -37,6 +34,7 @@ public class Main {
     // frame implementation
     private Frame frame = new IntelFrame(null, null);
     private Level topLevel = new Level(frame);
+    private Translate translate = new Translate();
     private boolean allVarsEscape = false;
     private FindEscape findEscape = new FindEscape(allVarsEscape);
 
@@ -55,18 +53,11 @@ public class Main {
         this.inputStream = inputStream;
         this.errorMsg = new ErrorMsg(this.name);
         this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
-        this.semant = new Semant(errorMsg, topLevel, new Translate());
+        this.semant = new Semant(errorMsg, topLevel, this.translate);
     }
 
     public ErrorMsg getErrorMsg() {
         return this.errorMsg;
-    }
-
-    /**
-     * Returns the symbol table for types. Used for testing
-     */
-    public SymbolTable<Type> getTypeSymbolTable() {
-        return semant.getEnv().getTEnv();
     }
 
     public boolean hasErrors() {

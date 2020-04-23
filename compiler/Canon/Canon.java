@@ -21,7 +21,6 @@ class MoveCall extends Tree.Stm {
 
     @Override
     public void accept(TreeVisitor treeVisitor) {
-        // TODO Auto-generated method stub
 
     }
 }
@@ -43,7 +42,6 @@ class ExpCall extends Tree.Stm {
 
     @Override
     public void accept(TreeVisitor treeVisitor) {
-        // TODO Auto-generated method stub
 
     }
 }
@@ -60,7 +58,7 @@ class StmExpList {
     }
 }
 
-public class Canon {
+class Canon {
 
     static boolean isNop(Tree.Stm a) {
         return a instanceof Tree.EXP && ((Tree.EXP) a).exp instanceof Tree.CONST;
