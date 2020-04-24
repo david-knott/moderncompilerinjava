@@ -8,4 +8,5 @@ public class InstrList {
     head = h;
     tail = t;
   }
+
 }

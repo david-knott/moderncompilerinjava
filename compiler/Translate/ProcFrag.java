@@ -50,11 +50,13 @@ public class ProcFrag extends Frag {
      * translated into assembly.
      */
     @Override
-    public void process(Canonicalization canonicalization, FragProcessor processor) {
+    public StmList process(Canonicalization canonicalization, FragProcessor processor) {
         StmList stmList = canonicalization.canon(this.body);
-        Assem.InstrList instrs = codegen(this.frame, stmList);
+        stmList.frame = this.frame;
+        return stmList;
+        //Assem.InstrList instrs = codegen(this.frame, stmList);
         // append instruction sink for liveness analysis
-        instrs = this.frame.procEntryExit2(instrs);
+        //instrs = this.frame.procEntryExit2(instrs);
     //    out.println("section .text");
         //create interference graph
     //    RegisterAllocator regAlloc = new RegisterAllocator(frame, instrs);

@@ -8,6 +8,14 @@ and a FragProcessor ( not sure if this is required ) and processes each Fragment
 is to create a new linked list of ProcessedFragments, which can be passed on to the Code Generation
 phase.
 
+Added new CodeGenerator and RegisterAllocator classes that process the lists of lists.
+I still need to create a returned statement for data fragments, ( strings )
+
+
+THe RegisterAllocator phase needs access to the frame, which is available in the TreeContainer as it is passed
+in with the ProcFrag.
+
+I recommend that ListList class also contains a reference to the corresonding class that generated it
 
 ## Later
 

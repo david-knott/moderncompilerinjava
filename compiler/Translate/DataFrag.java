@@ -3,6 +3,7 @@ package Translate;
 import java.io.PrintStream;
 
 import Canon.Canonicalization;
+import Tree.StmList;
 
 /**
  * Stores string literal data
@@ -20,9 +21,10 @@ public class DataFrag extends Frag {
 	}
 
 	@Override
-	public void process(Canonicalization canonicalization, FragProcessor processor) {
+	public StmList process(Canonicalization canonicalization, FragProcessor processor) {
 		PrintStream out = processor.getOut();
 		out.println("section .data");
 		out.println(this);
+		return null;
 	}
 }

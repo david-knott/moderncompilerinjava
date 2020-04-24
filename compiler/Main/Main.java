@@ -4,7 +4,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import Canon.Canonicalization;
+import Assem.InstrListList;
+import Canon.CanonFacadeImpl;
+import Codegen.CodeGeneratorFacade;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
 import Frame.Frame;
@@ -12,8 +14,8 @@ import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
+import RegAlloc.RegisterAllocator;
 import Semant.Semant;
-import Translate.Frag;
 import Translate.FragProcessor;
 import Translate.Level;
 import Translate.Translate;
@@ -97,35 +99,18 @@ public class Main {
         findEscape.traverse(this.ast.absyn);
         // get the IR function fragments
         var frags = this.semant.getTreeFragments(this.ast.absyn);
+
+        TreeContainer treeContainer = new TreeContainer(new FragProcessor(System.out), frags, new CanonFacadeImpl());
+
+        CodeGeneratorFacade codeGeneratorFacade = new CodeGeneratorFacade(treeContainer.process());
+        
+        InstrListList instructions = codeGeneratorFacade.generateCode();
+
+        RegisterAllocator registerAllocator = new RegisterAllocator(instructions);
+
+
         // put the IR fragments into the IR Processors
         out.close();
         return 0;
-    }
-}
-
-class TreeContainer {
-
-    private final Frag frags;
-    private final Canonicalization canonicalization;
-    private final FragProcessor fragProcessor;
-
-    public TreeContainer(FragProcessor fragProcessor, Frag frags, Canonicalization canonicalization) {
-        this.frags = frags;
-        this.canonicalization = canonicalization;
-        this.fragProcessor = fragProcessor;
-    }
-
-    /**
-     * Iterate through all the fragments calling their process method.
-     * This will apply canonicalization to the IR tree is the Frag is 
-     * a text Frag. Data Frags, which only contain String data are not 
-     * affected by this. 
-     * Calling this method builds up a link of processed fragments which
-     * can be passed on to the code generation phase.
-     */
-    public void process() {
-        for (Frag frag = this.frags; frag != null; frag = frag.next) {
-            frag.process(this.canonicalization, this.fragProcessor);
-        }
     }
 }
