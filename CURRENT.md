@@ -17,6 +17,8 @@ in with the ProcFrag.
 
 I recommend that ListList class also contains a reference to the corresonding class that generated it
 
+Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same
+way the Frame is
 ## Later
 
 For register allocation we need to build the interference graph using all the code blocks, 
