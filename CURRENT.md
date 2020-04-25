@@ -1,20 +1,11 @@
 # Current Tasks 
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
-Created new Canonicalisation facade which abstracts the tree canonicalisation functions
 
-Create new TreeContainer. This takes in a Fragment linked list, the Canonicalisation facade
-and a FragProcessor ( not sure if this is required ) and processes each Fragment. Still to do
-is to create a new linked list of ProcessedFragments, which can be passed on to the Code Generation
-phase.
+Register allocation has a problem, where precoloured temps that are not in the interference graph
+cannot be allocated. I need to investigate this further. Motivation is to reuse graph colouring with
+spilled variables.
 
-Added new CodeGenerator and RegisterAllocator classes that process the lists of lists.
-I still need to create a returned statement for data fragments, ( strings )
-
-THe RegisterAllocator phase needs access to the frame, which is available in the TreeContainer as it is passed
-in with the ProcFrag.
-
-I recommend that ListList class also contains a reference to the corresonding class that generated it
 
 Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same
 way the Frame is
