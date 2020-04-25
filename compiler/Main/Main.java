@@ -16,8 +16,10 @@ import Parse.Program;
 import Parse.Yylex;
 import RegAlloc.RegisterAllocator;
 import Semant.Semant;
+import Translate.Frag;
 import Translate.FragProcessor;
 import Translate.Level;
+import Translate.ProcessedFrag;
 import Translate.Translate;
 
 /**
@@ -69,20 +71,20 @@ public class Main {
     }
 
     /**
-     * Compiles the program. Using the parser we parse the source code
-     * and create an abstract syntax tree. The abstract syntax tree is
-     * traversed and we mark variables as escaping ( in frame ) or non
-     * escaping ( in register ). Semantic analysis is performed to check
-     * for type consistency and semantic meaning that cannot be infered
-     * from the grammar. The semantic analysis phase then produces an
-     * internediate form of the language that can be converted into assembly.
-     * The intermediate form is a list of fragments, either data fragment for strings
-     * or code fragment for a function. 
+     * Compiles the program. Using the parser we parse the source code and create an
+     * abstract syntax tree. The abstract syntax tree is traversed and we mark
+     * variables as escaping ( in frame ) or non escaping ( in register ). Semantic
+     * analysis is performed to check for type consistency and semantic meaning that
+     * cannot be infered from the grammar. The semantic analysis phase then produces
+     * an internediate form of the language that can be converted into assembly. The
+     * intermediate form is a list of fragments, either data fragment for strings or
+     * code fragment for a function.
+     * 
      * @return
      */
     public int compile() {
         PrintStream out = System.out; // java.io.PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
-        //parsse the input stream
+        // parsse the input stream
         try {
             java_cup.runtime.Symbol rootSymbol = parser.parse();
             this.ast = (Program) rootSymbol.value;
@@ -97,9 +99,16 @@ public class Main {
         }
         // find and mark escaping variables
         findEscape.traverse(this.ast.absyn);
-        // get the IR function fragments
-        var frags = this.semant.getTreeFragments(this.ast.absyn);
+        // get the tree function fragments
+        Frag frags = this.semant.getTreeFragments(this.ast.absyn);
+        //apply canonicalisation
+        ProcessedFrag processedFragList = frags.processAll(new CanonFacadeImpl());
+        //generate code
+        CodeFrag codeFragList = processedFragList.processAll(new CodeGeneratorFacade());
+        //apply register allocation
+        codeFragList.processAll(new RegisterAllocator());
 
+        /*
         TreeContainer treeContainer = new TreeContainer(new FragProcessor(System.out), frags, new CanonFacadeImpl());
 
         CodeGeneratorFacade codeGeneratorFacade = new CodeGeneratorFacade(treeContainer.process());
@@ -107,6 +116,7 @@ public class Main {
         InstrListList instructions = codeGeneratorFacade.generateCode();
 
         RegisterAllocator registerAllocator = new RegisterAllocator(instructions);
+    */
 
 
         // put the IR fragments into the IR Processors

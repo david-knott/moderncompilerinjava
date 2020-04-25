@@ -113,19 +113,17 @@ public class IntelFrame extends Frame {
         )
     );
 
-    public static TempList registers = new TempList(
+    private static TempList precoloured = new TempList(
         rax, new TempList(
             rcx, new TempList(
                 rdx, new TempList(
                     rdi, new TempList(
                         rsi, new TempList(
-                            rsp, new TempList(
                                 r8, new TempList(
                                     r9, new TempList(
                                         r10, new TempList(
                                             r11, new TempList(
                                                 rbx, new TempList(
-                                                 rbp, new TempList(
                                                         r12, new TempList(
                                                             r13, new TempList(
                                                                 r14, new TempList(
@@ -133,13 +131,46 @@ public class IntelFrame extends Frame {
                                                                 ) 
                                                             )
                                                        )
-                                                   )
                                                 )
                                             )
                                         )
                                     )
                                 )
-                            )
+                        )
+                    )
+                )
+            )
+        )
+    );
+
+
+    private static TempList registers = new TempList(
+        rax, new TempList(
+            rcx, new TempList(
+                rdx, new TempList(
+                    rdi, new TempList(
+                        rsi, new TempList(
+                           // rsp, new TempList(
+                                r8, new TempList(
+                                    r9, new TempList(
+                                        r10, new TempList(
+                                            r11, new TempList(
+                                                rbx, new TempList(
+                                              //   rbp, new TempList(
+                                                        r12, new TempList(
+                                                            r13, new TempList(
+                                                                r14, new TempList(
+                                                                    r15, null 
+                                                                ) 
+                                                            )
+                                                       )
+                                                   )
+                                              //  )
+                                            )
+                                        )
+                                    )
+                                )
+                          //  )
                         )
                     )
                 )
@@ -270,7 +301,7 @@ public class IntelFrame extends Frame {
     public Assem.InstrList procEntryExit2(Assem.InstrList body){
         return append(
             body, 
-            new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
+            new Assem.InstrList(new Assem.OPER("; SINK INSTRUCTION", null, returnSink), null));
     }
 
     @Override
@@ -324,7 +355,7 @@ public class IntelFrame extends Frame {
 
     @Override
 	public TempList precoloured() {
-        return registers;
+        return precoloured;
     }
 
     private Tree.Stm buildSeq(StmList list) {

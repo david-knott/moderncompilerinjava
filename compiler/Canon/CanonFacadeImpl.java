@@ -5,15 +5,18 @@ import Tree.StmList;
 
 public class CanonFacadeImpl implements Canonicalization {
 
-    public StmList linearize(Stm stm) {
+    private StmList linearize(Stm stm) {
         StmList stms = Canon.linearize(stm);
         return stms;
     }
 
-    public StmList traces(StmList stmList) {
+    private StmList traces(StmList stmList) {
         BasicBlocks b = new BasicBlocks(stmList);
-        // print.prStm(new Tree.LABEL(b.done));
         StmList traced = (new TraceSchedule(b)).stms;
+        //append done label to trace
+        var end = traced;
+        while(end.tail != null) end = end.tail;
+        end.tail = new StmList(new Tree.LABEL(b.done), null);
         return traced;
     }
 

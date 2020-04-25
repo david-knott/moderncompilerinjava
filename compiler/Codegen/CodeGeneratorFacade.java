@@ -1,52 +1,24 @@
 package Codegen;
 
 import Assem.InstrList;
-import Assem.InstrListList;
 import Frame.Frame;
 import Tree.StmList;
-import Tree.StmListList;
 
-
-class CodeGenExampleReturn {
-
-    //TreeContainerExampleReturn;
-    StmList stmList;
-
-
-
-}
 public class CodeGeneratorFacade {
-    private StmListList stmListList;
-
-    public CodeGeneratorFacade(StmListList stmListList) {
-        this.stmListList = stmListList;
-    }
 
     /**
-     * Generates assembly code for the entire list. Calls
-     * frame.procEntryExit2 which appends a sink instruction
-     * which is used to in flow analysis to mark certain temporaries
-     * as live at exit.
-     * Returns a list of assmebly instruction lists.
+     * Generates assembly code for the entire list. Calls frame.procEntryExit2 which
+     * appends a sink instruction which is used to in flow analysis to mark certain
+     * temporaries as live at exit. Returns a list of assmebly instruction lists.
      */
-    public InstrListList generateCode() {
-        InstrListList list = null;
-        for(var stmList = this.stmListList; stmList != null; stmList = stmList.tail) {
-            var frame = stmList.head.frame;
-            Assem.InstrList instrs = codegen(frame, stmList.head);
-            instrs = frame.procEntryExit2(instrs);
-            if(list == null) {
-                list = new InstrListList(instrs, null);
-            } else {
-                list.append(instrs);
-            }
-        }
-        return list;
+    public InstrList generateCode(Frame frame, StmList stms) {
+        Assem.InstrList instrs = codegen(frame, stms);
+        return frame.procEntryExit2(instrs);
     }
 
     /**
-     * Generates assembly code from the IR tree using
-     * the supplied frame and statement list.
+     * Generates assembly code from the IR tree using the supplied frame and
+     * statement list.
      * 
      * @param frame
      * @param stms

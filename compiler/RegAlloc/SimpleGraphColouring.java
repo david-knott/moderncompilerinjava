@@ -163,6 +163,7 @@ public class SimpleGraphColouring implements TempMap {
         while (!this.simpleStack.isEmpty()) {
             var node = this.simpleStack.pop();
             var okColours = new HashSet<Node>(this.getColours());
+            System.out.println("Colours " + okColours.size());
             // get adjacent nodes, check their colours and remove from ok list
             for (var adj = node.adj(); adj != null; adj = adj.tail) {
                 // check if adjacent node is already coloured

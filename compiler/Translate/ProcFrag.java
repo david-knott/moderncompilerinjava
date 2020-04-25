@@ -38,11 +38,6 @@ public class ProcFrag extends Frag {
         frame = frm;
     }
 
-    public Object codeGen(CodeGenerator codeGenerator) {
-        codeGenerator.codegen(this.frame, null);
-        return null;
-    }
-
     /**
      * Applies canonicalization, blocks and traces algorithms
      * to the contained IR tree. The produces a list of sequences without
@@ -50,10 +45,9 @@ public class ProcFrag extends Frag {
      * translated into assembly.
      */
     @Override
-    public StmList process(Canonicalization canonicalization, FragProcessor processor) {
+    public ProcessedFrag process(Canonicalization canonicalization, FragProcessor processor) {
         StmList stmList = canonicalization.canon(this.body);
-        stmList.frame = this.frame;
-        return stmList;
+        return new ProcessedProcFrag(stmList, this.frame);
         //Assem.InstrList instrs = codegen(this.frame, stmList);
         // append instruction sink for liveness analysis
         //instrs = this.frame.procEntryExit2(instrs);
@@ -103,13 +97,7 @@ public class ProcFrag extends Frag {
 
     }
 
-    /**
-     * Generates assembly code from the IR tree
-     * 
-     * @param f
-     * @param stms
-     * @return
-     */
+    /*
     private static InstrList codegen(Frame f, StmList stms) {
         Assem.InstrList first = null, last = null;
         for (Tree.StmList s = stms; s != null; s = s.tail) {
@@ -129,6 +117,11 @@ public class ProcFrag extends Frag {
         for (Tree.StmList l = stms; l != null; l = l.tail) {
             print.prStm(l.head);
         }
+    }
+*/
+    @Override
+    public Frame getFrame() {
+        return this.frame;
     }
 
 }
