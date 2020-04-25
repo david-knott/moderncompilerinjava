@@ -67,8 +67,8 @@ public class CodeFrag {
 	public void process(RegisterAllocator registerAllocator) {
 		AssemFlowGraph assemFlowGraph = new AssemFlowGraph(this.instrList.reverse());
 		InterferenceGraph interferenceGraph = new BitArrayInterferenceGraphImpl(assemFlowGraph);
-		SimpleGraphColouring simpleGraphColouring = new SimpleGraphColouring(this.getPrecoloured(interferenceGraph), this.getColours(interferenceGraph));
-		simpleGraphColouring.allocate(interferenceGraph);
+//		SimpleGraphColouring simpleGraphColouring = new SimpleGraphColouring(this.getPrecoloured(interferenceGraph), this.getColours(interferenceGraph));
+	//	simpleGraphColouring.allocate(interferenceGraph);
 		
 	}
 

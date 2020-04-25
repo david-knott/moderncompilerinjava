@@ -16,6 +16,7 @@ import Temp.TempMap;
  */
 public class SimpleGraphColouring implements TempMap {
 
+    //strictly speaking these are temps.
     private NodeList precoloured;
     private NodeList colours;
     private Set<Node> colouredNodes = new HashSet<Node>();
