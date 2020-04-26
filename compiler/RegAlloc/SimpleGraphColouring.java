@@ -48,7 +48,10 @@ public class SimpleGraphColouring implements TempMap {
     }
 
     /**
-     * Gets all the colours for this graaph.
+     * Gets all the colours for this graaph. The colours are nodes which are already
+     * assigned to particular registers. The nodes in the colours set are a subset
+     * of the nodes in the precoloured set. The reason for this is that some precoloured
+     * nodes cannot be used in the register allocation, such as stack and frame pointer.
      * 
      * @return
      */
@@ -150,7 +153,6 @@ public class SimpleGraphColouring implements TempMap {
         while (!this.simpleStack.isEmpty()) {
             var node = this.simpleStack.pop();
             var okColours = new HashSet<Node>(this.getColours());
-            System.out.println("Colours " + okColours.size());
             // get adjacent nodes, check their colours and remove from ok list
             for (var adj = node.adj(); adj != null; adj = adj.tail) {
                 // check if adjacent node is already coloured

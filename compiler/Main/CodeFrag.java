@@ -32,10 +32,19 @@ public class CodeFrag {
 		registerAllocator.allocate();
 	}
 
+	public void process(RegisterAllocator registerAllocator) {
+		AssemFlowGraph assemFlowGraph = new AssemFlowGraph(this.instrList.reverse());
+		InterferenceGraph interferenceGraph = new BitArrayInterferenceGraphImpl(assemFlowGraph);
+		SimpleGraphColouring simpleGraphColouring = new SimpleGraphColouring(this.getPrecoloured(interferenceGraph), this.getColours(interferenceGraph));
+		NodeList initial = this.getInitial(interferenceGraph);
+		simpleGraphColouring.allocate(interferenceGraph, initial);
+	}
+
 	private NodeList getPrecoloured(InterferenceGraph graph) {
 		NodeList nodeList = null;
 		for(TempList tempList = this.frame.precoloured(); tempList != null; tempList = tempList.tail) {
 			Node node = graph.tnode(tempList.head);
+			//precoloured node has not been seen in the interference graph
 			if(node == null) {
 				continue;
 			}
@@ -52,6 +61,7 @@ public class CodeFrag {
 		NodeList nodeList = null;
 		for(TempList tempList = this.frame.registers(); tempList != null; tempList = tempList.tail) {
 			Node node = graph.tnode(tempList.head);
+//colour node has not been seen in the interference graph
 			if(node == null) {
 				continue;
 			}
@@ -64,12 +74,29 @@ public class CodeFrag {
 		return nodeList;
 	}
 
-	public void process(RegisterAllocator registerAllocator) {
-		AssemFlowGraph assemFlowGraph = new AssemFlowGraph(this.instrList.reverse());
-		InterferenceGraph interferenceGraph = new BitArrayInterferenceGraphImpl(assemFlowGraph);
-		SimpleGraphColouring simpleGraphColouring = new SimpleGraphColouring(this.getPrecoloured(interferenceGraph), this.getColours(interferenceGraph));
-	//	simpleGraphColouring.allocate(interferenceGraph);
-		
+	private NodeList getInitial(InterferenceGraph interferenceGraph) {
+		NodeList initialList = null;
+		NodeList precoloured = this.getPrecoloured(interferenceGraph);
+		for(NodeList nodeList = interferenceGraph.nodes(); nodeList != null; nodeList = nodeList.tail){
+			Node node = nodeList.head;
+			//is node in precoloured list
+			boolean skip = false;
+			for(NodeList pc = precoloured; pc != null; pc = pc.tail) {
+				if(node.equals(pc.head)) {
+					skip = true;
+					break;
+				}
+			}
+			if(skip) {
+				continue;
+			}
+			if(initialList == null) {
+				initialList = new NodeList(node, null);
+			} else {
+				initialList = new NodeList(node, initialList);
+			}
+		}
+		return initialList;
 	}
 
 	public void append(CodeFrag process) {
