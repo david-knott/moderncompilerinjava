@@ -19,7 +19,7 @@ public class SimpleGraphColouringTest {
         NodeList precolouredNodes = new NodeList(a, null);
         NodeList colours = new NodeList(a, null);
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph, null);
         assertEquals(a, registerAllocator.getNodeColour(a));
     }
 
@@ -32,7 +32,7 @@ public class SimpleGraphColouringTest {
         NodeList precolouredNodes = new NodeList(a, new NodeList(b, null));
         NodeList colours = new NodeList(a, new NodeList(b, null));
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph, null);
         assertEquals(a, registerAllocator.getNodeColour(a));
         assertEquals(b, registerAllocator.getNodeColour(b));
     }
@@ -49,7 +49,7 @@ public class SimpleGraphColouringTest {
         NodeList precolouredNodes = new NodeList(a, new NodeList(b, new NodeList(c, null)));
         NodeList colours = new NodeList(a, new NodeList(b, new NodeList(c, null)));
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph, null);
         assertEquals(a, registerAllocator.getNodeColour(a));
         assertEquals(b, registerAllocator.getNodeColour(b));
         assertEquals(c, registerAllocator.getNodeColour(c));
@@ -66,9 +66,10 @@ public class SimpleGraphColouringTest {
         graph.addEdge(a, c);
         NodeList precolouredNodes = new NodeList(a, new NodeList(b, null));
         NodeList colours = new NodeList(a, new NodeList(b, null));
+        NodeList initial = new NodeList(c, null);
         //a & b are precoloured, except c to have a colour
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph,initial);
         assertEquals(a, registerAllocator.getNodeColour(a));
         assertEquals(b, registerAllocator.getNodeColour(b));
         assertEquals(b, registerAllocator.getNodeColour(c));
@@ -87,9 +88,10 @@ public class SimpleGraphColouringTest {
         graph.addEdge(a, d);
         NodeList precolouredNodes = new NodeList(a, new NodeList(b, null));
         NodeList colours = new NodeList(a, new NodeList(b, null));
+        NodeList initial = new NodeList(c, new NodeList(d, null));
         //a & b are precoloured, except c to have a colour
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph, initial);
         assertEquals(a, registerAllocator.getNodeColour(a));
         assertEquals(b, registerAllocator.getNodeColour(b));
         assertEquals(b, registerAllocator.getNodeColour(c));
@@ -111,9 +113,10 @@ public class SimpleGraphColouringTest {
         graph.addEdge(b, d);
         NodeList precolouredNodes = new NodeList(a, new NodeList(b, null));
         NodeList colours = new NodeList(a, new NodeList(b, null));
+        NodeList initial = new NodeList(c, new NodeList(d, null));
         //a & b are precoloured, except c to have a colour
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph, initial);
         assertEquals(a, registerAllocator.getNodeColour(a));
         assertEquals(b, registerAllocator.getNodeColour(b));
         assertEquals(a, registerAllocator.getNodeColour(c));
@@ -143,9 +146,10 @@ public class SimpleGraphColouringTest {
         graph.addEdge(d, e);
         NodeList precolouredNodes = new NodeList(a, new NodeList(b, null));
         NodeList colours = new NodeList(a, new NodeList(b, null));
+        NodeList initial = new NodeList(c, new NodeList(d, new NodeList(e, null)));
         //a & b are precoloured, except c to have a colour
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph, initial);
         assertEquals(a, registerAllocator.getNodeColour(a));
         assertEquals(b, registerAllocator.getNodeColour(b));
         assertEquals(3, registerAllocator.getSpilledNodes().size());
@@ -175,9 +179,10 @@ public class SimpleGraphColouringTest {
      //   graph.addEdge(d, e);
         NodeList precolouredNodes = new NodeList(a, new NodeList(b, new NodeList(c, new NodeList(d, null))));
         NodeList colours = new NodeList(a, new NodeList(b, new NodeList(c, new NodeList(d, null))));
+        NodeList initial = new NodeList(c, new NodeList(d, new NodeList(e, null)));
         //a & b are precoloured, except c to have a colour
         SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
-        registerAllocator.allocate(graph);
+        registerAllocator.allocate(graph, initial);
         assertEquals(a, registerAllocator.getNodeColour(a));
         assertEquals(b, registerAllocator.getNodeColour(b));
         assertEquals(c, registerAllocator.getNodeColour(c));

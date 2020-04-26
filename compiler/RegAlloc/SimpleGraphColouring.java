@@ -48,19 +48,6 @@ public class SimpleGraphColouring implements TempMap {
     }
 
     /**
-     * Gets all the nodes that have not yet been assigned a colour.
-     * 
-     * @return
-     */
-    Set<Node> getInitialNodes(Graph graph) {
-        Set<Node> s = new HashSet<Node>();
-        for(var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
-            s.add(nodes.head);
-        }
-        return s;
-    }
-
-    /**
      * Gets all the colours for this graaph.
      * 
      * @return
@@ -136,25 +123,24 @@ public class SimpleGraphColouring implements TempMap {
     }
 
     /**
-     * Runs the allocation algorithm.
+     * 
+     * @param graph the graph
+     * @param initialNodes linked list of nodes that are not precoloured.
      */
-    public void allocate(Graph graph) {
+    public void allocate(Graph graph, NodeList initialNodes) {
         // store node degrees in a hash table
         for (var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
             degrees.put(nodes.head, nodes.head.degree());
         }
-        // Adds nodes to stack and decrement their adjcacent node degrees
-        var simplifyWorklist = this.getInitialNodes(graph);
         //remove precoloured items from simplify step
-        simplifyWorklist.removeIf(x -> this.getPrecolouredNodes().contains(x));
-        while(!simplifyWorklist.isEmpty()) {
-            var node = simplifyWorklist.iterator().next();
-            simplifyWorklist.remove(node);
-            this.simpleStack.push(node);
+        while(initialNodes != null) {
+            var node = initialNodes.head;
+            this.simpleStack.push(initialNodes.head);
             for (var adj = node.adj(); adj != null; adj = adj.tail) {
                 var degree = degrees.get(adj.head) - 1;
                 degrees.put(adj.head, degree);
             }
+            initialNodes = initialNodes.tail;
         }
         assignColours();
     }
