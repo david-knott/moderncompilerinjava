@@ -8,8 +8,14 @@ import Graph.NodeList;
 import RegAlloc.BitArrayInterferenceGraphImpl;
 import RegAlloc.InterferenceGraph;
 import RegAlloc.RegisterAllocator;
-import RegAlloc.SimpleGraphColouring;
+import RegAlloc.SimpleGraphColouring2;
 import Temp.TempList;
+
+
+class CodeFragWithTemps {
+	private CodeFrag codeFrag;
+	private InstrList instrList;
+}
 
 /**
  * Represents a fragment of assembly code.
@@ -35,8 +41,12 @@ public class CodeFrag {
 	public void process(RegisterAllocator registerAllocator) {
 		AssemFlowGraph assemFlowGraph = new AssemFlowGraph(this.instrList.reverse());
 		InterferenceGraph interferenceGraph = new BitArrayInterferenceGraphImpl(assemFlowGraph);
-		SimpleGraphColouring simpleGraphColouring = new SimpleGraphColouring(this.getPrecoloured(interferenceGraph), this.getColours(interferenceGraph));
+		SimpleGraphColouring2 simpleGraphColouring = new SimpleGraphColouring2(this.getPrecoloured(interferenceGraph), this.frame.registers());
 		NodeList initial = this.getInitial(interferenceGraph);
+		//assign the colours for each pre coloured node 
+		for(NodeList pc = this.getPrecoloured(interferenceGraph); pc != null; pc = pc.tail) {
+			simpleGraphColouring.setNodeColour(pc.head, interferenceGraph.gtemp(pc.head));
+		}
 		simpleGraphColouring.allocate(interferenceGraph, initial);
 	}
 
@@ -45,23 +55,6 @@ public class CodeFrag {
 		for(TempList tempList = this.frame.precoloured(); tempList != null; tempList = tempList.tail) {
 			Node node = graph.tnode(tempList.head);
 			//precoloured node has not been seen in the interference graph
-			if(node == null) {
-				continue;
-			}
-			if(nodeList == null) {
-				nodeList = new NodeList(node, null);
-			} else {
-				nodeList = new NodeList(node, nodeList);
-			}
-		}
-		return nodeList;
-	}
-
-	private NodeList getColours(InterferenceGraph graph) {
-		NodeList nodeList = null;
-		for(TempList tempList = this.frame.registers(); tempList != null; tempList = tempList.tail) {
-			Node node = graph.tnode(tempList.head);
-//colour node has not been seen in the interference graph
 			if(node == null) {
 				continue;
 			}

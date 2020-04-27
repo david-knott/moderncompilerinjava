@@ -2,10 +2,10 @@
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 
-Register allocation has a problem, where precoloured temps that are not in the interference graph
-cannot be allocated. I need to investigate this further. Motivation is to reuse graph colouring with
-spilled variables.
+I have implemented SimpleGraphColouring2 although I am not happy with it. Mainly due to how the
+precoloured node colours are set after object constuction.
 
+Need to figure out how to either use the TempMap or create my own version of it.
 
 Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same
 way the Frame is
