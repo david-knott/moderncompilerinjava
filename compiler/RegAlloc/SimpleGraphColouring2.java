@@ -5,12 +5,63 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.Stack;
 
+import Assem.Instr;
+import Assem.InstrList;
 import Graph.Graph;
 import Graph.Node;
 import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
+
+
+class TempRewriter {
+
+    private TempList tempList;
+
+    public TempRewriter(TempList tempList){
+        this.tempList = tempList;
+    }
+
+    private boolean spilled(Temp temp) {
+        return true;
+    }
+
+    private Instr tempToMemory(InstrList instr, InstrList previous, Temp temp) {
+        return null;
+    }
+
+    private Instr memoryToTemp(InstrList instr, InstrList previous, Temp temp) {
+        return null;
+    }
+
+
+    public InstrList rewrite(InstrList instrList) {
+
+        InstrList previous = null;
+        for(InstrList loop = instrList; loop != null; loop = loop.tail) {
+            Instr instr = loop.head;
+            //foreach instance of def, move the temp to a memory location
+            for(TempList defs = instr.def(); defs != null; defs = defs.tail) {
+                Temp def = defs.head;
+                if(this.spilled(def)) {
+                    this.tempToMemory(loop, previous, def);
+                }
+            }
+            //foreach instance of a use, move from memory location to new temp
+            for(TempList uses = instr.use(); uses != null; uses = uses.tail) {
+                Temp use = uses.head;
+                if(this.spilled(use)) {
+                    this.memoryToTemp(loop, previous, use);
+                }
+            }
+            previous = loop;
+        }
+        return null;
+
+    }
+
+}
 
 /**
  * Register allocator class.
@@ -185,7 +236,7 @@ public class SimpleGraphColouring2 implements TempMap {
 
     @Override
     public String tempMap(Temp t) {
-        // return this.frame.tempMap(t);
+        //for given temp t, what node does it have, what temp does that node map to ?
         return null;
     }
 }

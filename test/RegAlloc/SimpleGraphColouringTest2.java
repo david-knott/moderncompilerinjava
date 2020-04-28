@@ -1,7 +1,10 @@
 package RegAlloc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Iterator;
 
 import org.junit.Test;
 
@@ -43,6 +46,7 @@ public class SimpleGraphColouringTest2 {
         SimpleGraphColouring2 registerAllocator = new SimpleGraphColouring2(precolouredNodes, IntelFrame.calleeSaves);
         //execute the allocation..
         registerAllocator.allocate(graph, initial);
+        assertTrue(registerAllocator.getSpilledNodes().isEmpty());
     }
 
     @Test
@@ -76,6 +80,7 @@ public class SimpleGraphColouringTest2 {
        // registerAllocator.setNodeColour(d, IntelFrame.r13);
         //execute the allocation..
         registerAllocator.allocate(graph, initial);
+        assertFalse(registerAllocator.getSpilledNodes().isEmpty());
     }
 }
 
