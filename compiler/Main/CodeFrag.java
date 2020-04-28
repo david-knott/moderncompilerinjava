@@ -7,6 +7,7 @@ import Graph.Node;
 import Graph.NodeList;
 import RegAlloc.BitArrayInterferenceGraphImpl;
 import RegAlloc.InterferenceGraph;
+import RegAlloc.PrecolouredNode;
 import RegAlloc.RegisterAllocator;
 import RegAlloc.SimpleGraphColouring2;
 import Temp.TempList;
@@ -44,38 +45,36 @@ public class CodeFrag {
 		SimpleGraphColouring2 simpleGraphColouring = new SimpleGraphColouring2(this.getPrecoloured(interferenceGraph), this.frame.registers());
 		NodeList initial = this.getInitial(interferenceGraph);
 		//assign the colours for each pre coloured node 
-		for(NodeList pc = this.getPrecoloured(interferenceGraph); pc != null; pc = pc.tail) {
-			simpleGraphColouring.setNodeColour(pc.head, interferenceGraph.gtemp(pc.head));
-		}
+		
 		simpleGraphColouring.allocate(interferenceGraph, initial);
 	}
 
-	private NodeList getPrecoloured(InterferenceGraph graph) {
-		NodeList nodeList = null;
+	private PrecolouredNode getPrecoloured(InterferenceGraph graph) {
+		PrecolouredNode precolouredNode= null;
 		for(TempList tempList = this.frame.precoloured(); tempList != null; tempList = tempList.tail) {
 			Node node = graph.tnode(tempList.head);
 			//precoloured node has not been seen in the interference graph
 			if(node == null) {
 				continue;
 			}
-			if(nodeList == null) {
-				nodeList = new NodeList(node, null);
+			if(precolouredNode == null) {
+				precolouredNode = new PrecolouredNode(node, tempList.head);
 			} else {
-				nodeList = new NodeList(node, nodeList);
+				precolouredNode = precolouredNode.append(node, tempList.head);
 			}
 		}
-		return nodeList;
+		return precolouredNode;
 	}
 
 	private NodeList getInitial(InterferenceGraph interferenceGraph) {
 		NodeList initialList = null;
-		NodeList precoloured = this.getPrecoloured(interferenceGraph);
+		PrecolouredNode precoloured = this.getPrecoloured(interferenceGraph);
 		for(NodeList nodeList = interferenceGraph.nodes(); nodeList != null; nodeList = nodeList.tail){
 			Node node = nodeList.head;
 			//is node in precoloured list
 			boolean skip = false;
-			for(NodeList pc = precoloured; pc != null; pc = pc.tail) {
-				if(node.equals(pc.head)) {
+			for(PrecolouredNode pc = precoloured; pc != null; pc = pc.tail) {
+				if(node.equals(pc.node)) {
 					skip = true;
 					break;
 				}

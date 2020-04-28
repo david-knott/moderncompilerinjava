@@ -9,7 +9,6 @@ import Graph.Graph;
 import Graph.Node;
 import Graph.NodeList;
 import Intel.IntelFrame;
-import Temp.Temp;
 import Temp.TempList;
 
 public class SimpleGraphColouringTest2 {
@@ -34,15 +33,14 @@ public class SimpleGraphColouringTest2 {
         graph.addEdge(c, d);//{c connects to d, e }
         graph.addEdge(c, e);
      //   graph.addEdge(d, e);
-        NodeList precolouredNodes = new NodeList(a, new NodeList(b, new NodeList(c, new NodeList(d, null))));
+        PrecolouredNode precolouredNodes= new PrecolouredNode(a, IntelFrame.r10)
+        .append(b, IntelFrame.r11)
+        .append(c, IntelFrame.r12)
+        .append(d, IntelFrame.r13)
+        ;
         NodeList initial = new NodeList(c, new NodeList(d, new NodeList(e, null)));
         //a & b are precoloured, except c to have a colour
         SimpleGraphColouring2 registerAllocator = new SimpleGraphColouring2(precolouredNodes, IntelFrame.calleeSaves);
-        //set the precoloured nodes temps.
-        registerAllocator.setNodeColour(a, IntelFrame.r10);
-        registerAllocator.setNodeColour(b, IntelFrame.r11);
-        registerAllocator.setNodeColour(c, IntelFrame.r12);
-        registerAllocator.setNodeColour(d, IntelFrame.r13);
         //execute the allocation..
         registerAllocator.allocate(graph, initial);
     }
@@ -67,14 +65,13 @@ public class SimpleGraphColouringTest2 {
         graph.addEdge(c, e);
         graph.addEdge(d, e);
 
-        NodeList precolouredNodes = new NodeList(a, new NodeList(b, null));
+
+        PrecolouredNode precolouredNodes= new PrecolouredNode(a, IntelFrame.r10).append(b, IntelFrame.r11);
         NodeList initial = new NodeList(c, new NodeList(d, new NodeList(e, null)));
         TempList colours = new TempList(IntelFrame.r10, new TempList(IntelFrame.r11, null));
         //a & b are precoloured, except c to have a colour
         SimpleGraphColouring2 registerAllocator = new SimpleGraphColouring2(precolouredNodes, colours);
         //set the precoloured nodes temps.
-        registerAllocator.setNodeColour(a, IntelFrame.r10);
-        registerAllocator.setNodeColour(b, IntelFrame.r11);
       //  registerAllocator.setNodeColour(c, IntelFrame.r12);
        // registerAllocator.setNodeColour(d, IntelFrame.r13);
         //execute the allocation..

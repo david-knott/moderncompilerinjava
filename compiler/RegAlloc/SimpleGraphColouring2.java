@@ -18,7 +18,7 @@ import Temp.TempMap;
 public class SimpleGraphColouring2 implements TempMap {
 
     //strictly speaking these are temps.
-    private NodeList precoloured;
+    private PrecolouredNode precoloured;
     private TempList colours;
     private Set<Node> colouredNodes = new HashSet<Node>();
     private Set<Node> spilledNodes = new HashSet<Node>();
@@ -26,9 +26,12 @@ public class SimpleGraphColouring2 implements TempMap {
     private Hashtable<Node, Integer> degrees = new Hashtable<Node, Integer>();
     private Hashtable<Node, Temp> nodeColours = new Hashtable<Node, Temp>();
 
-    public SimpleGraphColouring2(NodeList precoloured, TempList colours) {
-        this.precoloured = precoloured;
+    public SimpleGraphColouring2(PrecolouredNode precoloured, TempList colours) {
         this.colours = colours;
+        this.precoloured = precoloured;
+        for(var nodes = this.precoloured; nodes != null; nodes = nodes.tail) {
+            this.setNodeColour(nodes.node, nodes.temp);
+        }
     }
 
     /**
@@ -39,7 +42,7 @@ public class SimpleGraphColouring2 implements TempMap {
     Set<Node> getPrecolouredNodes() {
         Set<Node> s = new HashSet<Node>();
         for(var nodes = this.precoloured; nodes != null; nodes = nodes.tail) {
-            s.add(nodes.head);
+            s.add(nodes.node);
         }
         return s;
     }
@@ -120,12 +123,12 @@ public class SimpleGraphColouring2 implements TempMap {
     }
 
     /**
-     * Set a nodes colour. THis is used by this class as well
-     * as clients for setting precoloured nodes colour.
+     * Set a nodes colour. This is used to set both precoloured
+     * node colours and the during graph colouring operations.
      * @param node
      * @param colour
      */
-    public void setNodeColour(Node node, Temp colour) {
+    private void setNodeColour(Node node, Temp colour) {
         this.nodeColours.put(node, colour);
     }
 
