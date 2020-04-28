@@ -20,4 +20,11 @@ public class InstrList {
         }
         return reversed;
     }
+
+    public InstrList append(Instr instr) {
+        InstrList end = this;
+        for(; end.tail != null; end = end.tail);
+        end.tail = new InstrList(instr, null);
+        return this;
+    }
 }

@@ -7,6 +7,9 @@ import java.util.Stack;
 
 import Assem.Instr;
 import Assem.InstrList;
+import Assem.MOVE;
+import Assem.OPER;
+import Frame.Frame;
 import Graph.Graph;
 import Graph.Node;
 import Graph.NodeList;
@@ -18,46 +21,48 @@ import Temp.TempMap;
 class TempRewriter {
 
     private TempList tempList;
+    private Frame frame;
 
-    public TempRewriter(TempList tempList){
+    public TempRewriter(TempList tempList, Frame frame){
         this.tempList = tempList;
+        this.frame = frame;
     }
 
     private boolean spilled(Temp temp) {
         return true;
     }
 
-    private Instr tempToMemory(InstrList instr, InstrList previous, Temp temp) {
-        return null;
+    private Instr tempToMemory(InstrList instr, Temp temp) {
+        return new OPER("", null, new TempList(temp, null)); 
     }
 
-    private Instr memoryToTemp(InstrList instr, InstrList previous, Temp temp) {
-        return null;
+    private Instr memoryToTemp(InstrList instr, Temp temp) {
+        return new OPER("", new TempList(temp, null), null); 
     }
-
 
     public InstrList rewrite(InstrList instrList) {
 
-        InstrList previous = null;
+        InstrList result = new InstrList(instrList.head, null);
         for(InstrList loop = instrList; loop != null; loop = loop.tail) {
             Instr instr = loop.head;
-            //foreach instance of def, move the temp to a memory location
-            for(TempList defs = instr.def(); defs != null; defs = defs.tail) {
-                Temp def = defs.head;
-                if(this.spilled(def)) {
-                    this.tempToMemory(loop, previous, def);
-                }
-            }
             //foreach instance of a use, move from memory location to new temp
             for(TempList uses = instr.use(); uses != null; uses = uses.tail) {
                 Temp use = uses.head;
                 if(this.spilled(use)) {
-                    this.memoryToTemp(loop, previous, use);
+                    result.append(this.memoryToTemp(loop, use));
                 }
             }
-            previous = loop;
+            //add the instruction
+            result.append(instr);
+            //foreach instance of def, move the temp to a memory location
+            for(TempList defs = instr.def(); defs != null; defs = defs.tail) {
+                Temp def = defs.head;
+                if(this.spilled(def)) {
+                    result.append(this.tempToMemory(loop, def));
+                }
+            }
         }
-        return null;
+        return result;
 
     }
 

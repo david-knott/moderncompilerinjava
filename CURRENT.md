@@ -2,8 +2,15 @@
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 
-I have implemented SimpleGraphColouring2 although I am not happy with it. Mainly due to how the
-precoloured node colours are set after object constuction.
+How to spill a temp to memory in the case of a definition, how to retrieve a value from memory
+and place it in a temp. How do we reference the memory location when we retreive the value 
+back from the frame and place it into a new temp ?
+
+How do we ensure that the code is architecture independant. I assume it needs to do into the frame,
+
+Test that the store operation is placed after the definition of the variable.
+
+Test that the load operation is placed before the usage of the variable.
 
 Need to figure out how to either use the TempMap or create my own version of it.
 
