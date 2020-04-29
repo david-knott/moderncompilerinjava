@@ -3,13 +3,18 @@ package Intel;
 import Temp.Label;
 import Temp.Temp;
 import Temp.TempList;
+import Tree.BINOP;
 import Tree.CALL;
+import Tree.CONST;
 import Tree.Exp;
 import Tree.ExpList;
+import Tree.MEM;
+import Tree.MOVE;
 import Tree.NAME;
 import Tree.SEQ;
 import Tree.Stm;
 import Tree.StmList;
+import Tree.TEMP;
 import Util.BoolList;
 import Assem.Instr;
 import Assem.InstrList;
@@ -112,7 +117,13 @@ public class IntelFrame extends Frame {
 
     private StmList callingConventions;
 
-    private void moveIntoPosition(Temp src, int i) {
+    /**
+     * Moves function arguments into the registers or frame location
+     * where they will be accessed within the function body. We would
+     * assume these are at the bottom of the frane, nearest the callee
+     * function frame.
+     */
+    private void moveFunctionArgsInPosition(Temp src, int i) {
         Temp dest;
         switch (i) {
             case 0:
@@ -134,9 +145,14 @@ public class IntelFrame extends Frame {
                 dest = r9;
                 break;
             default:
-                throw new Error("move temp into stack frame location");
+                //allocate space on frame
+                InFrame inFrame = (InFrame)this.allocLocal(true);
+                //move src temp into frame location relative to frame pointer
+                var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
+                this.callingConventions = new StmList(new Tree.MOVE(memLocation, new Tree.TEMP(src)), this.callingConventions);
+                return;
         }
-        this.callingConventions = new StmList(new Tree.MOVE(new Tree.TEMP(src), new Tree.TEMP(dest)),
+        this.callingConventions = new StmList(new Tree.MOVE(new Tree.TEMP(dest), new Tree.TEMP(src)),
                 this.callingConventions);
     }
 
@@ -154,7 +170,7 @@ public class IntelFrame extends Frame {
             Access local;
             if (!escape) {
                 Temp temp = new Temp();
-                moveIntoPosition(temp, i);
+                moveFunctionArgsInPosition(temp, i);
                 local = new InReg(temp);
             } else {
                 localOffset = localOffset - WORD_SIZE;
@@ -197,9 +213,16 @@ public class IntelFrame extends Frame {
 
     @Override
     public Stm procEntryExit1(Stm body) {
-        if (this.callingConventions == null)
-            return body;
-        return new SEQ(buildSeq(this.callingConventions), body);
+        SEQ onEntry = null, onExit = null, cc = null;
+        //the idea here is that the register allocator will spill
+        //the calleeTemps if required. The precoloured temps ( callee )
+        //cannot be spilled as they are precoloured.
+        for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
+            Temp calleeTemp = new Temp();
+            onEntry = new SEQ(new MOVE(new TEMP(calleeTemp), new TEMP(callee.head)), onEntry);
+            onExit = new SEQ(new MOVE(new TEMP(callee.head), new TEMP(calleeTemp)), onExit);
+        }
+        return new SEQ(onEntry, new SEQ(buildSeq(this.callingConventions), new SEQ(body, onExit)));
     }
 
     /**

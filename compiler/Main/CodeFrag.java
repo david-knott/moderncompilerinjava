@@ -36,7 +36,7 @@ public class CodeFrag {
 
 	public void processAll(RegisterAllocator registerAllocator) {
 		for(CodeFrag loop = this; loop != null; loop = loop.next) {
-			registerAllocator.addCodeFrag();
+		//	registerAllocator.addCodeFrag();
 		}
 
 		registerAllocator.allocate();

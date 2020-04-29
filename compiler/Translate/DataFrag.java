@@ -23,9 +23,9 @@ public class DataFrag extends Frag {
 
 	@Override
 	public ProcessedFrag process(Canonicalization canonicalization, FragProcessor processor) {
-		PrintStream out = processor.getOut();
-		out.println("section .data");
-		out.println(this);
+	//	PrintStream out = processor.getOut();
+//		out.println("section .data");
+		//out.println(this);
 		return new ProcessedDataFrag(null);
 	}
 

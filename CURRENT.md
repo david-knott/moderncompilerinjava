@@ -14,6 +14,12 @@ not one by one. I am have created a simple GraphColouring class, but I need to r
 
 CodeFrag - how to get the spilled temps from the spilled nodes ?
 
+String literals are not implemented in DataFrag.
+
+Just implemented the callee save and restore code in procEntryExit1
+
+Need to build a recusive normalise function that converts a sequence of sequence into more
+easy to read ones. 
 
 Added a indicative method for CodeFrag for the recursive calling of register allocation. Still need to apply this to the entire programme. General algoirthm is
 - Generate flow graph for each code fragment
