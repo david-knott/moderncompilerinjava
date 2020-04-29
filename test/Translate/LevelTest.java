@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.Test;
 
+import Assem.Instr;
 import Assem.InstrList;
 import Frame.Access;
 import Frame.Frame;
@@ -71,7 +72,6 @@ public class LevelTest {
             return null;
         }
 
-
         @Override
         public InstrList codegen(Stm head) {
             // TODO Auto-generated method stub
@@ -97,12 +97,24 @@ public class LevelTest {
         }
 
         @Override
-	    public TempList registers(){
+        public TempList registers() {
             return null;
         }
 
         @Override
         public TempList precoloured() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Instr tempToMemory(Temp temp) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Instr memoryToTemp(Temp temp) {
             // TODO Auto-generated method stub
             return null;
         }

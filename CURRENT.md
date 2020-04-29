@@ -2,22 +2,12 @@
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 
-How to spill a temp to memory in the case of a definition, how to retrieve a value from memory
-and place it in a temp. How do we reference the memory location when we retreive the value 
-back from the frame and place it into a new temp ?
-
-How do we ensure that the code is architecture independant. I assume it needs to do into the frame,
-
-Test that the store operation is placed after the definition of the variable.
-
-Test that the load operation is placed before the usage of the variable.
+Added new RegisterSpiller classes and a test class. Appending and prepending the 
+new instuctions isn't working yet.
 
 Need to figure out how to either use the TempMap or create my own version of it.
 
-Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same
-way the Frame is
-
-## Later
+Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same way the Frame is
 
 For register allocation we need to build the interference graph using all the code blocks, 
 not one by one. I am have created a simple GraphColouring class, but I need to refactor before I can proceed with register allocation.

@@ -1,5 +1,6 @@
 package Frame;
 
+import Assem.Instr;
 import Assem.InstrList;
 import Temp.Label;
 import Temp.Temp;
@@ -106,4 +107,8 @@ public abstract class Frame implements TempMap {
     abstract public TempList registers();
 
 	abstract public TempList precoloured();
+
+	public abstract Instr tempToMemory(Temp temp); 
+
+	public abstract Instr memoryToTemp(Temp temp);
 }

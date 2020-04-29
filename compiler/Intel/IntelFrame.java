@@ -11,7 +11,9 @@ import Tree.SEQ;
 import Tree.Stm;
 import Tree.StmList;
 import Util.BoolList;
+import Assem.Instr;
 import Assem.InstrList;
+import Assem.OPER;
 import Frame.*;
 import java.util.Hashtable;
 
@@ -46,138 +48,44 @@ public class IntelFrame extends Frame {
     public static Temp r13 = new Temp();// callee
     public static Temp r14 = new Temp();// callee
     public static Temp r15 = new Temp();// callee
-    public static TempList specialRegs = new TempList(
-        rbp, new TempList(
-            rsp, null
-        )
-    );
+    public static TempList specialRegs = new TempList(rbp, new TempList(rsp, null));
     /**
-     * A linked list of temporaries that represent
-     * registers that are saved upon entry and restored
-     * upon exit by the callee function. The caller
-     * can be guaranteed that these registers will contain
-     * the same values when the callee returns. 
+     * A linked list of temporaries that represent registers that are saved upon
+     * entry and restored upon exit by the callee function. The caller can be
+     * guaranteed that these registers will contain the same values when the callee
+     * returns.
      */
-    public static TempList calleeSaves = new TempList(
-        rbx, new TempList(
-            r12, new TempList(
-                r13, new TempList(
-                    r14, new TempList(
-                        r15, null
-                    )
-                )
-            )
-        )
-    );
+    public static TempList calleeSaves = new TempList(rbx,
+            new TempList(r12, new TempList(r13, new TempList(r14, new TempList(r15, null)))));
 
     /**
-     * A linked list of temporaries that are used to
-     * pass arguments to functions.
+     * A linked list of temporaries that are used to pass arguments to functions.
      */
-    public static TempList argRegs = new TempList(
-        rdi, new TempList(
-            rsi, new TempList(
-                rdx, new TempList(
-                    rcx, new TempList(
-                        r8, new TempList(
-                            r9, null
-                        )
-                    )
-                )
-            )
-        )
-    );
+    public static TempList argRegs = new TempList(rdi,
+            new TempList(rsi, new TempList(rdx, new TempList(rcx, new TempList(r8, new TempList(r9, null))))));
 
     /**
-     * A linked list of temporaries that represent
-     * registers that are saved by the caller and restored
-     * by the caller. The callee is free to clobber the 
-     * values in these registers and not worry about restoring 
-     * them.
+     * A linked list of temporaries that represent registers that are saved by the
+     * caller and restored by the caller. The callee is free to clobber the values
+     * in these registers and not worry about restoring them.
      */
-    public static TempList callerSaves = new TempList(
-        rcx, new TempList(
-            rdx, new TempList(
-                rdi, new TempList(
-                    rsi, new TempList(
-                            r8, new TempList(
-                                r9, new TempList(
-                                    r10, new TempList(
-                                        r11, null
-                                    )
-                                )
-                            )
-                        )
-                )
-            )
-        )
-    );
+    public static TempList callerSaves = new TempList(rcx, new TempList(rdx, new TempList(rdi,
+            new TempList(rsi, new TempList(r8, new TempList(r9, new TempList(r10, new TempList(r11, null))))))));
 
-    private static TempList precoloured = new TempList(
-        rax, new TempList(
-            rcx, new TempList(
-                rdx, new TempList(
-                    rdi, new TempList(
-                        rsi, new TempList(
-                                r8, new TempList(
-                                    r9, new TempList(
-                                        r10, new TempList(
-                                            r11, new TempList(
-                                                rbx, new TempList(
-                                                        r12, new TempList(
-                                                            r13, new TempList(
-                                                                r14, new TempList(
-                                                                    r15, specialRegs
-                                                                ) 
-                                                            )
-                                                       )
-                                                )
-                                            )
-                                        )
-                                    )
-                                )
-                        )
-                    )
-                )
-            )
-        )
-    );
+    private static TempList precoloured = new TempList(rax, new TempList(rcx, new TempList(rdx, new TempList(rdi,
+            new TempList(rsi, new TempList(r8, new TempList(r9, new TempList(r10, new TempList(r11, new TempList(rbx,
+                    new TempList(r12, new TempList(r13, new TempList(r14, new TempList(r15, specialRegs))))))))))))));
 
-
-    private static TempList registers = new TempList(
-        rax, new TempList(
-            rcx, new TempList(
-                rdx, new TempList(
-                    rdi, new TempList(
-                        rsi, new TempList(
-                           // rsp, new TempList(
-                                r8, new TempList(
-                                    r9, new TempList(
-                                        r10, new TempList(
-                                            r11, new TempList(
-                                                rbx, new TempList(
-                                              //   rbp, new TempList(
-                                                        r12, new TempList(
-                                                            r13, new TempList(
-                                                                r14, new TempList(
-                                                                    r15, null 
-                                                                ) 
-                                                            )
-                                                       )
-                                                   )
-                                              //  )
-                                            )
-                                        )
-                                    )
-                                )
-                          //  )
-                        )
-                    )
-                )
-            )
-        )
-    );
-
+    private static TempList registers = new TempList(rax,
+            new TempList(rcx, new TempList(rdx, new TempList(rdi, new TempList(rsi, new TempList(
+                    // rsp, new TempList(
+                    r8, new TempList(r9, new TempList(r10, new TempList(r11, new TempList(rbx, new TempList(
+                            // rbp, new TempList(
+                            r12, new TempList(r13, new TempList(r14, new TempList(r15, null))))
+                    // )
+                    ))))
+            // )
+            ))))));
 
     private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
@@ -234,14 +142,15 @@ public class IntelFrame extends Frame {
 
     /**
      * Initialises a new instance of an Intel Frame activation record
-     * @param nm the label for the related function
+     * 
+     * @param nm   the label for the related function
      * @param frml the formal list, where true indicates the argument escapes
      */
     public IntelFrame(Label nm, BoolList frml) {
-       int i = 0;
+        int i = 0;
         while (frml != null) {
-            // first arg is static link 
-            var escape = /*i == 0 ||*/ i > 5 || frml.head;
+            // first arg is static link
+            var escape = /* i == 0 || */ i > 5 || frml.head;
             Access local;
             if (!escape) {
                 Temp temp = new Temp();
@@ -294,38 +203,27 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * The return sink is an empty operation added to the end of a function.
-     * It is used by the flow analysis to ensure that certain precoloured
-     * temporaries are marked as live on exit from the function
+     * The return sink is an empty operation added to the end of a function. It is
+     * used by the flow analysis to ensure that certain precoloured temporaries are
+     * marked as live on exit from the function
      */
-    public Assem.InstrList procEntryExit2(Assem.InstrList body){
-        return append(
-            body, 
-            new Assem.InstrList(new Assem.OPER("; SINK INSTRUCTION", null, returnSink), null));
+    public Assem.InstrList procEntryExit2(Assem.InstrList body) {
+        return append(body, new Assem.InstrList(new Assem.OPER("; SINK INSTRUCTION", null, returnSink), null));
     }
 
     @Override
     public Proc procEntryExit3(Assem.InstrList body) {
-        return new Proc(
-            "PROC " + "name", body, "END" + "name"
-        );
+        return new Proc("PROC " + "name", body, "END" + "name");
     }
-
-
 
     @Override
     public Exp externalCall(String func, ExpList args) {
         Label l = externalCalls.containsKey(func) ? externalCalls.get(func) : null;
-        if(l == null) {
+        if (l == null) {
             l = new Label(func);
             externalCalls.put(func, l);
         }
-        return new CALL(
-            new NAME(
-                l
-            ), 
-            args
-        );
+        return new CALL(new NAME(l), args);
     }
 
     /**
@@ -333,7 +231,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public String string(Label l, String literal) {
-        return l + "  db " + literal.length() +  ",'" + literal + "'";
+        return l + "  db " + literal.length() + ",'" + literal + "'";
     }
 
     @Override
@@ -343,18 +241,16 @@ public class IntelFrame extends Frame {
 
     @Override
     public String tempMap(Temp t) {
-        return tmap.containsKey(t) 
-        ? tmap.get(t) 
-        : t.toString();
+        return tmap.containsKey(t) ? tmap.get(t) : t.toString();
     }
 
     @Override
-	public TempList registers() {
+    public TempList registers() {
         return registers;
     }
 
     @Override
-	public TempList precoloured() {
+    public TempList precoloured() {
         return precoloured;
     }
 
@@ -379,5 +275,21 @@ public class IntelFrame extends Frame {
             p.tail = b;
             return a;
         }
+    }
+
+
+    private Hashtable<Temp, InFrame> spillMap = new Hashtable<Temp, InFrame>();
+
+    @Override
+    public Instr tempToMemory(Temp temp) {
+        InFrame inFrame = (InFrame)this.allocLocal(true);
+        spillMap.put(temp, inFrame);
+        return new OPER("offset = " + inFrame.offset + "; Reg Allocator tempToMemory", null, new TempList(temp, null));
+    }
+
+    @Override
+    public Instr memoryToTemp(Temp temp) {
+        InFrame inFrame = this.spillMap.get(temp);
+        return new OPER("offset = " + inFrame.offset + "; Reg Allocator memoryToTemp", new TempList(temp, null), null);
     }
 }
