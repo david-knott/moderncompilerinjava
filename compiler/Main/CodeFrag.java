@@ -6,9 +6,11 @@ import Frame.Frame;
 import Graph.Node;
 import Graph.NodeList;
 import RegAlloc.BitArrayInterferenceGraphImpl;
+import RegAlloc.DefaultSpillSelectStrategy;
 import RegAlloc.InterferenceGraph;
 import RegAlloc.PrecolouredNode;
 import RegAlloc.RegisterAllocator;
+import RegAlloc.RegisterSpiller;
 import RegAlloc.SimpleGraphColouring2;
 import Temp.TempList;
 
@@ -33,10 +35,11 @@ public class CodeFrag {
 	}
 
 	public void processAll(RegisterAllocator registerAllocator) {
+
 		for (CodeFrag me = this; me != null; me = me.next) {
 			me.process(registerAllocator);
 		}
-		registerAllocator.allocate();
+	//w	registerAllocator.allocate();
 	}
 
 	public void process(RegisterAllocator registerAllocator) {
@@ -47,6 +50,30 @@ public class CodeFrag {
 		//assign the colours for each pre coloured node 
 		
 		simpleGraphColouring.allocate(interferenceGraph, initial);
+		TempList tempList = null; //spilled list of temps.
+		RegisterSpiller registerSpiller = new RegisterSpiller(new DefaultSpillSelectStrategy(), tempList, this.frame);
+		var newInstrList = registerSpiller.rewrite(this.instrList);
+	}
+
+	private Object rewite(InstrList instrList) {
+		// build flow graph and interference graph
+		AssemFlowGraph assemFlowGraph = new AssemFlowGraph(instrList.reverse());
+		InterferenceGraph interferenceGraph = new BitArrayInterferenceGraphImpl(assemFlowGraph);
+		SimpleGraphColouring2 simpleGraphColouring = new SimpleGraphColouring2(this.getPrecoloured(interferenceGraph),
+				this.frame.registers());
+		NodeList initial = this.getInitial(interferenceGraph);
+		simpleGraphColouring.allocate(interferenceGraph, initial);
+		TempList tempList = null; // spilled list of temps.
+		if (tempList == null) {
+			return null;
+
+		} else {
+			RegisterSpiller registerSpiller = new RegisterSpiller(new DefaultSpillSelectStrategy(), tempList,
+					this.frame);
+			var newInstrList = registerSpiller.rewrite(this.instrList);
+			//return newInstrList and call rewrite again..
+			return rewite(newInstrList);
+		}
 	}
 
 	private PrecolouredNode getPrecoloured(InterferenceGraph graph) {

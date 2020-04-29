@@ -12,6 +12,12 @@ Note the CodeGen package is specifically for an intel x64 instruction set. This 
 For register allocation we need to build the interference graph using all the code blocks, 
 not one by one. I am have created a simple GraphColouring class, but I need to refactor before I can proceed with register allocation.
 
+CodeFrag - how to get the spilled temps from the spilled nodes ?
+
+
+Added a indicative method for CodeFrag for the recursive calling of register allocation. Still need to apply this to the entire programme. General algoirthm is
+- Generate flow graph for each code fragment
+- Add this to our interference graph and build it for the entire programme
 
 --------------------------------------------
 

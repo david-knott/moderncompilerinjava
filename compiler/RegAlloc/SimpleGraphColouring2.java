@@ -5,8 +5,6 @@ import java.util.Hashtable;
 import java.util.Set;
 import java.util.Stack;
 
-import Assem.MOVE;
-import Assem.OPER;
 import Graph.Graph;
 import Graph.Node;
 import Graph.NodeList;
