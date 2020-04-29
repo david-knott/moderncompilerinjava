@@ -1,5 +1,6 @@
 package Main;
 
+import Assem.Instr;
 import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
 import Frame.Frame;
@@ -13,7 +14,6 @@ import RegAlloc.RegisterAllocator;
 import RegAlloc.RegisterSpiller;
 import RegAlloc.SimpleGraphColouring2;
 import Temp.TempList;
-
 
 class CodeFragWithTemps {
 	private CodeFrag codeFrag;
@@ -35,56 +35,23 @@ public class CodeFrag {
 	}
 
 	public void processAll(RegisterAllocator registerAllocator) {
-
-		for (CodeFrag me = this; me != null; me = me.next) {
-			me.process(registerAllocator);
+		for(CodeFrag loop = this; loop != null; loop = loop.next) {
+			registerAllocator.addCodeFrag();
 		}
-	//w	registerAllocator.allocate();
-	}
 
-	public void process(RegisterAllocator registerAllocator) {
-		AssemFlowGraph assemFlowGraph = new AssemFlowGraph(this.instrList.reverse());
-		InterferenceGraph interferenceGraph = new BitArrayInterferenceGraphImpl(assemFlowGraph);
-		SimpleGraphColouring2 simpleGraphColouring = new SimpleGraphColouring2(this.getPrecoloured(interferenceGraph), this.frame.registers());
-		NodeList initial = this.getInitial(interferenceGraph);
-		//assign the colours for each pre coloured node 
-		
-		simpleGraphColouring.allocate(interferenceGraph, initial);
-		TempList tempList = null; //spilled list of temps.
-		RegisterSpiller registerSpiller = new RegisterSpiller(new DefaultSpillSelectStrategy(), tempList, this.frame);
-		var newInstrList = registerSpiller.rewrite(this.instrList);
-	}
+		registerAllocator.allocate();
 
-	private Object rewite(InstrList instrList) {
-		// build flow graph and interference graph
-		AssemFlowGraph assemFlowGraph = new AssemFlowGraph(instrList.reverse());
-		InterferenceGraph interferenceGraph = new BitArrayInterferenceGraphImpl(assemFlowGraph);
-		SimpleGraphColouring2 simpleGraphColouring = new SimpleGraphColouring2(this.getPrecoloured(interferenceGraph),
-				this.frame.registers());
-		NodeList initial = this.getInitial(interferenceGraph);
-		simpleGraphColouring.allocate(interferenceGraph, initial);
-		TempList tempList = null; // spilled list of temps.
-		if (tempList == null) {
-			return null;
-
-		} else {
-			RegisterSpiller registerSpiller = new RegisterSpiller(new DefaultSpillSelectStrategy(), tempList,
-					this.frame);
-			var newInstrList = registerSpiller.rewrite(this.instrList);
-			//return newInstrList and call rewrite again..
-			return rewite(newInstrList);
-		}
 	}
 
 	private PrecolouredNode getPrecoloured(InterferenceGraph graph) {
-		PrecolouredNode precolouredNode= null;
-		for(TempList tempList = this.frame.precoloured(); tempList != null; tempList = tempList.tail) {
+		PrecolouredNode precolouredNode = null;
+		for (TempList tempList = this.frame.precoloured(); tempList != null; tempList = tempList.tail) {
 			Node node = graph.tnode(tempList.head);
-			//precoloured node has not been seen in the interference graph
-			if(node == null) {
+			// precoloured node has not been seen in the interference graph
+			if (node == null) {
 				continue;
 			}
-			if(precolouredNode == null) {
+			if (precolouredNode == null) {
 				precolouredNode = new PrecolouredNode(node, tempList.head);
 			} else {
 				precolouredNode = precolouredNode.append(node, tempList.head);
@@ -96,20 +63,20 @@ public class CodeFrag {
 	private NodeList getInitial(InterferenceGraph interferenceGraph) {
 		NodeList initialList = null;
 		PrecolouredNode precoloured = this.getPrecoloured(interferenceGraph);
-		for(NodeList nodeList = interferenceGraph.nodes(); nodeList != null; nodeList = nodeList.tail){
+		for (NodeList nodeList = interferenceGraph.nodes(); nodeList != null; nodeList = nodeList.tail) {
 			Node node = nodeList.head;
-			//is node in precoloured list
+			// is node in precoloured list
 			boolean skip = false;
-			for(PrecolouredNode pc = precoloured; pc != null; pc = pc.tail) {
-				if(node.equals(pc.node)) {
+			for (PrecolouredNode pc = precoloured; pc != null; pc = pc.tail) {
+				if (node.equals(pc.node)) {
 					skip = true;
 					break;
 				}
 			}
-			if(skip) {
+			if (skip) {
 				continue;
 			}
-			if(initialList == null) {
+			if (initialList == null) {
 				initialList = new NodeList(node, null);
 			} else {
 				initialList = new NodeList(node, initialList);

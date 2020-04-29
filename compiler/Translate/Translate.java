@@ -502,6 +502,14 @@ public class Translate {
                 new TEMP(recordPointer)));
     }
 
+    /**
+     * Returns IR for a while loop
+     * @param level the static nesting level this while loop is at
+     * @param loopEnd the label used to break out of the lop
+     * @param testExp the expression that is tested at the start of each loop
+     * @param transBody the translated body expression
+     * @return
+     */
     public Exp whileL(Level level, Label loopEnd, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();

@@ -227,13 +227,16 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Returns a string of assembly
+     * Returns assembly for a string literal.
      */
     @Override
     public String string(Label l, String literal) {
         return l + "  db " + literal.length() + ",'" + literal + "'";
     }
 
+    /**
+     * Returns assembly for the supplied statement.
+     */
     @Override
     public InstrList codegen(Stm head) {
         return (new Codegen.Codegen(this)).codegen(head);
