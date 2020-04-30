@@ -19,7 +19,7 @@ String literals are not implemented in DataFrag.
 SEQ normalise function works, but I am not happy with it.
 
 IntelFrame contructor, where we create a new frame for a function. Loops through the formals list, checking
-if they variables should escape or not
+if they variables should escape or not. not sure how the moving of values from calling registers into the temps works for memory locations defined in the frame. We create variables either in the frame or in a temp based on the formals and the escape analysis we do before the semant stage. Need to add code to move our calling convention register or frame location into the callee frame ( same process as temp)
 
 I just implemented the callee save and restore code in procEntryExit1
 

@@ -171,12 +171,13 @@ public class IntelFrame extends Frame {
             if (!escape) {
                 //create a new temp for the variable
                 Temp temp = new Temp();
+                //moves calling convention register value into our temp
                 moveFunctionArgsInPosition(temp, i);
                 local = new InReg(temp);
             } else {
                 //create a location in the frame for the 
-                //variable 
                 localOffset = localOffset - WORD_SIZE;
+                //move calling convention register or frame loc into our local
                 local = new InFrame((localOffset));
             }
             if (super.formals == null)
