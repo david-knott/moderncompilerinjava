@@ -16,7 +16,12 @@ CodeFrag - how to get the spilled temps from the spilled nodes ?
 
 String literals are not implemented in DataFrag.
 
-Just implemented the callee save and restore code in procEntryExit1
+SEQ normalise function works, but I am not happy with it.
+
+IntelFrame contructor, where we create a new frame for a function. Loops through the formals list, checking
+if they variables should escape or not
+
+I just implemented the callee save and restore code in procEntryExit1
 
 Need to build a recusive normalise function that converts a sequence of sequence into more
 easy to read ones. 

@@ -169,17 +169,20 @@ public class IntelFrame extends Frame {
             var escape = /* i == 0 || */ i > 5 || frml.head;
             Access local;
             if (!escape) {
+                //create a new temp for the variable
                 Temp temp = new Temp();
                 moveFunctionArgsInPosition(temp, i);
                 local = new InReg(temp);
             } else {
+                //create a location in the frame for the 
+                //variable 
                 localOffset = localOffset - WORD_SIZE;
                 local = new InFrame((localOffset));
             }
-            if (formals == null)
-                formals = new AccessList(local, null);
+            if (super.formals == null)
+                super.formals = new AccessList(local, null);
             else
-                formals.append(local);
+                super.formals.append(local);
             frml = frml.tail;
             i++;
         }

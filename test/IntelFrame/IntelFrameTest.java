@@ -49,7 +49,7 @@ public class IntelFrameTest {
 
     @Test
     public void moveFunctionArg2IntoPosition() {
-        IntelFrame intelFrame = new IntelFrame(new Label(), new BoolList(true, new BoolList(true, null)));
+        IntelFrame intelFrame = new IntelFrame(new Label(), new BoolList(true, new BoolList(true, new BoolList(true, new BoolList(true, new BoolList(true, new BoolList(true, new BoolList(true, null))))))));
         EmptyStm emptyStm = new EmptyStm();
         Stm result = intelFrame.procEntryExit1(emptyStm);
         SEQ seq = (SEQ)result;
