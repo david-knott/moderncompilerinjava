@@ -1,5 +1,8 @@
 package Tree;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SEQ extends Stm {
     public Stm left, right;
 
@@ -21,28 +24,46 @@ public class SEQ extends Stm {
         treeVisitor.visit(this);
     }
 
-    private SEQ normalise(Stm s1, Stm s2) {
-        if((s1 instanceof SEQ) && !(s2 instanceof SEQ)) {
-            SEQ s = (SEQ)s1;
-            return new SEQ(normalise(s.left, s.right), s2);
+    private class Normalizer {
+
+        public Stm result;
+
+        public Normalizer(SEQ seq) {
+            tranverse(seq);
         }
-        else if(!(s1 instanceof SEQ) && (s2 instanceof SEQ)) {
-            SEQ s = (SEQ)s2;
-            return new SEQ(s1, normalise(s.left, s.right));
+
+        public void addOrCreate(Stm smt) {
+            if(smt == null) return;
+            if (result == null) {
+                result = smt;
+            } else {
+                result = new SEQ(smt, result);
+            }
         }
-        else if((s1 instanceof SEQ) && (s2 instanceof SEQ)) {
-            SEQ sa = (SEQ)s1;
-            SEQ sb = (SEQ)s2;
-            return normalise(sa.left, normalise(sa.right, normalise(sb.left, sb.right))); // normalise(sb.left, sb.right));
-        }
-        else {
-            return new SEQ(s1, s2);
+
+        public void tranverse(SEQ seq) {
+            if (seq.right instanceof SEQ) {
+                this.tranverse(((SEQ) seq.right));
+            } else {
+                this.addOrCreate(seq.right);
+            }
+            if (seq.left instanceof SEQ) {
+                this.tranverse(((SEQ) seq.left));
+            } else {
+                this.addOrCreate(seq.left);
+            }
+
         }
     }
 
+    /**
+     * Returns a normalized version of this SEQ in the form s (1, s(2, s(3, s(4,
+     * s(5, 6))))) This is generated from a list of the terminal nodes, listed from
+     * left to right.
+     * 
+     * @return
+     */
     public SEQ normalise() {
-        Stm left = this.left;
-        Stm right = this.right;
-        return this.normalise(left, right);
+        return (SEQ) (new Normalizer(this).result);
     }
 }

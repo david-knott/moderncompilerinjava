@@ -43,12 +43,20 @@ public class IntelFrameTest {
         EmptyStm emptyStm = new EmptyStm();
         Stm result = intelFrame.procEntryExit1(emptyStm);
         SEQ seq = (SEQ)result;
-        //left values should be all the callees and the function arguments 
-        //with the empty statement at the end
-        //expect that result is type of sequence
-        //with first n items
-        System.out.println(result);
+        SEQ nseq = seq.normalise();
+        System.out.println(nseq);
     }
+
+    @Test
+    public void moveFunctionArg2IntoPosition() {
+        IntelFrame intelFrame = new IntelFrame(new Label(), new BoolList(true, new BoolList(true, null)));
+        EmptyStm emptyStm = new EmptyStm();
+        Stm result = intelFrame.procEntryExit1(emptyStm);
+        SEQ seq = (SEQ)result;
+        SEQ nseq = seq.normalise();
+        System.out.println(nseq);
+    }
+
 
 
 
