@@ -64,6 +64,24 @@ public class SEQ extends Stm {
      * @return
      */
     public SEQ normalise() {
-        return (SEQ) (new Normalizer(this).result);
+       return (SEQ) (new Normalizer(this).result);
+       // return SEQ.linearize(this);
+    }
+
+    static Tree.SEQ linear(Tree.SEQ s, Tree.SEQ l) {
+        // calls function below with s.right and the list, which returns a statement
+        // then passes the s.left and the statement list into the function below
+        return linear(s.left, linear(s.right, l));
+    }
+
+    static Tree.SEQ linear(Tree.Stm s, Tree.SEQ l) {
+        if (s instanceof Tree.SEQ)
+            return linear((Tree.SEQ) s, l); // calls the function above
+        else
+            return new Tree.SEQ(s, l);
+    }
+
+    static public Tree.SEQ linearize(Tree.Stm s) {
+        return linear(s, null);
     }
 }

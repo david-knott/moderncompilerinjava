@@ -157,7 +157,22 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Initialises a new instance of an Intel Frame activation record
+     * Initialises a new instance of an Intel Frame activation record.
+     * The frml argument is passed in from the abstract synax and represents
+     * the formal arguments defined by the function header. These arguments
+     * do not escape by default, meaning they are stored in temporaries. If 
+     * an argument does escape it is stored in the frame. The codegen visitor
+     * munch args, called by the call codegen, puts the actual arguments into
+     * their argument passing registers, or into the caller frame, before the CALL command.
+     * 
+     * The callee is expected to move the temporaries from the argument passing registers
+     * into the frame temporaries, or ensure that we access frame variables using
+     * the correct offset relative to the new base pointer.
+     * 
+     * The frml list is by default non escaping, except for variables that are marked 
+     * as must escape. 
+     * 
+     * This confuses me a bit ! The formals, which are taken
      * 
      * @param nm   the label for the related function
      * @param frml the formal list, where true indicates the argument escapes
@@ -175,7 +190,7 @@ public class IntelFrame extends Frame {
                 moveFunctionArgsInPosition(temp, i);
                 local = new InReg(temp);
             } else {
-                //create a location in the frame for the 
+                //create a location in the frame for the item 
                 localOffset = localOffset - WORD_SIZE;
                 //move calling convention register or frame loc into our local
                 local = new InFrame((localOffset));
@@ -217,16 +232,18 @@ public class IntelFrame extends Frame {
 
     @Override
     public Stm procEntryExit1(Stm body) {
-        SEQ onEntry = null, onExit = null, cc = null;
+        SEQ onEntry = null, onExit = null;
         //the idea here is that the register allocator will spill
-        //the calleeTemps if required. The precoloured temps ( callee )
-        //cannot be spilled as they are precoloured.
+        //the callee Temps if it needs to. The precoloured temps ( callee )
+        //cannot be spilled as they are precoloured so we move them into new
+        //temps that are not coloured.
         for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = new Temp();
             onEntry = new SEQ(new MOVE(new TEMP(calleeTemp), new TEMP(callee.head)), onEntry);
             onExit = new SEQ(new MOVE(new TEMP(callee.head), new TEMP(calleeTemp)), onExit);
         }
-        return new SEQ(onEntry, new SEQ(buildSeq(this.callingConventions), new SEQ(body, onExit)));
+        //return new SEQ(onEntry, new SEQ(buildSeq(this.callingConventions), new SEQ(body, onExit)));
+        return new SEQ(buildSeq(this.callingConventions), new SEQ(body, null));
     }
 
     /**

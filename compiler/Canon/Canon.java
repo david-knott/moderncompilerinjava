@@ -156,13 +156,25 @@ class Canon {
         }
     }
 
+    /**
+     * Takes a tree sequence and a statement list. The right argument is passed into
+     * an overload which recurses until a statement is found, at which point the
+     * statememt is returned
+     * 
+     * @param s
+     * @param l
+     * @return a new statement list
+     */
     static Tree.StmList linear(Tree.SEQ s, Tree.StmList l) {
+        // calls function below with s.right and the list, which returns a statement
+        // list
+        // then passes the s.left and the statement list into the function below
         return linear(s.left, linear(s.right, l));
     }
 
     static Tree.StmList linear(Tree.Stm s, Tree.StmList l) {
         if (s instanceof Tree.SEQ)
-            return linear((Tree.SEQ) s, l);
+            return linear((Tree.SEQ) s, l); // calls the function above
         else
             return new Tree.StmList(s, l);
     }
