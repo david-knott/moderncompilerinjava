@@ -19,8 +19,10 @@ import Temp.Label;
 import Temp.Temp;
 import Temp.TempList;
 import Tree.EmptyStm;
+import Tree.MOVE;
 import Tree.SEQ;
 import Tree.Stm;
+import Tree.TEMP;
 import Util.BoolList;
 
 
@@ -54,12 +56,16 @@ public class IntelFrameTest {
         Stm result = intelFrame.procEntryExit1(emptyStm);
         SEQ seq = (SEQ)result;
         SEQ nseq = seq.normalise();
-        System.out.println(nseq);
+        //first item should be a move from callee registers to temporaries
+        //first is r12 to temp
+        System.out.println("r12=" + IntelFrame.r12);
+        matchesMove(nseq, IntelFrame.r12);
     }
 
-
-
-
-
-
+    private void matchesMove(SEQ seq, Temp src) {
+        assertTrue(seq.left instanceof MOVE);
+        MOVE move = (MOVE)seq.left;
+        TEMP mvSrc = (TEMP)move.src;
+        assertEquals(src, mvSrc.temp);
+    }
 }

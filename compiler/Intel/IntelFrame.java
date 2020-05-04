@@ -92,9 +92,16 @@ public class IntelFrame extends Frame {
             // )
             ))))));
 
+    //precoloured temps that map to the actual machine registers
     private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
+    //mapping from string to an external function label
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
+    //return sink used to indicate that certain values are live at function exit
     private static TempList returnSink = new TempList(rsp, calleeSaves);
+    //map to store spilled temps and their related inframe accesses
+    private Hashtable<Temp, InFrame> spillMap = new Hashtable<Temp, InFrame>();
+    //map to store callee registers and the temp created to store them.
+    private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
 
     static {
         tmap.put(rax, "rax");
@@ -117,13 +124,14 @@ public class IntelFrame extends Frame {
 
     private StmList callingConventions;
 
+    private void addCallingConvention() {
+
+    }
     /**
      * Moves function arguments into the registers or frame location
-     * where they will be accessed within the function body. We would
-     * assume these are at the bottom of the frane, nearest the callee
-     * function frame.
+     * where they will be accessed within the function body. 
      */
-    private void moveFunctionArgsInPosition(Temp src, int i) {
+    private void moveTempToFormal(Temp src, int i) {
         Temp dest;
         switch (i) {
             case 0:
@@ -147,7 +155,6 @@ public class IntelFrame extends Frame {
             default:
                 //allocate space on frame
                 InFrame inFrame = (InFrame)this.allocLocal(true);
-                //move src temp into frame location relative to frame pointer
                 var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
                 this.callingConventions = new StmList(new Tree.MOVE(memLocation, new Tree.TEMP(src)), this.callingConventions);
                 return;
@@ -155,6 +162,45 @@ public class IntelFrame extends Frame {
         this.callingConventions = new StmList(new Tree.MOVE(new Tree.TEMP(dest), new Tree.TEMP(src)),
                 this.callingConventions);
     }
+
+    /*
+     * Moves function arguments into the registers or frame location
+     * where they will be accessed within the function body. 
+     */
+    private void moveFrameToFormal(int offset, int i) {
+        Temp dest;
+        var memSrc = new MEM(new BINOP(BINOP.PLUS, new CONST(offset), new TEMP(this.FP())));
+        switch (i) {
+            case 0:
+                dest = rdi;
+                break;
+            case 1:
+                dest = rsi;
+                break;
+            case 2:
+                dest = rdx;
+                break;
+            case 3:
+                dest = rcx;
+                break;
+            case 4:
+                dest = r8;
+                break;
+            case 5:
+                dest = r9;
+                break;
+            default:
+                //allocate space on frame
+                InFrame inFrame = (InFrame)this.allocLocal(true);
+                var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
+                this.callingConventions = new StmList(new Tree.MOVE(memLocation, memSrc), this.callingConventions);
+                return;
+        }
+        this.callingConventions = new StmList(new Tree.MOVE(new Tree.TEMP(dest), memSrc),
+                this.callingConventions);
+    }
+
+
 
     /**
      * Initialises a new instance of an Intel Frame activation record.
@@ -187,12 +233,12 @@ public class IntelFrame extends Frame {
                 //create a new temp for the variable
                 Temp temp = new Temp();
                 //moves calling convention register value into our temp
-                moveFunctionArgsInPosition(temp, i);
+                this.moveTempToFormal(temp, i);
                 local = new InReg(temp);
             } else {
                 //create a location in the frame for the item 
                 localOffset = localOffset - WORD_SIZE;
-                //move calling convention register or frame loc into our local
+                this.moveFrameToFormal(localOffset, i);
                 local = new InFrame((localOffset));
             }
             if (super.formals == null)
@@ -230,20 +276,66 @@ public class IntelFrame extends Frame {
         return WORD_SIZE;
     }
 
+    SEQ calleeSaveList() {
+        SEQ seq = null;
+        for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
+            Temp calleeTemp = new Temp();
+            calleeTempMap.put(callee.head, calleeTemp);
+            seq = new SEQ(seq, new MOVE(new TEMP(calleeTemp), new TEMP(callee.head)));
+        }
+        return seq;
+    }
+
+    SEQ calleeRestoreList() {
+        SEQ seq = null;
+        for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
+            Temp calleeTemp = calleeTempMap.get(callee.head);
+            seq = new SEQ(seq, new MOVE(new TEMP(calleeTemp), new TEMP(callee.head)));
+        }
+        return seq;
+    }
+
+    SEQ moveArgs() {
+        return null;
+    }
+
+    SEQ prepend(SEQ seqa, SEQ b) {
+        return new SEQ(seqa, b);
+    }
+
+    SEQ prepend(SEQ seqa, Stm b) {
+        return new SEQ(seqa, b);
+    }
+
+    SEQ append(SEQ seqa, SEQ b) {
+        return new SEQ(b, seqa);
+    }
+
     @Override
     public Stm procEntryExit1(Stm body) {
-        SEQ onEntry = null, onExit = null;
         //the idea here is that the register allocator will spill
         //the callee Temps if it needs to. The precoloured temps ( callee )
         //cannot be spilled as they are precoloured so we move them into new
         //temps that are not coloured.
+        /*
         for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = new Temp();
             onEntry = new SEQ(new MOVE(new TEMP(calleeTemp), new TEMP(callee.head)), onEntry);
             onExit = new SEQ(new MOVE(new TEMP(callee.head), new TEMP(calleeTemp)), onExit);
         }
-        //return new SEQ(onEntry, new SEQ(buildSeq(this.callingConventions), new SEQ(body, onExit)));
-        return new SEQ(buildSeq(this.callingConventions), new SEQ(body, null));
+       // return new SEQ(onEntry, new SEQ(buildSeq(this.callingConventions), new SEQ(body, onExit)));
+        return new SEQ(onEntry, onExit);
+        */
+        return append(
+            prepend(
+                prepend(
+                    moveArgs(), 
+                    calleeSaveList()
+                ), 
+                body
+            ), 
+            calleeRestoreList()
+        );
     }
 
     /**
@@ -301,17 +393,6 @@ public class IntelFrame extends Frame {
         return precoloured;
     }
 
-    private Tree.Stm buildSeq(StmList list) {
-        // shouldn't happen
-        if (list == null) {
-            return null;
-        }
-        if (list.tail != null) {
-            return new SEQ(list.head, buildSeq(list.tail));
-        }
-        return list.head;
-    }
-
     private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b) {
         if (a == null)
             return b;
@@ -325,7 +406,6 @@ public class IntelFrame extends Frame {
     }
 
 
-    private Hashtable<Temp, InFrame> spillMap = new Hashtable<Temp, InFrame>();
 
     @Override
     public Instr tempToMemory(Temp temp) {

@@ -52,7 +52,6 @@ public class SEQ extends Stm {
             } else {
                 this.addOrCreate(seq.left);
             }
-
         }
     }
 
