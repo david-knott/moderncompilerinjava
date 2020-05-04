@@ -381,11 +381,19 @@ public class IntelFrame extends Frame {
         return tmap.containsKey(t) ? tmap.get(t) : t.toString();
     }
 
+    /**
+     * A linked list of all Intel registers except for the stack pointer
+     * and base pointer.  This is used for colours in the register allocation
+     * phase.
+     */
     @Override
     public TempList registers() {
         return registers;
     }
 
+    /**
+     * A linked list of all Intel registers.
+     */
     @Override
     public TempList precoloured() {
         return precoloured;
@@ -402,8 +410,6 @@ public class IntelFrame extends Frame {
             return a;
         }
     }
-
-
 
     @Override
     public Instr tempToMemory(Temp temp) {
