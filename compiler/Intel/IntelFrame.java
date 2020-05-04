@@ -124,7 +124,7 @@ public class IntelFrame extends Frame {
 
     private StmList callingConventions;
 
-    private void addCallingConvention() {
+    private void addCallingConvention(Stm stm) {
 
     }
     /**
@@ -156,11 +156,10 @@ public class IntelFrame extends Frame {
                 //allocate space on frame
                 InFrame inFrame = (InFrame)this.allocLocal(true);
                 var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
-                this.callingConventions = new StmList(new Tree.MOVE(memLocation, new Tree.TEMP(src)), this.callingConventions);
+                this.addCallingConvention(new Tree.MOVE(memLocation, new Tree.TEMP(src)));
                 return;
         }
-        this.callingConventions = new StmList(new Tree.MOVE(new Tree.TEMP(dest), new Tree.TEMP(src)),
-                this.callingConventions);
+        this.addCallingConvention(new Tree.MOVE(new Tree.TEMP(dest), new Tree.TEMP(src)));
     }
 
     /*
@@ -193,11 +192,10 @@ public class IntelFrame extends Frame {
                 //allocate space on frame
                 InFrame inFrame = (InFrame)this.allocLocal(true);
                 var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
-                this.callingConventions = new StmList(new Tree.MOVE(memLocation, memSrc), this.callingConventions);
+                this.addCallingConvention(new Tree.MOVE(memLocation, memSrc));
                 return;
         }
-        this.callingConventions = new StmList(new Tree.MOVE(new Tree.TEMP(dest), memSrc),
-                this.callingConventions);
+        this.addCallingConvention(new Tree.MOVE(new Tree.TEMP(dest), memSrc));
     }
 
 
