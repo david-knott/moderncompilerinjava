@@ -1,8 +1,5 @@
 package Tree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SEQ extends Stm {
     public Stm left, right;
 
