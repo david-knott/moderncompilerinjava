@@ -18,8 +18,6 @@ import Tree.StmList;
 import Tree.TEMP;
 import Util.BoolList;
 
-
-
 public class IntelFrameTest {
 
     @Test
@@ -100,8 +98,6 @@ public class IntelFrameTest {
         matchesMoveDest(calleeRestoreList.tail.tail.tail.tail.head, IntelFrame.r15);
     }
 
-
-
     private void matchesMoveDest(Stm stm, Temp dst) {
         assertTrue(stm instanceof MOVE);
         MOVE move = (MOVE)stm;
@@ -125,6 +121,5 @@ public class IntelFrameTest {
         assertTrue(binop.left instanceof CONST);
         CONST cont = (CONST)binop.left;
         assertEquals(cont.value, offset);
- 
     }
 }

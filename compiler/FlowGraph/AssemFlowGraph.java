@@ -3,6 +3,7 @@ package FlowGraph;
 import java.util.Hashtable;
 
 import Assem.Instr;
+import Assem.InstrListList;
 import Assem.LABEL;
 import Graph.Node;
 import Temp.Label;
@@ -22,6 +23,10 @@ public class AssemFlowGraph extends FlowGraph {
         nodeMap.put(node, instr);
         invNodeMap.put(instr, node);
         return node;
+    }
+
+    public AssemFlowGraph() {
+        //initialize the structures.
     }
 
     public AssemFlowGraph(Assem.InstrList instrs) {

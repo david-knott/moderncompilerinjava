@@ -1,7 +1,7 @@
 package Translate;
 
 import Codegen.CodeGeneratorFacade;
-import Main.CodeFrag;
+import RegAlloc.CodeFrag;
 import Tree.StmList;
 
 /**

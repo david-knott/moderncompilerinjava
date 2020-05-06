@@ -10,7 +10,7 @@ public class RegisterAllocator {
 
 //    RegisterAllocator regAlloc = new RegisterAllocator(frame, instrs);
       //  regAlloc.allocate();
-        TempMap tempmap2 = new Temp.CombineMap(frame, new DefaultMap());
+ i//      TempMap tempmap2 = new Temp.CombineMap(frame, new DefaultMap());
     //    for (Assem.InstrList p = instrs; p != null; p = p.tail)
     //        out.print(p.head.format(tempmap2));
         // buildInterferenceGraph(instrs);
@@ -18,6 +18,10 @@ public class RegisterAllocator {
 
 
         return null;
+    }
+
+    public void doit() {
+
     }
 
 	public void allocate() {

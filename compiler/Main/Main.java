@@ -14,6 +14,7 @@ import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
+import RegAlloc.CodeFrag;
 import RegAlloc.RegisterAllocator;
 import Semant.Semant;
 import Translate.Frag;

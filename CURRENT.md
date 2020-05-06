@@ -1,8 +1,15 @@
 # Current Tasks 
 
+For register allocation we need to build the interference graph using all the code blocks, 
+not one by one. I am have created a simple GraphColouring class, but I need to refactor before I can proceed with register allocation.
+
+
 ## Immediate Work
 
-Unit test IntelFrame procEntryExit1 to ensure correct calling sequences
+Started register allocation. ( CodeFrag.java )
+1) Implement builders
+2) Implement LiveOut class - calculates the live out variables within a flow grap for a function body
+3) Test LiveOut class
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 
@@ -12,9 +19,6 @@ new instuctions isn't working yet.
 Need to figure out how to either use the TempMap or create my own version of it.
 
 Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same way the Frame is
-
-For register allocation we need to build the interference graph using all the code blocks, 
-not one by one. I am have created a simple GraphColouring class, but I need to refactor before I can proceed with register allocation.
 
 CodeFrag - how to get the spilled temps from the spilled nodes ?
 

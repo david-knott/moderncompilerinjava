@@ -1,18 +1,12 @@
-package Main;
+package RegAlloc;
 
 import Assem.Instr;
 import Assem.InstrList;
-import FlowGraph.AssemFlowGraph;
+import Assem.MOVE;
+import FlowGraph.FlowGraph;
 import Frame.Frame;
 import Graph.Node;
 import Graph.NodeList;
-import RegAlloc.BitArrayInterferenceGraphImpl;
-import RegAlloc.DefaultSpillSelectStrategy;
-import RegAlloc.InterferenceGraph;
-import RegAlloc.PrecolouredNode;
-import RegAlloc.RegisterAllocator;
-import RegAlloc.RegisterSpiller;
-import RegAlloc.SimpleGraphColouring2;
 import Temp.TempList;
 
 class CodeFragWithTemps {
@@ -34,9 +28,32 @@ public class CodeFrag {
 		this.frame = frame;
 	}
 
-	public void processAll(RegisterAllocator registerAllocator) {
+	public void processAll(RegisterAllocator registerAllocator, FlowGraphBuilder flowGraphBuilder, InterferenceGraphBuilder interferenceGraphBuilder) {
+		//construct a liveness analysis using all the fragments
+		InterferenceGraph interferenceGraph = interferenceGraphBuilder.create();
 		for(CodeFrag loop = this; loop != null; loop = loop.next) {
-		//	registerAllocator.addCodeFrag();
+			//get flow graph for function fragment
+			FlowGraph flowGraph = flowGraphBuilder.create(loop.instrList);
+			//if there are any cycles, remember then for spilling heuristic
+			Cycles cycles = new Cycles(flowGraph);
+			//calculate live out for function
+			LiveOut liveOut = new LiveOut(flowGraph);
+			//add interference edges
+			/*
+			for(InstrList instrList = this.instrList.reverse(); instrList != null; instrList = instrList.tail) {
+				Instr instr = instrList.head;
+				if(instr instanceof MOVE) {
+				} else {
+					for(TempList defs = instr.def(); defs != null; defs = defs.tail) {
+						
+
+					}
+					interferenceGraph.addEdge(from, to);
+				}
+			}
+			*/
+
+
 		}
 
 		registerAllocator.allocate();

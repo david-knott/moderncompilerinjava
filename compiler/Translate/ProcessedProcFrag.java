@@ -3,7 +3,7 @@ package Translate;
 import Assem.InstrList;
 import Codegen.CodeGeneratorFacade;
 import Frame.Frame;
-import Main.CodeFrag;
+import RegAlloc.CodeFrag;
 import Tree.StmList;
 
 /**
