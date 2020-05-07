@@ -175,4 +175,10 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
 			out.println();
         }
     }
+
+    @Override
+    public void bind(Node node, Temp temp) {
+        // TODO Auto-generated method stub
+
+    }
 }
