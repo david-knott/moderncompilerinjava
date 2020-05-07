@@ -1,8 +1,6 @@
 package RegAlloc;
 
-import Assem.Instr;
 import Assem.InstrList;
-import Assem.MOVE;
 import FlowGraph.FlowGraph;
 import Frame.Frame;
 import Graph.Node;
@@ -28,7 +26,7 @@ public class CodeFrag {
 		this.frame = frame;
 	}
 
-	public void processAll(RegisterAllocator registerAllocator, FlowGraphBuilder flowGraphBuilder, InterferenceGraphBuilder interferenceGraphBuilder) {
+	public void processAll(FlowGraphBuilder flowGraphBuilder, InterferenceGraph interferenceGraph) {
 		//construct a liveness analysis using all the fragments
 		//Interference graph uses the following items
 		// LiveOut
@@ -36,7 +34,7 @@ public class CodeFrag {
 		// moveList
 		// workListMoves
 
-		InterferenceGraph interferenceGraph = interferenceGraphBuilder.create();
+		//build the interference graph
 		for(CodeFrag loop = this; loop != null; loop = loop.next) {
 			//get flow graph for function fragment
 			FlowGraph flowGraph = flowGraphBuilder.create(loop.instrList);
@@ -45,35 +43,33 @@ public class CodeFrag {
 			//calculate live out for function
 			LiveOut liveOut = new LiveOut(flowGraph);
 			//add interference edges
-			for(InstrList instrList = loop.instrList.reverse(); instrList != null; instrList = instrList.tail) {
-				Instr instr = instrList.head;
-				//need to know what node maps to the current instruction.
-				//flowGraph.isMove(node);
-				if(instr instanceof MOVE) {
-					//handle move instructions.
-					TempList useI = instr.use();
-					TempList defI = instr.def();
-					//for each item n in union of useI and defI add to moveList
-					//add instr to workListMove
-				} else {
-					for(TempList defs = instr.def(); defs != null; defs = defs.tail) {
+			for(NodeList nodeList = flowGraph.nodes().reverse(); nodeList != null; nodeList = nodeList.tail) {
+				Node node = nodeList.head;
+				if(flowGraph.isMove(node)) {
+					//need to indicate that the edge is move based.
+//					MoveList moveList = new MoveList(s, d, null);
 
-						//liveOut.liveOut(flowGraph.)
-						Node from = interferenceGraph.newNode();
-						//bind from to live temp 
-						Node to = interferenceGraph.newNode();
-						//Bind to to def temp 
-						interferenceGraph.addEdge(from, to);
+				} else {
+					for(TempList defs = flowGraph.def(node); defs != null; defs = defs.tail) {
+						for(TempList lo = liveOut.liveOut(node); lo != null; lo = lo.tail) {
+							Node from = interferenceGraph.newNode();
+							interferenceGraph.bind(from, lo.head);
+							Node to = interferenceGraph.newNode();
+							interferenceGraph.bind(to, defs.head);
+							interferenceGraph.addEdge(from, to, false);
+						}
 					}
 				}
 			}
-
 		}
-
-		registerAllocator.allocate();
-
 	}
 
+	/**
+	 * Returns all the precoloured nodes that are present in the
+	 * interference graph
+	 * @param graph the graph
+	 * @return a linked list of precoloured nodes
+	 */
 	private PrecolouredNode getPrecoloured(InterferenceGraph graph) {
 		PrecolouredNode precolouredNode = null;
 		for (TempList tempList = this.frame.precoloured(); tempList != null; tempList = tempList.tail) {
@@ -91,6 +87,12 @@ public class CodeFrag {
 		return precolouredNode;
 	}
 
+	/**
+	 * Returns a linked list of nodes in the interference graph 
+	 * that are not precoloured
+	 * @param interferenceGraph the interference graph
+	 * @return a linked list of nodes
+	 */
 	private NodeList getInitial(InterferenceGraph interferenceGraph) {
 		NodeList initialList = null;
 		PrecolouredNode precoloured = this.getPrecoloured(interferenceGraph);
@@ -104,6 +106,7 @@ public class CodeFrag {
 					break;
 				}
 			}
+			//node is in the precoloured list so skip it.
 			if (skip) {
 				continue;
 			}
