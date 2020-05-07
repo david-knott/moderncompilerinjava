@@ -1,19 +1,12 @@
 package RegAlloc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Iterator;
 
 import org.junit.Test;
 
 import Assem.InstrList;
 import Assem.TEST;
 import Frame.Frame;
-import Graph.Graph;
-import Graph.Node;
-import Graph.NodeList;
 import Intel.IntelFrame;
 import Temp.Label;
 import Temp.Temp;

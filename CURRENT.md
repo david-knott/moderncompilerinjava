@@ -8,10 +8,12 @@ not one by one. I am have created a simple GraphColouring class, but I need to r
 
 Started register allocation. ( CodeFrag.java )
 1) Implement builders
-2) Implement LiveOut class - calculates the live out variables within a flow grap for a function body
-3) Test LiveOut class
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
+
+Implement liveout class using reverse control flow edges.
+
+Possible bug in LiveOut class, where the BitSet capacity is not correct.
 
 Added new RegisterSpiller classes and a test class. Appending and prepending the 
 new instuctions isn't working yet.

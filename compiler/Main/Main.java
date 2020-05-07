@@ -107,7 +107,7 @@ public class Main {
         //generate code
         CodeFrag codeFragList = processedFragList.processAll(new CodeGeneratorFacade());
         //apply register allocation
-        codeFragList.processAll(new RegisterAllocator());
+      //  codeFragList.processAll(new RegisterAllocator());
 
         /*
         TreeContainer treeContainer = new TreeContainer(new FragProcessor(System.out), frags, new CanonFacadeImpl());

@@ -10,21 +10,18 @@ public class TEST extends Instr {
    public String comments;
 
 
+   public TEST() {
+      dst = null;
+      src = null;
+      jump = null;
+   }
    public TEST(Temp.TempList d, Temp.TempList s) {
-      if (d == null)
-         throw new Error("d");
-      if (s == null)
-         throw new Error("s");
       dst = d;
       src = s;
       jump = null;
    }
 
    public TEST(Temp.TempList d, Temp.TempList s, Temp.LabelList j) {
-      if (d == null)
-         throw new Error("d");
-      if (s == null)
-         throw new Error("s");
       if (j == null)
          throw new Error("j");
       dst = d;
