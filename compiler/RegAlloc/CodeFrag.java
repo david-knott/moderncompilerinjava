@@ -30,6 +30,12 @@ public class CodeFrag {
 
 	public void processAll(RegisterAllocator registerAllocator, FlowGraphBuilder flowGraphBuilder, InterferenceGraphBuilder interferenceGraphBuilder) {
 		//construct a liveness analysis using all the fragments
+		//Interference graph uses the following items
+		// LiveOut
+		// Instruction List ( is it a move or not )
+		// moveList
+		// workListMoves
+
 		InterferenceGraph interferenceGraph = interferenceGraphBuilder.create();
 		for(CodeFrag loop = this; loop != null; loop = loop.next) {
 			//get flow graph for function fragment
@@ -39,20 +45,28 @@ public class CodeFrag {
 			//calculate live out for function
 			LiveOut liveOut = new LiveOut(flowGraph);
 			//add interference edges
-			/*
-			for(InstrList instrList = this.instrList.reverse(); instrList != null; instrList = instrList.tail) {
+			for(InstrList instrList = loop.instrList.reverse(); instrList != null; instrList = instrList.tail) {
 				Instr instr = instrList.head;
+				//need to know what node maps to the current instruction.
+				//flowGraph.isMove(node);
 				if(instr instanceof MOVE) {
+					//handle move instructions.
+					TempList useI = instr.use();
+					TempList defI = instr.def();
+					//for each item n in union of useI and defI add to moveList
+					//add instr to workListMove
 				} else {
 					for(TempList defs = instr.def(); defs != null; defs = defs.tail) {
-						
 
+						//liveOut.liveOut(flowGraph.)
+						Node from = interferenceGraph.newNode();
+						//bind from to live temp 
+						Node to = interferenceGraph.newNode();
+						//Bind to to def temp 
+						interferenceGraph.addEdge(from, to);
 					}
-					interferenceGraph.addEdge(from, to);
 				}
 			}
-			*/
-
 
 		}
 

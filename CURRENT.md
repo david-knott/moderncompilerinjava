@@ -7,7 +7,8 @@ not one by one. I am have created a simple GraphColouring class, but I need to r
 ## Immediate Work
 
 Started register allocation. ( CodeFrag.java )
-1) Implement builders
+1) Calculate interference edges. Currently I am looping through the instructions. It might be better to loop
+through the nodes of the Flow Graph instead.
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 
