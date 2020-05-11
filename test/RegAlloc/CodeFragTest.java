@@ -19,12 +19,9 @@ public class CodeFragTest {
         //expect a to interfer with b
         Instr instr1 = new TEST(new TempList(a), new TempList(b));
         InstrList instrList = new InstrList(instr1, null);
-        InterferenceGraph interferenceGraph = new InterferenceGraphBuilder().create();
-
+        InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
         CodeFrag codeFrag = new CodeFrag(instrList, new IntelFrame(new Label(), null));
-        codeFrag.processAll(new FlowGraphBuilder(), interferenceGraph, null);
-
-        System.out.println("test");
+        codeFrag.processAll(interferenceGraph, new RegisterAllocator());
         interferenceGraph.show(System.out);
     }
 
@@ -38,9 +35,8 @@ public class CodeFragTest {
         Instr instr2 = new TEST(new TempList(b), new TempList(a , new TempList(b))); // b <- a op b
         Instr instr3 = new TEST(new TempList(c), new TempList(b, new TempList(c, new TempList(a)))); //c <- b op c op a
         InstrList instrList = new InstrList(instr1, new InstrList(instr2, new InstrList(instr3, null)));
-        InterferenceGraph interferenceGraph = new InterferenceGraphBuilder().create();
-
+        InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
         CodeFrag codeFrag = new CodeFrag(instrList, new IntelFrame(new Label(), null));
-        codeFrag.processAll(new FlowGraphBuilder(), interferenceGraph, new RegisterAllocator());
+        codeFrag.processAll(interferenceGraph, new RegisterAllocator());
     }
 }

@@ -1,6 +1,7 @@
 package RegAlloc;
 
 import Assem.InstrList;
+import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Frame.Frame;
 import Graph.Node;
@@ -27,11 +28,12 @@ public class CodeFrag {
 		this.frame = frame;
 	}
 
-	public void processAll(FlowGraphBuilder flowGraphBuilder, InterferenceGraph interferenceGraph, RegisterAllocator registerAllocator) {
+	public void processAll(InterferenceGraph interferenceGraph, RegisterAllocator registerAllocator) {
 		// build the interference graph
 		for (CodeFrag loop = this; loop != null; loop = loop.next) {
 			// get flow graph for function fragment
-			FlowGraph flowGraph = flowGraphBuilder.create(loop.instrList);
+			FlowGraph flowGraph = new AssemFlowGraph(loop.instrList);
+			
 			// calculate live out for function
 			LiveOut liveOut = new LiveOut(flowGraph);
 			// add interference edges
