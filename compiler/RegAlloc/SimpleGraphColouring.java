@@ -16,7 +16,7 @@ import Temp.TempMap;
 /**
  * Register allocator class.
  */
-public class SimpleGraphColouring2 implements TempMap {
+public class SimpleGraphColouring implements TempMap {
 
     //strictly speaking these are temps.
     private PrecolouredNode precoloured;
@@ -26,7 +26,7 @@ public class SimpleGraphColouring2 implements TempMap {
     private Hashtable<Node, Integer> degrees = new Hashtable<Node, Integer>();
     private Hashtable<Node, Temp> nodeColours = new Hashtable<Node, Temp>();
 
-    public SimpleGraphColouring2(PrecolouredNode precoloured, TempList colours) {
+    public SimpleGraphColouring(PrecolouredNode precoloured, TempList colours) {
         this.colours = colours;
         this.precoloured = precoloured;
         for(var nodes = this.precoloured; nodes != null; nodes = nodes.tail) {

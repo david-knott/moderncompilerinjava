@@ -12,7 +12,7 @@ public class RegisterAllocator {
         var precolouredNodes = this.getPrecoloured(frame, interferenceGraph);
         var colours = frame.registers();
         var initial = this.getInitial(frame, interferenceGraph);
-        SimpleGraphColouring2 simpleGraphColouring2 = new SimpleGraphColouring2(precolouredNodes, colours);
+        SimpleGraphColouring simpleGraphColouring2 = new SimpleGraphColouring(precolouredNodes, colours);
         simpleGraphColouring2.allocate(interferenceGraph, initial);
 	}
 

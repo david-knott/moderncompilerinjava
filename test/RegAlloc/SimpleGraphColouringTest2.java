@@ -43,7 +43,7 @@ public class SimpleGraphColouringTest2 {
         ;
         NodeList initial = new NodeList(c, new NodeList(d, new NodeList(e, null)));
         //a & b are precoloured, except c to have a colour
-        SimpleGraphColouring2 registerAllocator = new SimpleGraphColouring2(precolouredNodes, IntelFrame.calleeSaves);
+        SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, IntelFrame.calleeSaves);
         //execute the allocation..
         registerAllocator.allocate(graph, initial);
         assertTrue(registerAllocator.getSpilledNodes().isEmpty());
@@ -74,7 +74,7 @@ public class SimpleGraphColouringTest2 {
         NodeList initial = new NodeList(c, new NodeList(d, new NodeList(e, null)));
         TempList colours = new TempList(IntelFrame.r10, new TempList(IntelFrame.r11, null));
         //a & b are precoloured, except c to have a colour
-        SimpleGraphColouring2 registerAllocator = new SimpleGraphColouring2(precolouredNodes, colours);
+        SimpleGraphColouring registerAllocator = new SimpleGraphColouring(precolouredNodes, colours);
         //set the precoloured nodes temps.
       //  registerAllocator.setNodeColour(c, IntelFrame.r12);
        // registerAllocator.setNodeColour(d, IntelFrame.r13);
