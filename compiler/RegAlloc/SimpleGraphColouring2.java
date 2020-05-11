@@ -21,7 +21,6 @@ public class SimpleGraphColouring2 implements TempMap {
     //strictly speaking these are temps.
     private PrecolouredNode precoloured;
     private TempList colours;
-    private Set<Node> colouredNodes = new HashSet<Node>();
     private Set<Node> spilledNodes = new HashSet<Node>();
     private Stack<Node> simpleStack = new Stack<Node>();
     private Hashtable<Node, Integer> degrees = new Hashtable<Node, Integer>();
@@ -71,7 +70,8 @@ public class SimpleGraphColouring2 implements TempMap {
      * @return
      */
     Set<Node> getColouredNodes() {
-        return this.colouredNodes;
+        return this.nodeColours.keySet();
+        //return this.colouredNodes;
     }
 
     

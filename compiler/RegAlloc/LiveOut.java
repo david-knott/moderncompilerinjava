@@ -68,7 +68,7 @@ class LiveOut {
 		// add live ranges as tempLists to liveOutmap
 		for (Node n : liveOutMap.keySet()) {
 			var bitMap = liveOutMap.get(n);
-			System.out.print(n + " => " );
+			System.out.print("Liveout node:" + n + " => " );
 			for (int i = 0; i < capacity; i++) {
 				if (bitMap.getBit(i)) {
 					TempList tempList = liveMap.get(n);

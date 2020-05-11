@@ -11,7 +11,8 @@ class InterferenceGraphImpl extends InterferenceGraph {
 	private Hashtable<Node, Temp> ntemp = new Hashtable<Node, Temp>();
 
 	public InterferenceGraphImpl() {
-    }
+	}
+	
     
 	@Override
 	public Node tnode(Temp temp) {

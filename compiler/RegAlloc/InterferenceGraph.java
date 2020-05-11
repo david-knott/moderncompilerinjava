@@ -15,6 +15,8 @@ abstract public class InterferenceGraph extends Graph {
    abstract public MoveList moves();
 
    public void addEdge(Node from, Node to, boolean move) {
+      if (from == to)
+         return;
       this.addEdge(from, to);
    }
 
