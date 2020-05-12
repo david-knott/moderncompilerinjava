@@ -64,3 +64,7 @@ Investigate if data frags, assembly which contains string literals, can be held 
 Current implementation has lots of print streams interleved with business logic. This makes refactoring hard
 
 
+#### Helpful Links
+https://assignments.lrde.epita.fr/source_code/project_layout/src_regalloc.html
+https://assignments.lrde.epita.fr/source_code/project_layout/src_target_ia32.html
+https://gitlab.lrde.epita.fr/tiger/tc-base/-/tree/2022/src
