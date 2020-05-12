@@ -7,23 +7,24 @@ import Temp.TempList;
 
 public class RegisterAllocator {
 
-	public void allocate(Frame frame, InterferenceGraph interferenceGraph) {
+	public TempList allocate(Frame frame, InterferenceGraph interferenceGraph) {
         System.out.println("Allocating registers.");
         var precolouredNodes = this.getPrecoloured(frame, interferenceGraph);
         var colours = frame.registers();
         var initial = this.getInitial(frame, interferenceGraph);
         SimpleGraphColouring simpleGraphColouring2 = new SimpleGraphColouring(precolouredNodes, colours);
-        simpleGraphColouring2.allocate(interferenceGraph, initial);
+		simpleGraphColouring2.allocate(interferenceGraph, initial);
+		TempList spills = null;
+		for(Node node : simpleGraphColouring2.getSpilledNodes()) {
+			if(spills == null) {
+				spills = new TempList(interferenceGraph.gtemp(node));
+			} else {
+				spills = new TempList(interferenceGraph.gtemp(node), spills); 
+			}
+		}
+		return spills;
 	}
 
-	public TempList getSpills() {
-		return null;
-	}
-	
-	public boolean hasSpills() {
-		return false;
-	}
-    
 	/**
 	 * Returns all the precoloured nodes that are present in the interference graph
 	 * @param frame argument provides the registers and the precoloured temps

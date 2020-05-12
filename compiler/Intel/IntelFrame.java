@@ -436,15 +436,21 @@ public class IntelFrame extends Frame {
     }
 
     @Override
-    public Instr tempToMemory(Temp temp) {
+    public InstrList tempToMemory(Temp temp) {
         InFrame inFrame = (InFrame)this.allocLocal(true);
+        Temp newTemp = new Temp();
         spillMap.put(temp, inFrame);
-        return new OPER("offset = " + inFrame.offset + "; Reg Allocator tempToMemory", null, new TempList(temp, null));
+        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move temp to new temp\n", newTemp, temp);
+        Instr moveNewTempToFrame = new OPER("offset = " + inFrame.offset + "; Reg Allocator tempToMemory", null, new TempList(newTemp, null));
+        return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null)); 
     }
 
     @Override
-    public Instr memoryToTemp(Temp temp) {
+    public InstrList memoryToTemp(Temp temp) {
         InFrame inFrame = this.spillMap.get(temp);
-        return new OPER("offset = " + inFrame.offset + "; Reg Allocator memoryToTemp", new TempList(temp, null), null);
+        Temp newTemp = new Temp();
+        Instr moveFrameToNewTemp = new OPER("offset = " + inFrame.offset + "; Reg Allocator memory to temp", new TempList(newTemp, null), null);
+        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move new temp to temp\n", temp, newTemp);
+        return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null)); 
     }
 }

@@ -1,5 +1,6 @@
 package RegAlloc;
 
+import Assem.Instr;
 import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
@@ -31,9 +32,8 @@ public class CodeFrag {
 	public void processAll(InterferenceGraph interferenceGraph, RegisterAllocator registerAllocator) {
 		// build the interference graph
 		for (CodeFrag loop = this; loop != null; loop = loop.next) {
-			// get flow graph for function fragment
+			//create a new flow graph for function fragment
 			FlowGraph flowGraph = new AssemFlowGraph(loop.instrList);
-			
 			// calculate live out for function
 			LiveOut liveOut = new LiveOut(flowGraph);
 			// add interference edges
@@ -64,14 +64,34 @@ public class CodeFrag {
 				}
 			}
 		}
-		//full interference graph has been built.
-		//pass in the base frame to get precoloured temps
-		//and colours
-		registerAllocator.allocate(this.frame, interferenceGraph);
-		if(registerAllocator.hasSpills()) {
-			//rewrite and call again
-			//CodeFrag newCodeFrags = instructionRewriter.rewrite(this);
-			//newCodeFrags.processAll(flowGraphBuilder, interferenceGraph, registerAllocator);
+		TempList spills = registerAllocator.allocate(this.frame, interferenceGraph);
+		if(spills != null) {
+			SpillSelectStrategy spillSelectStrategy = new DefaultSpillSelectStrategy();
+			Temp spilledTemp = spillSelectStrategy.spill(spills);
+			for (CodeFrag loop = this; loop != null; loop = loop.next) {
+				InstrList previous = null;
+				for(InstrList instrList = loop.instrList; instrList != null; instrList = instrList.tail) {
+					if(instrList.head.def().contains(spilledTemp)) {
+						InstrList defSpill = loop.frame.tempToMemory(spilledTemp);
+						//set current item to defSpill
+						InstrList oldTail = instrList.tail;
+						instrList.tail = defSpill;
+						defSpill.tail = oldTail;
+					}
+					if(instrList.head.use().contains(spilledTemp)) {
+						InstrList useSpill = loop.frame.memoryToTemp(spilledTemp);
+						//set previous item
+						InstrList oldTail = previous.tail;
+						previous.tail = useSpill;
+						useSpill.tail = oldTail;
+
+					}
+					previous = instrList;
+
+				}
+
+			}
+
 		}
 	}
 

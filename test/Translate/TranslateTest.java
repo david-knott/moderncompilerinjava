@@ -112,13 +112,13 @@ public class TranslateTest {
         }
 
         @Override
-        public Instr tempToMemory(Temp temp) {
+        public InstrList tempToMemory(Temp temp) {
             // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public Instr memoryToTemp(Temp temp) {
+        public InstrList memoryToTemp(Temp temp) {
             // TODO Auto-generated method stub
             return null;
         }
