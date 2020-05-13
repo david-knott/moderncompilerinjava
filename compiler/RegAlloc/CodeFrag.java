@@ -10,11 +10,6 @@ import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 
-class CodeFragWithTemps {
-	private CodeFrag codeFrag;
-	private InstrList instrList;
-}
-
 /**
  * Represents a fragment of assembly code.
  */
@@ -77,6 +72,8 @@ public class CodeFrag {
 						InstrList oldTail = instrList.tail;
 						instrList.tail = defSpill;
 						defSpill.tail = oldTail;
+						//move loop to next item
+						instrList = instrList.tail;
 					}
 					if(instrList.head.use().contains(spilledTemp)) {
 						InstrList useSpill = loop.frame.memoryToTemp(spilledTemp);
@@ -93,6 +90,7 @@ public class CodeFrag {
 			}
 
 		}
+		System.out.println("done");
 	}
 
 	private Node getOrCreate(InterferenceGraph interferenceGraph, Temp temp) {

@@ -49,7 +49,7 @@ public class CodeFragTest {
         //expect a to interfere with b
         Instr instr1 = new TEST(new TempList(a), new TempList(b)); // a <- b
         Instr instr2 = new TEST(new TempList(b), new TempList(a , new TempList(b))); // b <- a op b
-        Instr instr3 = new TEST(new TempList(c), new TempList(b, new TempList(c, new TempList(a)))); //c <- b op c op a
+        Instr instr3 = new TEST(new TempList(c), new TempList(b, new TempList(c))); //c <- b op c
         InstrList instrList = new InstrList(instr1, new InstrList(instr2, new InstrList(instr3, null)));
         InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
         CodeFrag codeFrag = new CodeFrag(instrList, new TestFrame());

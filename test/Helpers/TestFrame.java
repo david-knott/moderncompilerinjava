@@ -2,6 +2,7 @@ package Helpers;
 
 import Assem.Instr;
 import Assem.InstrList;
+import Assem.OPER;
 import Frame.Access;
 import Frame.Frame;
 import Frame.Proc;
@@ -99,18 +100,23 @@ public class TestFrame extends Frame {
         return null;
     }
 
+
     @Override
     public InstrList tempToMemory(Temp temp) {
-        // TODO Auto-generated method stub
-        System.out.println("temp to memory");
-        return null;
+        Temp newTemp = new Temp();
+        System.out.println(temp + ":move temp to frame");
+        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move temp to new temp\n", newTemp, temp);
+        Instr moveNewTempToFrame = new OPER("offset = " + 0 + ";\tspill - move new temp to frame\n", null, new TempList(newTemp, null));
+        return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null)); 
     }
 
     @Override
     public InstrList memoryToTemp(Temp temp) {
-        // TODO Auto-generated method stub
-        System.out.println("memory to temp");
-        return null;
+        Temp newTemp = new Temp();
+        System.out.println(temp + ":move frame to temp");
+        Instr moveFrameToNewTemp = new OPER("offset = 0 ;\tspill - move frame to new temp\n", new TempList(newTemp, null), null);
+        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move new temp to temp\n", temp, newTemp);
+        return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null)); 
     }
     
 }
