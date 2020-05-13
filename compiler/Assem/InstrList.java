@@ -23,26 +23,35 @@ public class InstrList {
 
     public InstrList append(Instr instr) {
         InstrList end = this;
-        for(; end.tail != null; end = end.tail);
+        for (; end.tail != null; end = end.tail)
+            ;
         end.tail = new InstrList(instr, null);
+        return this;
+    }
+
+    public InstrList append(InstrList instrList) {
+        for (; instrList != null; instrList = instrList.tail) {
+            this.append(instrList.head);
+        }
         return this;
     }
 
     public int size() {
         int i = 0;
         InstrList end = this;
-        for(; end != null; end = end.tail) i++;
+        for (; end != null; end = end.tail)
+            i++;
         return i;
- 
+
     }
 
-	public void insertAfter(InstrList prev, Instr memoryToTemp) {
-        //insert at start of list
-        if(prev == null) {
+    public void insertAfter(InstrList prev, Instr memoryToTemp) {
+        // insert at start of list
+        if (prev == null) {
             throw new Error("Insert at start of list not supported");
         } else {
             var old = prev.tail;
             prev.tail = new InstrList(memoryToTemp, old);
         }
-	}
+    }
 }

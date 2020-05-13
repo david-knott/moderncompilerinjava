@@ -27,7 +27,7 @@ public class CodeFrag {
 	public void processAll(InterferenceGraph interferenceGraph, RegisterAllocator registerAllocator) {
 		// build the interference graph
 		for (CodeFrag loop = this; loop != null; loop = loop.next) {
-			//create a new flow graph for function fragment
+			// create a new flow graph for function fragment
 			FlowGraph flowGraph = new AssemFlowGraph(loop.instrList);
 			// calculate live out for function
 			LiveOut liveOut = new LiveOut(flowGraph);
@@ -59,49 +59,52 @@ public class CodeFrag {
 				}
 			}
 		}
-		//get spills
 		TempList spills = registerAllocator.allocate(this.frame, interferenceGraph);
-		if(spills != null) {
+		if (spills != null) {
 			SpillSelectStrategy spillSelectStrategy = new DefaultSpillSelectStrategy();
 			Temp spilledTemp = spillSelectStrategy.spill(spills);
+			/**
+			 * Need to insert instructions after a def and before a def Edge cases: use on
+			 * first instruction, no def
+			 */
 			for (CodeFrag loop = this; loop != null; loop = loop.next) {
-				InstrList previous = null;
-				for(InstrList instrList = loop.instrList; instrList != null; instrList = instrList.tail) {
-					if(instrList.head.def().contains(spilledTemp)) {
-						InstrList defSpill = loop.frame.tempToMemory(spilledTemp);
-						//set current item to defSpill
-						InstrList oldTail = instrList.tail;
-						instrList.tail = defSpill;
-						defSpill.tail = oldTail;
-						//move loop to next item
-						instrList = oldTail;
-
+				InstrList newInstrList = null;
+				for (InstrList instrList = loop.instrList; instrList != null; instrList = instrList.tail) {
+					if (newInstrList == null) {
+						newInstrList = new InstrList(instrList.head, null);
 					}
-					if(instrList.head.use().contains(spilledTemp)) {
+					boolean addedSpillInstr = false;
+					if (instrList.head.def().contains(spilledTemp)) {
+						InstrList defSpill = loop.frame.tempToMemory(spilledTemp);
+						newInstrList.append(instrList.head);
+						newInstrList.append(defSpill);
+						addedSpillInstr  = true;
+					}
+					if (instrList.head.use().contains(spilledTemp)) {
 						InstrList useSpill = loop.frame.memoryToTemp(spilledTemp);
-						//set previous item
-						InstrList oldTail = previous.tail;
-						previous.tail = useSpill;
-						useSpill.tail = oldTail;
-
-
+						newInstrList.append(useSpill);
+						newInstrList.append(instrList.head);
+						addedSpillInstr  = true;
+					}
+					if(!addedSpillInstr) {
+						newInstrList.append(instrList.head);
+					}
 				}
-
+				System.out.println("done");
 			}
 
 		}
-		System.out.println("done");
 	}
 
 	private Node getOrCreate(InterferenceGraph interferenceGraph, Temp temp) {
-		if(interferenceGraph.tnode(temp) != null) {
+		if (interferenceGraph.tnode(temp) != null) {
 			return interferenceGraph.tnode(temp);
 		} else {
 			Node node = interferenceGraph.newNode();
 			interferenceGraph.bind(node, temp);
 			return node;
 		}
-    }
+	}
 
 	public void append(CodeFrag process) {
 		CodeFrag processedFrag = this;
