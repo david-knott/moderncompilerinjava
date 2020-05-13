@@ -59,6 +59,7 @@ public class CodeFrag {
 				}
 			}
 		}
+		//get spills
 		TempList spills = registerAllocator.allocate(this.frame, interferenceGraph);
 		if(spills != null) {
 			SpillSelectStrategy spillSelectStrategy = new DefaultSpillSelectStrategy();
@@ -73,7 +74,8 @@ public class CodeFrag {
 						instrList.tail = defSpill;
 						defSpill.tail = oldTail;
 						//move loop to next item
-						instrList = instrList.tail;
+						instrList = oldTail;
+
 					}
 					if(instrList.head.use().contains(spilledTemp)) {
 						InstrList useSpill = loop.frame.memoryToTemp(spilledTemp);
@@ -82,8 +84,6 @@ public class CodeFrag {
 						previous.tail = useSpill;
 						useSpill.tail = oldTail;
 
-					}
-					previous = instrList;
 
 				}
 
