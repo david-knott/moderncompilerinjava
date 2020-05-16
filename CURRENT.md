@@ -7,9 +7,8 @@ not one by one. I am have created a simple GraphColouring class, but I need to r
 
 Started register allocation. ( CodeFrag.java )
 
-1. Spill temporary, working on inserting the spill moves into instruction list.
-2. Move interference graph logic into interference graph
-3. Improve bit array implementation
+0) Liveness analysis in reverse
+1) Refactor again ! Register allocation per function call ! Use temp map
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 

@@ -51,8 +51,8 @@ public class CodeFragTest {
         Instr instr2 = new TEST(new TempList(b), new TempList(a , new TempList(b))); // b <- a op b
         Instr instr3 = new TEST(new TempList(c), new TempList(b, new TempList(c))); //c <- b op c
         InstrList instrList = new InstrList(instr1, new InstrList(instr2, new InstrList(instr3, null)));
-        InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
         CodeFrag codeFrag = new CodeFrag(instrList, new TestFrame());
+        InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
         codeFrag.processAll(interferenceGraph, new RegisterAllocator());
     }
 

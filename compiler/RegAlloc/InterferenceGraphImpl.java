@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import Graph.Node;
 import Temp.Temp;
 
-class InterferenceGraphImpl extends InterferenceGraph {
+public class InterferenceGraphImpl extends InterferenceGraph {
 
 	private Hashtable<Temp, Node> tnode = new Hashtable<Temp, Node>();
 	private Hashtable<Node, Temp> ntemp = new Hashtable<Node, Temp>();

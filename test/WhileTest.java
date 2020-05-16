@@ -13,7 +13,7 @@ public class WhileTest {
 
     @Test
     public void basic_two() {
-        String tigerCode = "let var a:int := 99 in a end";
+        String tigerCode = "let var a:int := 555 in a + 1 end";
         InputStream inputStream = new ByteArrayInputStream(tigerCode.getBytes(Charset.forName("UTF-8")));
         Main m = new Main("chap5", inputStream);
         m.compile();

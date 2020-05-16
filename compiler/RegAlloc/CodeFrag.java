@@ -60,6 +60,11 @@ public class CodeFrag {
 			}
 		}
 		TempList spills = registerAllocator.allocate(this.frame, interferenceGraph);
+		
+		for (CodeFrag loop = this; loop != null; loop = loop.next) {
+			this.write(loop.instrList);
+		}
+
 		if (spills != null) {
 			SpillSelectStrategy spillSelectStrategy = new DefaultSpillSelectStrategy();
 			Temp spilledTemp = spillSelectStrategy.spill(spills);
@@ -93,6 +98,13 @@ public class CodeFrag {
 				System.out.println("done");
 			}
 
+		}
+		
+	}
+
+	private void write(InstrList instrList) {
+		for(; instrList != null; instrList = instrList.tail){
+			System.out.print(instrList.head.format(this.frame));
 		}
 	}
 

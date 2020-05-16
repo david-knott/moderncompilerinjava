@@ -15,6 +15,8 @@ import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
 import RegAlloc.CodeFrag;
+import RegAlloc.InterferenceGraph;
+import RegAlloc.InterferenceGraphImpl;
 import RegAlloc.RegisterAllocator;
 import Semant.Semant;
 import Translate.Frag;
@@ -107,7 +109,9 @@ public class Main {
         //generate code
         CodeFrag codeFragList = processedFragList.processAll(new CodeGeneratorFacade());
         //apply register allocation
-      //  codeFragList.processAll(new RegisterAllocator());
+        InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
+        codeFragList.processAll(interferenceGraph, new RegisterAllocator());
+
 
         /*
         TreeContainer treeContainer = new TreeContainer(new FragProcessor(System.out), frags, new CanonFacadeImpl());

@@ -29,13 +29,13 @@ class LiveOut {
 		for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
 			var node = nodes.head;
 			for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
-				 System.out.println("adding " + tl.head.hashCode() + " to tempMap");
+//				 System.out.println("adding " + tl.head.hashCode() + " to tempMap");
 				tempMap.put(tl.head.hashCode(), tl.head);
 				capacity = Math.max(capacity, tl.head.hashCode());
 			}
 		}
 		capacity++;
-		System.out.println("Capacity = " + capacity);
+//		System.out.println("Capacity = " + capacity);
 		// initialise maps with empty bit sets
 		for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
 			liveInMap.put(nodes.head, new BitArraySet(capacity));
@@ -46,7 +46,7 @@ class LiveOut {
 			boolean changed = false;
 			for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
 				var node = nodes.head;
-				System.out.println("live range for " + node);
+//				System.out.println("live range for " + node);
 				BitArraySet liveInPrev = liveInMap.get(node);
 				BitArraySet liveOutPrev = liveOutMap.get(node);
 				BitArraySet liveIn = new BitArraySet(flowGraph.use(node), capacity)
@@ -68,7 +68,7 @@ class LiveOut {
 		// add live ranges as tempLists to liveOutmap
 		for (Node n : liveOutMap.keySet()) {
 			var bitMap = liveOutMap.get(n);
-			System.out.print("Liveout node:" + n + " => " );
+		//	System.out.print("Liveout node:" + n + " => " );
 			for (int i = 0; i < capacity; i++) {
 				if (bitMap.getBit(i)) {
 					TempList tempList = liveMap.get(n);
@@ -81,11 +81,11 @@ class LiveOut {
 							tempList = new TempList(temp);
 							liveMap.put(n, tempList);
 						}
-						System.out.print(temp + ",");
+					//	System.out.print(temp + ",");
 					}
 				}
 			}
-			System.out.println();
+//			System.out.println();
 		}
 	}
 

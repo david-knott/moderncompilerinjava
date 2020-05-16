@@ -3,23 +3,25 @@ package RegAlloc;
 import Frame.Frame;
 import Graph.Node;
 import Graph.NodeList;
+import Temp.Temp;
 import Temp.TempList;
+import Temp.TempMap;
 
-public class RegisterAllocator {
+public class RegisterAllocator implements TempMap {
 
 	public TempList allocate(Frame frame, InterferenceGraph interferenceGraph) {
-        System.out.println("Allocating registers.");
-        var precolouredNodes = this.getPrecoloured(frame, interferenceGraph);
-        var colours = frame.registers();
-        var initial = this.getInitial(frame, interferenceGraph);
-        SimpleGraphColouring simpleGraphColouring2 = new SimpleGraphColouring(precolouredNodes, colours);
+		// System.out.println("Allocating registers.");
+		var precolouredNodes = this.getPrecoloured(frame, interferenceGraph);
+		var colours = frame.registers();
+		var initial = this.getInitial(frame, interferenceGraph);
+		SimpleGraphColouring simpleGraphColouring2 = new SimpleGraphColouring(precolouredNodes, colours);
 		simpleGraphColouring2.allocate(interferenceGraph, initial);
 		TempList spills = null;
-		for(Node node : simpleGraphColouring2.getSpilledNodes()) {
-			if(spills == null) {
+		for (Node node : simpleGraphColouring2.getSpilledNodes()) {
+			if (spills == null) {
 				spills = new TempList(interferenceGraph.gtemp(node));
 			} else {
-				spills = new TempList(interferenceGraph.gtemp(node), spills); 
+				spills = new TempList(interferenceGraph.gtemp(node), spills);
 			}
 		}
 		return spills;
@@ -27,6 +29,7 @@ public class RegisterAllocator {
 
 	/**
 	 * Returns all the precoloured nodes that are present in the interference graph
+	 * 
 	 * @param frame argument provides the registers and the precoloured temps
 	 * @param graph the graph
 	 * @return a linked list of precoloured nodes
@@ -51,7 +54,9 @@ public class RegisterAllocator {
 	/**
 	 * Returns a linked list of nodes in the interference graph that are not
 	 * precoloured
-	 * @param frame argument provides the registers and the precoloured temps
+	 * 
+	 * @param frame             argument provides the registers and the precoloured
+	 *                          temps
 	 * @param interferenceGraph the interference graph
 	 * @return a linked list of nodes
 	 */
@@ -79,5 +84,11 @@ public class RegisterAllocator {
 			}
 		}
 		return initialList;
+	}
+
+	@Override
+	public String tempMap(Temp t) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

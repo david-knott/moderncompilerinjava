@@ -168,7 +168,7 @@ public class SimpleGraphColouring implements TempMap {
                 // we need to know the precoloured nodes colour
                 if (this.getColouredNodes().contains(adj.head) || this.getPrecolouredNodes().contains(adj.head)) {
                     var colorToRemove = this.getNodeColour(adj.head);
-                    System.out.println(" removing colour " + colorToRemove + " from list.");
+             //       System.out.println(" removing colour " + colorToRemove + " from list.");
                     okColours.remove(colorToRemove);
                 }
             }
@@ -179,7 +179,7 @@ public class SimpleGraphColouring implements TempMap {
             } else {
                 var colour = okColours.iterator().next();
                 this.setNodeColour(node, colour);
-                System.out.println("Assigning colour " + colour + " to node " + node);
+             //   System.out.println("Assigning colour " + colour + " to node " + node);
             }
         }
     }
