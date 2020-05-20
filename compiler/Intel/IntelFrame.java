@@ -119,6 +119,10 @@ public class IntelFrame extends Frame {
         tmap.put(r13, "r13");
         tmap.put(r14, "r14");
         tmap.put(r15, "r15");
+        System.out.println("Precoloured Temps");
+        for(Temp key : tmap.keySet()) {
+            System.out.println(key + " => " + tmap.get(key));
+        }
     }
 
     private StmList callingConventions;
@@ -357,7 +361,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-        return calleeSaveList().append(moveArgs()).append(body).append(calleeRestoreList()).toSEQ();
+      return calleeSaveList().append(moveArgs()).append(body).append(calleeRestoreList()).toSEQ();
     }
 
     /**
@@ -402,7 +406,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public String tempMap(Temp t) {
-        return tmap.containsKey(t) ? tmap.get(t) : t.toString();
+        return tmap.containsKey(t) ? tmap.get(t) : null;
     }
 
     /**

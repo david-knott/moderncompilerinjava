@@ -58,7 +58,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             var node = nodes.head;
             for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
-              //  System.out.println("adding " + tl.head.hashCode() + " to tempMap");
                 tempMap.put(tl.head.hashCode(), tl.head);
                 capacity = Math.max(capacity, tl.head.hashCode());
             }
@@ -124,7 +123,7 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                             Node from = this.getOrCreate(defs.head);
                             Node to = this.getOrCreate(tempList.head);
                             this.addEdge(from, to);
-         //                   System.out.println("Added move interference edge " + defs.head + " " + tempList.head);
+                            System.out.println("Added move interference edge " + defs.head + " " + tempList.head);
                         }
                     }
                 }
@@ -136,13 +135,13 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                             Node to = this.getOrCreate(tempList.head);
                             Node from = this.getOrCreate(defs.head);
                             this.addEdge(from, to);
-           //                 System.out.println("Added interference edge " + defs.head + " " + tempList.head);
+                            System.out.println("Added interference edge " + defs.head + " " + tempList.head);
                         }
                     }
                 }
             }
         }
-     //   System.out.println("done");
+        System.out.println("done");
     }
 
     @Override

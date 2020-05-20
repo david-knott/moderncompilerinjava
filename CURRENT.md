@@ -5,10 +5,10 @@ not one by one. I am have created a simple GraphColouring class, but I need to r
 
 ## Immediate Work
 
-Started register allocation. ( CodeFrag.java )
+Bug in prcEntryExit1 - the callee restore sequence is placed incorrectly after cannonicalisation
 
-0) Liveness analysis in reverse
-1) Refactor again ! Register allocation per function call ! Use temp map
+Investigate why register allocation puts rbx into rbx in the callee save / restore sequence
+
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 

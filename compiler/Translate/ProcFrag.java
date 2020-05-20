@@ -3,6 +3,8 @@ package Translate;
 import Assem.InstrList;
 import Canon.Canonicalization;
 import Frame.Frame;
+import Temp.TempMap;
+import Tree.Print;
 import Tree.StmList;
 
 interface CodeGenerator {
@@ -47,6 +49,13 @@ public class ProcFrag extends Frag {
     @Override
     public ProcessedFrag process(Canonicalization canonicalization, FragProcessor processor) {
         StmList stmList = canonicalization.canon(this.body);
+
+        var out = System.out;
+TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
+        var print = new Print(out, tempmap);
+        out.println("# Before canonicalization: ");
+        print.prStm(this.body);
+
         return new ProcessedProcFrag(stmList, this.frame);
         //Assem.InstrList instrs = codegen(this.frame, stmList);
         // append instruction sink for liveness analysis

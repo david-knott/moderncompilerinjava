@@ -109,8 +109,8 @@ public class Main {
         //generate code
         CodeFrag codeFragList = processedFragList.processAll(new CodeGeneratorFacade());
         //apply register allocation
-        InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
-        codeFragList.processAll(interferenceGraph, new RegisterAllocator());
+        //InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
+        codeFragList.processAll();
 
 
         /*
