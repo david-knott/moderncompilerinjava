@@ -123,7 +123,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                             Node from = this.getOrCreate(defs.head);
                             Node to = this.getOrCreate(tempList.head);
                             this.addEdge(from, to);
-                            System.out.println("Added move interference edge " + defs.head + " " + tempList.head);
                         }
                     }
                 }
@@ -135,7 +134,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                             Node to = this.getOrCreate(tempList.head);
                             Node from = this.getOrCreate(defs.head);
                             this.addEdge(from, to);
-                            System.out.println("Added interference edge " + defs.head + " " + tempList.head);
                         }
                     }
                 }

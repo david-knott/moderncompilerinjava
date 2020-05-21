@@ -383,7 +383,7 @@ public class IntelFrame extends Frame {
      * marked as live on exit from the function
      */
     public Assem.InstrList procEntryExit2(Assem.InstrList body) {
-        return append(body, new Assem.InstrList(new Assem.OPER("; SINK INSTRUCTION", null, returnSink), null));
+        return append(body, new Assem.InstrList(new Assem.OPER("; sink instruction", null, returnSink), null));
     }
 
     @Override

@@ -1,7 +1,10 @@
 package RegAlloc;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Stack;
+
+import javax.swing.text.AttributeSet.ColorAttribute;
 
 import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
@@ -38,7 +41,7 @@ class Colour implements TempMap {
 	private TempMap precoloured;
 	private TempList registers;
 	private TempList spills;
-	private Hashtable<Temp, String> coloured = new Hashtable<Temp, String>();
+	private Hashtable<Temp, Temp> coloured = new Hashtable<Temp, Temp>();
 
 	public Colour(InterferenceGraph graph, TempMap precoloured, TempList registers) {
 		this.precoloured = precoloured;
@@ -47,39 +50,14 @@ class Colour implements TempMap {
 		this.spills = null;
 		//store each nodes degree
 		NodeList initialNodes = null;
-		NodeList potentialSpills = null;
 		for (var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
 			degrees.put(nodes.head, nodes.head.degree());
 			Temp temp = graph.gtemp(nodes.head);
-			// add non precoloured temps to the worklist
 			if(this.precoloured.tempMap(temp) == null) {
 				initialNodes = new NodeList(nodes.head, initialNodes);
 			}
 		}
-		// keep adding nodes to stack until we only
-		// nodes of K + 1 degree list
 		int k = registers.size();
-		// first process nodes with degree less than or 
-		// equal to K
-		/*
-		while(true) {
-			var node = initialNodes.head;
-			if(degrees.get(node) <= k) {
-				for (var adj = node.adj(); adj != null; adj = adj.tail) {
-					var d = degrees.get(adj.head);
-					degrees.put(adj.head, d - 1);
-				}
-				this.simpleStack.push(node);
-			} else {
-				//node with more than K adjacent nodes
-				potentialSpills = new NodeList(node, potentialSpills);
-			}
-			initialNodes = initialNodes.tail;
-			//if only nodes of higher degree left
-			if(initialNodes == null)
-				break;
-		}
-		*/
 		while (initialNodes != null) {
 			var node = initialNodes.head;
 			if(degrees.get(node) <= k) {
@@ -93,29 +71,35 @@ class Colour implements TempMap {
 			}
 			initialNodes = initialNodes.tail;
 		}
+
+
 		while (!this.simpleStack.isEmpty()) {
 			Node node = this.simpleStack.pop();
-			TempList colours = this.registers;
+			//TempList colours = this.registers;
+			HashSet<Temp> colours = new HashSet<Temp>();
+			for(var c = this.registers; c != null; c = c.tail) {
+				colours.add(c.head);
+			}
 			for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				if (null != this.precoloured.tempMap(graph.gtemp(adj.head))) { // is the node precoloured ?
-			//		System.out.println("Precoloured." + this.precoloured.tempMap(graph.gtemp(adj.head)));
-					colours = colours.tail;
+					System.out.println("Precoloured." + this.precoloured.tempMap(graph.gtemp(adj.head)));
+					//colours = colours.tail;
+					colours.remove(graph.gtemp(adj.head));
 					continue;
 				}
 				if (coloured.containsKey(graph.gtemp(adj.head))) { // an adjacent node is already coloured
-					// remove colour from our list
-					//System.out.println("Removing " + colours.head);
-					colours = colours.tail;
+					var c= coloured.get(graph.gtemp(adj.head));
+					//colours = colours.tail;
+					colours.remove(c);
 					continue;
 				}
 			}
-			if (colours == null) {
-		//		System.out.println("Spilling node " + node);
-				spills = new TempList(graph.gtemp(node), spills);
+			if (colours.isEmpty()) {
+				throw new Error("Splill not implemented");
 			} else {
-				Temp color = colours.head;
-				//System.out.println("Assiging:" + graph.gtemp(node) + " => " + precoloured.tempMap(color));
-				coloured.put(graph.gtemp(node), precoloured.tempMap(color));
+				Temp color = colours.iterator().next();
+				System.out.println("Assiging:" + graph.gtemp(node) + " => " + precoloured.tempMap(color));
+				coloured.put(graph.gtemp(node), color);
 			}
 		}
 	}
@@ -126,7 +110,10 @@ class Colour implements TempMap {
 
 	@Override
 	public String tempMap(Temp t) {
-		return coloured.get(t);
+		var colour = this.coloured.get(t);
+		if(colour == null)
+		return null;
+		return this.precoloured.tempMap(colour);
 	}
 }
 
