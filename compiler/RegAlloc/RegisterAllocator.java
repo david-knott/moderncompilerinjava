@@ -98,23 +98,23 @@ class Colour implements TempMap {
 			TempList colours = this.registers;
 			for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				if (null != this.precoloured.tempMap(graph.gtemp(adj.head))) { // is the node precoloured ?
-					System.out.println("Precoloured." + this.precoloured.tempMap(graph.gtemp(adj.head)));
+			//		System.out.println("Precoloured." + this.precoloured.tempMap(graph.gtemp(adj.head)));
 					colours = colours.tail;
 					continue;
 				}
 				if (coloured.containsKey(graph.gtemp(adj.head))) { // an adjacent node is already coloured
 					// remove colour from our list
-					System.out.println("Removing " + colours.head);
+					//System.out.println("Removing " + colours.head);
 					colours = colours.tail;
 					continue;
 				}
 			}
 			if (colours == null) {
-				System.out.println("Spilling node " + node);
+		//		System.out.println("Spilling node " + node);
 				spills = new TempList(graph.gtemp(node), spills);
 			} else {
 				Temp color = colours.head;
-				System.out.println("Assiging:" + graph.gtemp(node) + " => " + precoloured.tempMap(color));
+				//System.out.println("Assiging:" + graph.gtemp(node) + " => " + precoloured.tempMap(color));
 				coloured.put(graph.gtemp(node), precoloured.tempMap(color));
 			}
 		}

@@ -311,7 +311,7 @@ class CodegenVisitor implements TreeVisitor {
     @Override
     public void visit(CONST cnst) {
         temp = new Temp();
-        emit(new OPER("movq $" + cnst.value + ", %`d0\t;\n", L(temp, null), null));
+        emit(new OPER("movq $" + cnst.value + ", %`d0\t; move const into temp\n", L(temp, null), null));
     }
 
     @Override

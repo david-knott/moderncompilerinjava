@@ -383,14 +383,14 @@ public class Translate {
             expTyList = expTyList.tail;
             return new ESEQ(firstEx.unNx(), expTyList.expTy.exp.unEx());
         }
+        //more than 2
         //build list with n - 1 items
         ExpTyList allExceptLast = new ExpTyList(expTyList.expTy);
         expTyList = expTyList.tail;
         for(; expTyList != null; expTyList = expTyList.tail) {
             //the last item is next, update reference to expTypList
             //and exit the loop
-            if(expTyList.tail.tail == null) {
-                expTyList = expTyList.tail;
+            if(expTyList.tail == null) {
                 break;
             }
             allExceptLast.append(expTyList.expTy);

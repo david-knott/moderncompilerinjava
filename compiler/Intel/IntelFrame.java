@@ -6,11 +6,13 @@ import Temp.TempList;
 import Tree.BINOP;
 import Tree.CALL;
 import Tree.CONST;
+import Tree.EXP;
 import Tree.Exp;
 import Tree.ExpList;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.NAME;
+import Tree.SEQ;
 import Tree.Stm;
 import Tree.StmList;
 import Tree.TEMP;
@@ -310,7 +312,7 @@ public class IntelFrame extends Frame {
      * allocator, or coloured to a free register.
      * @return a linked list of move statements.
      */
-    StmList calleeSaveList() {
+    Stm calleeSaveList() {
         StmList list = null;
         for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = new Temp();
@@ -322,7 +324,7 @@ public class IntelFrame extends Frame {
                 list = list.append(move);
             }
         }
-        return list;
+        return list.toSEQ();
     }
 
     /**
@@ -330,7 +332,7 @@ public class IntelFrame extends Frame {
      * callee registers to their values before the function was invoked.
      * @return a linked list of move statements.
      */
-    StmList calleeRestoreList() {
+    Stm calleeRestoreList() {
         StmList list = null;
         for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = calleeTempMap.get(callee.head);
@@ -341,7 +343,7 @@ public class IntelFrame extends Frame {
                 list = list.append(move);
             }
         }
-        return list;
+        return list.toSEQ();
     }
 
     /**
@@ -350,8 +352,11 @@ public class IntelFrame extends Frame {
      * are used in the function body.
      * @return a linked list of move statements.
      */
-    StmList moveArgs() {
-        return this.callingConventions;
+    Stm moveArgs() {
+        if(this.callingConventions == null) {
+           return new EXP(new CONST(0)); 
+        }
+        return this.callingConventions.toSEQ();
     }
 
     /**
@@ -361,7 +366,15 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-      return calleeSaveList().append(moveArgs()).append(body).append(calleeRestoreList()).toSEQ();
+      //return calleeSaveList().append(moveArgs()).append(body).append(calleeRestoreList()).toSEQ();
+    //  var empty = new EXP(new CONST(0));
+      return new SEQ(
+          calleeSaveList(), 
+          new SEQ(
+              moveArgs(), 
+              new SEQ(body, calleeRestoreList())
+          )
+      );
     }
 
     /**
