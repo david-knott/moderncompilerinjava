@@ -53,22 +53,16 @@ public class Translate {
     }
 
      /**
-      * This function has the side effect of remembering a ProcFrag
+      * This function has the side effect of remembering a ProcFrag. It
+      * adds a move to the return value reqister if the procedure returns a value
       * @param level the current static function level
       * @param body the body of the function we are translating
       */
-    public void procEntryExit(Level level, Exp body) {
-        if (body == null)
-            return;
-        if (body instanceof Ex) {
-            var exp = new Nx(new MOVE(new TEMP(level.frame.RV()), body.unEx()));
-            var statement = level.frame.procEntryExit1(exp.unNx());
-            addFrag(new ProcFrag(statement, level.frame));
-        } else {
-            var statement = level.frame.procEntryExit1(body.unNx());
-            addFrag(new ProcFrag(statement, level.frame));
-        }
-    }
+     public void procEntryExit(Level level, Exp body) {
+         if (body == null)
+             return;
+         addFrag(new ProcFrag(level.frame.procEntryExit1(body.unNx()), level.frame));
+     }
 
     /**
      * Returns a IR expression of a simple variable. This comprises of an offset
@@ -108,25 +102,6 @@ public class Translate {
     public Exp subscriptVar(ExpTy transIndexExp, ExpTy translatedArrayVar, Level level) {
         var baseExp = translatedArrayVar.exp.unEx();
         var indexExp = transIndexExp.exp.unEx();
-        /*
-        return new Ex(
-            new MEM(
-                new BINOP(
-                    BINOP.PLUS, 
-                    baseExp, 
-                    new BINOP(
-                        BINOP.MUL, 
-                        new BINOP(
-                            BINOP.PLUS,
-                            indexExp, 
-                            new CONST(1)
-                        ),
-                        new CONST(level.frame.wordSize())
-                    )
-                )                
-            )
-        );
-        */
         var gotoSegFault = new Label();
         var gotoAnd = new Label();
         var gotoSubscript = new Label();
@@ -155,8 +130,8 @@ public class Translate {
                             new LABEL(gotoSegFault),
                             new SEQ(
                                 new MOVE(
-                                    new MEM(new CONST(8)),
-                                    new CONST(9) /* TODO: assembly is a bit weird */
+                                    new MEM(new CONST(0)),
+                                    new CONST(0) /* TODO: assembly is a bit weird */
                                 ),
                                 new LABEL(gotoSubscript) /* not needed as a seg fauly will happen */
                             )
@@ -269,8 +244,20 @@ public class Translate {
         return new Ex(new CONST(0));
     }
 
+    /**
+     * Returns a translated function body. If the function returns
+     * a value, an additional move is appended to move the expression
+     * result into the RV register.
+     * @param level the static nesting level of the function
+     * @param firstFunction the function body expression and return type
+     * @return an expression
+     */
     public Exp functionBody(Level level, ExpTy firstFunction) {
-        return firstFunction.exp;
+        if(!firstFunction.ty.coerceTo(Semant.VOID)) {
+            return new Nx(new MOVE(new TEMP(level.frame.RV()), firstFunction.exp.unEx()));
+        } else {
+            return firstFunction.exp;
+        }
     }
 
     public Exp nil() {
@@ -314,13 +301,12 @@ public class Translate {
         } else {
             //recursive call, use current frames static link
             staticLink = new MEM(
-            new BINOP(
-                BINOP.PLUS, 
-                new CONST(staticLinkOffset), 
-                new TEMP(callerLevel.frame.FP())
-            )
-        );
-        
+                new BINOP(
+                    BINOP.PLUS, 
+                    new CONST(staticLinkOffset), 
+                    new TEMP(callerLevel.frame.FP())
+                )
+            );
         }
         //add current frames frame pointer as parameter to call
         ExpList expList = new ExpList(staticLink, null);
@@ -328,6 +314,7 @@ public class Translate {
             expList.append(expTyList.expTy.exp.unEx());
             expTyList = expTyList.tail;
         }
+        //TODO: Why are these the same
         if(result.coerceTo(Semant.VOID)){
             return new Ex(new CALL(new NAME(functionLabel), expList));
         } else {
@@ -345,65 +332,74 @@ public class Translate {
             return expTyList.expTy.exp;
         }
         if(expTyList.last().expTy.ty != Semant.VOID){
-            return new Ex(expSeq(level, expTyList));
+            return new Ex(expSeq(expTyList));
         } else {
-            return new Nx(stmSeq(level, expTyList));
+            return new Nx(buildSeq(expTyList));
         }
     }
 
-    private Stm stmSeq(Level level, ExpTyList expTyList) {
-        if(expTyList.expTy == null && expTyList.tail == null){
+    /**
+     * Returns a Tree Stm from a Translated Expression List.
+     * If there is only one Translated Expression in the list
+     * that expression is returned as a statement. If there is
+     * more than one item, a Tree Seqence is returned. This function
+     * calls itself recursivly.
+     * @param expTyList
+     * @return
+     */
+    private Tree.Stm buildSeq(ExpTyList expTyList) {
+        //shouldn't happen
+        if(expTyList.expTy == null) {
             return null;
         }
-        var firstStm = expTyList.expTy.exp.unNx();
-        if(expTyList.tail == null){
-            return firstStm;
+        if(expTyList.tail != null) {
+            return new SEQ(expTyList.expTy.exp.unNx(), buildSeq(expTyList.tail));
         }
-        SEQ seq = new SEQ(firstStm, null);
-        expTyList = expTyList.tail;
-        while(expTyList != null){
-            if(expTyList.tail == null){
-                seq.right = expTyList.expTy.exp.unNx();
-            }else{
-                SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
-                seq.right = seq1;
-                seq = seq1;
-            }
-            expTyList = expTyList.tail;
-        }
-        return seq;
+        return expTyList.expTy.exp.unNx();
     }
 
-    private Tree.Exp expSeq(Level level, ExpTyList expTyList) {
+    /**
+     * Returns a new ESEQ ( Expression Sequence), where the statements
+     * are evaluated first and the the expression is returned. If there is
+     * only one item in the list, that item is returned as an expression. 
+     * If there is more than one iten in the list, we create an ESEQ with the
+     * first n - 1 items as statements and the nth item as a expression
+     * @param level
+     * @param expTyList
+     * @return an tree expression
+     */
+    private Tree.Exp expSeq(ExpTyList expTyList) {
+        //invariant check, shouldn't happen
         if(expTyList.expTy == null && expTyList.tail == null){
             return null;
         }
+        //only one item in list, so just return it as expression
         var firstEx = expTyList.expTy.exp;
         if(expTyList.tail == null){
             return firstEx.unEx();
         }
-        if(expTyList.tail.tail == null){
-            return new ESEQ(firstEx.unNx(), expTyList.tail.expTy.exp.unEx());
-        }
-        ESEQ eseq = null;
-        SEQ seq = new SEQ(firstEx.unNx(), null);
-        expTyList = expTyList.tail;
-        while(expTyList != null){
-            if(expTyList.tail == null){
-                eseq = new ESEQ(seq, expTyList.expTy.exp.unEx());
-            }else{
-                if(expTyList.tail.tail == null){
-                    seq.right = expTyList.expTy.exp.unNx();
-                } else {
-                    SEQ seq1 = new SEQ(expTyList.expTy.exp.unNx(), null);
-                    seq.right = seq1;
-                    seq = seq1;
-                }
-           }
+        //only two items in list so, return first and last
+        if(expTyList.tail.tail == null) {
             expTyList = expTyList.tail;
+            return new ESEQ(firstEx.unNx(), expTyList.expTy.exp.unEx());
         }
-        return eseq;
-    }
+        //more than 2
+        //build list with n - 1 items
+        ExpTyList allExceptLast = new ExpTyList(expTyList.expTy);
+        expTyList = expTyList.tail;
+        for(; expTyList != null; expTyList = expTyList.tail) {
+            //the last item is next, update reference to expTypList
+            //and exit the loop
+            if(expTyList.tail == null) {
+                break;
+            }
+            allExceptLast.append(expTyList.expTy);
+        }
+        //using the sequence and the last item build eseq
+        ExpTy last = expTyList.expTy;
+        Stm statement = this.buildSeq(allExceptLast);
+        return new ESEQ(statement, last.exp.unEx());
+   }
 
     /**
      * Allocates an array in the heap. Returns a pointer to the
@@ -483,7 +479,7 @@ public class Translate {
     }
 
     public Exp record(Level level, ExpTyList expTyList) {
-        Temp recordPointer = IntelFrame.rv;//new Temp();
+        Temp recordPointer = IntelFrame.rax;//new Temp();
         //Temp recordPointer = new Temp();
         Stm stm = fieldList(recordPointer, expTyList, level);
         int total = 0;
@@ -506,6 +502,14 @@ public class Translate {
                 new TEMP(recordPointer)));
     }
 
+    /**
+     * Returns IR for a while loop
+     * @param level the static nesting level this while loop is at
+     * @param loopEnd the label used to break out of the lop
+     * @param testExp the expression that is tested at the start of each loop
+     * @param transBody the translated body expression
+     * @return
+     */
     public Exp whileL(Level level, Label loopEnd, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();

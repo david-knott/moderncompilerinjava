@@ -1,18 +1,19 @@
 package Codegen;
 
 import Assem.Instr;
-import Assem.OPER;
 import Frame.Frame;
 import Intel.IntelFrame;
-import Temp.LabelList;
 import Temp.Temp;
+import Temp.LabelList;
 import Temp.TempList;
 import Tree.BINOP;
+import Assem.OPER;
 import Tree.CALL;
 import Tree.CJUMP;
 import Tree.CONST;
 import Tree.ESEQ;
 import Tree.EXP;
+import Tree.Exp;
 import Tree.ExpList;
 import Tree.JUMP;
 import Tree.LABEL;
@@ -25,14 +26,20 @@ import Tree.TreeVisitor;
 
 class CodegenVisitor implements TreeVisitor {
 
+    private TreePatternList tpl;
+
     Assem.InstrList iList = null, last = null;
     private Temp temp;
     private Frame frame;
-    private TempList calldefs = new TempList(IntelFrame.rv, IntelFrame.callerSaves);
 
-    public CodegenVisitor(Frame frame) {
-        this.frame = frame;
-	}
+    /**
+     * A linked list of temporaries that are used in liveness
+     * analysis to flag caller saved registers ( registers that caller must manage )
+     * as being destination nodes or defs. This means they are defined at the point 
+     * the callee is invoked, this in turn means they are live across the function call.
+     * Which means they will interfere with all other temporaries within that function.
+     */
+    private TempList calldefs = new TempList(IntelFrame.rax, IntelFrame.callerSaves);
 
 	private TempList L(Temp h, TempList t) {
         return new TempList(h, t);
@@ -71,15 +78,11 @@ class CodegenVisitor implements TreeVisitor {
             case 5:
                 finalPos = IntelFrame.r9;
                 break;
-            default:
-                // item is pushed onto the stack
-                break;
         }
         if (finalPos != null) {
-            emit(new Assem.MOVE("movq %`s0, %`d0\n", finalPos, argTemp));
+            emit(new Assem.MOVE("movq %`s0, %`d0;\tmove argument " + i + " into register\n", finalPos, argTemp));
         } else {
-            //0, 7, 8, 9... => sp + 0, sp + 8, sp + 16
-            emit(new Assem.MOVE("movq %`s0, " + (i * frame.wordSize()) + "(%`d0)\t; " + i + " argument\n", IntelFrame.sp, argTemp));
+            emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)\t;move argument " + i + " into frame\n", IntelFrame.rsp, argTemp));
         }
         if (args.tail == null) {
             return L(argTemp, null);
@@ -87,38 +90,205 @@ class CodegenVisitor implements TreeVisitor {
         return L(argTemp, munchArgs(i + 1, args.tail));
     }
 
+    private void registerMoveTreePatterns(){
+        var tb = new TreePatternBuilder();
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new TempNode("temp")
+            ).addSibling(
+                new ConstNode("c1")
+            ).getParent().getParent().getParent().addChild(
+                new ConstNode("c2")
+            )
+            .build(), treePattern -> {
+                var temp = (TEMP)treePattern.getNamedMatch("temp");
+                var cnst = (CONST)treePattern.getNamedMatch("c1");
+                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
+                //special move where there is no src register
+                emit(new Assem.OPER("movq %" + cnst2.value + ", " + cnst.value + "(%`d0)\t;j -> mem(binop(temp + k))\n", L(temp.temp, null), null));
+            }
+        );
+        tpl.add(
+            tb.addRoot(
+                new MoveNode("move")
+            ).addChild(
+                new TempNode("temp1")
+            ).getParent().addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new TempNode("temp2")
+            ).addSibling(
+                new ConstNode("c1")
+            )
+            .build(), treePattern -> {
+                var temp1 = (TEMP)treePattern.getNamedMatch("temp1");
+                var temp2 = (TEMP)treePattern.getNamedMatch("temp2");
+                var cnst = (CONST)treePattern.getNamedMatch("c1");
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t;mem(binop(temp + k)) -> temp\n", temp1.temp, temp2.temp));
+            }
+        );
+    }
+
+    private void registerMemTreePatterns(){
+        var tb = new TreePatternBuilder();
+        tpl.add(
+            tb.addRoot(
+                new MemNode("mem")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ConstNode("cnst")
+            ).addSibling(
+                new ExpNode("exp")
+            )
+            .build(), treePattern -> {
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                var cnst = (CONST)treePattern.getNamedMatch("cnst");
+                exp.accept(this);
+                var src = temp;
+                temp = new Temp();
+                var dst = temp;
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t; mem(binop(k + exp) -> temp\n", 
+                    dst, src));
+            }
+        );
+        tpl.add(
+            tb.addRoot(
+                new MemNode("mem")
+            ).addChild(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ExpNode("exp")
+            ).addSibling(
+                new ConstNode("cnst")
+            )
+            .build(), treePattern -> {
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                var cnst = (CONST)treePattern.getNamedMatch("cnst");
+                exp.accept(this);
+                var src = temp;
+                temp = new Temp();
+                var dst = temp;
+                emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0\t; mem(binop(+, exp, const)) -> temp\n", 
+                    dst, src));
+            }
+        );
+    }
+     
+    private void registerBinopTreePatterns(){
+        var tb = new TreePatternBuilder();
+        /*
+        tpl.add(
+            tb.addRoot(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ConstNode("c1")
+            ).addSibling(
+                new ExpNode("exp")
+            )
+            .build(), treePattern -> {
+                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                exp.accept(this);
+                var expR = temp;
+                emit(new Assem.OPER("add $" + cnst1.value + ", %`d0\t;add literal\n", L(expR, null), L(expR, null)));
+            }
+        );
+        */
+        /*
+        tpl.add(
+            tb.addRoot(
+                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new MemNode("m1")
+            ).addChild(
+                new BinopNode("b2", x -> {return x.binop == BINOP.PLUS;})
+            ).addChild(
+                new ConstNode("c1")
+            ).addSibling(
+                new ExpNode("exp")
+            ).getParent().getParent().getParent().addChild(
+                new ConstNode("c2")
+            )
+            .build(), treePattern -> {
+                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
+                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
+                var exp = (Exp)treePattern.getNamedMatch("exp");
+                exp.accept(this);
+                var expR = temp;
+                emit(new Assem.OPER("add $" + cnst1.value + " " + cnst2.value + ", %`d0\t;add memory offset\n", L(expR, null), L(expR, null)));
+            }
+        );
+        */
+    }
+
+    private void registerExpTreePatterns(){
+        var tb = new TreePatternBuilder();
+        //handle call
+        tpl.add(
+            tb.addRoot(
+                new EXPNode("exp")
+            ).addChild(
+                new CallNode("call1")   
+            ).build(), treePattern -> {
+            var call = (CALL)treePattern.getNamedMatch("call1");
+            call.accept(this);
+        });
+    }
+    
+    public CodegenVisitor(Frame frame) {
+        this.frame = frame;
+        tpl = new TreePatternList();
+        registerExpTreePatterns();
+        registerMoveTreePatterns();
+        registerMemTreePatterns();
+        registerBinopTreePatterns();
+    }
+
     @Override
     public void visit(BINOP op) {
+        if(tpl.match(op)) {
+            return;
+        }
         op.left.accept(this);
         var leftTemp = temp;
         op.right.accept(this);
         var rightTemp = temp;
         switch (op.binop) {
             case BINOP.AND:
-                emit(new OPER("and %`s0, %`d0 ; \n", L(leftTemp, null), L(rightTemp, null), null));
+                emit(new OPER("and %`s0, %`d0 ; \n", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
                 break;
             case BINOP.ARSHIFT:
                 break;
             case BINOP.DIV:
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax \n", leftTemp, IntelFrame.rv));
-                emit(new OPER("div  %`s0\t; divide rax by value in right \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, null), null));
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax \n", IntelFrame.rax, leftTemp));
+                emit(new OPER("div  %`s0\t; divide rax by value in right \n", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, null) ));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rax));
                 break;
             case BINOP.LSHIFT:
                 break;
             case BINOP.MINUS:
-                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
+                emit(new OPER("sub %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
                 break;
             case BINOP.MUL:
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", leftTemp, IntelFrame.rv));
-                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rv, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rv, null)), null));
-                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rv));
+                emit(new OPER(";comment\n", null, null));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move left into rax\n", IntelFrame.rax, leftTemp));
+                emit(new OPER("mul %`s0\t; multiple rax by value in right; \n", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                emit(new Assem.MOVE("movq %`s0, %`d0\t; move rax into right\n", rightTemp, IntelFrame.rax));
                 break;
             case BINOP.OR:
-                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, L(leftTemp, null)), null));
+                emit(new OPER("or %`s0, %`d0\n", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
                 break;
             case BINOP.PLUS:
-                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null)), null));
+                emit(new OPER("add %`s0 %`d0 \n", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
                 break;
             case BINOP.RSHIFT:
                 break;
@@ -131,32 +301,32 @@ class CodegenVisitor implements TreeVisitor {
 
     @Override
     public void visit(CALL call) {
-//        call.func.accept(this);
         var name = (NAME)call.func;
         TempList l = munchArgs(0, call.args);
-        emit(new OPER("call " + name.label + "\n", calldefs, l));
+        //result goes into rax
+        temp = IntelFrame.rax;
+        emit(new OPER("call " + name.label + "\n",  calldefs, l));
     }
 
     @Override
     public void visit(CONST cnst) {
         temp = new Temp();
-        emit(new OPER("movq $" + cnst.value + ", %`d0\t;\n", L(temp, null), null, null));
+        emit(new OPER("movq $" + cnst.value + ", %`d0\t; move const into temp\n", L(temp, null), null));
     }
 
     @Override
     public void visit(ESEQ op) {
-
+        throw new Error("Not implemented.");
     }
 
     @Override
     public void visit(EXP exp) {
-        // handle procedure call
-        if (exp.exp instanceof CALL) {
+        if(!tpl.match(exp)) {
             exp.exp.accept(this);
-            return;
+            var expTemp = temp;
+            temp = new Temp();
+            emit(new Assem.MOVE("movq %`s0, %`d0\t; exp \n", temp, expTemp));
         }
-        // other exp expression
-        exp.exp.accept(this);
     }
 
     @Override
@@ -165,159 +335,35 @@ class CodegenVisitor implements TreeVisitor {
     }
 
     @Override
-    public void visit(LABEL label) {
-        emit(new Assem.LABEL(label.label.toString() + ":\n", label.label));
+    public void visit(LABEL op) {
+        emit(new Assem.LABEL(op.label.toString() + ":\n", op.label));
     }
 
     @Override
     public void visit(MEM op) {
-        op.exp.accept(this);
-    }
-
-    private void munchMove(TEMP dst, Tree.Exp src){
-        //default case
-        src.accept(this);
-        var mem = temp;
-        emit(new Assem.MOVE("movq %`s0, %`d0\t; Exp src -> TEMP dst\n", dst.temp, mem));
-    }
-
-    private void munchMove(TEMP dst, MEM src){
-        if(src.exp instanceof BINOP){
-            var binop = (BINOP)src.exp;
-            if(binop.left instanceof CONST && binop.binop == BINOP.PLUS){
-                var cons = (CONST)binop.left;
-                //process right element
-                binop.right.accept(this);
-                var right = temp;
-                emit(new Assem.MOVE("movq " + cons.value + "(`s0), %`d0\t;\n", dst.temp, right));
-                return;
-            }
-            if(binop.right instanceof CONST && binop.binop == BINOP.PLUS){
-                var cons = (CONST)binop.right;
-                //process right element
-                binop.left.accept(this);
-                var left = temp;
-                emit(new Assem.MOVE("movq " + cons.value + "(`s0), %`d0\t;\n", dst.temp, left));
-                return;
-            }
+        if(!tpl.match(op)) {
+            op.exp.accept(this);
+            var mem = temp;
+            temp = new Temp();
+            emit(new Assem.MOVE("movq (%`s0), %`d0\t;move value at source to new temp\n", temp, mem));
         }
-        //default case
-        src.accept(this);
-        var mem = temp;
-        emit(new Assem.MOVE("movq (`s0), %`d0\t;\n", dst.temp, mem));
-    }
-
-    private void munchMove(MEM dst, Tree.Exp src){
-        if(dst.exp instanceof BINOP){
-            var binop = (BINOP)dst.exp;
-            if(binop.left instanceof CONST && binop.binop == BINOP.PLUS){
-                var cons = (CONST)binop.left;
-                //process right element
-                binop.right.accept(this);
-                var right = temp;
-                src.accept(this);
-                var exp = temp;
-                emit(new Assem.MOVE("movq `s0, " + cons.value + "(%`d0)\t;mem 1\n", right, exp));
-                return;
-            }
-            if(binop.right instanceof CONST && binop.binop == BINOP.PLUS){
-                var cons = (CONST)binop.right;
-                //process right element
-                binop.left.accept(this);
-                var left = temp;
-                src.accept(this);
-                var exp = temp;
-                emit(new Assem.MOVE("movq `s0, " + cons.value + "(%`d0)\t;mem 2\n", left, exp));
-                return;
-            }
-
-        }
-        //default case
-        dst.accept(this);
-        var mem = temp;
-        src.accept(this);
-        var exp = temp;
-        emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", mem, exp));
-    }
-
-    private void munchMove(MEM dst, MEM src){
-        if(dst.exp instanceof BINOP && src.exp instanceof BINOP) {
-            var dstBinop = (BINOP)dst.exp;
-            var srcBinop = (BINOP)src.exp;
-            if(dstBinop.left instanceof CONST && dstBinop.binop == BINOP.PLUS 
-            && srcBinop.left instanceof CONST && srcBinop.binop == BINOP.PLUS
-            ){
-                var dstCons = (CONST)dstBinop.left;
-                var srcCons = (CONST)srcBinop.left;
-                //process right element
-                dstBinop.right.accept(this);
-                var dstRight = temp;
-                srcBinop.right.accept(this);
-                var srcRight = temp;
-                emit(new Assem.MOVE("movq " + srcCons + "(%`s0), " + dstCons.value + "(%`d0)\t;\n", dstRight, srcRight));
-                return;
-            }
-            if(dstBinop.right instanceof CONST && dstBinop.binop == BINOP.PLUS
-            && srcBinop.right instanceof CONST && srcBinop.binop == BINOP.PLUS
-            ){
-                var dstCons = (CONST)dstBinop.right;
-                var srcCons = (CONST)srcBinop.right;
-                //process right element
-                dstBinop.left.accept(this);
-                var dstLeft = temp;
-                srcBinop.left.accept(this);
-                var srcLeft = temp;
-                emit(new Assem.MOVE("movq " + srcCons + "(%`s0), " + dstCons.value + "(%`d0)\t;\n", dstLeft, srcLeft));
-                return;
-            }
-        }
-        //default case
-        dst.accept(this);
-        var mem = temp;
-        src.accept(this);
-        var exp = temp;
-        emit(new Assem.MOVE("movq `s0, (%`d0)\t;\n", mem, exp));
-
     }
 
     @Override
-    public void visit(MOVE move) {
-        if (move.dst instanceof TEMP && move.src instanceof CALL) {
-            move.src.accept(this);
-            TEMP dstTemp = (TEMP) move.dst;
-            // move function temp result into dst temp
-            emit(new Assem.MOVE("movq %`s0, %`d0\t;\n", dstTemp.temp, temp));
-            return;
+    public void visit(MOVE op) {
+        if(!tpl.match(op)) {
+            op.dst.accept(this);
+            var mem = temp;
+            op.src.accept(this);
+            var exp = temp;
+            emit(new Assem.MOVE("movq %`s0, %`d0\t;default move\n", mem, exp));
         }
-        // move src exp to memory exp with offset
-        if (move.dst instanceof MEM && move.src instanceof TEMP) {
-            munchMove((MEM)move.dst, (TEMP)move.src);
-            return;
-        }
-        if (move.dst instanceof TEMP && move.src instanceof MEM) {
-            munchMove((TEMP)move.dst, (MEM)move.src);
-            return;
-        }
-        if (move.dst instanceof MEM && move.src instanceof MEM) {
-            munchMove((MEM)move.dst, (MEM)move.src);
-            return;
-        }
-        if (move.dst instanceof MEM) {
-            munchMove((MEM)move.dst, move.src);
-            return;
-        }
-        if (move.dst instanceof TEMP) {
-            munchMove((TEMP)move.dst, move.src);
-            return;
-        }
-        throw new Error("Unable to handle" + move.dst + " " + move.src);
     }
 
     @Override
-    public void visit(NAME name) {
-        //this.temp = new Temp();
-        //emit(new Assem.MOVE("movq " + name.label + ", %`d0\t; move label into temp \n", temp, null));
-        throw new Error();
+    public void visit(NAME op) {
+        temp = new Temp();
+        emit(new Assem.OPER("movq " + op.label + ", %`d0\t;move label to new temp\n", L(temp, null), null));
     }
 
     @Override
@@ -337,37 +383,37 @@ class CodegenVisitor implements TreeVisitor {
         var leftTemp = temp;
         cjump.right.accept(this);
         var rightTemp = temp;
-        emit(new OPER("cmp `s0, `d0\n", L(leftTemp, null), L(rightTemp, null), null));
+        emit(new OPER("cmp %`s0, %`d0\n", L(rightTemp, null), L(leftTemp, null)));
         switch(cjump.relop) {
             case CJUMP.EQ:
-                emit(new OPER("je `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("je `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.GE:
-                emit(new OPER("jge `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jge `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.GT:
-                emit(new OPER("jg `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jg `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.LE:
-                emit(new OPER("jle `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jle `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.LT:
-                emit(new OPER("jl `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jl `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.NE:
-                emit(new OPER("jne `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jne `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.UGE:
-                emit(new OPER("jae `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jae `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.UGT:
-                emit(new OPER("ja `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("ja `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.ULE:
-                emit(new OPER("jbe `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jbe `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
             case CJUMP.ULT:
-                emit(new OPER("jb `j0\n", null, null, new LabelList(cjump.iftrue, null)));
+                emit(new OPER("jb `j0\n", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
             break;
         }
     }

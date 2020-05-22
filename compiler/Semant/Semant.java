@@ -73,12 +73,13 @@ public class Semant {
     }
 
     /**
-     * Main method to translate and type check ast
+     * Main method to translate and type check ast.
+     * We also must translate the top level implicit function
      * 
      * @param absyn
      * @return
      */
-    public Frag transProg(Absyn.Exp absyn) {
+    public Frag getTreeFragments(Absyn.Exp absyn) {
         var trans = this.transExp(absyn);
         translate.procEntryExit(level, trans.exp);
         return translate.getResult();
@@ -263,6 +264,7 @@ public class Semant {
         } while (current != null);
         current = e;
         ExpTy firstFunction = null;
+        Level firstFunctionLevel = null;
         do {
             // I think we begin scope here because we
             // are processing the function body in this loop
@@ -280,6 +282,7 @@ public class Semant {
             var transBody = new Semant(env, breakScopeLabel, newLevel, translate).transExp(current.body);
             if (firstFunction == null) {
                 firstFunction = transBody;
+                firstFunctionLevel = newLevel;
             }
             if (!transBody.ty.coerceTo(vent.result)) {
                 env.errorMsg.add(new TypeMismatchError(e.pos, transBody.ty.actual(), vent.result));
@@ -288,8 +291,8 @@ public class Semant {
             current = current.next;
         } while (current != null);
         // add the fragment to the list
-        var body = translate.functionBody(level, firstFunction);
-        translate.procEntryExit(level, body);
+        var body = translate.functionBody(firstFunctionLevel, firstFunction);
+        translate.procEntryExit(firstFunctionLevel, body);
         return translate.Noop();
     }
 

@@ -58,12 +58,10 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             var node = nodes.head;
             for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
-                System.out.println("adding " + tl.head.hashCode() + " to tempMap");
                 tempMap.put(tl.head.hashCode(), tl.head);
                 capacity = Math.max(capacity, tl.head.hashCode());
             }
         }
-        System.out.println("capacity = " + capacity);
         // initialise maps with empty bit sets
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             liveInMap.put(nodes.head, new BitArraySet(capacity));
@@ -125,7 +123,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                             Node from = this.getOrCreate(defs.head);
                             Node to = this.getOrCreate(tempList.head);
                             this.addEdge(from, to);
-                            System.out.println("Added move interference edge " + defs.head + " " + tempList.head);
                         }
                     }
                 }
@@ -137,7 +134,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
                             Node to = this.getOrCreate(tempList.head);
                             Node from = this.getOrCreate(defs.head);
                             this.addEdge(from, to);
-                            System.out.println("Added interference edge " + defs.head + " " + tempList.head);
                         }
                     }
                 }
@@ -158,7 +154,6 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
 
     @Override
     public MoveList moves() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -176,5 +171,11 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
 			}
 			out.println();
         }
+    }
+
+    @Override
+    public void bind(Node node, Temp temp) {
+        // TODO Auto-generated method stub
+
     }
 }
