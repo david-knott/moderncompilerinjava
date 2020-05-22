@@ -20,7 +20,6 @@ import RegAlloc.InterferenceGraphImpl;
 import RegAlloc.RegisterAllocator;
 import Semant.Semant;
 import Translate.Frag;
-import Translate.FragProcessor;
 import Translate.Level;
 import Translate.ProcessedFrag;
 import Translate.Translate;
@@ -46,12 +45,6 @@ public class Main {
     private Translate translate = new Translate();
     private boolean allVarsEscape = false;
     private FindEscape findEscape = new FindEscape(allVarsEscape);
-
-    static void prStmList(Tree.Print print, Tree.StmList stms) {
-        for (Tree.StmList l = stms; l != null; l = l.tail) {
-            print.prStm(l.head);
-        }
-    }
 
     public Main(final String filename) throws FileNotFoundException {
         this(filename, new java.io.FileInputStream(filename));
@@ -100,30 +93,16 @@ public class Main {
                 throw new Error(e.toString());
             }
         }
-        // find and mark escaping variables
         findEscape.traverse(this.ast.absyn);
-        // get the tree function fragments
         Frag frags = this.semant.getTreeFragments(this.ast.absyn);
-        //apply canonicalisation
-        ProcessedFrag processedFragList = frags.processAll(new CanonFacadeImpl());
-        //generate code
-        CodeFrag codeFragList = processedFragList.processAll(new CodeGeneratorFacade());
-        //apply register allocation
-        //InterferenceGraph interferenceGraph = new InterferenceGraphImpl(); 
-        codeFragList.processAll();
+        for(; frags != null; frags = frags.next) {
+          //  frags.process(canonicalization, fragProcessor);
 
+        }
 
-        /*
-        TreeContainer treeContainer = new TreeContainer(new FragProcessor(System.out), frags, new CanonFacadeImpl());
-
-        CodeGeneratorFacade codeGeneratorFacade = new CodeGeneratorFacade(treeContainer.process());
-        
-        InstrListList instructions = codeGeneratorFacade.generateCode();
-
-        RegisterAllocator registerAllocator = new RegisterAllocator(instructions);
-    */
-
-
+ //       ProcessedFrag processedFragList = frags.processAll(new CanonFacadeImpl());
+   //     CodeFrag codeFragList = processedFragList.processAll(new CodeGeneratorFacade());
+     //   codeFragList.processAll();
         // put the IR fragments into the IR Processors
         out.close();
         return 0;

@@ -20,6 +20,7 @@ import Util.BoolList;
 import Assem.Instr;
 import Assem.InstrList;
 import Assem.OPER;
+import Codegen.Codegen;
 import Frame.*;
 import java.util.Hashtable;
 
@@ -37,6 +38,8 @@ import java.util.Hashtable;
 public class IntelFrame extends Frame {
 
     private int localOffset = WORD_SIZE;
+    private StmList callingConventions;
+    private Codegen codege; 
     private static final int WORD_SIZE = 8;
     public static Temp rax = new Temp();
     public static Temp rsp = new Temp();
@@ -127,7 +130,6 @@ public class IntelFrame extends Frame {
         }
     }
 
-    private StmList callingConventions;
 
     private void addCallingConvention(Stm stm) {
         if(this.callingConventions == null) {
@@ -228,16 +230,15 @@ public class IntelFrame extends Frame {
      * The frml list is by default non escaping, except for variables that are marked 
      * as must escape. 
      * 
-     * This confuses me a bit ! The formals, which are taken
-     * 
      * @param nm   the label for the related function
      * @param frml the formal list, where true indicates the argument escapes
      */
     public IntelFrame(Label nm, BoolList frml) {
+        this.codege = new Codegen(this);
         int i = 0;
         while (frml != null) {
             // first arg is static link
-            var escape = /* i == 0 || */ i > 5 || frml.head;
+            var escape =  i > 5 || frml.head;
             Access local;
             if (!escape) {
                 //create a new temp for the variable
@@ -366,8 +367,6 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-      //return calleeSaveList().append(moveArgs()).append(body).append(calleeRestoreList()).toSEQ();
-    //  var empty = new EXP(new CONST(0));
       return new SEQ(
           calleeSaveList(), 
           new SEQ(
@@ -380,12 +379,17 @@ public class IntelFrame extends Frame {
     /**
      * The return sink is an empty operation added to the end of a function. It is
      * used by the flow analysis to ensure that certain precoloured temporaries are
-     * marked as live on exit from the function
+     * marked as live on exit from the function.
      */
     public Assem.InstrList procEntryExit2(Assem.InstrList body) {
-        return append(body, new Assem.InstrList(new Assem.OPER("; sink instruction", null, returnSink), null));
+        return append(
+            body, 
+                new Assem.InstrList(new Assem.OPER("; sink instruction", null, returnSink), null));
     }
 
+    /**
+     * Adds the procedure prolog and epilog.
+     */
     @Override
     public Proc procEntryExit3(Assem.InstrList body) {
         return new Proc("PROC " + "name", body, "END" + "name");
@@ -414,7 +418,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public InstrList codegen(Stm head) {
-        return (new Codegen.Codegen(this)).codegen(head);
+        return this.codege.codegen(head);
     }
 
     @Override
@@ -452,9 +456,17 @@ public class IntelFrame extends Frame {
         }
     }
 
+    private InFrame getInFrameAccess(Access access) {
+        if(access instanceof InFrame) {
+            return (InFrame)access;
+        } else {
+            throw new Error("Access is not of type InFrame");
+        }
+    }
+
     @Override
     public InstrList tempToMemory(Temp temp) {
-        InFrame inFrame = (InFrame)this.allocLocal(true);
+        InFrame inFrame = this.getInFrameAccess(this.allocLocal(true));
         Temp newTemp = new Temp();
         spillMap.put(temp, inFrame);
         Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move temp to new temp\n", newTemp, temp);
