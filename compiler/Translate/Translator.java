@@ -27,6 +27,15 @@ import Types.Type;
 public class Translator {
 
     private Frag frags;
+    private boolean arrayBoundsCheck;
+
+    public Translator() {
+        this.arrayBoundsCheck = true;
+    }
+
+    public Translator(boolean arrayBoundsCheck) {
+        this.arrayBoundsCheck = arrayBoundsCheck;
+    }
 
     /**
      * Returns a linked list of fragments. This includes data fragments for strings,
@@ -82,6 +91,7 @@ public class Translator {
 
     /**
      * Fetches value from location, either temporary or from frame
+     * @return the {@link Translate.Exp translated expression}
      */
     public Exp varExp(ExpTy varEp){
         return varEp.exp;
@@ -105,41 +115,8 @@ public class Translator {
         var gotoSegFault = new Label();
         var gotoAnd = new Label();
         var gotoSubscript = new Label();
-        var check = new ESEQ(
-            new SEQ(
-                new CJUMP(
-                    CJUMP.GE, 
-                    indexExp, 
-                    new MEM(
-                        baseExp
-                    ),
-                    gotoSegFault,
-                    gotoAnd
-                ),
-                new SEQ(
-                    new LABEL(gotoAnd),
-                    new SEQ(
-                        new CJUMP(
-                            CJUMP.LT, 
-                            indexExp, 
-                            new CONST(0),
-                            gotoSegFault,
-                            gotoSubscript
-                        ),
-                        new SEQ(
-                            new LABEL(gotoSegFault),
-                            new SEQ(
-                                new MOVE(
-                                    new MEM(new CONST(0)),
-                                    new CONST(0) /* TODO: assembly is a bit weird */
-                                ),
-                                new LABEL(gotoSubscript) /* not needed as a seg fauly will happen */
-                            )
-                        )
-                    )
-                )
-            ),
-            new MEM(
+        if(!this.arrayBoundsCheck) {
+            return new Ex(new MEM(
                 new BINOP(
                     BINOP.PLUS, 
                     baseExp, 
@@ -153,9 +130,60 @@ public class Translator {
                         new CONST(level.frame.wordSize())
                     )
                 )                
-            )
-        );
-        return new Ex(check);
+            ));
+        } else {
+            var check = new ESEQ(
+                new SEQ(
+                    new CJUMP(
+                        CJUMP.GE, 
+                        indexExp, 
+                        new MEM(
+                            baseExp
+                        ),
+                        gotoSegFault,
+                        gotoAnd
+                    ),
+                    new SEQ(
+                        new LABEL(gotoAnd),
+                        new SEQ(
+                            new CJUMP(
+                                CJUMP.LT, 
+                                indexExp, 
+                                new CONST(0),
+                                gotoSegFault,
+                                gotoSubscript
+                            ),
+                            new SEQ(
+                                new LABEL(gotoSegFault),
+                                new SEQ(
+                                    new MOVE(
+                                        new MEM(new CONST(0)),
+                                        new CONST(0) /* TODO: assembly is a bit weird */
+                                    ),
+                                    new LABEL(gotoSubscript) /* not needed as a seg fauly will happen */
+                                )
+                            )
+                        )
+                    )
+                ),
+                new MEM(
+                    new BINOP(
+                        BINOP.PLUS, 
+                        baseExp, 
+                        new BINOP(
+                            BINOP.MUL, 
+                            new BINOP(
+                                BINOP.PLUS,
+                                indexExp, 
+                                new CONST(1)
+                            ),
+                            new CONST(level.frame.wordSize())
+                        )
+                    )                
+                )
+            );
+            return new Ex(check);
+        }
     }
 
     /**
@@ -408,27 +436,48 @@ public class Translator {
      * size
      */
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
-        ExpList args = new ExpList(
-            new BINOP(
-                BINOP.PLUS, 
+        if(!this.arrayBoundsCheck) {
+            Temp arrayPointer = new Temp();
+            ExpList args = new ExpList(
                 transSizeExp.exp.unEx(), 
-                new CONST(1)
-            ), 
-            new ExpList(
-                transInitExp.exp.unEx(), 
-                null
-            )
-        );
-        Temp arrayPointer = new Temp();
-        return new Ex(
-            new ESEQ(
-                new MOVE(
-                    new TEMP(arrayPointer), 
-                    level.frame.externalCall("initArray", args) /* return a call tree */
+                new ExpList(
+                    transInitExp.exp.unEx(), 
+                    null
+                )
+            );
+            return new Ex(
+                new ESEQ(
+                    new MOVE(
+                        new TEMP(arrayPointer), 
+                        level.frame.externalCall("initArray", args) /* return a call tree */
+                    ), 
+                    new TEMP(arrayPointer)
+                )
+            );
+
+        } else {
+            ExpList args = new ExpList(
+                new BINOP(
+                    BINOP.PLUS, 
+                    transSizeExp.exp.unEx(), 
+                    new CONST(1)
                 ), 
-                new TEMP(arrayPointer)
-            )
-        );
+                new ExpList(
+                    transInitExp.exp.unEx(), 
+                    null
+                )
+            );
+            Temp arrayPointer = new Temp();
+            return new Ex(
+                new ESEQ(
+                    new MOVE(
+                        new TEMP(arrayPointer), 
+                        level.frame.externalCall("initArray", args) /* return a call tree */
+                    ), 
+                    new TEMP(arrayPointer)
+                )
+            );
+        }
 
     }
 

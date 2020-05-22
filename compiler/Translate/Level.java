@@ -47,6 +47,11 @@ public class Level {
         frame = f;
     }
 
+    /**
+     * Creates a local access within the frame for this level
+     * @param escape should the variable escape or not
+     * @return the new access
+     */
     public Access allocLocal(boolean escape) {
         return new Access(this, frame.allocLocal(escape));
     }

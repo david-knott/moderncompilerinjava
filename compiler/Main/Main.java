@@ -4,9 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import Assem.InstrListList;
-import Canon.CanonFacadeImpl;
-import Codegen.CodeGeneratorFacade;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
 import Frame.Frame;
@@ -14,14 +11,10 @@ import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
-import RegAlloc.CodeFrag;
-import RegAlloc.InterferenceGraph;
-import RegAlloc.InterferenceGraphImpl;
-import RegAlloc.RegisterAllocator;
 import Semant.Semant;
+import Temp.Label;
 import Translate.Frag;
 import Translate.Level;
-import Translate.ProcessedFrag;
 import Translate.Translator;
 
 /**
@@ -40,7 +33,7 @@ public class Main {
     private ErrorMsg errorMsg;
     private Grm parser;
     // frame implementation
-    private Frame frame = new IntelFrame(null, null);
+    private Frame frame = new IntelFrame(new Label("tigermain"), null);
     private Level topLevel = new Level(frame);
     private Translator translate = new Translator();
     private boolean allVarsEscape = false;
@@ -56,14 +49,6 @@ public class Main {
         this.errorMsg = new ErrorMsg(this.name);
         this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
         this.semant = new Semant(errorMsg, topLevel, this.translate);
-    }
-
-    public ErrorMsg getErrorMsg() {
-        return this.errorMsg;
-    }
-
-    public boolean hasErrors() {
-        return this.errorMsg.getCompilerErrors().size() != 0;
     }
 
     /**

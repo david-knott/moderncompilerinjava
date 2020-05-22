@@ -110,5 +110,6 @@ public abstract class Frame implements TempMap {
 
 	public abstract InstrList tempToMemory(Temp temp); 
 
-	public abstract InstrList memoryToTemp(Temp temp);
+    public abstract InstrList memoryToTemp(Temp temp);
+    
 }
