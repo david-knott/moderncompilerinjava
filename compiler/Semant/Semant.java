@@ -36,7 +36,7 @@ import Translate.ExpTy;
 import Translate.ExpTyList;
 import Translate.Frag;
 import Translate.Level;
-import Translate.Translate;
+import Translate.Translator;
 import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
@@ -45,18 +45,18 @@ import Util.BoolList;
 public class Semant {
     private final Env env;
     private final Label breakScopeLabel;
-    private final Translate translate;
+    private final Translator translate;
     private Level level;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
     public static final Types.Type NIL = new Types.NIL();
 
-    public Semant(final ErrorMsg.ErrorMsg err, final Level lvl, Translate trans) {
+    public Semant(final ErrorMsg.ErrorMsg err, final Level lvl, Translator trans) {
         this(new Env(err, lvl), null, lvl, trans);
     }
 
-    Semant(final Env e, Label bsl, Level lev, Translate trans) {
+    Semant(final Env e, Label bsl, Level lev, Translator trans) {
         env = e;
         breakScopeLabel = bsl;
         level = lev;

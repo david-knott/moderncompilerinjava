@@ -24,7 +24,7 @@ import Types.Type;
  * Translates Abstract Syntax to IR and stores fragments for use 
  * in next phase of compileation.
  */
-public class Translate {
+public class Translator {
 
     private Frag frags;
 

@@ -22,7 +22,7 @@ import Semant.Semant;
 import Translate.Frag;
 import Translate.Level;
 import Translate.ProcessedFrag;
-import Translate.Translate;
+import Translate.Translator;
 
 /**
  * Main class that executes the compiler.
@@ -42,7 +42,7 @@ public class Main {
     // frame implementation
     private Frame frame = new IntelFrame(null, null);
     private Level topLevel = new Level(frame);
-    private Translate translate = new Translate();
+    private Translator translate = new Translator();
     private boolean allVarsEscape = false;
     private FindEscape findEscape = new FindEscape(allVarsEscape);
 
