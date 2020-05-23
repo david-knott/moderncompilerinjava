@@ -13,7 +13,9 @@ import Intel.IntelFrame;
 import Semant.Semant;
 import Symbol.Symbol;
 import Temp.Label;
+import Tree.BINOP;
 import Tree.CALL;
+import Tree.CONST;
 import Tree.EXP;
 import Tree.MEM;
 import Tree.MOVE;
@@ -128,7 +130,6 @@ public class TranslateTest {
         Exp fieldVar = translator.fieldVar(recordVar.exp, 0, level);
         var linear = Canon.Canon.linearize(fieldVar.unNx());
         assertNotNull(linear);
-
     }
 
     @Test
@@ -137,5 +138,9 @@ public class TranslateTest {
         assertNotNull(binaryOperator);
         var linear = Canon.Canon.linearize(binaryOperator.unNx());
         assertNotNull(linear);
+        assertTrue(linear.head instanceof EXP);
+        assertTrue(((EXP)linear.head).exp instanceof BINOP);
+        assertTrue(((BINOP)((EXP)linear.head).exp).left instanceof CONST);
+        assertTrue(((BINOP)((EXP)linear.head).exp).right instanceof CONST);
     }
 }
