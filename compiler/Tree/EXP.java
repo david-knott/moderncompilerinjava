@@ -1,5 +1,9 @@
 package Tree;
 
+/**
+ * An expression that does not return
+ * a result.
+ */
 public class EXP extends Stm {
     public Exp exp;
 

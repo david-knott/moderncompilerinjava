@@ -58,7 +58,7 @@ class StmExpList {
     }
 }
 
-class Canon {
+public class Canon {
 
     static boolean isNop(Tree.Stm a) {
         return a instanceof Tree.EXP && ((Tree.EXP) a).exp instanceof Tree.CONST;
