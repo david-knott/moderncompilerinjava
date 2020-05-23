@@ -64,17 +64,18 @@ public class Translator {
         }
     }
 
-     /**
-      * This function has the side effect of remembering a ProcFrag. It
-      * adds a move to the return value reqister if the procedure returns a value
-      * @param level the current static function level
-      * @param body the body of the function we are translating
-      */
-     public void procEntryExit(Level level, Exp body) {
-         if (body == null)
-             return;
-         addFrag(new ProcFrag(level.frame.procEntryExit1(body.unNx()), level.frame));
-     }
+    /**
+     * This function saves a translated rocFrag to an internal
+     * linked list. This linked list is used after translate
+     * has completed and it passed to the later stages.
+     * @param level the current static function level
+     * @param body  the body of the function we are translating
+     */
+    public void procEntryExit(Level level, Exp body) {
+        if (body == null)
+            return;
+        addFrag(new ProcFrag(level.frame.procEntryExit1(body.unNx()), level.frame));
+    }
 
     /**
      * Returns an integer expression 
@@ -114,6 +115,38 @@ public class Translator {
      */
     public Exp nil() {
         return new Ex(new CONST(0));
+    }
+
+    /**
+     * Returns a MEM object which represents a static link to
+     * a variable in a frame higher up the stack. If the variable
+     * is defined in the current stack frame, the static link 
+     * will just refer to the current activation records frame pointer.
+     * @param access
+     * @param level
+     * @return a Tree.Exp containing MEM expressions.
+     */
+    private Tree.Exp staticLinkOffset(Access access, Level level) {
+        //variable is defined at same level as use,
+        //just return the fp as framePointer
+        Tree.Exp exp = new TEMP(level.frame.FP());
+        if(level == access.home){
+            return exp;
+        } else {
+            var slinkLevel = level;
+            int staticLinkOffset = 0;
+            while (slinkLevel != access.home) {
+                exp = new MEM(
+                    new BINOP(
+                        BINOP.PLUS, 
+                        new CONST(staticLinkOffset), 
+                        exp
+                    )
+                );
+                slinkLevel = slinkLevel.parent;
+            }
+            return exp;
+        }
     }
 
     /**
@@ -165,7 +198,6 @@ public class Translator {
                     new TEMP(arrayPointer)
                 )
             );
-
         } else {
             ExpList args = new ExpList(
                 new BINOP(
@@ -422,6 +454,10 @@ public class Translator {
         }
     }
 
+    public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
+    }
+
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
         return new Ex(new BINOP(i, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
@@ -438,11 +474,6 @@ public class Translator {
             
         return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
     }
-
-    public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
-    }
-
 
     /**
      * Returns a translated function body. If the function returns
@@ -645,12 +676,6 @@ public class Translator {
         );
     }
 
-    private Exp body(ExpTy expTy){
-        if(expTy == null)
-            return Noop();
-        return expTy.exp;
-    }
-
     private Stm declarations(ExpTyList decList){
         //null dec list or head is expTy
         if(decList == null || decList.expTy == null){
@@ -674,6 +699,12 @@ public class Translator {
             decList = decList.tail;
         }
         return seq;
+    }
+
+    private Exp body(ExpTy expTy){
+        if(expTy == null)
+            return Noop();
+        return expTy.exp;
     }
 
     /**
@@ -704,61 +735,15 @@ public class Translator {
     }
 
     /**
-     * Returns a MEM object which represents a static link to
-     * a variable in a frame higher up the stack. If the variable
-     * is defined in the current stack frame, the static link 
-     * will just refer to the current activation records frame pointer.
-     * @param access
+     * Translates a variable declation. This is generally
+     * a move from an source expression to a destination
+     * which may be a temporary or a memory location depending
+     * on whether the variable escapes.
      * @param level
-     * @return a Tree.Exp containing MEM expressions.
+     * @param translateAccess
+     * @param exp
+     * @return a translated expression.
      */
-    public Tree.Exp staticLinkOffset(Access access, Level level) {
-        //variable is defined at same level as use,
-        //just return the fp as framePointer
-        Tree.Exp exp = new TEMP(level.frame.FP());
-        if(level == access.home){
-            return exp;
-        } else {
-            var slinkLevel = level;
-            int staticLinkOffset = 0;
-            while (slinkLevel != access.home) {
-                exp = new MEM(
-                    new BINOP(
-                        BINOP.PLUS, 
-                        new CONST(staticLinkOffset), 
-                        exp
-                    )
-                );
-                slinkLevel = slinkLevel.parent;
-            }
-            return exp;
-        }
-
-        /*
-        int staticLinkOffset = 0;
-        Tree.Exp exp = new MEM(
-            new BINOP(
-                BINOP.PLUS, 
-                new CONST(staticLinkOffset), 
-                new TEMP(level.frame.FP())
-            )
-        );
-        
-        var slinkLevel = level;
-        while (slinkLevel != access.home) {
-            exp = new MEM(
-                new BINOP(
-                    BINOP.PLUS, 
-                    new CONST(staticLinkOffset), 
-                    exp
-                )
-            );
-            slinkLevel = slinkLevel.parent;
-        }
-        return exp;
-        */
-    }
-
 	public Exp transDec(Level level, Access translateAccess, Exp exp) {
         return new Nx(
             new MOVE(
@@ -771,9 +756,9 @@ public class Translator {
     /**
      * Removes static link from formal list, used by Semant
      * @param formals
-     * @return
+     * @return an access linked list
      */
-	public AccessList formals(AccessList formals) {
+	public AccessList stripStaticLink(AccessList formals) {
 		return formals != null ? formals.tail : null;
 	}
 }

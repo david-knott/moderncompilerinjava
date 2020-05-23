@@ -273,7 +273,7 @@ public class Semant {
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             var vent = (FunEntry) env.venv.get(current.name);
             // iterate formals adding access to the created var entries
-            var translateAccess = translate.formals(newLevel.formals);
+            var translateAccess = translate.stripStaticLink(newLevel.formals);
             for (var p = current.params; p != null; p = p.tail) {
                 var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
                 env.venv.put(p.name, varEntry);

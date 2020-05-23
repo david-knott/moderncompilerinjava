@@ -130,4 +130,12 @@ public class TranslateTest {
         assertNotNull(linear);
 
     }
+
+    @Test
+    public void binopEq() {
+        Exp binaryOperator = translator.binaryOperator(0, new ExpTy(translator.integer(1), Semant.INT), new ExpTy(translator.integer(1), Semant.INT));
+        assertNotNull(binaryOperator);
+        var linear = Canon.Canon.linearize(binaryOperator.unNx());
+        assertNotNull(linear);
+    }
 }
