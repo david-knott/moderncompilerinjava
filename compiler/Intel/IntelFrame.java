@@ -384,7 +384,7 @@ public class IntelFrame extends Frame {
     public Assem.InstrList procEntryExit2(Assem.InstrList body) {
         return append(
             body, 
-                new Assem.InstrList(new Assem.OPER("; sink instruction", null, returnSink), null));
+                new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
     }
 
     /**

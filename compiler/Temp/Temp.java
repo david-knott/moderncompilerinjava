@@ -1,20 +1,45 @@
 package Temp;
 
-public class Temp {
-  private static int count;
-  private int num;
+import java.util.Hashtable;
 
-  @Override
-  public String toString() {
-    return "t" + num;
-  }
+public class Temp implements Comparable<Temp> {
 
-  public Temp() {
-    num = count++;
-  }
+    private static Hashtable<String, Temp> temps = new Hashtable<String, Temp>();
+    private static int count;
 
-  @Override
-  public int hashCode() {
-    return num;
-  }
+    public static Temp create() {
+        Temp temp = new Temp();
+        temps.put(temp.toString(), temp);
+        return temp;
+    }
+
+    public static Temp create(String name) {
+        if (temps.containsKey(name)) {
+            return temps.get(name);
+        }
+        Temp temp = new Temp();
+        temps.put(name, temp);
+        return temp;
+    }
+
+    private int num;
+
+    public Temp() {
+        num = count++;
+    }
+
+    @Override
+    public String toString() {
+        return "t" + num;
+    }
+
+    @Override
+    public int hashCode() {
+        return num;
+    }
+
+    @Override
+    public int compareTo(Temp o) {
+        return o.num == this.num ? 0 : (o.num < this.num ? -1 : 1);
+    }
 }
