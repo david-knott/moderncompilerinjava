@@ -32,7 +32,7 @@ public class TranslateTest {
     @Before
     public void setup() {
         translator = new Translator(false, false);
-        frame = new IntelFrame(new Label("test"), null);
+        frame = new IntelFrame(Label.create("test"), null);
         level = new Level(frame);
     }
 

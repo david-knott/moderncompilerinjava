@@ -399,7 +399,7 @@ public class IntelFrame extends Frame {
     public Exp externalCall(String func, ExpList args) {
         Label l = externalCalls.containsKey(func) ? externalCalls.get(func) : null;
         if (l == null) {
-            l = new Label(func);
+            l = Label.create(func);
             externalCalls.put(func, l);
         }
         return new CALL(new NAME(l), args);

@@ -1,5 +1,7 @@
 package Temp;
 
+import java.util.Hashtable;
+
 import Symbol.Symbol;
 
 /**
@@ -7,6 +9,25 @@ import Symbol.Symbol;
  */
 
 public class Label {
+   private static Hashtable<String, Label> labels = new Hashtable<String, Label>();
+
+   public static Label create() {
+      return new Label();
+   }
+
+   public static Label create(Symbol symbol) {
+      return create(symbol.toString());
+   }
+
+   public static Label create(String string) {
+      if(labels.contains(string)){
+         return labels.get(string);
+      }
+      Label label = new Label(string);
+      labels.put(string, label);
+      return label;
+   }
+
    private String name;
    private static int count;
 
@@ -21,7 +42,7 @@ public class Label {
     * Makes a new label that prints as "name". Warning: avoid repeated calls to
     * <tt>new Label(s)</tt> with the same name <tt>s</tt>.
     */
-   public Label(String n) {
+   private Label(String n) {
       name = n;
    }
 

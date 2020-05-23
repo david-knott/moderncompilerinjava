@@ -33,7 +33,7 @@ public class Main {
     private ErrorMsg errorMsg;
     private Grm parser;
     // frame implementation
-    private Frame frame = new IntelFrame(new Label("tigermain"), null);
+    private Frame frame = new IntelFrame(Label.create("tigermain"), null);
     private Level topLevel = new Level(frame);
     private Translator translate = new Translator();
     private boolean allVarsEscape = false;
