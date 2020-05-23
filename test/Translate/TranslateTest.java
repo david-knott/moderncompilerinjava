@@ -11,6 +11,7 @@ import org.junit.Test;
 import Frame.Frame;
 import Intel.IntelFrame;
 import Semant.Semant;
+import Symbol.Symbol;
 import Temp.Label;
 import Tree.CALL;
 import Tree.EXP;
@@ -18,6 +19,7 @@ import Tree.MEM;
 import Tree.MOVE;
 import Tree.TEMP;
 import Types.ARRAY;
+import Types.RECORD;
 
 public class TranslateTest {
 
@@ -27,7 +29,7 @@ public class TranslateTest {
 
     @Before
     public void setup() {
-        translator = new Translator(false);
+        translator = new Translator(false, false);
         frame = new IntelFrame(new Label("test"), null);
         level = new Level(frame);
     }
@@ -107,5 +109,25 @@ public class TranslateTest {
         ExpTy arrayVar = new ExpTy(translator.simpleVar(access, level), new ARRAY(Semant.INT));
         Exp subscriptVar = translator.subscriptVar(integerExp, arrayVar, level);
         assertNotNull(subscriptVar);
+    }
+
+    @Test
+    public void initRecord() {
+        ExpTyList expTyList = null;
+        Exp record = translator.record(level, expTyList);
+        assertNotNull(record);
+        var linear = Canon.Canon.linearize(record.unNx());
+        assertNotNull(linear);
+    }
+
+    @Test
+    public void fieldVar() {
+        Access access = level.allocLocal(false);
+        RECORD r = new RECORD(Symbol.symbol("field1"),Semant.INT, null);
+        ExpTy recordVar = new ExpTy(translator.simpleVar(access, level), r);
+        Exp fieldVar = translator.fieldVar(recordVar.exp, 0, level);
+        var linear = Canon.Canon.linearize(fieldVar.unNx());
+        assertNotNull(linear);
+
     }
 }

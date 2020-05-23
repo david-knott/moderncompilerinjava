@@ -28,13 +28,16 @@ public class Translator {
 
     private Frag frags;
     private boolean arrayBoundsCheck;
+    private boolean nullRecordCheck;
 
     public Translator() {
         this.arrayBoundsCheck = true;
+        this.nullRecordCheck = true;
     }
 
-    public Translator(boolean arrayBoundsCheck) {
+    public Translator(boolean arrayBoundsCheck, boolean nullRecordCheck) {
         this.arrayBoundsCheck = arrayBoundsCheck;
+        this.nullRecordCheck = nullRecordCheck;
     }
 
     /**
@@ -74,6 +77,46 @@ public class Translator {
      }
 
     /**
+     * Returns an integer expression 
+     * @param value
+     * @return
+     */
+    public Exp integer(int value) {
+        return new Ex(new CONST(value));
+    }
+
+    /**
+     * Returns a string expression and generates
+     * an assembly data fragment and stores in a
+     * linked list of fragments.
+     * @param literal
+     * @param level
+     * @return
+     */
+    public Exp string(String literal, Level level) {
+        Label label = new Label();
+        var stringFragment = level.frame.string(label, literal);
+        addFrag(new DataFrag(stringFragment));
+        return new Ex(new NAME(label));
+    }
+
+    /**
+     * Returns a noop expression.
+     * @return a noop expression.
+     */
+    public Exp Noop() {
+        return new Ex(new CONST(0));
+    }
+
+    /**
+     * Returns a nil expression.
+     * @return a nill expression.
+     */
+    public Exp nil() {
+        return new Ex(new CONST(0));
+    }
+
+    /**
      * Returns a IR expression of a simple variable. This comprises of an offset
      * from the defining frames frame pointer. If this variable is declared at same
      * level this will be the associated framees frame pointer. If the variable is
@@ -95,6 +138,58 @@ public class Translator {
      */
     public Exp varExp(ExpTy varEp){
         return varEp.exp;
+    }
+
+    /**
+     * Allocates an array in the heap. Returns a pointer to the
+     * base address. The base address contains the size of the array
+     * stored as a word. The elements are stored contigously after the
+     * size
+     */
+    public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
+        if(!this.arrayBoundsCheck) {
+            Temp arrayPointer = new Temp();
+            ExpList args = new ExpList(
+                transSizeExp.exp.unEx(), 
+                new ExpList(
+                    transInitExp.exp.unEx(), 
+                    null
+                )
+            );
+            return new Ex(
+                new ESEQ(
+                    new MOVE(
+                        new TEMP(arrayPointer), 
+                        level.frame.externalCall("initArray", args) /* return a call tree */
+                    ), 
+                    new TEMP(arrayPointer)
+                )
+            );
+
+        } else {
+            ExpList args = new ExpList(
+                new BINOP(
+                    BINOP.PLUS, 
+                    transSizeExp.exp.unEx(), 
+                    new CONST(1)
+                ), 
+                new ExpList(
+                    transInitExp.exp.unEx(), 
+                    null
+                )
+            );
+            Temp arrayPointer = new Temp();
+            return new Ex(
+                new ESEQ(
+                    new MOVE(
+                        new TEMP(arrayPointer), 
+                        level.frame.externalCall("initArray", args) /* return a call tree */
+                    ), 
+                    new TEMP(arrayPointer)
+                )
+            );
+        }
+
     }
 
     /**
@@ -187,6 +282,83 @@ public class Translator {
     }
 
     /**
+     * Initialises a new record in the heap.
+     * @param level
+     * @param expTyList
+     * @return
+     */
+    public Exp record(Level level, ExpTyList expTyList) {
+        Temp recordPointer = IntelFrame.rax;//new Temp();
+        //Temp recordPointer = new Temp();
+        Stm stm = fieldList(recordPointer, expTyList, level);
+        int total = 0;
+        for (var s = expTyList; s != null; s = s.tail) total++;
+        int size = level.frame.wordSize() * total;
+        return new Ex(new ESEQ(
+            new SEQ(
+                new MOVE(
+                    new TEMP(recordPointer),
+                    level.frame.externalCall(
+                        "initRecord", 
+                        new ExpList(
+                            new CONST(size), 
+                            null
+                        )
+                    )
+                ), 
+                stm
+            ),
+            new TEMP(recordPointer)));
+    }
+
+
+    private Stm fieldList(Temp recordPointer,ExpTyList expTyList, Level level){
+        if(expTyList == null || expTyList.expTy == null){
+            return Noop().unNx();
+        }
+        int total = 0;
+        Stm first = new MOVE(
+                        new MEM(
+                            new BINOP(
+                                BINOP.PLUS, 
+                                new TEMP(recordPointer), 
+                                new CONST(level.frame.wordSize() * total)
+                            )
+                        ),
+            expTyList.expTy.exp.unEx()
+        );
+        if(expTyList.tail == null){
+            return first; 
+        }
+        SEQ seq = new SEQ(first, null);
+        expTyList = expTyList.tail;
+        var prev = seq;
+        while (expTyList != null) {
+            total++;
+            Stm fieldExp = 
+                new MOVE(
+                    new MEM(
+                        new BINOP(
+                            BINOP.PLUS, 
+                            new TEMP(recordPointer), 
+                            new CONST(level.frame.wordSize() * total)
+                        )
+                    ),
+                    expTyList.expTy.exp.unEx()
+                );
+            if (expTyList.tail == null) {
+                prev.right = fieldExp;
+            } else {
+                SEQ next = new SEQ(fieldExp, null);
+                prev.right = next;
+                prev = next;
+            }
+            expTyList = expTyList.tail;
+        }
+        return seq;
+    }
+
+    /**
      * Translates a field variable. Using the base reference and the field offset
      * this returns the value at the computed memory location. 
      * This method checks if the base reference is nil before dereferencing the field.
@@ -200,29 +372,43 @@ public class Translator {
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
         var gotoSegFault = new Label();
         var gotoSubscript = new Label();
-        return new Ex(
-            new ESEQ(
-                new SEQ(
-                    new CJUMP(
-                        CJUMP.EQ, 
-                        new MEM(
-                            exp.unEx()
-                        ), 
-                        new CONST(0), 
-                        gotoSegFault, 
-                        gotoSubscript
-                    ),
+        if(this.nullRecordCheck) {
+            return new Ex(
+                new ESEQ(
                     new SEQ(
-                        new LABEL(gotoSegFault),
+                        new CJUMP(
+                            CJUMP.EQ, 
+                            new MEM(
+                                exp.unEx()
+                            ), 
+                            new CONST(0), 
+                            gotoSegFault, 
+                            gotoSubscript
+                        ),
                         new SEQ(
-                            new MOVE( /* triggers a seg fault */
-                                new MEM(new CONST(0)),
-                                new CONST(0)
-                            ),
-                            new LABEL(gotoSubscript)
+                            new LABEL(gotoSegFault),
+                            new SEQ(
+                                new MOVE( /* triggers a seg fault */
+                                    new MEM(new CONST(0)),
+                                    new CONST(0)
+                                ),
+                                new LABEL(gotoSubscript)
+                            )
                         )
+                    ),
+                    new MEM(
+                        new BINOP(
+                            BINOP.PLUS, 
+                            exp.unEx(), 
+                            new CONST(
+                                fieldIndex * level.frame.wordSize()
+                            )
+                        )           
                     )
-                ),
+                )
+            );
+        } else {
+            return new Ex(
                 new MEM(
                     new BINOP(
                         BINOP.PLUS, 
@@ -232,8 +418,8 @@ public class Translator {
                         )
                     )           
                 )
-            )
-        );
+            );
+        }
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
@@ -257,20 +443,6 @@ public class Translator {
         return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
     }
 
-    public Exp integer(int value) {
-        return new Ex(new CONST(value));
-    }
-
-    public Exp string(String literal, Level level) {
-        Label label = new Label();
-        var stringFragment = level.frame.string(label, literal);
-        addFrag(new DataFrag(stringFragment));
-        return new Ex(new NAME(label));
-    }
-
-    public Exp Noop() {
-        return new Ex(new CONST(0));
-    }
 
     /**
      * Returns a translated function body. If the function returns
@@ -287,11 +459,6 @@ public class Translator {
             return firstFunction.exp;
         }
     }
-
-    public Exp nil() {
-        return new Ex(new CONST(0));
-    }
-
     /**
      * Generates IR for a call function. Function actual parameters
      * are passed in as part of calling sequence which happens later.
@@ -429,127 +596,7 @@ public class Translator {
         return new ESEQ(statement, last.exp.unEx());
    }
 
-    /**
-     * Allocates an array in the heap. Returns a pointer to the
-     * base address. The base address contains the size of the array
-     * stored as a word. The elements are stored contigously after the
-     * size
-     */
-    public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
-        if(!this.arrayBoundsCheck) {
-            Temp arrayPointer = new Temp();
-            ExpList args = new ExpList(
-                transSizeExp.exp.unEx(), 
-                new ExpList(
-                    transInitExp.exp.unEx(), 
-                    null
-                )
-            );
-            return new Ex(
-                new ESEQ(
-                    new MOVE(
-                        new TEMP(arrayPointer), 
-                        level.frame.externalCall("initArray", args) /* return a call tree */
-                    ), 
-                    new TEMP(arrayPointer)
-                )
-            );
-
-        } else {
-            ExpList args = new ExpList(
-                new BINOP(
-                    BINOP.PLUS, 
-                    transSizeExp.exp.unEx(), 
-                    new CONST(1)
-                ), 
-                new ExpList(
-                    transInitExp.exp.unEx(), 
-                    null
-                )
-            );
-            Temp arrayPointer = new Temp();
-            return new Ex(
-                new ESEQ(
-                    new MOVE(
-                        new TEMP(arrayPointer), 
-                        level.frame.externalCall("initArray", args) /* return a call tree */
-                    ), 
-                    new TEMP(arrayPointer)
-                )
-            );
-        }
-
-    }
-
-    private Stm fieldList(Temp recordPointer,ExpTyList expTyList, Level level){
-        if(expTyList == null || expTyList.expTy == null){
-            return Noop().unNx();
-        }
-        int total = 0;
-        Stm first = new MOVE(
-                        new MEM(
-                            new BINOP(
-                                BINOP.PLUS, 
-                                new TEMP(recordPointer), 
-                                new CONST(level.frame.wordSize() * total)
-                            )
-                        ),
-            expTyList.expTy.exp.unEx()
-        );
-        if(expTyList.tail == null){
-            return first; 
-        }
-        SEQ seq = new SEQ(first, null);
-        expTyList = expTyList.tail;
-        var prev = seq;
-        while (expTyList != null) {
-            total++;
-            Stm fieldExp = 
-                new MOVE(
-                    new MEM(
-                        new BINOP(
-                            BINOP.PLUS, 
-                            new TEMP(recordPointer), 
-                            new CONST(level.frame.wordSize() * total)
-                        )
-                    ),
-                    expTyList.expTy.exp.unEx()
-                );
-            if (expTyList.tail == null) {
-                prev.right = fieldExp;
-            } else {
-                SEQ next = new SEQ(fieldExp, null);
-                prev.right = next;
-                prev = next;
-            }
-            expTyList = expTyList.tail;
-        }
-        return seq;
-    }
-
-    public Exp record(Level level, ExpTyList expTyList) {
-        Temp recordPointer = IntelFrame.rax;//new Temp();
-        //Temp recordPointer = new Temp();
-        Stm stm = fieldList(recordPointer, expTyList, level);
-        int total = 0;
-        for (var s = expTyList; s != null; s = s.tail) total++;
-        int size = level.frame.wordSize() * total;
-        return new Ex(new ESEQ(
-                new SEQ(
-                    new MOVE(
-                        new TEMP(recordPointer),
-                        level.frame.externalCall(
-                            "malloc", 
-                            new ExpList(
-                                new CONST(size), 
-                                null
-                            )
-                        )
-                    ), 
-                    stm
-                ),
-                new TEMP(recordPointer)));
-    }
+    
 
     /**
      * Returns IR for a while loop
