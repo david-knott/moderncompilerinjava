@@ -63,7 +63,7 @@ public class Main {
      * 
      * @return
      */
-    public int compile() {
+    public int compile()  {
         PrintStream out = System.out; // java.io.PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
         // parsse the input stream
         try {
@@ -81,14 +81,11 @@ public class Main {
         findEscape.traverse(this.ast.absyn);
         Frag frags = this.semant.getTreeFragments(this.ast.absyn);
         for(; frags != null; frags = frags.next) {
-          //  frags.process(canonicalization, fragProcessor);
-
+            //apply canonicalisation, blocks and traces to the fragments
+            //run code gen on the statement list
+            //run register allocation on the instructions
+            //write to out stream
         }
-
- //       ProcessedFrag processedFragList = frags.processAll(new CanonFacadeImpl());
-   //     CodeFrag codeFragList = processedFragList.processAll(new CodeGeneratorFacade());
-     //   codeFragList.processAll();
-        // put the IR fragments into the IR Processors
         out.close();
         return 0;
     }

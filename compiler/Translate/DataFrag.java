@@ -22,7 +22,7 @@ public class DataFrag extends Frag {
 	}
 
 	@Override
-	public ProcessedFrag process(Canonicalization canonicalization, FragProcessor processor) {
+	public ProcessedFrag process(Canonicalization canonicalization) {
 	//	PrintStream out = processor.getOut();
 //		out.println("section .data");
 		//out.println(this);

@@ -46,7 +46,7 @@ public class ProcFrag extends Frag {
      * correct flow which can be easily translated into assembly.
      */
     @Override
-    public ProcessedFrag process(Canonicalization canonicalization, FragProcessor processor) {
+    public ProcessedFrag process(Canonicalization canonicalization) {
         StmList stmList = canonicalization.canon(this.body);
         var out = System.out;
         TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
