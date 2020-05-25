@@ -42,22 +42,22 @@ public class IntelFrame extends Frame {
     private StmList callingConventions;
     private Codegen codege;
     private static final int WORD_SIZE = 8;
-    public static Temp rax = new Temp();
-    public static Temp rsp = new Temp();
-    public static Temp rbx = new Temp();// callee save
-    public static Temp rcx = new Temp();// 4th argu
-    public static Temp rdx = new Temp();// 3rd argu
-    public static Temp rsi = new Temp();// 2lrd argu
-    public static Temp rdi = new Temp();// 1st argu
-    public static Temp rbp = new Temp();// callee saved
-    public static Temp r8 = new Temp();// 5th argup
-    public static Temp r9 = new Temp();// 6th argup
-    public static Temp r10 = new Temp();// scratch
-    public static Temp r11 = new Temp();// scratch
-    public static Temp r12 = new Temp();// callee
-    public static Temp r13 = new Temp();// callee
-    public static Temp r14 = new Temp();// callee
-    public static Temp r15 = new Temp();// callee
+    public static Temp rax = Temp.create("rax");
+    public static Temp rsp = Temp.create("rsp");
+    public static Temp rbx = Temp.create("rbx");// callee save
+    public static Temp rcx = Temp.create("rcx");// 4th argu
+    public static Temp rdx = Temp.create("rdx");// 3rd argu
+    public static Temp rsi = Temp.create("rsi");// 2lrd argu
+    public static Temp rdi = Temp.create("rdi");// 1st argu
+    public static Temp rbp = Temp.create("rbp");// callee saved
+    public static Temp r8 = Temp.create("r8");// 5th argup
+    public static Temp r9 = Temp.create("r9");// 6th argup
+    public static Temp r10 = Temp.create("r10");// scratch
+    public static Temp r11 = Temp.create("r11");// scratch
+    public static Temp r12 = Temp.create("r12");// callee
+    public static Temp r13 = Temp.create("r13");// callee
+    public static Temp r14 = Temp.create("r14");// callee
+    public static Temp r15 = Temp.create("r15");// callee
     public static TempList specialRegs = new TempList(rbp, new TempList(rsp, null));
     /**
      * A linked list of temporaries that represent registers that are saved upon
@@ -82,6 +82,9 @@ public class IntelFrame extends Frame {
     public static TempList callerSaves = new TempList(rcx, new TempList(rdx, new TempList(rdi,
             new TempList(rsi, new TempList(r8, new TempList(r9, new TempList(r10, new TempList(r11, null))))))));
 
+    /**
+     * Registers that are available as colours for the register allocator.
+     */
     private GenericLinkedList<Temp> registers = new GenericLinkedList<Temp>(rax)
             .append(rax)
             .append(rdx)
@@ -96,20 +99,7 @@ public class IntelFrame extends Frame {
             .append(r14)
             .append(r15)
             .append(rbx);
-            /*
-    private static TempList registers = new TempList(rax,
-            new TempList(rcx, new TempList(rdx, new TempList(rdi, new TempList(rsi, new TempList(
-                    // rsp, new TempList(
-                    r8, new TempList(r9, new TempList(r10, new TempList(r11, new TempList(rbx, new TempList(
-                            // rbp, new TempList(
-                            r12, new TempList(r13, new TempList(r14, new TempList(r15, null))))
-                    // )
-                    ))))
-            // )
-            ))))));*/
 
-    // precoloured temps that map to the actual machine registers
-    private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
     // mapping from string to an external function label
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
     // return sink used to indicate that certain values are live at function exit
@@ -118,29 +108,6 @@ public class IntelFrame extends Frame {
     private Hashtable<Temp, InFrame> spillMap = new Hashtable<Temp, InFrame>();
     // map to store callee registers and the temp created to store them.
     private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
-
-    static {
-        tmap.put(rax, "rax");
-        tmap.put(rsp, "rsp");
-        tmap.put(rbp, "rbp");
-        tmap.put(rbx, "rbx");
-        tmap.put(rcx, "rcx");
-        tmap.put(rdx, "rdx");
-        tmap.put(rsi, "rsi");
-        tmap.put(rdi, "rdi");
-        tmap.put(r8, "r8");
-        tmap.put(r9, "r9");
-        tmap.put(r10, "r10");
-        tmap.put(r11, "r11");
-        tmap.put(r12, "r12");
-        tmap.put(r13, "r13");
-        tmap.put(r14, "r14");
-        tmap.put(r15, "r15");
-        System.out.println("Precoloured Temps");
-        for (Temp key : tmap.keySet()) {
-            System.out.println(key + " => " + tmap.get(key));
-        }
-    }
 
     private void addCallingConvention(Stm stm) {
         if (this.callingConventions == null) {
@@ -251,7 +218,7 @@ public class IntelFrame extends Frame {
             Access local;
             if (!escape) {
                 // create a new temp for the variable
-                Temp temp = new Temp();
+                Temp temp = Temp.create();
                 // moves calling convention register value into our temp
                 this.moveRegArgsToTemp(temp, i);
                 local = new InReg(temp);
@@ -428,7 +395,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public String tempMap(Temp t) {
-        return tmap.containsKey(t) ? tmap.get(t) : null;
+        return Temp.name(t);
     }
 
     /**

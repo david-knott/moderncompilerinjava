@@ -20,7 +20,7 @@ class Colour implements TempMap {
 	private TempList spills;
 	private Hashtable<Temp, Temp> coloured = new Hashtable<Temp, Temp>();
 
-	public Colour(InterferenceGraph graph, TempMap precoloured, GenericLinkedList<Temp> registers) {
+	public Colour(InterferenceGraph graph, TempMap precoloured, GenericLinkedList<Temp> registers, boolean dumpGraph) {
 		this.precoloured = precoloured;
 		graph.show(System.out);
 		this.registers = registers;

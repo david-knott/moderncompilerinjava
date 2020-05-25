@@ -11,12 +11,12 @@ public class RegAlloc implements TempMap {
 	public Frame frame;
 	public Colour colour;
 
-	public RegAlloc(Frame frame, InstrList instrList) {
+	public RegAlloc(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {
 		this.instrList = instrList;
 		this.frame = frame;
 		var fg = new AssemFlowGraph(instrList);
-		var baig = new BitArrayInterferenceGraphImpl(fg);
-		this.colour = new Colour(baig, this.frame, this.frame.registers());
+		var baig = new InterferenceGraphImpl(fg);
+		this.colour = new Colour(baig, this.frame, this.frame.registers(), false /*dump graph*/);
 	}
 
 	@Override

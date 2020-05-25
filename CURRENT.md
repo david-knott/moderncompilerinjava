@@ -1,14 +1,10 @@
-# Current Tasks
+## Diary
 
-For register allocation we need to build the interference graph using all the code blocks,
-not one by one. I am have created a simple GraphColouring class, but I need to refactor before I can proceed with register allocation.
 
-## Immediate Work
+25th May 2020
 
-Bug in prcEntryExit1 - the callee restore sequence is placed incorrectly after cannonicalisation
-
-Investigate why register allocation puts rbx into rbx in the callee save / restore sequence
-
+Simplified the code, I introduced lots of classes in a previous attempt to simplify !
+Move construction of Temp & Label instances into these classes. 
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 

@@ -5,11 +5,13 @@ import java.util.Hashtable;
 public class Temp implements Comparable<Temp> {
 
     private static Hashtable<String, Temp> temps = new Hashtable<String, Temp>();
+    private static Hashtable<Temp, String> revTemps = new Hashtable<Temp, String>();
     private static int count;
 
     public static Temp create() {
         Temp temp = new Temp();
         temps.put(temp.toString(), temp);
+        revTemps.put(temp, temp.toString());
         return temp;
     }
 
@@ -19,7 +21,12 @@ public class Temp implements Comparable<Temp> {
         }
         Temp temp = new Temp();
         temps.put(name, temp);
+        revTemps.put(temp, name);
         return temp;
+    }
+
+    public static String name(Temp temp) {
+        return revTemps.containsKey(temp) ? revTemps.get(temp) : null;
     }
 
     private int num;

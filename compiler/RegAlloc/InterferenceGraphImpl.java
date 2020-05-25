@@ -8,7 +8,7 @@ import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 
-public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
+public class InterferenceGraphImpl extends InterferenceGraph {
 
     /**
      * Returns a count of all definitions
@@ -51,7 +51,7 @@ public class BitArrayInterferenceGraphImpl extends InterferenceGraph {
         return newNode;
     }
 
-    public BitArrayInterferenceGraphImpl(FlowGraph flowGraph) {
+    public InterferenceGraphImpl(FlowGraph flowGraph) {
         liveMap = new Hashtable<Node, TempList>();
         tempMap = new Hashtable<Integer, Temp>();
         int capacity = 0;

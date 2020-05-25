@@ -32,6 +32,9 @@ public class ProcFrag extends Frag {
      */
     public final Frame frame;
 
+    /**
+     * Performs canonicalisation on the Tree
+     */
     private final Canonicalization canonicalization;
 
     /**
@@ -83,7 +86,7 @@ public class ProcFrag extends Frag {
         prStmList(print, stmList);
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
-        RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
+        RegAlloc regAlloc = new RegAlloc(this.frame, instrs, false);
         this.frame.procEntryExit3(instrs);
         out.println("# Instructions: ");
         out.println("section .text");
