@@ -33,6 +33,7 @@ public class InterferenceGraphImpl extends InterferenceGraph {
     private Hashtable<Integer, Temp> tempMap;
     private Hashtable<Node, BitArraySet> liveInMap = new Hashtable<Node, BitArraySet>();
     private Hashtable<Node, BitArraySet> liveOutMap = new Hashtable<Node, BitArraySet>();
+    private MoveList moveList = null;
 
     private Temp getTemp(Integer i) {
         if (tempMap.containsKey(i)) {
@@ -122,6 +123,7 @@ public class InterferenceGraphImpl extends InterferenceGraph {
                         if (uses.head != tempList.head && defs.head != tempList.head) {
                             Node from = this.getOrCreate(defs.head);
                             Node to = this.getOrCreate(tempList.head);
+                            this.moveList = new MoveList(from, to, this.moveList);
                             this.addEdge(from, to);
                         }
                     }
@@ -154,7 +156,7 @@ public class InterferenceGraphImpl extends InterferenceGraph {
 
     @Override
     public MoveList moves() {
-        return null;
+        return this.moveList;
     }
 
     @Override

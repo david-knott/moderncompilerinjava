@@ -68,7 +68,7 @@ public class GraphvisRenderer implements GraphRenderer {
                     out.print(",");
                 }
             }
-            out.println("}");
+            out.println("} [style=solid]");
         }
         out.println("}");
     }

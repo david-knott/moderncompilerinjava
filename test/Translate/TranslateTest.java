@@ -40,14 +40,6 @@ public class TranslateTest {
     }
 
     @Test
-    public void simpleVarNotNull() {
-        Access access = level.allocLocal(true);
-        assertNotNull(access);
-        Exp simpleVar = translator.simpleVar(access, level);
-        assertNotNull(simpleVar);
-    }
-
-    @Test
     public void simpleVarInReg() {
         Access access = level.allocLocal(false);
         Exp simpleVar = translator.simpleVar(access, level);
@@ -67,6 +59,12 @@ public class TranslateTest {
         Ex ex = (Ex) simpleVar;
         assertNotNull(ex);
         assertTrue(ex.exp instanceof MEM);
+        assertTrue(((MEM)ex.exp).exp instanceof BINOP);
+        MEM mem = ((MEM)ex.exp);
+        assertTrue(((BINOP)mem.exp).left instanceof TEMP);
+        //expect left to base pointer temp
+        assertTrue(((BINOP)mem.exp).right instanceof CONST);
+        //expect right to be const offset
     }
 
     @Test
@@ -79,8 +77,6 @@ public class TranslateTest {
         assertNotNull(ex);
         assertTrue(ex.exp instanceof MEM);
     }
-
-
 
     @Test
     public void varExpInReg() {
@@ -155,5 +151,4 @@ public class TranslateTest {
         assertTrue(((BINOP)((EXP)linear.head).exp).left instanceof CONST);
         assertTrue(((BINOP)((EXP)linear.head).exp).right instanceof CONST);
     }
-
 }

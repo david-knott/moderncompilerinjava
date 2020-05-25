@@ -38,7 +38,7 @@ import java.util.Hashtable;
  */
 public class IntelFrame extends Frame {
 
-    private int localOffset = WORD_SIZE;
+    private int localOffset = 0;
     private StmList callingConventions;
     private Codegen codege;
     private static final int WORD_SIZE = 8;
@@ -351,7 +351,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-        return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
+       return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
     }
 
     /**
