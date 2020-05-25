@@ -57,7 +57,8 @@ public class GraphvisRenderer implements GraphRenderer {
             Temp t = interferenceGraph.gtemp(n);
             String tm = tempMap.tempMap(t);
             String colour = toColor(tm);
-            out.println(t + " [ style=filled fillcolor=\"" + colour + "\" label=\"" + tm + "\"]");
+            String reg = t.toString();
+            out.println(t + " [ style=filled fillcolor=\"" + colour + "\" label=\"" + tm + " [" + reg + "]\"]");
         }
         for (NodeList p = interferenceGraph.nodes(); p != null; p = p.tail) {
             Node n = p.head;

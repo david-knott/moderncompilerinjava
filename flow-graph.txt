@@ -3,29 +3,49 @@ digraph D{
 "]
 1 [ label="movq %rbx, %rbx	;default move
 "]
-2 [ label="movq %r12, %rsi	;default move
+2 [ label="movq %r12, %r10	;default move
 "]
-3 [ label="movq %r13, %rdx	;default move
+3 [ label="movq %r13, %r9	;default move
 "]
-4 [ label="movq %r14, %rax	;default move
+4 [ label="movq %r14, %r8	;default move
 "]
-5 [ label="movq %r15, %rdi	;default move
+5 [ label="movq %r15, %rdx	;default move
 "]
-6 [ label="movq %rbx, %rbx	;default move
+6 [ label="movq $10, %rsi	; move const into temp
 "]
-7 [ label="movq %rsi, %r12	;default move
+7 [ label="movq $1, %rax	; move const into temp
 "]
-8 [ label="movq %rdx, %r13	;default move
+8 [ label="add %rsi %rax 
 "]
-9 [ label="movq %rax, %r14	;default move
+9 [ label="movq %rax, %rdi;	move argument 0 into register
 "]
-10 [ label="movq %rdi, %r15	;default move
+10 [ label="movq $0, %rsi	; move const into temp
 "]
-11 [ label="jmp L0
+11 [ label="movq %rsi, %rsi;	move argument 1 into register
 "]
-12 [ label="L0:
+12 [ label="call initArray
 "]
-13 [ label=""]
+13 [ label="movq %rax, %rax	;default move
+"]
+14 [ label="movq %rax, %rax	;default move
+"]
+15 [ label="movq %rax, %rax	; exp 
+"]
+16 [ label="movq %rbx, %rbx	;default move
+"]
+17 [ label="movq %r10, %r12	;default move
+"]
+18 [ label="movq %r9, %r13	;default move
+"]
+19 [ label="movq %r8, %r14	;default move
+"]
+20 [ label="movq %rdx, %r15	;default move
+"]
+21 [ label="jmp L0
+"]
+22 [ label="L0:
+"]
+23 [ label=""]
 0 -> {1}
 1 -> {2}
 2 -> {3}
@@ -39,5 +59,15 @@ digraph D{
 10 -> {11}
 11 -> {12}
 12 -> {13}
-13 -> {}
+13 -> {14}
+14 -> {15}
+15 -> {16}
+16 -> {17}
+17 -> {18}
+18 -> {19}
+19 -> {20}
+20 -> {21}
+21 -> {22}
+22 -> {23}
+23 -> {}
 }

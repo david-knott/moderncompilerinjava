@@ -22,7 +22,6 @@ class Colour implements TempMap {
 
 	public Colour(InterferenceGraph graph, TempMap precoloured, GenericLinkedList<Temp> registers, boolean dumpGraph) {
 		this.precoloured = precoloured;
-		graph.show(System.out);
 		this.registers = registers;
 		this.spills = null;
 		//store each nodes degree
@@ -59,14 +58,11 @@ class Colour implements TempMap {
 			}
 			for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				if (null != this.precoloured.tempMap(graph.gtemp(adj.head))) { // is the node precoloured ?
-					System.out.println("Precoloured." + this.precoloured.tempMap(graph.gtemp(adj.head)));
-					//colours = colours.tail;
 					colours.remove(graph.gtemp(adj.head));
 					continue;
 				}
 				if (coloured.containsKey(graph.gtemp(adj.head))) { // an adjacent node is already coloured
 					var c= coloured.get(graph.gtemp(adj.head));
-					//colours = colours.tail;
 					colours.remove(c);
 					continue;
 				}
@@ -75,7 +71,6 @@ class Colour implements TempMap {
 				throw new Error("Spill not implemented");
 			} else {
 				Temp color = colours.iterator().next();
-				System.out.println("Assiging:" + graph.gtemp(node) + " => " + precoloured.tempMap(color));
 				coloured.put(graph.gtemp(node), color);
 			}
 		}

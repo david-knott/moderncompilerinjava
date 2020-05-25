@@ -1,5 +1,7 @@
 package Translate;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import Assem.InstrList;
@@ -49,7 +51,6 @@ public class ProcFrag extends Frag {
         canonicalization = new CanonFacadeImpl();
     }
 
-    
     private InstrList codegen(Frame f, StmList stms) {
         Assem.InstrList first = null, last = null;
         for (Tree.StmList s = stms; s != null; s = s.tail) {
@@ -80,18 +81,34 @@ public class ProcFrag extends Frag {
     public void process(PrintStream out) {
         StmList stmList = canonicalization.canon(this.body);
         TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
-        var print = new Print(out, tempmap);
-        out.println("# Before canonicalization: ");
-        print.prStm(this.body);
-        out.println("# After canonicalization: ");
-        prStmList(print, stmList);
+        try {
+            PrintStream ps = new PrintStream(new FileOutputStream("./tree.txt"));
+            var print = new Print(ps, tempmap);
+            ps.println("# Before canonicalization: ");
+            print.prStm(this.body);
+            ps.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            PrintStream ps = new PrintStream(new FileOutputStream("./canon.txt"));
+            var print = new Print(ps, tempmap);
+            ps.println("# After canonicalization: ");
+            prStmList(print, stmList);
+            ps.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
         RegAlloc regAlloc = new RegAlloc(this.frame, instrs, false);
         this.frame.procEntryExit3(instrs);
         out.println("# Instructions: ");
         out.println("section .text");
-        for(; instrs != null; instrs = instrs.tail) {
+        for (; instrs != null; instrs = instrs.tail) {
             out.print(instrs.head.format(regAlloc));
         }
     }

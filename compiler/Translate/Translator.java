@@ -29,15 +29,28 @@ public class Translator {
     private Frag frags;
     private boolean arrayBoundsCheck;
     private boolean nullRecordCheck;
+    private boolean dumpGraphs;
+    private boolean dumpAbsyn;
+    private boolean dumpTree;
+    private boolean dumpCanonicalTree;
 
     public Translator() {
         this.arrayBoundsCheck = true;
         this.nullRecordCheck = true;
+        this.dumpGraphs = false;
+        this.dumpAbsyn = false;
+        this.dumpTree = false;
+        this.dumpCanonicalTree = false;
     }
 
     public Translator(boolean arrayBoundsCheck, boolean nullRecordCheck) {
         this.arrayBoundsCheck = arrayBoundsCheck;
         this.nullRecordCheck = nullRecordCheck;
+        this.dumpGraphs = false;
+        this.dumpAbsyn = false;
+        this.dumpTree = false;
+        this.dumpCanonicalTree = false;
+
     }
 
     /**

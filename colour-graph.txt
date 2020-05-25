@@ -1,22 +1,40 @@
 graph D{
-t14 [ style=filled fillcolor="darkgoldenrod3" label="r14"]
-t13 [ style=filled fillcolor="cyan3" label="r13"]
-t12 [ style=filled fillcolor="coral" label="r12"]
-t2 [ style=filled fillcolor="white" label="rbx"]
-t19 [ style=filled fillcolor="bisque2" label="rax"]
-t18 [ style=filled fillcolor="deeppink1" label="rdx"]
-t17 [ style=filled fillcolor="antiquewhite4" label="rsi"]
-t16 [ style=filled fillcolor="white" label="rbx"]
-t15 [ style=filled fillcolor="dimgrey" label="r15"]
-t20 [ style=filled fillcolor="firebrick" label="rdi"]
-t14 -- {t2,t12,t13}
-t13 -- {t2,t12,t19}
-t12 -- {t2,t18,t19}
-t2 -- {t17,t18,t19}
-t19 -- {t15,t16,t17,t18}
-t18 -- {t14,t15,t16,t17}
-t17 -- {t13,t14,t15,t16}
-t16 -- {t12,t13,t14,t15}
+t26 [ style=filled fillcolor="bisque2" label="rax [t26]"]
+t22 [ style=filled fillcolor="deeppink1" label="rdx [t22]"]
+t21 [ style=filled fillcolor="aquamarine4" label="r8 [t21]"]
+t20 [ style=filled fillcolor="blue1" label="r9 [t20]"]
+t19 [ style=filled fillcolor="brown" label="r10 [t19]"]
+t18 [ style=filled fillcolor="white" label="rbx [t18]"]
+t14 [ style=filled fillcolor="darkgoldenrod3" label="r14 [t14]"]
+t13 [ style=filled fillcolor="cyan3" label="r13 [t13]"]
+t12 [ style=filled fillcolor="coral" label="r12 [t12]"]
+t2 [ style=filled fillcolor="white" label="rbx [t2]"]
+t5 [ style=filled fillcolor="antiquewhite4" label="rsi [t5]"]
+t24 [ style=filled fillcolor="bisque2" label="rax [t24]"]
+t15 [ style=filled fillcolor="dimgrey" label="r15 [t15]"]
+t23 [ style=filled fillcolor="antiquewhite4" label="rsi [t23]"]
+t17 [ style=filled fillcolor="bisque2" label="rax [t17]"]
+t6 [ style=filled fillcolor="firebrick" label="rdi [t6]"]
+t16 [ style=filled fillcolor="bisque2" label="rax [t16]"]
+t0 [ style=filled fillcolor="bisque2" label="rax [t0]"]
+t25 [ style=filled fillcolor="antiquewhite4" label="rsi [t25]"]
+t26 -- {t18,t19,t20,t21,t22}
+t22 -- {t18,t19,t20,t21}
+t21 -- {t15,t18,t19,t20}
+t20 -- {t14,t15,t18,t19}
+t19 -- {t13,t14,t15,t18}
+t18 -- {t12,t13,t14,t15}
+t14 -- {t2,t12,t13,t22}
+t13 -- {t2,t12,t21,t22}
+t12 -- {t2,t20,t21,t22}
+t2 -- {t19,t20,t21,t22}
+t5 -- {t18,t19,t20,t21,t22,t24}
+t24 -- {t18,t19,t20,t21,t22,t23}
 t15 -- {t2,t12,t13,t14}
-t20 -- {t16,t17,t18,t19}
+t23 -- {t18,t19,t20,t21,t22}
+t17 -- {t18,t19,t20,t21,t22}
+t6 -- {t18,t19,t20,t21,t22}
+t16 -- {t18,t19,t20,t21,t22}
+t0 -- {t18,t19,t20,t21,t22}
+t25 -- {t18,t19,t20,t21,t22,t24}
 }
