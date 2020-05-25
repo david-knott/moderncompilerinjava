@@ -1,8 +1,15 @@
 package RegAlloc;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+
 import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
 import Frame.Frame;
+import Graph.GraphvisRenderer;
 import Temp.Temp;
 import Temp.TempMap;
 
@@ -16,13 +23,20 @@ public class RegAlloc implements TempMap {
 		this.frame = frame;
 		var fg = new AssemFlowGraph(instrList);
 		var baig = new InterferenceGraphImpl(fg);
-		this.colour = new Colour(baig, this.frame, this.frame.registers(), false /*dump graph*/);
+		this.colour = new Colour(baig, this.frame, this.frame.registers(), false /* dump graph */);
+		try {
+			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph.txt"));
+			new GraphvisRenderer().render(ps, baig, this);
+			ps.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public String tempMap(Temp t) {
 		String maps = this.colour.tempMap(t);
-		if(maps == null) {
+		if (maps == null) {
 			return this.frame.tempMap(t);
 		}
 		return maps;

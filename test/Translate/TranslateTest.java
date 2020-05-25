@@ -28,12 +28,15 @@ public class TranslateTest {
     private Translator translator;
     private Frame frame;
     private Level level;
+    private Level childLevel;
+
 
     @Before
     public void setup() {
         translator = new Translator(false, false);
         frame = new IntelFrame(Label.create("test"), null);
         level = new Level(frame);
+        childLevel = new Level(level, Symbol.symbol("child"), null);
     }
 
     @Test
@@ -65,6 +68,19 @@ public class TranslateTest {
         assertNotNull(ex);
         assertTrue(ex.exp instanceof MEM);
     }
+
+    @Test
+    public void simpleVarStaticLink() {
+        Access access = level.allocLocal(true);
+        Exp simpleVar = translator.simpleVar(access, childLevel);
+        assertNotNull(simpleVar);
+        assertTrue(simpleVar instanceof Ex);
+        Ex ex = (Ex) simpleVar;
+        assertNotNull(ex);
+        assertTrue(ex.exp instanceof MEM);
+    }
+
+
 
     @Test
     public void varExpInReg() {
@@ -139,4 +155,5 @@ public class TranslateTest {
         assertTrue(((BINOP)((EXP)linear.head).exp).left instanceof CONST);
         assertTrue(((BINOP)((EXP)linear.head).exp).right instanceof CONST);
     }
+
 }

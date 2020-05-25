@@ -82,10 +82,6 @@ public class Main {
         Frag frags = this.semant.getTreeFragments(this.ast.absyn);
         for(; frags != null; frags = frags.next) {
             frags.process(out);
-            //apply canonicalisation, blocks and traces to the fragments
-            //run code gen on the statement list
-            //run register allocation on the instructions
-            //write to out stream
         }
         out.close();
         return 0;

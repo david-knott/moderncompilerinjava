@@ -49,6 +49,7 @@ public class ProcFrag extends Frag {
         canonicalization = new CanonFacadeImpl();
     }
 
+    
     private InstrList codegen(Frame f, StmList stms) {
         Assem.InstrList first = null, last = null;
         for (Tree.StmList s = stms; s != null; s = s.tail) {
@@ -99,7 +100,4 @@ public class ProcFrag extends Frag {
     public Frame getFrame() {
         return this.frame;
     }
-
-    
-
 }

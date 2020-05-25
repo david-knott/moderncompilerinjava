@@ -21,22 +21,25 @@ public class Level {
     Level parent;
     public AccessList formals;
 
+    /**
+     * Creates a new static nesting level, using the supplied level as it parent.
+     * The symbol name relates to the function that is linked to this level.
+     * @param prnt
+     * @param name
+     * @param fmls
+     */
     public Level(Level prnt, Symbol name, BoolList fmls) {
         parent = prnt;
         // add new escaping formal parameter for static link to parent frame
-        frame = prnt.frame.newFrame(new Label(), new BoolList(true, fmls));
+        frame = prnt.frame.newFrame(new Label(name), new BoolList(true, fmls));
         //get the formals and add their access to translate acccess
         Frame.AccessList frameFormals = frame.formals;
       //  for (var fml = fmls; fml != null; fml = fml.tail) {
         while(frameFormals != null){
             if(formals == null){
                 formals = new AccessList(new Access(this, frameFormals.head));
-            //    current = formals;
             } else {
                 formals.append(new Access(this, frameFormals.head));
-             //   previous = current;
-             //   current = new AccessList(new Access(prnt, frameFormals.head));
-             //   previous.tail = current;
             }
             frameFormals = frameFormals.tail;
         }

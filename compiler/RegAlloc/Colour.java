@@ -44,7 +44,7 @@ class Colour implements TempMap {
 				}
 				this.simpleStack.push(initialNodes.head);
 			} else {
-				throw new Error("Cannot spill");
+				throw new Error("Cannot spill " + degrees.get(node) + " > " + k);
 			}
 			initialNodes = initialNodes.tail;
 		}

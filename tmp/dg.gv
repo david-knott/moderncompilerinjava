@@ -1,0 +1,41 @@
+graph D{
+rdx [ fillcolour="#000000" label="rdx"]
+r8 [ fillcolour="#000000" label="r8"]
+r9 [ fillcolour="#000000" label="r9"]
+rbx [ fillcolour="#000000" label="rbx"]
+r15 [ fillcolour="#111126" label="r15"]
+rsi [ fillcolour="#113224" label="rsi"]
+rax [ fillcolour="#000000" label="rax"]
+r10 [ fillcolour="#000000" label="r10"]
+r13 [ fillcolour="#111124" label="r13"]
+r12 [ fillcolour="#111123" label="r12"]
+rbx [ fillcolour="#112712" label="rbx"]
+r14 [ fillcolour="#111125" label="r14"]
+rax [ fillcolour="#000000" label="rax"]
+rax [ fillcolour="#000000" label="rax"]
+rsi [ fillcolour="#000000" label="rsi"]
+rsi [ fillcolour="#000000" label="rsi"]
+rax [ fillcolour="#112681" label="rax"]
+rax [ fillcolour="#000000" label="rax"]
+rdi [ fillcolour="#112759" label="rdi"]
+rax -- {rbx,r10,r9,r8,rdx}
+rdx -- {rbx,r10,r9,r8}
+r8 -- {r15,rbx,r10,r9}
+r9 -- {r14,r15,rbx,r10}
+r10 -- {r13,r14,r15,rbx}
+rbx -- {r12,r13,r14,r15}
+r13 -- {rbx,r12,r8,rdx}
+r12 -- {rbx,r9,r8,rdx}
+rbx -- {r10,r9,r8,rdx}
+rax -- {rsi,rbx,r10,r9,r8,rdx}
+rsi -- {rbx,r10,r9,r8,rdx,rax}
+r15 -- {rbx,r12,r13,r14}
+r14 -- {rbx,r12,r13,rdx}
+rax -- {rbx,r10,r9,r8,rdx}
+rsi -- {rbx,r10,r9,r8,rdx}
+rax -- {rbx,r10,r9,r8,rdx}
+rax -- {rbx,r10,r9,r8,rdx}
+rsi -- {rbx,r10,r9,r8,rdx,rax}
+rdi -- {rbx,r10,r9,r8,rdx}
+}
+

@@ -287,7 +287,11 @@ public class IntelFrame extends Frame {
     /**
      * Returns a linked list of statements that move the callee precoloured
      * registers into new temporaries. These may be spilled by the register
-     * allocator, or coloured to a free register.
+     * allocator, or coloured to a free register. 
+     * 
+     * This moves callee saves to temporaries regardless of whether they are
+     * used or not. It would be better to only move items that are already in
+     * use.
      * 
      * @return a linked list of move statements.
      */
@@ -364,6 +368,15 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Proc procEntryExit3(Assem.InstrList body) {
+        /*
+        InstrList instrList = new InstrList(
+            new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null)), 
+            new InstrList(
+                new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)), 
+                null
+        );
+        move the stack pointer by the amount of space needed to allocate the frame.
+        */
         return new Proc("PROC " + "name", body, "END" + "name");
     }
 

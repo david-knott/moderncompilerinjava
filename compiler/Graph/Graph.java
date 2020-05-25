@@ -64,4 +64,8 @@ public class Graph {
     }
   }
 
+  public void render(java.io.PrintStream out, GraphRenderer graphRender) {
+    graphRender.render(out, this);
+  }
+
 }
