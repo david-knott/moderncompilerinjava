@@ -13,6 +13,7 @@ import Tree.Exp;
 import Tree.ExpList;
 import Tree.Stm;
 import Util.BoolList;
+import Util.GenericLinkedList;
 
 public class TestFrame extends Frame {
 
@@ -89,17 +90,10 @@ public class TestFrame extends Frame {
     }
 
     @Override
-    public TempList registers() {
+    public GenericLinkedList<Temp> registers() {
         // TODO Auto-generated method stub
         return null;
     }
-
-    @Override
-    public TempList precoloured() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
 
     @Override
     public InstrList tempToMemory(Temp temp) {

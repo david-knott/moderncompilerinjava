@@ -17,6 +17,7 @@ import Tree.Stm;
 import Tree.StmList;
 import Tree.TEMP;
 import Util.BoolList;
+import Util.GenericLinkedList;
 import Assem.Instr;
 import Assem.InstrList;
 import Assem.OPER;
@@ -39,7 +40,7 @@ public class IntelFrame extends Frame {
 
     private int localOffset = WORD_SIZE;
     private StmList callingConventions;
-    private Codegen codege; 
+    private Codegen codege;
     private static final int WORD_SIZE = 8;
     public static Temp rax = new Temp();
     public static Temp rsp = new Temp();
@@ -81,10 +82,21 @@ public class IntelFrame extends Frame {
     public static TempList callerSaves = new TempList(rcx, new TempList(rdx, new TempList(rdi,
             new TempList(rsi, new TempList(r8, new TempList(r9, new TempList(r10, new TempList(r11, null))))))));
 
-    private static TempList precoloured = new TempList(rax, new TempList(rcx, new TempList(rdx, new TempList(rdi,
-            new TempList(rsi, new TempList(r8, new TempList(r9, new TempList(r10, new TempList(r11, new TempList(rbx,
-                    new TempList(r12, new TempList(r13, new TempList(r14, new TempList(r15, specialRegs))))))))))))));
-
+    private GenericLinkedList<Temp> registers = new GenericLinkedList<Temp>(rax)
+            .append(rax)
+            .append(rdx)
+            .append(rdi)
+            .append(rsi)
+            .append(r8)
+            .append(r9)
+            .append(r10)
+            .append(r11)
+            .append(r12)
+            .append(r13)
+            .append(r14)
+            .append(r15)
+            .append(rbx);
+            /*
     private static TempList registers = new TempList(rax,
             new TempList(rcx, new TempList(rdx, new TempList(rdi, new TempList(rsi, new TempList(
                     // rsp, new TempList(
@@ -94,17 +106,17 @@ public class IntelFrame extends Frame {
                     // )
                     ))))
             // )
-            ))))));
+            ))))));*/
 
-    //precoloured temps that map to the actual machine registers
+    // precoloured temps that map to the actual machine registers
     private static Hashtable<Temp, String> tmap = new Hashtable<Temp, String>();
-    //mapping from string to an external function label
+    // mapping from string to an external function label
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
-    //return sink used to indicate that certain values are live at function exit
+    // return sink used to indicate that certain values are live at function exit
     private static TempList returnSink = new TempList(rsp, calleeSaves);
-    //map to store spilled temps and their related inframe accesses
+    // map to store spilled temps and their related inframe accesses
     private Hashtable<Temp, InFrame> spillMap = new Hashtable<Temp, InFrame>();
-    //map to store callee registers and the temp created to store them.
+    // map to store callee registers and the temp created to store them.
     private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
 
     static {
@@ -125,14 +137,13 @@ public class IntelFrame extends Frame {
         tmap.put(r14, "r14");
         tmap.put(r15, "r15");
         System.out.println("Precoloured Temps");
-        for(Temp key : tmap.keySet()) {
+        for (Temp key : tmap.keySet()) {
             System.out.println(key + " => " + tmap.get(key));
         }
     }
 
-
     private void addCallingConvention(Stm stm) {
-        if(this.callingConventions == null) {
+        if (this.callingConventions == null) {
             this.callingConventions = new StmList(stm);
         } else {
             this.callingConventions = this.callingConventions.append(stm);
@@ -165,9 +176,9 @@ public class IntelFrame extends Frame {
                 src = r9;
                 break;
             default:
-                //allocate space on frame
-                InFrame inFrame = (InFrame)this.allocLocal(true);
-                //move item at frame location into temp
+                // allocate space on frame
+                InFrame inFrame = (InFrame) this.allocLocal(true);
+                // move item at frame location into temp
                 var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
                 this.addCallingConvention(new Tree.MOVE(new Tree.TEMP(dest), memLocation));
                 return;
@@ -175,10 +186,10 @@ public class IntelFrame extends Frame {
         this.addCallingConvention(new Tree.MOVE(new Tree.TEMP(dest), new Tree.TEMP(src)));
     }
 
-    /* 
-    * Generates statements that move from argument registers or frame locations
-    * into a frame location.
-    */
+    /*
+     * Generates statements that move from argument registers or frame locations
+     * into a frame location.
+     */
     private void moveFrameToFormal(int offset, int i) {
         Temp src;
         var memDest = new MEM(new BINOP(BINOP.PLUS, new CONST(offset), new TEMP(this.FP())));
@@ -202,8 +213,8 @@ public class IntelFrame extends Frame {
                 src = r9;
                 break;
             default:
-                //allocate space on frame
-                InFrame inFrame = (InFrame)this.allocLocal(true);
+                // allocate space on frame
+                InFrame inFrame = (InFrame) this.allocLocal(true);
                 var srcLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
                 var destLocation = new MEM(new BINOP(BINOP.MINUS, new CONST(offset), new TEMP(this.FP())));
                 this.addCallingConvention(new Tree.MOVE(destLocation, srcLocation));
@@ -212,23 +223,21 @@ public class IntelFrame extends Frame {
         this.addCallingConvention(new Tree.MOVE(memDest, new Tree.TEMP(src)));
     }
 
-
-
     /**
-     * Initialises a new instance of an Intel Frame activation record.
-     * The frml argument is passed in from the abstract synax and represents
-     * the formal arguments defined by the function header. These arguments
-     * do not escape by default, meaning they are stored in temporaries. If 
-     * an argument does escape it is stored in the frame. The codegen visitor
-     * munch args, called by the call codegen, puts the actual arguments into
-     * their argument passing registers, or into the caller frame, before the CALL command.
+     * Initialises a new instance of an Intel Frame activation record. The frml
+     * argument is passed in from the abstract synax and represents the formal
+     * arguments defined by the function header. These arguments do not escape by
+     * default, meaning they are stored in temporaries. If an argument does escape
+     * it is stored in the frame. The codegen visitor munch args, called by the call
+     * codegen, puts the actual arguments into their argument passing registers, or
+     * into the caller frame, before the CALL command.
      * 
-     * The callee is expected to move the temporaries from the argument passing registers
-     * into the frame temporaries, or ensure that we access frame variables using
-     * the correct offset relative to the new base pointer.
+     * The callee is expected to move the temporaries from the argument passing
+     * registers into the frame temporaries, or ensure that we access frame
+     * variables using the correct offset relative to the new base pointer.
      * 
-     * The frml list is by default non escaping, except for variables that are marked 
-     * as must escape. 
+     * The frml list is by default non escaping, except for variables that are
+     * marked as must escape.
      * 
      * @param nm   the label for the related function
      * @param frml the formal list, where true indicates the argument escapes
@@ -238,16 +247,16 @@ public class IntelFrame extends Frame {
         int i = 0;
         while (frml != null) {
             // first arg is static link
-            var escape =  i > 5 || frml.head;
+            var escape = i > 5 || frml.head;
             Access local;
             if (!escape) {
-                //create a new temp for the variable
+                // create a new temp for the variable
                 Temp temp = new Temp();
-                //moves calling convention register value into our temp
+                // moves calling convention register value into our temp
                 this.moveRegArgsToTemp(temp, i);
                 local = new InReg(temp);
             } else {
-                //create a location in the frame for the item 
+                // create a location in the frame for the item
                 localOffset = localOffset - WORD_SIZE;
                 this.moveFrameToFormal(localOffset, i);
                 local = new InFrame((localOffset));
@@ -272,8 +281,10 @@ public class IntelFrame extends Frame {
 
     /**
      * Creates a new Frame instance. Where name is
-     * @param name the name of the function.
-     * @param formals the formal argument list, where a true indicates the variable escapes.
+     * 
+     * @param name    the name of the function.
+     * @param formals the formal argument list, where a true indicates the variable
+     *                escapes.
      */
     @Override
     public Frame newFrame(Label name, BoolList formals) {
@@ -281,8 +292,8 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Returns the precoloured temporary that
-     * maps to the frame pointer or base pointer.
+     * Returns the precoloured temporary that maps to the frame pointer or base
+     * pointer.
      */
     @Override
     public Temp FP() {
@@ -290,9 +301,8 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Returns the precoloured temporary that maps
-     * the the register that is the return value from
-     * a function is placed in.
+     * Returns the precoloured temporary that maps the the register that is the
+     * return value from a function is placed in.
      */
     @Override
     public Temp RV() {
@@ -309,17 +319,18 @@ public class IntelFrame extends Frame {
 
     /**
      * Returns a linked list of statements that move the callee precoloured
-     * registers into new temporaries. These may be spilled by the register 
+     * registers into new temporaries. These may be spilled by the register
      * allocator, or coloured to a free register.
+     * 
      * @return a linked list of move statements.
      */
     Stm calleeSaveList() {
         StmList list = null;
-        for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
+        for (TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = new Temp();
             calleeTempMap.put(callee.head, calleeTemp);
             MOVE move = new MOVE(new TEMP(calleeTemp), new TEMP(callee.head));
-            if(list == null) {
+            if (list == null) {
                 list = new StmList(move);
             } else {
                 list = list.append(move);
@@ -329,16 +340,17 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Returns a linked list of statements that restore the precoloured
-     * callee registers to their values before the function was invoked.
+     * Returns a linked list of statements that restore the precoloured callee
+     * registers to their values before the function was invoked.
+     * 
      * @return a linked list of move statements.
      */
     Stm calleeRestoreList() {
         StmList list = null;
-        for(TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
+        for (TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = calleeTempMap.get(callee.head);
             MOVE move = new MOVE(new TEMP(callee.head), new TEMP(calleeTemp));
-            if(list == null) {
+            if (list == null) {
                 list = new StmList(move);
             } else {
                 list = list.append(move);
@@ -348,32 +360,27 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Returns a list of statements that move formal arguments from their
-     * calling convention registers or frame locations to the temporaries that
-     * are used in the function body.
+     * Returns a list of statements that move formal arguments from their calling
+     * convention registers or frame locations to the temporaries that are used in
+     * the function body.
+     * 
      * @return a linked list of move statements.
      */
     Stm moveArgs() {
-        if(this.callingConventions == null) {
-           return new EXP(new CONST(0)); 
+        if (this.callingConventions == null) {
+            return new EXP(new CONST(0));
         }
         return this.callingConventions.toSEQ();
     }
 
     /**
-     * The idea here is that the register allocator will spill the callee Temps if it needs to. 
-     * The precoloured temps ( callee ) cannot be spilled as they are precoloured so we move 
-     * them into new temps that are not coloured.
+     * The idea here is that the register allocator will spill the callee Temps if
+     * it needs to. The precoloured temps ( callee ) cannot be spilled as they are
+     * precoloured so we move them into new temps that are not coloured.
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-      return new SEQ(
-          calleeSaveList(), 
-          new SEQ(
-              moveArgs(), 
-              new SEQ(body, calleeRestoreList())
-          )
-      );
+        return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
     }
 
     /**
@@ -382,9 +389,7 @@ public class IntelFrame extends Frame {
      * marked as live on exit from the function.
      */
     public Assem.InstrList procEntryExit2(Assem.InstrList body) {
-        return append(
-            body, 
-                new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
+        return append(body, new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
     }
 
     /**
@@ -427,21 +432,12 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * A linked list of all Intel registers except for the stack pointer
-     * and base pointer.  This is used for colours in the register allocation
-     * phase.
+     * A linked list of all Intel registers except for the stack pointer and base
+     * pointer. This is used for colours in the register allocation phase.
      */
     @Override
-    public TempList registers() {
+    public GenericLinkedList<Temp> registers() {
         return registers;
-    }
-
-    /**
-     * A linked list of all Intel registers.
-     */
-    @Override
-    public TempList precoloured() {
-        return precoloured;
     }
 
     private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b) {

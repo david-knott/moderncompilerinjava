@@ -1,8 +1,6 @@
 package Translate;
 
 import java.io.PrintStream;
-
-import Canon.Canonicalization;
 import Frame.Frame;
 import Tree.StmList;
 
@@ -22,11 +20,9 @@ public class DataFrag extends Frag {
 	}
 
 	@Override
-	public ProcessedFrag process(Canonicalization canonicalization) {
-	//	PrintStream out = processor.getOut();
-//		out.println("section .data");
-		//out.println(this);
-		return new ProcessedDataFrag(null);
+	public void process(PrintStream out) {
+		out.println("section .data");
+		out.println(this.data);
 	}
 
 	@Override

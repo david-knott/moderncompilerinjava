@@ -7,6 +7,7 @@ import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
 import Tree.Stm;
+import Util.GenericLinkedList;
 
 public abstract class Frame implements TempMap {
     public Label name;
@@ -104,9 +105,7 @@ public abstract class Frame implements TempMap {
 
 	abstract public InstrList codegen(Stm head);
 
-    abstract public TempList registers();
-
-	abstract public TempList precoloured();
+    abstract public GenericLinkedList<Temp> registers();
 
 	public abstract InstrList tempToMemory(Temp temp); 
 

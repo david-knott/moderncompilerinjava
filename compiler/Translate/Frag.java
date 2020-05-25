@@ -1,8 +1,8 @@
 package Translate;
 
-import Canon.Canonicalization;
+import java.io.PrintStream;
+
 import Frame.Frame;
-import Tree.StmList;
 
 /**
  * An abstract code fragment. This contains either a function body IR tree or a
@@ -12,13 +12,9 @@ public abstract class Frag {
 
     public Frag next;
 
-    public abstract ProcessedFrag process(Canonicalization canonicalization);
+    public abstract void process(PrintStream out);
 
     public abstract Frame getFrame();
-
-    public ProcessedFrag processAll(Canonicalization canonicalization) {
-        return null;
-    }
 
 }
 

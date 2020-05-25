@@ -92,10 +92,6 @@ public class TranslateTest {
         Exp array = translator.array(level, integerExp, integerExp);
         assertNotNull(array);
         var linear = Canon.Canon.linearize(array.unNx());
-        //Expect initArray to call init array function
-        //with size and initial values as arguments
-        //and return temporary with a pointer to the
-        //heap allocated array.
         assertTrue(linear.head instanceof MOVE);
         assertTrue(((MOVE)linear.head).dst instanceof TEMP);
         assertTrue(((MOVE)linear.head).src instanceof CALL);
