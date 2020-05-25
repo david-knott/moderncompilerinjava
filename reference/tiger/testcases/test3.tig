@@ -5,6 +5,6 @@ let
 in
 (
 	rec1.name := "Somebody";
-	rec2
+	rec1
 )
 end

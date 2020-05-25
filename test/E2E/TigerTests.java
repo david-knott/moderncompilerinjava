@@ -43,4 +43,16 @@ public class TigerTests {
         Main m = new Main("chap5", loadFile("./reference/tiger/testcases/test2.tig"));
         m.compile();
     }
+
+    @Test
+    public void example3() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./reference/tiger/testcases/test3.tig"));
+        m.compile();
+    }
+
+    @Test
+    public void example4() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./reference/tiger/testcases/test4.tig"));
+        m.compile();
+    }
 }
