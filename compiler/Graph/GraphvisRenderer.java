@@ -12,8 +12,8 @@ import Temp.TempMap;
 public class GraphvisRenderer implements GraphRenderer {
 
     private String toColor(String str) {
-        if(str == null)
-        return "white";
+        if (str == null)
+            return "white";
         switch (str) {
             case "rax":
                 return "bisque2";
@@ -35,16 +35,12 @@ public class GraphvisRenderer implements GraphRenderer {
                 return "darkgoldenrod3";
             case "r15":
                 return "dimgrey";
-        case "rbx":
+            case "rbx":
                 return "white";
-        case "rdi":
+            case "rdi":
                 return "firebrick";
-        case "rdx":
+            case "rdx":
                 return "deeppink1";
-
-
-
-
             default:
                 throw new Error(str + " has no mapping");
         }
