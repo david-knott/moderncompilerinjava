@@ -4,7 +4,6 @@ import java.io.PrintStream;
 
 import FlowGraph.FlowGraph;
 import RegAlloc.InterferenceGraph;
-import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempMap;
 
