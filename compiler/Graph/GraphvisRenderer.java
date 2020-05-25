@@ -4,30 +4,14 @@ import java.io.PrintStream;
 
 import FlowGraph.FlowGraph;
 import RegAlloc.InterferenceGraph;
+import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempMap;
 
 //dot -Tpng colour-graph.txt -o out.png;display out.png
 public class GraphvisRenderer implements GraphRenderer {
-    public void render(PrintStream out, Graph graph) {
-        out.println("graph D{");
-        for (NodeList p = graph.nodes(); p != null; p = p.tail) {
-            Node n = p.head;
-            out.print(n.toString());
-            out.print(" -- {");
-            for (NodeList q = n.succ(); q != null; q = q.tail) {
-                out.print(q.head.toString());
-                if (q.tail != null) {
 
-                    out.print(",");
-                }
-            }
-            out.println("}");
-        }
-        out.println("}");
-    }
-
-    String toColor(String str) {
+    private String toColor(String str) {
         if(str == null)
         return "white";
         switch (str) {
@@ -93,11 +77,17 @@ public class GraphvisRenderer implements GraphRenderer {
         out.println("}");
     }
 
-    public void render(PrintStream out, FlowGraph flowGraph) {
+    public void render(PrintStream out, FlowGraph flowGraph, TempMap tempMap) {
+        out.println("digraph D{");
+        for (NodeList p = flowGraph.nodes(); p != null; p = p.tail) {
+            Node n = p.head;
+            String tm = flowGraph.instr(n).format(tempMap);
+            out.println(n.toString() + " [ label=\"" + tm + "\"]");
+        }
         for (NodeList p = flowGraph.nodes(); p != null; p = p.tail) {
             Node n = p.head;
             out.print(n.toString());
-            out.print(" -- {");
+            out.print(" -> {");
             for (NodeList q = n.succ(); q != null; q = q.tail) {
                 out.print(q.head.toString());
                 if (q.tail != null) {
