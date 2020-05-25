@@ -1,43 +1,57 @@
 digraph D{
-0 [ label="L1:
+0 [ label="L4:
 "]
 1 [ label="movq %rbx, %rbx	;default move
 "]
 2 [ label="movq %r12, %rax	;default move
 "]
-3 [ label="movq %r13, %rdi	;default move
+3 [ label="movq %r13, %r8	;default move
 "]
-4 [ label="movq %r14, %rsi	;default move
+4 [ label="movq %r14, %rdi	;default move
 "]
 5 [ label="movq %r15, %rdx	;default move
 "]
-6 [ label="movq $99, %r8	; move const into temp
+6 [ label="movq $99, %rsi	; move const into temp
 "]
-7 [ label="movq %r8, %r9	;default move
+7 [ label="movq %rsi, %r9	;default move
 "]
-8 [ label="movq $9, %r8	; move const into temp
+8 [ label="L1:
 "]
-9 [ label="add %r9 %r8 
+9 [ label="movq $0, %rsi	; move const into temp
 "]
-10 [ label="movq %r8, %r9	;default move
+10 [ label="cmp %r9, %rsi
 "]
-11 [ label="movq %r9, %r8	; exp 
+11 [ label="jg L2
 "]
-12 [ label="movq %rbx, %rbx	;default move
+12 [ label="L0:
 "]
-13 [ label="movq %rax, %r12	;default move
+13 [ label="L2:
 "]
-14 [ label="movq %rdi, %r13	;default move
+14 [ label="movq %r9, %rsi	; exp 
 "]
-15 [ label="movq %rsi, %r14	;default move
+15 [ label="movq %rbx, %rbx	;default move
 "]
-16 [ label="movq %rdx, %r15	;default move
+16 [ label="movq %rax, %r12	;default move
 "]
-17 [ label="jmp L0
+17 [ label="movq %r8, %r13	;default move
 "]
-18 [ label="L0:
+18 [ label="movq %rdi, %r14	;default move
 "]
-19 [ label=""]
+19 [ label="movq %rdx, %r15	;default move
+"]
+20 [ label="jmp L3
+"]
+21 [ label="L5:
+"]
+22 [ label="L3:
+"]
+23 [ label="jmp L0
+"]
+24 [ label="L6:
+"]
+25 [ label="jmp L1
+"]
+26 [ label=""]
 0 -> {1}
 1 -> {2}
 2 -> {3}
@@ -49,13 +63,20 @@ digraph D{
 8 -> {9}
 9 -> {10}
 10 -> {11}
-11 -> {12}
-12 -> {13}
-13 -> {14}
+11 -> {12,13}
+12 -> {14}
+13 -> {23}
 14 -> {15}
 15 -> {16}
 16 -> {17}
 17 -> {18}
 18 -> {19}
-19 -> {}
+19 -> {20}
+20 -> {22}
+21 -> {13}
+22 -> {26}
+23 -> {12}
+24 -> {25}
+25 -> {8}
+26 -> {}
 }

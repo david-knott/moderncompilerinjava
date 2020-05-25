@@ -1,6 +1,0 @@
-let
-	type myint = int
-    type  arrtype = array of myint
-in
-	arr1
-end

@@ -1,5 +1,0 @@
-let
-	type myint = int
-in
-	arr1
-end

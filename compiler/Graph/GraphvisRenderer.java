@@ -40,6 +40,9 @@ public class GraphvisRenderer implements GraphRenderer {
                 return "firebrick";
             case "rdx":
                 return "deeppink1";
+            case "rbp":
+                return "pink1";
+
             default:
                 throw new Error(str + " has no mapping");
         }
@@ -55,20 +58,20 @@ public class GraphvisRenderer implements GraphRenderer {
             String reg = t.toString();
             out.println(t + " [ style=filled fillcolor=\"" + colour + "\" label=\"" + tm + " [" + reg + "]\"]");
         }
+        var moves = interferenceGraph.moves();
         for (NodeList p = interferenceGraph.nodes(); p != null; p = p.tail) {
             Node n = p.head;
             Temp t = interferenceGraph.gtemp(n);
-            out.print(t);
-            out.print(" -- {");
             for (NodeList q = n.succ(); q != null; q = q.tail) {
+                out.print(t);
+                out.print(" -- {");
                 Temp ta = interferenceGraph.gtemp(q.head);
                 out.print(ta.toString());
-                if (q.tail != null) {
-
-                    out.print(",");
-                }
+                if (moves != null && moves.contains(p.head, q.head))
+                    out.println("} [style=dashed]");
+                else
+                    out.println("} [style=solid]");
             }
-            out.println("} [style=solid]");
         }
         out.println("}");
     }

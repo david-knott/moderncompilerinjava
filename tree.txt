@@ -1,0 +1,70 @@
+# Before canonicalization: 
+SEQ(
+.SEQ(
+..MOVE(
+...TEMP t17,
+...TEMP rbx),
+..SEQ(
+...MOVE(
+....TEMP t18,
+....TEMP r12),
+...SEQ(
+....MOVE(
+.....TEMP t19,
+.....TEMP r13),
+....SEQ(
+.....MOVE(
+......TEMP t20,
+......TEMP r14),
+.....MOVE(
+......TEMP t21,
+......TEMP r15))))),
+.SEQ(
+..EXP(
+...CONST 0),
+..SEQ(
+...EXP(
+....ESEQ(
+.....MOVE(
+......TEMP t16,
+......CONST 99),
+.....ESEQ(
+......SEQ(
+.......LABEL L1,
+.......SEQ(
+........CJUMP(GT,
+.........TEMP t16,
+.........CONST 0,
+.........L2,L0),
+........SEQ(
+.........JUMP(
+..........NAME L2),
+.........SEQ(
+..........LABEL L2,
+..........SEQ(
+...........JUMP(
+............NAME L0),
+...........SEQ(
+............JUMP(
+.............NAME L1),
+............LABEL L0)))))),
+......TEMP t16))),
+...SEQ(
+....MOVE(
+.....TEMP rbx,
+.....TEMP t17),
+....SEQ(
+.....MOVE(
+......TEMP r12,
+......TEMP t18),
+.....SEQ(
+......MOVE(
+.......TEMP r13,
+.......TEMP t19),
+......SEQ(
+.......MOVE(
+........TEMP r14,
+........TEMP t20),
+.......MOVE(
+........TEMP r15,
+........TEMP t21))))))))

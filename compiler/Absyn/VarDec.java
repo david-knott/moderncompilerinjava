@@ -15,6 +15,14 @@ public class VarDec extends Dec {
       init = i;
    }
 
+   public VarDec(int p, Symbol n, NameTy t, Exp i, boolean escape) {
+      pos = p;
+      name = n;
+      typ = t;
+      init = i;
+      escape = false;
+   }
+
    public String toString() {
       return "{ VarDec name='" + name + "', type='" + typ.name + "'}";
    }

@@ -1,0 +1,7 @@
+let
+
+	var a:int := 99
+in
+	a := a + 9;
+	a
+end

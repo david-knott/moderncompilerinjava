@@ -952,7 +952,6 @@ public class Semant {
     }
 
     private LetExp rewriteForExp(ForExp forExp){
-        
         return new LetExp(
             forExp.pos,
             new DecList(
@@ -965,7 +964,8 @@ public class Semant {
                             forExp.pos,
                             Symbol.symbol("int")
                         ),
-                        forExp.hi
+                        forExp.hi,
+                        false /* dont escape */
                     ),
                     null
                 )

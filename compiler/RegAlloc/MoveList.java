@@ -9,11 +9,8 @@ public class MoveList {
          throw new Error("s");
       if (d == null)
          throw new Error("d");
-      if (t == null)
-         throw new Error("t");
       src = s;
       dst = d;
-      tail = t;
    }
 
    public boolean contains(Graph.Node s, Graph.Node d) {

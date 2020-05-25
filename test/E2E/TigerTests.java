@@ -80,7 +80,25 @@ public class TigerTests {
 
     @Test
     public void assign() throws FileNotFoundException {
-        Main m = new Main("chap5", loadFile("./reference/tests/assign.tig"));
+        Main m = new Main("chap5", loadFile("./test/fixtures/assign.tig"));
+        m.compile();
+    }
+
+    @Test
+    public void whileLoop() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/whileLoop.tig"));
+        m.compile();
+    }
+
+    @Test
+    public void whileBreakLoop() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/whileBreakLoop.tig"));
+        m.compile();
+    }
+
+    @Test
+    public void forLoop() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/forLoop.tig"));
         m.compile();
     }
 }
