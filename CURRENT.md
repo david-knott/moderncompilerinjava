@@ -3,7 +3,9 @@
 *26th May 2020*
 
 Added additional translate tests as well as some basic tiger programms
+Started unit tests for graph colouring.
 
+TODO: Reverse the flow calculation to speed up liveness analysis.
 TODO: Find a better way to test the translate functions.
 
 *25th May 2020*
