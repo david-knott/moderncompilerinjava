@@ -15,8 +15,11 @@ public class MoveList {
 
    public boolean contains(Graph.Node s, Graph.Node d) {
       MoveList item = this;
-      for(; item != null; item = item.tail){
-         if(item.src == s && item.dst == d){
+      for (; item != null; item = item.tail) {
+         if (item.src == s && item.dst == d) {
+            return true;
+         }
+         if (item.src == d && item.dst == s) {
             return true;
          }
       }

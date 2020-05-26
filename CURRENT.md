@@ -1,10 +1,18 @@
 ## Diary
 
+*26th May 2020*
 
-25th May 2020
+Added additional translate tests as well as some basic tiger programms
+
+TODO: Find a better way to test the translate functions.
+
+*25th May 2020*
 
 Simplified the code, I introduced lots of classes in a previous attempt to simplify !
-Move construction of Temp & Label instances into these classes. 
+Move construction of Temp & Label instances into these classes. Added graphvis renderer
+to be able to see the flow and colour graphs.
+
+TODO: Refactor code so that Graphvis renderer is a hook plugin.
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 

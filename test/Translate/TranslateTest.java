@@ -161,6 +161,5 @@ public class TranslateTest {
         assertNotNull(whileLoopExp);
         var linear = Canon.Canon.linearize(whileLoopExp.unNx());
         assertNotNull(linear);
-
     }
 }
