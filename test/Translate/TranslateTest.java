@@ -151,4 +151,16 @@ public class TranslateTest {
         assertTrue(((BINOP)((EXP)linear.head).exp).left instanceof CONST);
         assertTrue(((BINOP)((EXP)linear.head).exp).right instanceof CONST);
     }
+
+    @Test
+    public void whileLoopExp() {
+        Label loopEnd = Label.create();
+        ExpTy testExp = new ExpTy(translator.relativeOperator(0, new ExpTy(translator.integer(1), Semant.INT), new ExpTy(translator.integer(0), Semant.INT)), Semant.INT);
+        ExpTy transBody = new ExpTy(translator.integer(1), Semant.INT);
+        Exp whileLoopExp = translator.whileL(level, loopEnd, testExp, transBody);
+        assertNotNull(whileLoopExp);
+        var linear = Canon.Canon.linearize(whileLoopExp.unNx());
+        assertNotNull(linear);
+
+    }
 }
