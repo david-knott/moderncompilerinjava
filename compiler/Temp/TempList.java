@@ -4,6 +4,24 @@ public class TempList {
    public Temp head;
    public TempList tail;
 
+   public static TempList create(Temp h) {
+      return new TempList(h, null);
+   }
+
+   public static TempList create(Temp[] h) {
+      TempList tl = new TempList(h[0]);
+      for(int i = 1; i < h.length; i++) {
+         tl.append(h[i]);
+      }
+      return tl;
+   }
+
+   public void append(Temp t) {
+      TempList end = this;
+      for(; end.tail != null; end = end.tail);
+      end.tail = new TempList(t);
+   }
+
    public TempList(Temp h) {
       if (h == null)
          throw new Error("h cannot be null");

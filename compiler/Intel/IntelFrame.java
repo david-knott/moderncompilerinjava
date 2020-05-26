@@ -85,21 +85,20 @@ public class IntelFrame extends Frame {
     /**
      * Registers that are available as colours for the register allocator.
      */
-    private GenericLinkedList<Temp> registers = new GenericLinkedList<Temp>(rax)
-            .append(rax)
-            .append(rdx)
-            .append(rdi)
-            .append(rsi)
-            .append(r8)
-            .append(r9)
-            .append(r10)
-            .append(r11)
-            .append(r12)
-            .append(r13)
-            .append(r14)
-            .append(r15)
-            .append(rbx);
-
+    private TempList registers = TempList.create(new Temp[]{
+        rax,
+        rdx,
+        rdi,
+        r8,
+        r9,
+        r10,
+        r11,
+        r12,
+        r13,
+        r14,
+        r15,
+        rbx
+    });
     // mapping from string to an external function label
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
     // return sink used to indicate that certain values are live at function exit
@@ -416,7 +415,7 @@ public class IntelFrame extends Frame {
      * pointer. This is used for colours in the register allocation phase.
      */
     @Override
-    public GenericLinkedList<Temp> registers() {
+    public TempList registers() {
         return registers;
     }
 

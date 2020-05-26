@@ -22,7 +22,6 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		var fg = new AssemFlowGraph(instrList);
-		
 		var baig = new InterferenceGraphImpl(fg);
 		this.colour = new Colour(baig, this.frame, this.frame.registers(), false /* dump graph */);
 		try {

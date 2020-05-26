@@ -16,11 +16,17 @@ import Util.BoolList;
 import Util.GenericLinkedList;
 
 public class TestFrame extends Frame {
+    private TempList precoloured; 
+    private TempList registers;
+
+    public TestFrame(TempList precoloured, TempList registers) {
+        this.precoloured = precoloured;
+        this.registers = registers;
+    }
 
     @Override
     public String tempMap(Temp t) {
-        // TODO Auto-generated method stub
-        return null;
+        return Temp.name(t);
     }
 
     @Override
@@ -90,9 +96,8 @@ public class TestFrame extends Frame {
     }
 
     @Override
-    public GenericLinkedList<Temp> registers() {
-        // TODO Auto-generated method stub
-        return null;
+    public TempList registers() {
+        return this.registers;
     }
 
     @Override

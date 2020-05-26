@@ -16,11 +16,11 @@ class Colour implements TempMap {
 	private Hashtable<Node, Integer> degrees = new Hashtable<Node, Integer>();
 	private Stack<Node> simpleStack = new Stack<Node>();
 	private TempMap precoloured;
-	private GenericLinkedList<Temp> registers;
+	private TempList registers;
 	private TempList spills;
 	private Hashtable<Temp, Temp> coloured = new Hashtable<Temp, Temp>();
 
-	public Colour(InterferenceGraph graph, TempMap precoloured, GenericLinkedList<Temp> registers, boolean dumpGraph) {
+	public Colour(InterferenceGraph graph, TempMap precoloured, TempList registers, boolean dumpGraph) {
 		this.precoloured = precoloured;
 		this.registers = registers;
 		this.spills = null;
