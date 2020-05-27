@@ -55,14 +55,7 @@ class IGBackwardControlEdges extends InterferenceGraph {
         return newNode;
     }
 
-    /**
-     * Constructor for a InterferenceGraphv2.
-     * 
-     * @param flowGraph the flowgraph
-     */
-    public IGBackwardControlEdges(FlowGraph flowGraph) {
-        liveMap = new Hashtable<Node, TempList>();
-        tempMap = new Hashtable<Integer, Temp>();
+    private void computeLiveness(FlowGraph flowGraph) {
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             var node = nodes.head;
             for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
@@ -77,55 +70,49 @@ class IGBackwardControlEdges extends InterferenceGraph {
         // calculate live ranges using liveness equations, except in reverse this time.
         boolean changed = false;
         do {
-            /* 
-            changed <- false
-            loop ( )
-                if old and new sets not equal 
-                changed <- true
-                if changed = false break
-
-            */
+            /*
+             * changed <- false loop ( ) if old and new sets not equal changed <- true if
+             * changed = false break
+             * 
+             */
             changed = false;
-                iterationCount++;
+            iterationCount++;
             for (NodeList nodes = flowGraph.nodes().reverse(); nodes != null; nodes = nodes.tail) {
                 var node = nodes.head;
-                BitSet liveInPrev = (BitSet)liveInMap.get(node).clone();
-                BitSet liveOutPrev = (BitSet)liveOutMap.get(node).clone();
-                //reverse, calculate liveout first
+                BitSet liveInPrev = (BitSet) liveInMap.get(node).clone();
+                BitSet liveOutPrev = (BitSet) liveOutMap.get(node).clone();
+                // reverse, calculate liveout first
                 BitSet liveOut = new BitSet();
                 for (var succ = node.succ(); succ != null; succ = succ.tail) {
-                    BitSet liveInPred = (BitSet)(liveInMap.get(succ.head).clone());
+                    BitSet liveInPred = (BitSet) (liveInMap.get(succ.head).clone());
                     liveOut.or(liveInPred);
                 }
                 liveOutMap.put(node, liveOut);
-                //calculate live in.
-                BitSet liveIn = (BitSet)this.fromTempList(flowGraph.use(node)).clone();
-                BitSet def = (BitSet)this.fromTempList(flowGraph.def(node)).clone();
-              //  BitSet dif = (BitSet)liveOutPrev.clone();
-                BitSet dif = (BitSet)liveOutPrev.clone();
+                // calculate live in.
+                BitSet liveIn = (BitSet) this.fromTempList(flowGraph.use(node)).clone();
+                BitSet def = (BitSet) this.fromTempList(flowGraph.def(node)).clone();
+                // BitSet dif = (BitSet)liveOutPrev.clone();
+                BitSet dif = (BitSet) liveOutPrev.clone();
                 dif.andNot(def);
                 liveIn.or(dif);
-                //record the liveIn and liveOut for this node
+                // record the liveIn and liveOut for this node
                 liveInMap.put(node, liveIn);
                 var c1 = compare(liveIn, liveInPrev);
                 var c2 = compare(liveOut, liveOutPrev);
                 changed = changed || ((c1 != 0) || (c2 != 0));
             }
-            /*
-            System.out.println("---------------");
-            for (NodeList nodes = flowGraph.nodes().reverse(); nodes != null; nodes = nodes.tail) {
-                System.out.println(nodes.head + " "  + " " + liveOutMap.get(nodes.head) + liveInMap.get(nodes.head));
-            }
-            System.out.println("---------------");*/
             System.out.println("--- Iteration " + iterationCount + " ----");
             for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
                 System.out.println(nodes.head + " " + liveInMap.get(nodes.head) + " " + liveOutMap.get(nodes.head));
             }
             System.out.println("---------------");
-            if(!changed) 
+            if (!changed)
                 break;
-            
+
         } while (true);
+    }
+
+    private void computeLiveRanges() {
         /// add live ranges as tempLists to liveOutmap
         for (Node n : liveOutMap.keySet()) {
             var bitMap = liveOutMap.get(n);
@@ -145,6 +132,9 @@ class IGBackwardControlEdges extends InterferenceGraph {
                 }
             }
         }
+    }
+
+    private void buildGraph(FlowGraph flowGraph) {
         for (Node n : liveMap.keySet()) {
             TempList tempList = liveMap.get(n);
             var defs = flowGraph.def(n);
@@ -177,10 +167,23 @@ class IGBackwardControlEdges extends InterferenceGraph {
         }
     }
 
+    /**
+     * Constructor for a InterferenceGraphv2.
+     * 
+     * @param flowGraph the flowgraph
+     */
+    public IGBackwardControlEdges(FlowGraph flowGraph) {
+        liveMap = new Hashtable<Node, TempList>();
+        tempMap = new Hashtable<Integer, Temp>();
+        this.computeLiveness(flowGraph);
+        this.computeLiveRanges();
+        this.buildGraph(flowGraph);
+
+    }
+
     public int getIterationCount() {
         return this.iterationCount;
     }
-
 
     @Override
     public Node tnode(Temp temp) {
