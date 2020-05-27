@@ -79,26 +79,35 @@ class IGForwardControlEdges extends InterferenceGraph {
             liveOutMap.put(nodes.head, new BitSet());
         }
         // calculate live ranges using liveness equations
+        /*
+        in1[n] <- in[n], out1[n] <- out[n]
+        in[n] <- use[n] UNION ( out[n] MINUS def[n])
+        out[n] <- UNION ( in[s] all successors of n )
+
+
+        */
         boolean changed = false;
         do {
             changed = false;
+            iterationCount++;
             for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
-                iterationCount++;
                 var node = nodes.head;
-                System.out.println("->" + flowGraph.instr(node));
-                BitSet liveInPrev = liveInMap.get(node);
-                BitSet liveOutPrev = liveOutMap.get(node);
-                BitSet liveIn = (BitSet) this.fromTempList(flowGraph.use(node)).clone();
+                BitSet liveInPrev = (BitSet)liveInMap.get(node).clone();
+                BitSet liveOutPrev = (BitSet)liveOutMap.get(node).clone();
+                //calculate out[n] - def[n]
                 BitSet def = (BitSet) this.fromTempList(flowGraph.def(node)).clone();
                 BitSet dif = (BitSet) liveOutPrev.clone();
                 dif.andNot(def);
+                //calculate use[n] union ( out[n] - def[n])
+                BitSet liveIn = (BitSet) this.fromTempList(flowGraph.use(node)).clone();
                 liveIn.or(dif);
+                liveInMap.put(node, liveIn);
+                //calculate SUC UNION in[s]
                 BitSet liveOut = new BitSet();
                 for (var succ = node.succ(); succ != null; succ = succ.tail) {
                     BitSet liveInSucc = (BitSet) (liveInMap.get(succ.head).clone());
                     liveOut.or(liveInSucc);
                 }
-                liveInMap.put(node, liveIn);
                 liveOutMap.put(node, liveOut);
                 var c1 = compare(liveIn, liveInPrev);
                 var c2 = compare(liveOut, liveOutPrev);
@@ -106,6 +115,11 @@ class IGForwardControlEdges extends InterferenceGraph {
                 //loop or if c1 was changed or c2 was changed
                 changed = changed || c1 != 0 || c2 != 0;
             }
+            System.out.println("--- Iteration " + iterationCount + " ----");
+            for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+                System.out.println(nodes.head + " " + liveInMap.get(nodes.head) + " " + liveOutMap.get(nodes.head));
+            }
+            System.out.println("---------------");
             if (!changed)
                 break;
         } while (true);

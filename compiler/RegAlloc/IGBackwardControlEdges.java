@@ -86,33 +86,45 @@ class IGBackwardControlEdges extends InterferenceGraph {
 
             */
             changed = false;
-            for (NodeList nodes = flowGraph.nodes().reverse(); nodes != null; nodes = nodes.tail) {
                 iterationCount++;
+            for (NodeList nodes = flowGraph.nodes().reverse(); nodes != null; nodes = nodes.tail) {
                 var node = nodes.head;
-                System.out.println("->" + flowGraph.instr(node));
-                BitSet liveInPrev = liveInMap.get(node);
-                BitSet liveOutPrev = liveOutMap.get(node);
+                BitSet liveInPrev = (BitSet)liveInMap.get(node).clone();
+                BitSet liveOutPrev = (BitSet)liveOutMap.get(node).clone();
                 //reverse, calculate liveout first
                 BitSet liveOut = new BitSet();
-                for (var pred = node.pred(); pred != null; pred = pred.tail) {
-                    BitSet liveInPred = (BitSet)(liveInMap.get(pred.head).clone());
+                for (var succ = node.succ(); succ != null; succ = succ.tail) {
+                    BitSet liveInPred = (BitSet)(liveInMap.get(succ.head).clone());
                     liveOut.or(liveInPred);
                 }
+                liveOutMap.put(node, liveOut);
                 //calculate live in.
                 BitSet liveIn = (BitSet)this.fromTempList(flowGraph.use(node)).clone();
                 BitSet def = (BitSet)this.fromTempList(flowGraph.def(node)).clone();
+              //  BitSet dif = (BitSet)liveOutPrev.clone();
                 BitSet dif = (BitSet)liveOutPrev.clone();
                 dif.andNot(def);
                 liveIn.or(dif);
                 //record the liveIn and liveOut for this node
                 liveInMap.put(node, liveIn);
-                liveOutMap.put(node, liveOut);
                 var c1 = compare(liveIn, liveInPrev);
                 var c2 = compare(liveOut, liveOutPrev);
                 changed = changed || ((c1 != 0) || (c2 != 0));
             }
+            /*
+            System.out.println("---------------");
+            for (NodeList nodes = flowGraph.nodes().reverse(); nodes != null; nodes = nodes.tail) {
+                System.out.println(nodes.head + " "  + " " + liveOutMap.get(nodes.head) + liveInMap.get(nodes.head));
+            }
+            System.out.println("---------------");*/
+            System.out.println("--- Iteration " + iterationCount + " ----");
+            for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+                System.out.println(nodes.head + " " + liveInMap.get(nodes.head) + " " + liveOutMap.get(nodes.head));
+            }
+            System.out.println("---------------");
             if(!changed) 
-            break;
+                break;
+            
         } while (true);
         /// add live ranges as tempLists to liveOutmap
         for (Node n : liveOutMap.keySet()) {

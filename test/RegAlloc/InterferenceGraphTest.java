@@ -90,6 +90,21 @@ public class InterferenceGraphTest {
     }
 
     @Test
+    public void backwardControlEdges() {
+        Temp a = Temp.create("rax");
+        Temp b = Temp.create("rdx");
+        Temp c = Temp.create("rdc");
+        Instr instr1 = new TEST(new TempList(a), new TempList(b)); //a is def, b is livein
+        Instr instr2 = new TEST(new TempList(b), new TempList(a)); //a is livein
+        Instr instr3= new TEST(new TempList(c), new TempList(a)); //a is livein
+        InstrList instrList = new InstrList(instr1, new InstrList(instr2, new InstrList(instr3, null)));
+        FlowGraph flowGraph = new AssemFlowGraph(instrList);
+        IGBackwardControlEdges graphv2 = new IGBackwardControlEdges(flowGraph);
+        graphv2.show(System.out);
+        assertNotNull(graphv2);
+    }
+
+    @Test
     public void forwardComplex() {
         Temp a = Temp.create();
         Temp b = Temp.create();
@@ -107,24 +122,9 @@ public class InterferenceGraphTest {
         flowGraph.show(System.out);
         IGForwardControlEdges graphv2 = new IGForwardControlEdges(flowGraph);
         graphv2.show(System.out);
-        System.out.println("Iteration Count:" + graphv2.getIterationCount());
         assertNotNull(graphv2);
     }
  
-    @Test
-    public void backwardControlEdges() {
-        Temp a = Temp.create("rax");
-        Temp b = Temp.create("rdx");
-        Temp c = Temp.create("rdc");
-        Instr instr1 = new TEST(new TempList(a), new TempList(b)); //a is def, b is livein
-        Instr instr2 = new TEST(new TempList(b), new TempList(a)); //a is livein
-        Instr instr3= new TEST(new TempList(c), new TempList(a)); //a is livein
-        InstrList instrList = new InstrList(instr1, new InstrList(instr2, new InstrList(instr3, null)));
-        FlowGraph flowGraph = new AssemFlowGraph(instrList);
-        IGBackwardControlEdges graphv2 = new IGBackwardControlEdges(flowGraph);
-        graphv2.show(System.out);
-        assertNotNull(graphv2);
-    }
 
     @Test
     public void backwardComplex() {
