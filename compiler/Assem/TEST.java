@@ -8,19 +8,20 @@ public class TEST extends Instr {
    public Temp.TempList src;
    public Targets jump;
    public String comments ;
+   private static int id = 0;
 
 
    public TEST() {
       dst = null;
       src = null;
       jump = null;
-      super.assem = "";
+      super.assem = Integer.toString(id++);
    }
    public TEST(Temp.TempList d, Temp.TempList s) {
       dst = d;
       src = s;
       jump = null;
-      super.assem = "";
+      super.assem = Integer.toString(id++);
    }
 
    public TEST(Temp.TempList d, Temp.TempList s, Temp.LabelList j) {
@@ -29,7 +30,7 @@ public class TEST extends Instr {
       dst = d;
       src = s;
       jump = new Targets(j);
-      super.assem = "";
+      super.assem = Integer.toString(id++);
    }
 
    @Override
@@ -45,5 +46,10 @@ public class TEST extends Instr {
    @Override
    public Targets jumps() {
       return this.jump;
+   }
+
+   @Override
+   public String toString() {
+      return "Test Instruction "+ this.assem;
    }
 }

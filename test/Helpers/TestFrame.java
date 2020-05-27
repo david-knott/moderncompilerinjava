@@ -13,7 +13,6 @@ import Tree.Exp;
 import Tree.ExpList;
 import Tree.Stm;
 import Util.BoolList;
-import Util.GenericLinkedList;
 
 public class TestFrame extends Frame {
     private TempList precoloured; 
@@ -26,7 +25,7 @@ public class TestFrame extends Frame {
 
     @Override
     public String tempMap(Temp t) {
-        return Temp.name(t);
+        return precoloured.toTempMap().get(t);
     }
 
     @Override

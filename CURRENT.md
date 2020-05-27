@@ -1,5 +1,19 @@
 ## Diary
 
+
+*27th May 2020*
+Implemented Liveness equations using java.util.BitSet. Tests were not passing.
+The issue was caused by the implementation of the BitSet. It changes the bits within
+the target set, rather than creating a new one. This was affecting the equations.
+I cloned the bit sets prior to using them and this fixed the problem. I may still
+implement by own BitSet class that provides a functional interface.
+
+Implementing the reverse live out calculation.
+
+TODO: Implement BitSet class with functional interface, so that or / and / andNot return a
+new BitSet rather than modifying the calling instance.
+TODO: Unit testing methodology for liveout equation should be better
+
 *26th May 2020*
 
 Added additional translate tests as well as some basic tiger programms

@@ -59,6 +59,7 @@ public class IntelFrame extends Frame {
     public static Temp r14 = Temp.create("r14");// callee
     public static Temp r15 = Temp.create("r15");// callee
     public static TempList specialRegs = new TempList(rbp, new TempList(rsp, null));
+
     /**
      * A linked list of temporaries that represent registers that are saved upon
      * entry and restored upon exit by the callee function. The caller can be
@@ -99,6 +100,26 @@ public class IntelFrame extends Frame {
         r15,
         rbx
     });
+
+    /**
+     * Registers that are available as colours for the register allocator.
+     */
+    private TempList precoloured = TempList.create(new Temp[]{
+        rax,
+        rdx,
+        rdi,
+        r8,
+        r9,
+        r10,
+        r11,
+        r12,
+        r13,
+        r14,
+        r15,
+        rbx
+    });
+
+
     // mapping from string to an external function label
     private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
     // return sink used to indicate that certain values are live at function exit
@@ -188,6 +209,7 @@ public class IntelFrame extends Frame {
         }
         this.addCallingConvention(new Tree.MOVE(memDest, new Tree.TEMP(src)));
     }
+
 
     /**
      * Initialises a new instance of an Intel Frame activation record. The frml
@@ -353,6 +375,18 @@ public class IntelFrame extends Frame {
        return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
     }
 
+    private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b) {
+        if (a == null)
+            return b;
+        else {
+            Assem.InstrList p;
+            for (p = a; p.tail != null; p = p.tail)
+                ;
+            p.tail = b;
+            return a;
+        }
+    }
+
     /**
      * The return sink is an empty operation added to the end of a function. It is
      * used by the flow analysis to ensure that certain precoloured temporaries are
@@ -405,9 +439,12 @@ public class IntelFrame extends Frame {
         return this.codege.codegen(head);
     }
 
+    /**
+     * Temporary map for the intel frame.
+     */
     @Override
     public String tempMap(Temp t) {
-        return Temp.name(t);
+        return this.precoloured.toTempMap().get(t);
     }
 
     /**
@@ -417,18 +454,6 @@ public class IntelFrame extends Frame {
     @Override
     public TempList registers() {
         return registers;
-    }
-
-    private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b) {
-        if (a == null)
-            return b;
-        else {
-            Assem.InstrList p;
-            for (p = a; p.tail != null; p = p.tail)
-                ;
-            p.tail = b;
-            return a;
-        }
     }
 
     private InFrame getInFrameAccess(Access access) {

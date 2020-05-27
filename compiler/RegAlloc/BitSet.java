@@ -2,14 +2,22 @@ package RegAlloc;
 
 import Temp.TempList;
 
-public class BitArraySet {
+public class BitSet {
 
     private static final int ALL_ONES = 0xFFFFFFFF;
     private static final int WORD_SIZE = 32;
-    private int bits[] = null;
+    
+    /**
+     * The internal field that stores all the bits.
+     */
+    private int words[] = null;
     private int capacity;
 
-    public BitArraySet(int size) {
+    public BitSet() {
+        //initWords()
+    }
+
+    public BitSet(int size) {
         if(size == 0)
         throw new Error("size cannot be zero");
         capacity = size;
@@ -26,15 +34,15 @@ public class BitArraySet {
         //we could use a ceiling function for this, however I suspect
         //this is quicker, get number of whole divisions and add
         //1 if there is a remainder from the division
-        bits = new int[size / WORD_SIZE + (size % WORD_SIZE == 0 ? 0 : 1)];
+        words = new int[size / WORD_SIZE + (size % WORD_SIZE == 0 ? 0 : 1)];
     }
 
-    BitArraySet(int capacity, int[] bits) {
+    BitSet(int capacity, int[] bits) {
         this.capacity = capacity;
-        this.bits = bits;
+        this.words = bits;
     }
 
-    public BitArraySet(TempList tempList, int capacity) {
+    public BitSet(TempList tempList, int capacity) {
         this(capacity);
         for (var tp = tempList; tp != null; tp = tp.tail) {
             var temp = tp.head;
@@ -43,7 +51,7 @@ public class BitArraySet {
         }
     }
 
-    public boolean getBit(int pos) {
+    public boolean get(int pos) {
         //get a specific bit using pos
         //first find which int we need to bit shift
         //we can find that from division, returns a word, or 32 bits
@@ -52,12 +60,12 @@ public class BitArraySet {
         //this basically moves the 1 in the second int to the position we are
         //interested in. We then & both, which returns 1 if the bit array has a 1
         //or a zero where it doesn't
-        return (bits[pos / WORD_SIZE] & (1 << (pos % WORD_SIZE))) != 0;
+        return (words[pos / WORD_SIZE] & (1 << (pos % WORD_SIZE))) != 0;
     }
 
     public void setBit(int pos, boolean b) {
         //again we find which word we need to bit shift
-        int word = bits[pos / WORD_SIZE];
+        int word = words[pos / WORD_SIZE];
         //create a bit mask by shifting the first bit to the
         //bit position we are interested in. [ 0,0,1,0,0]
         int posBit = 1 << (pos % WORD_SIZE);
@@ -77,37 +85,37 @@ public class BitArraySet {
             //if position is 1 it changes to 0 ( 0 & 1 = 0)
             word &= (ALL_ONES - posBit);
         }
-        bits[pos / WORD_SIZE] = word;
+        words[pos / WORD_SIZE] = word;
     }
 
-    public BitArraySet union(BitArraySet bitArraySet) {
-        int[] union = new int[this.bits.length];
+    public BitSet union(BitSet bitArraySet) {
+        int[] union = new int[this.words.length];
         for(var i = 0; i < union.length; i++){
-            union[i] = this.bits[i] | bitArraySet.bits[i];
+            union[i] = this.words[i] | bitArraySet.words[i];
         }
-        return new BitArraySet(capacity, union);
+        return new BitSet(capacity, union);
     }
 
-    public BitArraySet difference(BitArraySet bitArraySet) {
-        int[] diff = new int[this.bits.length];
+    public BitSet difference(BitSet bitArraySet) {
+        int[] diff = new int[this.words.length];
         for(var i = 0; i < diff.length; i++){
-            diff[i] = this.bits[i] & ~bitArraySet.bits[i];
+            diff[i] = this.words[i] & ~bitArraySet.words[i];
         }
-        return new BitArraySet(capacity, diff);
+        return new BitSet(capacity, diff);
     }
 
-    public BitArraySet intersection(BitArraySet bitArraySet) {
-        int[] inter = new int[this.bits.length];
+    public BitSet intersection(BitSet bitArraySet) {
+        int[] inter = new int[this.words.length];
         for(var i = 0; i < inter.length; i++){
-            inter[i] = this.bits[i] & bitArraySet.bits[i];
+            inter[i] = this.words[i] & bitArraySet.words[i];
         }
-        return new BitArraySet(capacity, inter);
+        return new BitSet(capacity, inter);
     }
 
-    public boolean equals(BitArraySet other) {
-        for(int i = 0; i < bits.length; i++){
+    public boolean equals(BitSet other) {
+        for(int i = 0; i < words.length; i++){
        //     System.out.println(bits[i] + " " + other.bits[i]);
-            if(bits[i] != other.bits[i]){
+            if(words[i] != other.words[i]){
                 return false;
             }
         }
@@ -117,7 +125,7 @@ public class BitArraySet {
     public String toString(){
         String s = "";
         for(int i = 0; i < capacity; i++){
-            s+= this.getBit(i) ? i : "_";
+            s+= this.get(i) ? i : "_";
             if(i < capacity - 1)
                 s+= ",";
         }

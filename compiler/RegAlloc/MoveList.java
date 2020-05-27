@@ -11,6 +11,7 @@ public class MoveList {
          throw new Error("d");
       src = s;
       dst = d;
+      tail = t;
    }
 
    public boolean contains(Graph.Node s, Graph.Node d) {

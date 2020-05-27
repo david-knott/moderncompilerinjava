@@ -1,5 +1,7 @@
 package Temp;
 
+import java.util.Hashtable;
+
 public class TempList {
    public Temp head;
    public TempList tail;
@@ -51,5 +53,14 @@ public class TempList {
          size++;
       }
       return size;
+   }
+
+   public Hashtable<Temp, String> toTempMap() {
+      Hashtable<Temp, String> ht = new Hashtable<Temp, String>();
+      TempList start = this;
+      for(; start != null; start = start.tail) {
+         ht.put(start.head, Temp.name(start.head));
+      }
+      return ht;
    }
 }

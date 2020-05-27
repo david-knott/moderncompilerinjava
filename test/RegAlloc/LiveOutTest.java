@@ -57,8 +57,7 @@ public class LiveOutTest {
         Instr instr1 = new TEST(new TempList(a), new TempList(b));
         Instr instr2 = new TEST(new TempList(b), new TempList(a));
         Instr instr3 = new TEST(new TempList(c), new TempList(b));
-        Instr instr4 = new TEST();
-        InstrList instrList = new InstrList(instr1, new InstrList(instr2, new InstrList(instr3, new InstrList(instr4, null))));
+        InstrList instrList = new InstrList(instr1, new InstrList(instr2, new InstrList(instr3, null)));
         FlowGraph flowGraph = new AssemFlowGraph(instrList);
         LiveOut liveOut = new LiveOut(flowGraph);
         flowGraph.show(System.out);

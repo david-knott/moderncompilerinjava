@@ -25,9 +25,9 @@ public class Temp implements Comparable<Temp> {
         return temp;
     }
 
-    public static String name(Temp temp) {
-        return revTemps.containsKey(temp) ? revTemps.get(temp) : null;
-    }
+	public static String name(Temp head) {
+		return revTemps.get(head);
+	}
 
     private int num;
 
@@ -49,4 +49,5 @@ public class Temp implements Comparable<Temp> {
     public int compareTo(Temp o) {
         return o.num == this.num ? 0 : (o.num < this.num ? -1 : 1);
     }
+
 }

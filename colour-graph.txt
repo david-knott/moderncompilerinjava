@@ -1,2 +1,10 @@
 graph D{
+t5 [ style=filled fillcolor="bisque2" label="rax [t5]"]
+t6 [ style=filled fillcolor="deeppink1" label="rdx [t6]"]
+t3 [ style=filled fillcolor="deeppink1" label="rdx [t3]"]
+t4 [ style=filled fillcolor="firebrick" label="rdi [t4]"]
+t5 -- {t3} [style=solid]
+t6 -- {t5} [style=solid]
+t4 -- {t3} [style=solid]
+t4 -- {t5} [style=solid]
 }

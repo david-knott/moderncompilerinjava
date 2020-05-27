@@ -9,7 +9,6 @@ import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
-import Util.GenericLinkedList;
 
 class Colour implements TempMap {
 
@@ -24,6 +23,7 @@ class Colour implements TempMap {
 		this.precoloured = precoloured;
 		this.registers = registers;
 		this.spills = null;
+		graph.show(System.out);
 		//store each nodes degree
 		NodeList initialNodes = null;
 		for (var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
@@ -33,6 +33,7 @@ class Colour implements TempMap {
 				initialNodes = new NodeList(nodes.head, initialNodes);
 			}
 		}
+		//k colours for our graph
 		int k = registers.size();
 		while (initialNodes != null) {
 			var node = initialNodes.head;
@@ -47,11 +48,8 @@ class Colour implements TempMap {
 			}
 			initialNodes = initialNodes.tail;
 		}
-
-
 		while (!this.simpleStack.isEmpty()) {
 			Node node = this.simpleStack.pop();
-			//TempList colours = this.registers;
 			HashSet<Temp> colours = new HashSet<Temp>();
 			for(var c = this.registers; c != null; c = c.tail) {
 				colours.add(c.head);
@@ -68,6 +66,7 @@ class Colour implements TempMap {
 				}
 			}
 			if (colours.isEmpty()) {
+				//mark node as potential spill.
 				throw new Error("Spill not implemented");
 			} else {
 				Temp color = colours.iterator().next();
