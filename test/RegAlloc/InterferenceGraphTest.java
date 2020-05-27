@@ -143,7 +143,6 @@ public class InterferenceGraphTest {
         FlowGraph flowGraph = new AssemFlowGraph(instrList);
         IGBackwardControlEdges graphv2 = new IGBackwardControlEdges(flowGraph);
         graphv2.show(System.out);
-        System.out.println("Iteration Count:" + graphv2.getIterationCount());
         assertNotNull(graphv2);
     }
 }

@@ -6,7 +6,6 @@ public class BitSet {
 
     private static final int ALL_ONES = 0xFFFFFFFF;
     private static final int WORD_SIZE = 32;
-    
     /**
      * The internal field that stores all the bits.
      */
@@ -37,18 +36,7 @@ public class BitSet {
         words = new int[size / WORD_SIZE + (size % WORD_SIZE == 0 ? 0 : 1)];
     }
 
-    BitSet(int capacity, int[] bits) {
-        this.capacity = capacity;
-        this.words = bits;
-    }
-
-    public BitSet(TempList tempList, int capacity) {
-        this(capacity);
-        for (var tp = tempList; tp != null; tp = tp.tail) {
-            var temp = tp.head;
-            var pos = temp.hashCode();
-            setBit(pos, true);
-        }
+    BitSet(int[] bits) {
     }
 
     public boolean get(int pos) {
@@ -63,7 +51,7 @@ public class BitSet {
         return (words[pos / WORD_SIZE] & (1 << (pos % WORD_SIZE))) != 0;
     }
 
-    public void setBit(int pos, boolean b) {
+    public void set(int pos, boolean b) {
         //again we find which word we need to bit shift
         int word = words[pos / WORD_SIZE];
         //create a bit mask by shifting the first bit to the
@@ -93,7 +81,8 @@ public class BitSet {
         for(var i = 0; i < union.length; i++){
             union[i] = this.words[i] | bitArraySet.words[i];
         }
-        return new BitSet(capacity, union);
+        //return new BitSet(capacity, union);
+        throw new Error();
     }
 
     public BitSet difference(BitSet bitArraySet) {
@@ -101,7 +90,7 @@ public class BitSet {
         for(var i = 0; i < diff.length; i++){
             diff[i] = this.words[i] & ~bitArraySet.words[i];
         }
-        return new BitSet(capacity, diff);
+        throw new Error();
     }
 
     public BitSet intersection(BitSet bitArraySet) {
@@ -109,26 +98,14 @@ public class BitSet {
         for(var i = 0; i < inter.length; i++){
             inter[i] = this.words[i] & bitArraySet.words[i];
         }
-        return new BitSet(capacity, inter);
+        throw new Error();
     }
 
     public boolean equals(BitSet other) {
-        for(int i = 0; i < words.length; i++){
-       //     System.out.println(bits[i] + " " + other.bits[i]);
-            if(words[i] != other.words[i]){
-                return false;
-            }
-        }
-        return true; 
+        throw new Error();
     }
 
     public String toString(){
-        String s = "";
-        for(int i = 0; i < capacity; i++){
-            s+= this.get(i) ? i : "_";
-            if(i < capacity - 1)
-                s+= ",";
-        }
-        return s;
+        throw new Error();
     }
 }
