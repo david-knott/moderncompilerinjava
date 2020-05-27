@@ -8,7 +8,11 @@ the target set, rather than creating a new one. This was affecting the equations
 I cloned the bit sets prior to using them and this fixed the problem. I may still
 implement by own BitSet class that provides a functional interface.
 
-Implementing the reverse live out calculation.
+Implemented the reverse live out calculation.
+
+Figured out the example in the book is not identical to my test. The book contains
+a node the has both use / def and is also a target for a jump. The assem language
+doesn't support this and this introduce an extra node into the equations.
 
 TODO: Implement BitSet class with functional interface, so that or / and / andNot return a
 new BitSet rather than modifying the calling instance.
