@@ -10,7 +10,8 @@ Modified Translate.AccessList.append to use a function interface.
 Rewrite the instructions that either use or define variables to save them
 to the stack frame.
 
-Test rewrite functionality.
+Test rewrite functionality. Bug in rewrite functionality. Adding 2 offset = 0
+Can a use be used before a def ?
 
 TODO: All append, prepend operations are OO. Set operations are functional.
 

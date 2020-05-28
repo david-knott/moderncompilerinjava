@@ -1,5 +1,7 @@
 package Assem;
 
+import Temp.DefaultMap;
+
 public class InstrList {
     public Instr head;
     public InstrList tail;
@@ -43,13 +45,13 @@ public class InstrList {
 
     }
 
-    public void insertAfter(InstrList prev, Instr memoryToTemp) {
-        // insert at start of list
-        if (prev == null) {
-            throw new Error("Insert at start of list not supported");
-        } else {
-            var old = prev.tail;
-            prev.tail = new InstrList(memoryToTemp, old);
+    public void dump() {
+        InstrList instrList = this;
+for (; instrList != null; instrList = instrList.tail) {
+    System.out.println(instrList.head.format(new DefaultMap()));
         }
+        
+
     }
+
 }

@@ -68,6 +68,7 @@ public class RegAlloc implements TempMap {
 			this.rewrite();
 			this.allocate();
 		}
+		this.instrList.dump();
 	}
 
 	public RegAlloc(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {

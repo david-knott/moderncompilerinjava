@@ -50,6 +50,7 @@ public class RegAllocTest {
         RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
         TempMapHelper helper = new TempMapHelper(alloc, registers);
         System.out.println(helper);
+        
 
     }
 }
