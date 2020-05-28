@@ -21,19 +21,17 @@ public class InstrList {
         return reversed;
     }
 
-    public InstrList append(Instr instr) {
+    public void append(Instr instr) {
         InstrList end = this;
         for (; end.tail != null; end = end.tail)
             ;
         end.tail = new InstrList(instr, null);
-        return this;
     }
 
-    public InstrList append(InstrList instrList) {
+    public void append(InstrList instrList) {
         for (; instrList != null; instrList = instrList.tail) {
             this.append(instrList.head);
         }
-        return this;
     }
 
     public int size() {

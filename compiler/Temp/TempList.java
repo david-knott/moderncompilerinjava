@@ -39,6 +39,27 @@ public class TempList {
       end.tail = new TempList(t);
    }
 
+   public TempList and(TempList tempList) {
+      System.out.println(this);
+      System.out.println(tempList);
+      TempList and = null;
+      TempList me = this;
+      do
+      {
+         if(me.head == tempList.head) {
+            if(and == null) {
+               and = new TempList(me.head);
+            } else {
+               and.append(me.head);
+            }
+         }
+         me = me.tail;
+         tempList = tempList.tail;
+      }while(me != null && tempList != null);
+      System.out.println(and);
+      return and;
+   }
+
    public boolean contains(Temp n) {
       for (TempList s = this; s != null; s = s.tail) {
          if (s.head == n) {

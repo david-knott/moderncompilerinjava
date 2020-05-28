@@ -38,7 +38,7 @@ public class RegAllocTest {
         Temp t4 = Temp.create("t4");
         TempList initial = new TempList(t1, new TempList(t2, new TempList(t3, new TempList(t4))));
         TempList precoloured = TempList.create(new Temp[] { r1, r2, r3 });
-        TempList registers = TempList.create(new Temp[] { r1, r2});
+        TempList registers = TempList.create(new Temp[] { r1, r2 });
         TestFrame testFrame = new TestFrame(precoloured, registers);
         InstrList instrList = new InstrList(new TEST(new TempList(t1, new TempList(r3)), new TempList(t2)),
                 new InstrList(new TEST(new TempList(t3), new TempList(t4)),
@@ -48,6 +48,8 @@ public class RegAllocTest {
                                                 new InstrList(new TEST(new TempList(t4), new TempList(t2)), null))))));
         var fg = new AssemFlowGraph(instrList);
         RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
+        TempMapHelper helper = new TempMapHelper(alloc, registers);
+        System.out.println(helper);
 
     }
 }

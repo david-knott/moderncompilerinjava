@@ -67,7 +67,7 @@ for (var adj = node.adj(); adj != null; adj = adj.tail) {
 					ilk = true;
 				}
 			}
-			if (!ilk) { /* only significant degree nodes left */
+			if (!ilk && initialNodes != null) { /* only significant degree nodes left */
 				Node node = initialNodes.head;
 				initialNodes = initialNodes.tail;
 				this.reduceDegree(node);
