@@ -72,6 +72,7 @@ public class PotentialSpillColour implements TempMap {
 		//select phase
 		while (!this.simpleStack.isEmpty()) {
 			Node node = this.simpleStack.pop();
+			//is this node a potential spill ?
 			HashSet<Temp> colours = new HashSet<Temp>();
 			for (var c = this.registers; c != null; c = c.tail) {
 				colours.add(c.head);
@@ -89,7 +90,7 @@ public class PotentialSpillColour implements TempMap {
 			}
 			//assign colour to node
 			if (colours.isEmpty()) {
-				// mark node as an actualactualactualactualactual spill.
+				//no colours available, so its an actual spill
 				throw new Error("Spill not implemented");
 			} else {
 				Temp color = colours.iterator().next();
