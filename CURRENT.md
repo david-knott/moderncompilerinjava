@@ -10,8 +10,9 @@ Modified Translate.AccessList.append to use a function interface.
 Rewrite the instructions that either use or define variables to save them
 to the stack frame.
 
-TODO: Ensure all *List functions implement a similar functional interface
-where the collection is being modified.
+Test rewrite functionality.
+
+TODO: All append, prepend operations are OO. Set operations are functional.
 
 
 *27th May 2020*
