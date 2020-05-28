@@ -1,5 +1,7 @@
 package Translate;
 
+import java.text.Format;
+
 import Symbol.Symbol;
 import Temp.Label;
 import Util.BoolList;
@@ -21,6 +23,11 @@ public class Level {
     Level parent;
     public AccessList formals;
 
+    // associate a frame with this level
+    public Level(Frame.Frame f) {
+        frame = f;
+    }
+
     /**
      * Creates a new static nesting level, using the supplied level as it parent.
      * The symbol name relates to the function that is linked to this level.
@@ -30,25 +37,17 @@ public class Level {
      */
     public Level(Level prnt, Symbol name, BoolList fmls) {
         parent = prnt;
-        // add new escaping formal parameter for static link to parent frame
         frame = prnt.frame.newFrame(new Label(name), new BoolList(true, fmls));
-        //get the formals and add their access to translate acccess
         Frame.AccessList frameFormals = frame.formals;
-      //  for (var fml = fmls; fml != null; fml = fml.tail) {
-        while(frameFormals != null){
+        for(; frameFormals != null; frameFormals = frameFormals.tail) {
             if(formals == null){
                 formals = new AccessList(new Access(this, frameFormals.head));
             } else {
-                formals.append(new Access(this, frameFormals.head));
+                formals = formals.append(new Access(this, frameFormals.head));
             }
-            frameFormals = frameFormals.tail;
         }
     }
 
-    // associate a frame with this level
-    public Level(Frame.Frame f) {
-        frame = f;
-    }
 
     /**
      * Creates a local access within the frame for this level

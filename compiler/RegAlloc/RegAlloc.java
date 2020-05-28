@@ -11,6 +11,7 @@ import FlowGraph.AssemFlowGraph;
 import Frame.Frame;
 import Graph.GraphvisRenderer;
 import Temp.Temp;
+import Temp.TempList;
 import Temp.TempMap;
 
 /**
@@ -19,14 +20,16 @@ import Temp.TempMap;
 public class RegAlloc implements TempMap {
 	public InstrList instrList;
 	public Frame frame;
-	public Colour colour;
+	public PotentialSpillColour colour;
 
 	public RegAlloc(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {
 		this.instrList = instrList;
 		this.frame = frame;
 		var fg = new AssemFlowGraph(instrList);
 		var baig = new IGBackwardControlEdges(fg);
-		this.colour = new Colour(baig, this.frame, this.frame.registers(), false /* dump graph */);
+		//this.colour = new Colour(baig, this.frame, this.frame.registers(), false /* dump graph */);
+		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
+		
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph.txt"));
 			new GraphvisRenderer().render(ps, baig, this);
@@ -41,6 +44,28 @@ public class RegAlloc implements TempMap {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		TempList spills = this.colour.spills();
+		if(spills != null) {
+			//rewrite the instructions
+			for(; instrList != null; instrList = instrList.tail) {
+				if(instrList.head.def() != null && instrList.head.def().contains(spills)) {
+
+					System.out.println("rewrite instruction " + instrList.head + " frame " + this.frame);
+				}
+				if(instrList.head.use() != null && instrList.head.use().contains(spills)) {
+
+					System.out.println("rewrite instruction " + instrList.head);
+				}
+
+
+
+				
+
+			}
+		//	RegAlloc alloc = new RegAlloc(frame, instrList, dumpGraphs);
+			
+		}
+		
 	}
 
 	@Override

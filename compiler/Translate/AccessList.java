@@ -8,11 +8,15 @@ public class AccessList {
         head = hd;
     }
 
-    public void append(Access access) {
-        var end = this;
-        for (; end.tail != null; end = end.tail)
-            ;
-        end.tail = new AccessList(access);
+    public AccessList(Access hd, AccessList tail) {
+        head = hd;
+        this.tail = tail;
+    }
 
+    public AccessList append(Access t) {
+        if (this.tail == null) {
+            return new AccessList(this.head, new AccessList(t));
+        }
+        return new AccessList(this.head, this.tail.append(t));
     }
 }

@@ -121,13 +121,8 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                     TempList tempList = liveMap.get(n);
                     Temp temp = getTemp(i);
                     if (temp != null) {
-                        if (tempList != null) {
-                            tempList = new TempList(temp, tempList);
-                            liveMap.put(n, tempList);
-                        } else {
-                            tempList = new TempList(temp, null);
-                            liveMap.put(n, tempList);
-                        }
+                        tempList = new TempList(temp, tempList);
+                        liveMap.put(n, tempList);
                     }
                 }
             }

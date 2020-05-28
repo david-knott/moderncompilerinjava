@@ -12,16 +12,10 @@ public class TempList {
 
    public static TempList create(Temp[] h) {
       TempList tl = new TempList(h[0]);
-      for(int i = 1; i < h.length; i++) {
+      for (int i = 1; i < h.length; i++) {
          tl.append(h[i]);
       }
       return tl;
-   }
-
-   public void append(Temp t) {
-      TempList end = this;
-      for(; end.tail != null; end = end.tail);
-      end.tail = new TempList(t);
    }
 
    public TempList(Temp h) {
@@ -38,9 +32,25 @@ public class TempList {
       tail = t;
    }
 
+   public void append(Temp t) {
+      TempList end = this;
+      for (; end.tail != null; end = end.tail)
+         ;
+      end.tail = new TempList(t);
+   }
+
    public boolean contains(Temp n) {
       for (TempList s = this; s != null; s = s.tail) {
          if (s.head == n) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public boolean contains(TempList spills) {
+      for (TempList s = spills; s != null; s = s.tail) {
+         if(this.contains(s.head)) {
             return true;
          }
       }
@@ -55,12 +65,27 @@ public class TempList {
       return size;
    }
 
+   public String toString() {
+      StringBuilder builder = new StringBuilder();
+      builder.append("[");
+      for (TempList s = this; s != null; s = s.tail) {
+         builder.append(s.head);
+         if (s.tail != null) {
+            builder.append(",");
+         }
+      }
+      builder.append("]");
+      return builder.toString();
+
+   }
+
    public Hashtable<Temp, String> toTempMap() {
       Hashtable<Temp, String> ht = new Hashtable<Temp, String>();
       TempList start = this;
-      for(; start != null; start = start.tail) {
+      for (; start != null; start = start.tail) {
          ht.put(start.head, Temp.name(start.head));
       }
       return ht;
    }
+
 }

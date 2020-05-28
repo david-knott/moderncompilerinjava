@@ -6,18 +6,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
 
+import Assem.Instr;
 import Assem.InstrList;
+import Assem.LABEL;
 import Assem.TEST;
 import FlowGraph.AssemFlowGraph;
+import FlowGraph.FlowGraph;
+import Graph.Node;
+import Graph.NodeList;
 import Helpers.TempMapHelper;
 import Helpers.TestFrame;
+import Temp.Label;
+import Temp.LabelList;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
+import Util.GenericLinkedList;
 
-public class PotentialSpillColourTest {
+
+
+public class RegAllocTest {
+
     @Test
-    public void oneColour() {
+     public void simple() {
         Temp r1 = Temp.create("rax");
         Temp r2 = Temp.create("rdx");
         Temp r3 = Temp.create("rdi");
@@ -27,7 +38,7 @@ public class PotentialSpillColourTest {
         Temp t4 = Temp.create("t4");
         TempList initial = new TempList(t1, new TempList(t2, new TempList(t3, new TempList(t4))));
         TempList precoloured = TempList.create(new Temp[] { r1, r2, r3 });
-        TempList registers = TempList.create(new Temp[] { r1, r2 });
+        TempList registers = TempList.create(new Temp[] { r1, r2});
         TestFrame testFrame = new TestFrame(precoloured, registers);
         InstrList instrList = new InstrList(new TEST(new TempList(t1, new TempList(r3)), new TempList(t2)),
                 new InstrList(new TEST(new TempList(t3), new TempList(t4)),
@@ -36,13 +47,7 @@ public class PotentialSpillColourTest {
                                         new InstrList(new TEST(new TempList(t2), new TempList(t3)),
                                                 new InstrList(new TEST(new TempList(t4), new TempList(t2)), null))))));
         var fg = new AssemFlowGraph(instrList);
-		InterferenceGraph graph = new IGBackwardControlEdges(fg);
-        PotentialSpillColour potentialSpillColour = new PotentialSpillColour(graph, testFrame, registers);
-        assertNotNull(potentialSpillColour);
-        TempMapHelper tempMapHelper = new TempMapHelper(potentialSpillColour, initial);
-        System.out.println(tempMapHelper);
-        System.out.println(potentialSpillColour.spills().toString());
-        assertEquals(4, tempMapHelper.colours.size());
+        RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
 
     }
 }

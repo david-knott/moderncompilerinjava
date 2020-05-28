@@ -1,61 +1,14 @@
 digraph D{
-0 [ label="L1:
-"]
-1 [ label="movq %rbx, %rbx	;default move
-"]
-2 [ label="movq %r12, %r9	;default move
-"]
-3 [ label="movq %r13, %r8	;default move
-"]
-4 [ label="movq %r14, %rdi	;default move
-"]
-5 [ label="movq %r15, %rdx	;default move
-"]
-6 [ label="movq $99, %rax	; move const into temp
-"]
-7 [ label="movq %rax, %rax	;default move
-"]
-8 [ label="movq $9, %r10	; move const into temp
-"]
-9 [ label="add %rax %r10 
-"]
-10 [ label="movq %r10, %rax	;default move
-"]
-11 [ label="movq %rax, %rax	; exp 
-"]
-12 [ label="movq %rbx, %rbx	;default move
-"]
-13 [ label="movq %r9, %r12	;default move
-"]
-14 [ label="movq %r8, %r13	;default move
-"]
-15 [ label="movq %rdi, %r14	;default move
-"]
-16 [ label="movq %rdx, %r15	;default move
-"]
-17 [ label="jmp L0
-"]
-18 [ label="L0:
-"]
-19 [ label=""]
+0 [ label="0"]
+1 [ label="1"]
+2 [ label="2"]
+3 [ label="3"]
+4 [ label="4"]
+5 [ label="5"]
 0 -> {1}
 1 -> {2}
 2 -> {3}
 3 -> {4}
 4 -> {5}
-5 -> {6}
-6 -> {7}
-7 -> {8}
-8 -> {9}
-9 -> {10}
-10 -> {11}
-11 -> {12}
-12 -> {13}
-13 -> {14}
-14 -> {15}
-15 -> {16}
-16 -> {17}
-17 -> {18}
-18 -> {19}
-19 -> {}
+5 -> {}
 }

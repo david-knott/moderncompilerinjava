@@ -120,8 +120,6 @@ public class IntelFrame extends Frame {
     });
 
 
-    // mapping from string to an external function label
-    private static Hashtable<String, Label> externalCalls = new Hashtable<String, Label>();
     // return sink used to indicate that certain values are live at function exit
     private static TempList returnSink = new TempList(rsp, calleeSaves);
     // map to store spilled temps and their related inframe accesses
@@ -415,12 +413,7 @@ public class IntelFrame extends Frame {
 
     @Override
     public Exp externalCall(String func, ExpList args) {
-        Label l = externalCalls.containsKey(func) ? externalCalls.get(func) : null;
-        if (l == null) {
-            l = Label.create(func);
-            externalCalls.put(func, l);
-        }
-        return new CALL(new NAME(l), args);
+        return new CALL(new NAME(Label.create(func)), args);
     }
 
     /**
@@ -454,6 +447,22 @@ public class IntelFrame extends Frame {
     @Override
     public TempList registers() {
         return registers;
+    }
+    
+
+    /**
+     * Returns a string representation of this frame.
+     * 
+     */
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("### Intel Stack Frame ###");
+        stringBuilder.append("-> RBP ");
+        stringBuilder.append("RBP - 8 ");
+        stringBuilder.append("RBP - 16 ");
+        stringBuilder.append("RBP - 24 ");
+        stringBuilder.append("-> RSP");
+        return stringBuilder.toString();
     }
 
     private InFrame getInFrameAccess(Access access) {

@@ -5,6 +5,13 @@ Started the potential spill colouring implementation. In the middle
 of  forcing a spill, still need to save certain nodes as potential
 spills.
 
+Modified Translate.AccessList.append to use a function interface.
+
+Rewrite the instructions that either use or define variables to save them
+to the stack frame.
+
+TODO: Ensure all *List functions implement a similar functional interface
+where the collection is being modified.
 
 
 *27th May 2020*
