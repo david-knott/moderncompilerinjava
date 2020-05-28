@@ -15,16 +15,7 @@ public class GenericLinkedList<T> {
         this.tail = null;
     }
 
-    public GenericLinkedList<T> append(T t) {
-        if (this.tail == null) {
-            return new GenericLinkedList<T>(this.head, new GenericLinkedList<T>(t));
-        }
-        return new GenericLinkedList<T>(this.head, this.tail.append(t));
-    }
-
-    public GenericLinkedList<T> prepend(T item) {
-        return null;
-    }
+    
 
     /**
      * Check if item n is contained in this linked list. This method runs in O(n)
@@ -102,6 +93,13 @@ public class GenericLinkedList<T> {
             size++;
         }
         return size;
+    }
+
+    public GenericLinkedList<T> append(T t) {
+        if (this.tail == null) {
+            return new GenericLinkedList<T>(this.head, new GenericLinkedList<T>(t));
+        }
+        return new GenericLinkedList<T>(this.head, this.tail.append(t));
     }
 
     /**

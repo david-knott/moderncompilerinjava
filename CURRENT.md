@@ -1,5 +1,10 @@
 ## Diary
 
+*28th May 2020*
+Started the potential spill colouring implementation. In the middle
+of  forcing a spill, still need to save certain nodes as potential
+spills.
+
 
 *27th May 2020*
 Implemented Liveness equations using java.util.BitSet. Tests were not passing.

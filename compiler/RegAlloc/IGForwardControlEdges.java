@@ -13,7 +13,7 @@ import Temp.TempList;
  * Generates an interference graph for the supplied flow graph using forward
  * control edges.
  */
-class IGForwardControlEdges extends InterferenceGraph {
+public class IGForwardControlEdges extends InterferenceGraph {
     private Hashtable<Node, BitSet> liveInMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, BitSet> liveOutMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, TempList> liveMap;

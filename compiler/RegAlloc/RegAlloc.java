@@ -13,6 +13,9 @@ import Graph.GraphvisRenderer;
 import Temp.Temp;
 import Temp.TempMap;
 
+/**
+ * RegAlloc class manages the spilling.
+ */
 public class RegAlloc implements TempMap {
 	public InstrList instrList;
 	public Frame frame;
@@ -22,7 +25,7 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		var fg = new AssemFlowGraph(instrList);
-		var baig = new InterferenceGraphImpl(fg);
+		var baig = new IGBackwardControlEdges(fg);
 		this.colour = new Colour(baig, this.frame, this.frame.registers(), false /* dump graph */);
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph.txt"));

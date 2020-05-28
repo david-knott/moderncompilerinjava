@@ -9,7 +9,7 @@ import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 
-class IGBackwardControlEdges extends InterferenceGraph {
+public class IGBackwardControlEdges extends InterferenceGraph {
     private Hashtable<Node, BitSet> liveInMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, BitSet> liveOutMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, TempList> liveMap;
