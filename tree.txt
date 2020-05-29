@@ -2,55 +2,65 @@
 SEQ(
 .SEQ(
 ..MOVE(
-...TEMP t17,
+...TEMP t209,
 ...TEMP rbx),
 ..SEQ(
 ...MOVE(
-....TEMP t18,
+....TEMP t210,
 ....TEMP r12),
 ...SEQ(
 ....MOVE(
-.....TEMP t19,
+.....TEMP t211,
 .....TEMP r13),
 ....SEQ(
 .....MOVE(
-......TEMP t20,
+......TEMP t212,
 ......TEMP r14),
 .....MOVE(
-......TEMP t21,
+......TEMP t213,
 ......TEMP r15))))),
 .SEQ(
-..EXP(
-...CONST 0),
+..SEQ(
+...MOVE(
+....MEM(
+.....BINOP(PLUS,
+......CONST -8,
+......TEMP t7)),
+....TEMP rdi),
+...SEQ(
+....MOVE(
+.....TEMP t206,
+.....TEMP t5),
+....MOVE(
+.....TEMP t207,
+.....TEMP rdx))),
 ..SEQ(
 ...EXP(
-....ESEQ(
-.....MOVE(
-......TEMP t16,
-......CONST 99),
-.....ESEQ(
-......MOVE(
-.......TEMP t16,
+....CALL(
+.....NAME L82,
+......MEM(
 .......BINOP(PLUS,
-........TEMP t16,
-........CONST 9)),
-......TEMP t16))),
+........CONST 0,
+........TEMP t7)),
+......BINOP(PLUS,
+.......TEMP t206,
+.......CONST 1))),
 ...SEQ(
 ....MOVE(
 .....TEMP rbx,
-.....TEMP t17),
+.....TEMP t209),
 ....SEQ(
 .....MOVE(
 ......TEMP r12,
-......TEMP t18),
+......TEMP t210),
 .....SEQ(
 ......MOVE(
 .......TEMP r13,
-.......TEMP t19),
+.......TEMP t211),
 ......SEQ(
 .......MOVE(
 ........TEMP r14,
-........TEMP t20),
+........TEMP t212),
 .......MOVE(
 ........TEMP r15,
-........TEMP t21))))))))
+........TEMP t213))))))))

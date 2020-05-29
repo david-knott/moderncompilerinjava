@@ -47,11 +47,12 @@ public class InstrList {
 
     public void dump() {
         InstrList instrList = this;
-for (; instrList != null; instrList = instrList.tail) {
-    System.out.println(instrList.head.format(new DefaultMap()));
+        System.out.println("### Instruction List ###");
+        for (; instrList != null; instrList = instrList.tail) {
+            System.out.println(instrList.head.getClass().getSimpleName() + "=>" + instrList.head.format(new DefaultMap()));
         }
-        
 
+        System.out.println("########################");
     }
 
 }

@@ -40,8 +40,6 @@ public class TempList {
    }
 
    public TempList and(TempList tempList) {
-      System.out.println(this);
-      System.out.println(tempList);
       TempList and = null;
       TempList me = this;
       do
@@ -56,7 +54,6 @@ public class TempList {
          me = me.tail;
          tempList = tempList.tail;
       }while(me != null && tempList != null);
-      System.out.println(and);
       return and;
    }
 

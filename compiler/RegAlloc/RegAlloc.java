@@ -15,6 +15,7 @@ public class RegAlloc implements TempMap {
 	public InstrList instrList;
 	public Frame frame;
 	public PotentialSpillColour colour;
+	public int iterations;
 
 	private void build() {
 		FlowGraph fg = new AssemFlowGraph(instrList);
@@ -30,6 +31,8 @@ public class RegAlloc implements TempMap {
 		TempList spills = this.colour.spills();
 		InstrList newList = null;
 		for (; instrList != null; instrList = instrList.tail) {
+			boolean instructionWritten = false;
+			;
 			if (instrList.head.def() != null) {
 				TempList spilledDefs = instrList.head.def().and(spills);
 				for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
@@ -38,23 +41,28 @@ public class RegAlloc implements TempMap {
 					} else {
 						newList.append(instrList.head);
 					}
-					System.out.println(
-							"rewrite def instruction - move to frame " + instrList.head + " frame " + this.frame);
-					InstrList instrList = frame.tempToMemory(spilledDefs.head);
-					newList.append(instrList);
+					InstrList tempToMemory = frame.tempToMemory(spilledDefs.head);
+					newList.append(tempToMemory);
+					instructionWritten = true;
 				}
 			}
 			if (instrList.head.use() != null) {
 				TempList spilledUses = instrList.head.use().and(spills);
 				for (; spilledUses != null; spilledUses = spilledUses.tail) {
-					System.out.println(
-							"rewrite use instruction - move to temp " + instrList.head + " frame " + this.frame);
-					InstrList instrList = frame.memoryToTemp(spilledUses.head);
+					InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head);
 					if (newList == null) {
-						newList = new InstrList(instrList.head, null);
+						newList = memoryToTemp;
 					} else {
-						newList.append(instrList);
+						newList.append(memoryToTemp);
 					}
+					newList.append(instrList.head);
+					instructionWritten = true;
+				}
+			}
+			if (!instructionWritten) {
+				if (newList == null) {
+					newList = new InstrList(instrList.head, null);
+				} else {
 					newList.append(instrList.head);
 				}
 			}
@@ -63,6 +71,9 @@ public class RegAlloc implements TempMap {
 	}
 
 	private void allocate() {
+		this.iterations++;
+		System.out.println(this.iterations);
+		this.instrList.dump();
 		this.build();
 		if (this.hasSpills()) {
 			this.rewrite();
@@ -72,6 +83,7 @@ public class RegAlloc implements TempMap {
 	}
 
 	public RegAlloc(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {
+		this.iterations = 0;
 		this.instrList = instrList;
 		this.frame = frame;
 		this.allocate();

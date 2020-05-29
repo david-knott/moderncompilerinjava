@@ -24,7 +24,7 @@ class Colour implements TempMap {
 	public Colour(InterferenceGraph graph, TempMap precoloured, TempList registers, boolean dumpGraph) {
 		this.precoloured = precoloured;
 		this.registers = registers;
-		graph.show(System.out);
+		//graph.show(System.out);
 		// store each nodes degree
 		NodeList initialNodes = null;
 		for (var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {

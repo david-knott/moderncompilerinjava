@@ -101,11 +101,12 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                 var c2 = compare(liveOut, liveOutPrev);
                 changed = changed || ((c1 != 0) || (c2 != 0));
             }
+            /*
             System.out.println("--- Iteration " + iterationCount + " ----");
             for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
                 System.out.println(nodes.head + " " + liveInMap.get(nodes.head) + " " + liveOutMap.get(nodes.head));
             }
-            System.out.println("---------------");
+            System.out.println("---------------");*/
             if (!changed)
                 break;
 

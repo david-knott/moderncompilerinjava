@@ -102,18 +102,16 @@ public class TestFrame extends Frame {
     @Override
     public InstrList tempToMemory(Temp temp) {
         Temp newTemp = new Temp();
-        System.out.println(temp + ":move temp to frame");
-        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move temp to new temp\n", newTemp, temp);
-        Instr moveNewTempToFrame = new OPER("offset = " + 0 + ";\tspill - move new temp to frame\n", null, new TempList(newTemp, null));
+        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0; ttm", newTemp, temp);
+        Instr moveNewTempToFrame = new OPER("movq %`s0, " + 0 + "(%`d0); ttm", this.precoloured, new TempList(newTemp, null));
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null)); 
     }
 
     @Override
     public InstrList memoryToTemp(Temp temp) {
         Temp newTemp = new Temp();
-        System.out.println(temp + ":move frame to temp");
-        Instr moveFrameToNewTemp = new OPER("offset = 0 ;\tspill - move frame to new temp\n", new TempList(newTemp, null), null);
-        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move new temp to temp\n", temp, newTemp);
+        Instr moveFrameToNewTemp = new OPER("movq " + 0 + "(%`s0), %`d0; mtt", new TempList(newTemp, null), this.precoloured);
+        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0; mtt", temp, newTemp);
         return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null)); 
     }
     

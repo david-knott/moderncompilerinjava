@@ -20,7 +20,7 @@ public class PotentialSpillColour implements TempMap {
 	private Hashtable<Temp, Temp> coloured = new Hashtable<Temp, Temp>();
 
 	private void addSpill(Temp temp) {
-		if(spills == null) {
+		if (spills == null) {
 			spills = new TempList(temp);
 		} else {
 			spills.append(temp);
@@ -28,16 +28,16 @@ public class PotentialSpillColour implements TempMap {
 	}
 
 	private void reduceDegree(Node node) {
-for (var adj = node.adj(); adj != null; adj = adj.tail) {
-						var d = degrees.get(adj.head);
-						degrees.put(adj.head, d - 1);
-					}
+		for (var adj = node.adj(); adj != null; adj = adj.tail) {
+			var d = degrees.get(adj.head);
+			degrees.put(adj.head, d - 1);
+		}
 	}
 
 	public PotentialSpillColour(InterferenceGraph graph, TempMap precoloured, TempList registers) {
 		this.precoloured = precoloured;
 		this.registers = registers;
-		graph.show(System.out);
+		// graph.show(System.out);
 		// store each nodes degree
 		NodeList initialNodes = null;
 		for (var nodes = graph.nodes(); nodes != null; nodes = nodes.tail) {
@@ -60,7 +60,7 @@ for (var adj = node.adj(); adj != null; adj = adj.tail) {
 			for (NodeList nodeList = initialNodes; nodeList != null; nodeList = nodeList.tail) {
 				Node node = nodeList.head;
 				if (degrees.get(node) < k) {
-					System.out.println("Less than significant degree left");
+					// System.out.println("Less than significant degree left");
 					this.reduceDegree(node);
 					this.simpleStack.push(node);
 					initialNodes = initialNodes.remove(node);
@@ -71,7 +71,7 @@ for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				Node node = initialNodes.head;
 				initialNodes = initialNodes.tail;
 				this.reduceDegree(node);
-				System.out.println("Only significant degree left");
+				// System.out.println("Only significant degree left");
 				this.simpleStack.push(node); // mark as potential spill
 			}
 
@@ -98,11 +98,11 @@ for (var adj = node.adj(); adj != null; adj = adj.tail) {
 			}
 			// assign colour to node
 			if (colours.isEmpty()) {
-				System.out.println("No colours to assign");
+				// System.out.println("No colours to assign");
 				addSpill(graph.gtemp(node));
 			} else {
 				Temp color = colours.iterator().next();
-				System.out.println("Assigning color " + color);
+				// System.out.println("Assigning color " + color);
 				coloured.put(graph.gtemp(node), color);
 			}
 		}

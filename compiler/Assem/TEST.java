@@ -7,21 +7,29 @@ public class TEST extends Instr {
    public Temp.TempList dst;
    public Temp.TempList src;
    public Targets jump;
-   public String comments ;
+   public String comments;
    private static int id = 0;
-
 
    public TEST() {
       dst = null;
       src = null;
       jump = null;
-      super.assem = Integer.toString(id++);
+      super.assem = "test null, null";
    }
+
    public TEST(Temp.TempList d, Temp.TempList s) {
       dst = d;
       src = s;
       jump = null;
-      super.assem = Integer.toString(id++);
+      if (dst == null && src == null) {
+         super.assem = "test null, null";
+      } else if (src == null) {
+         super.assem = "test null,  %`d0";
+      } else if (dst == null) {
+         super.assem = "test %`s0,  null";
+      } else {
+         super.assem = "test %`s0,  %`d0";
+      }
    }
 
    public TEST(Temp.TempList d, Temp.TempList s, Temp.LabelList j) {
@@ -30,7 +38,15 @@ public class TEST extends Instr {
       dst = d;
       src = s;
       jump = new Targets(j);
-      super.assem = Integer.toString(id++);
+      if (dst == null && src == null) {
+         super.assem = "test null, null";
+      } else if (src == null) {
+         super.assem = "test null,  %`d0";
+      } else if (dst == null) {
+         super.assem = "test %`s0,  null";
+      } else {
+         super.assem = "test %`s0,  %`d0";
+      }
    }
 
    @Override
@@ -50,6 +66,6 @@ public class TEST extends Instr {
 
    @Override
    public String toString() {
-      return "Test Instruction "+ this.assem;
+      return "test %`s,  %`d";
    }
 }

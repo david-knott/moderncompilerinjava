@@ -1,45 +1,57 @@
 # After canonicalization: 
-LABEL L1
+LABEL L95
 MOVE(
-.TEMP t17,
+.TEMP t209,
 .TEMP rbx)
 MOVE(
-.TEMP t18,
+.TEMP t210,
 .TEMP r12)
 MOVE(
-.TEMP t19,
+.TEMP t211,
 .TEMP r13)
 MOVE(
-.TEMP t20,
+.TEMP t212,
 .TEMP r14)
 MOVE(
-.TEMP t21,
+.TEMP t213,
 .TEMP r15)
 MOVE(
-.TEMP t16,
-.CONST 99)
+.MEM(
+..BINOP(PLUS,
+...CONST -8,
+...TEMP t7)),
+.TEMP rdi)
 MOVE(
-.TEMP t16,
-.BINOP(PLUS,
-..TEMP t16,
-..CONST 9))
+.TEMP t206,
+.TEMP t5)
+MOVE(
+.TEMP t207,
+.TEMP rdx)
 EXP(
-.TEMP t16)
+.CALL(
+..NAME L82,
+...MEM(
+....BINOP(PLUS,
+.....CONST 0,
+.....TEMP t7)),
+...BINOP(PLUS,
+....TEMP t206,
+....CONST 1)))
 MOVE(
 .TEMP rbx,
-.TEMP t17)
+.TEMP t209)
 MOVE(
 .TEMP r12,
-.TEMP t18)
+.TEMP t210)
 MOVE(
 .TEMP r13,
-.TEMP t19)
+.TEMP t211)
 MOVE(
 .TEMP r14,
-.TEMP t20)
+.TEMP t212)
 MOVE(
 .TEMP r15,
-.TEMP t21)
+.TEMP t213)
 JUMP(
-.NAME L0)
-LABEL L0
+.NAME L94)
+LABEL L94

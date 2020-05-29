@@ -23,12 +23,15 @@ import Temp.TempList;
 import Temp.TempMap;
 import Util.GenericLinkedList;
 
-
-
 public class RegAllocTest {
 
     @Test
-     public void simple() {
+    public void empty() {
+    }
+
+    @Test
+    public void simple() {
+        Temp r0 = Temp.create("rbp");
         Temp r1 = Temp.create("rax");
         Temp r2 = Temp.create("rdx");
         Temp r3 = Temp.create("rdi");
@@ -36,9 +39,8 @@ public class RegAllocTest {
         Temp t2 = Temp.create("t2");
         Temp t3 = Temp.create("t3");
         Temp t4 = Temp.create("t4");
-        TempList initial = new TempList(t1, new TempList(t2, new TempList(t3, new TempList(t4))));
-        TempList precoloured = TempList.create(new Temp[] { r1, r2, r3 });
-        TempList registers = TempList.create(new Temp[] { r1, r2 });
+        TempList precoloured = TempList.create(new Temp[] { r0, r1, r2, r3 });
+        TempList registers = TempList.create(new Temp[] { r1, r2  });
         TestFrame testFrame = new TestFrame(precoloured, registers);
         InstrList instrList = new InstrList(new TEST(new TempList(t1, new TempList(r3)), new TempList(t2)),
                 new InstrList(new TEST(new TempList(t3), new TempList(t4)),
@@ -49,8 +51,33 @@ public class RegAllocTest {
         var fg = new AssemFlowGraph(instrList);
         RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
         TempMapHelper helper = new TempMapHelper(alloc, registers);
-        System.out.println(helper);
-        
+
+    }
+
+    @Test
+    public void loop() {
+
+        Label l = Label.create();
+        Temp a = Temp.create("rbp");
+        Temp b = Temp.create("rax");
+        Temp c = Temp.create("rdx");
+        Instr instr1 = new TEST(new TempList(a), null);
+        Instr labelIn = new LABEL("l", l);
+        Instr instr2 = new TEST(new TempList(b), new TempList(a));
+        Instr instr3 = new TEST(new TempList(c), new TempList(b, new TempList(c)));
+        Instr instr4 = new TEST(new TempList(a), new TempList(b));
+        Instr instr5 = new TEST(null, new TempList(a), new LabelList(l, null)); // loops back to 2
+        Instr instr6 = new TEST(null, new TempList(c));
+        InstrList instrList = new InstrList(instr1, new InstrList(labelIn, new InstrList(instr2,
+                new InstrList(instr3, new InstrList(instr4, new InstrList(instr5, new InstrList(instr6, null)))))));
+TempList precoloured = TempList.create(new Temp[] { a, b, c });
+        TempList registers = TempList.create(new Temp[] { b, c });
+        TestFrame testFrame = new TestFrame(precoloured, registers);
+
+var fg = new AssemFlowGraph(instrList);
+        RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
+        TempMapHelper helper = new TempMapHelper(alloc, registers);
+
 
     }
 }
