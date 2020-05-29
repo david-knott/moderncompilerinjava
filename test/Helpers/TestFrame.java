@@ -100,14 +100,14 @@ public class TestFrame extends Frame {
     }
 
     @Override
-    public InstrList tempToMemory(Temp temp, Temp spillTemp) {
+    public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
         Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0; ttm", spillTemp, temp);
         Instr moveNewTempToFrame = new OPER("movq %`s0, " + 0 + "(%`d0); ttm", this.precoloured, new TempList(spillTemp, null));
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null)); 
     }
 
     @Override
-    public InstrList memoryToTemp(Temp temp, Temp spillTemp) {
+    public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
         Instr moveFrameToNewTemp = new OPER("movq " + 0 + "(%`s0), %`d0; mtt", new TempList(spillTemp, null), this.precoloured);
         Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0; mtt", temp, spillTemp);
         return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null)); 
