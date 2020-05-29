@@ -952,6 +952,7 @@ public class Semant {
     }
 
     private LetExp rewriteForExp(ForExp forExp){
+        // create readonly var for forExp.var.name
         return new LetExp(
             forExp.pos,
             new DecList(

@@ -4,6 +4,20 @@ import java.util.Hashtable;
 
 public class TempList {
 
+   public static TempList sort(TempList tempList) {
+      if (tempList == null || tempList.tail == null) {
+         return tempList;
+      }
+      /*
+       * 2) Else divide the linked list into two halves. FrontBackSplit(head, &a, &b);
+       * a and b are two halves 3) Sort the two halves a and b. MergeSort(a);
+       * MergeSort(b); 4) Merge the sorted a and b (using SortedMerge() discussed
+       * here) and update the head pointer using headRef. headRef = SortedMerge(a, b);
+       */
+
+      return tempList;
+   }
+
    /**
     * Return this set in reverse.
     * 
@@ -46,6 +60,8 @@ public class TempList {
     * @return
     */
    public static TempList and(TempList me, TempList tempList) {
+      me = TempList.sort(me);
+      tempList = TempList.sort(tempList);
       if (me == null || tempList == null)
          return null;
       TempList and = null;
@@ -70,6 +86,8 @@ public class TempList {
    public static TempList or(TempList me, TempList tempList) {
       if (me == null && tempList == null)
          return null;
+      me = TempList.sort(me);
+      tempList = TempList.sort(tempList);
       TempList or = null;
       while (me != null && tempList != null) {
          if (me.head.compareTo(tempList.head) > 0) {
@@ -96,6 +114,23 @@ public class TempList {
       return or;
    }
 
+   public static TempList andNot(TempList me, TempList tempList) {
+      if (me == null)
+         return null;
+      if (tempList == null) {
+         return me;
+      }
+      me = TempList.sort(me);
+      tempList = TempList.sort(tempList);
+      TempList andNot = null;
+      for (; me != null; me = me.tail) {
+         if (!tempList.contains(me)) {
+            andNot = TempList.append(andNot, me.head);
+         }
+      }
+      return andNot;
+   }
+
    public Temp head;
    public TempList tail;
 
@@ -104,9 +139,9 @@ public class TempList {
    }
 
    public static TempList create(Temp[] h) {
-      TempList tl = new TempList(h[0]);
+      TempList tl = null;
       for (int i = 1; i < h.length; i++) {
-         tl.append(h[i]);
+         tl = TempList.append(tl, h[i]);
       }
       return tl;
    }
@@ -123,13 +158,6 @@ public class TempList {
          throw new Error("h cannot be null");
       head = h;
       tail = t;
-   }
-
-   public void append(Temp t) {
-      TempList end = this;
-      for (; end.tail != null; end = end.tail)
-         ;
-      end.tail = new TempList(t);
    }
 
    public boolean contains(Temp n) {

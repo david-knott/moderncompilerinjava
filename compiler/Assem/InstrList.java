@@ -115,7 +115,6 @@ public class InstrList {
             System.out.println(
                     instrList.head.getClass().getSimpleName() + "=>" + instrList.head.format(new DefaultMap()));
         }
-
         System.out.println("########################");
     }
 

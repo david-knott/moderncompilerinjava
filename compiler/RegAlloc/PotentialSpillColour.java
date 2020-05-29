@@ -20,11 +20,7 @@ public class PotentialSpillColour implements TempMap {
 	private Hashtable<Temp, Temp> coloured = new Hashtable<Temp, Temp>();
 
 	private void addSpill(Temp temp) {
-		if (spills == null) {
-			spills = new TempList(temp);
-		} else {
-			spills.append(temp);
-		}
+		spills = TempList.append(spills, temp);
 	}
 
 	private void reduceDegree(Node node) {

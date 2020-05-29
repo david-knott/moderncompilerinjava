@@ -5,7 +5,9 @@ Fixed rewrite bug, still need to copy it into the Intel Frame.
 
 Modified test assem instruction to output a string representation of itself.
 
-TODO: Add invalid escape sequence to the for each loop symbol to prevent it from being overwritten.
+TODO: Add invalid escape sequence to the for each loop symbol to prevent it from being overwritten
+
+TODO: Implement spill cost, in particular give temps that are for spilling infinite cost.
 
 *28th May 2020*
 Started the potential spill colouring implementation. In the middle

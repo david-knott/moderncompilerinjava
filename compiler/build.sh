@@ -1,4 +1,5 @@
 #!/bin/bash
+export PATH=~/bin/jdk-14+36/bin/:$PATH
 package=compiler_build_script
 while test $# -gt 0; do
   case "$1" in
@@ -58,7 +59,7 @@ fi
 javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java Types/*.java Semant/*.java Main/*.java
 #java -cp bin Parse.Main ../reference/tiger/testcases/test3.tig
 
-cd ..
-javac -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar ./test/*.java
-java -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar:./lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore test.Chap5Test
+#cd ..
+#javac -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar ./test/*.java
+#java -cp .:./compiler/bin:./lib/junit-4.13-beta-3.jar:./lib/hamcrest-core-1.3.jar org.junit.runner.JUnitCore test.Chap5Test
 cd compiler

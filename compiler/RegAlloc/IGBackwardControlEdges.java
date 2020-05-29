@@ -18,6 +18,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
     private Hashtable<Node, Temp> nodeTempMap = new Hashtable<Node, Temp>();
     private MoveList moveList = null;
     private int iterationCount = 0;
+    private FlowGraph flowGraph;
 
     private Temp getTemp(Integer i) {
         if (tempMap.containsKey(i)) {
@@ -174,7 +175,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
         this.computeLiveness(flowGraph);
         this.computeLiveRanges();
         this.buildGraph(flowGraph);
-
+        this.flowGraph = flowGraph;
     }
 
     public int getIterationCount() {
@@ -194,6 +195,11 @@ public class IGBackwardControlEdges extends InterferenceGraph {
     @Override
     public MoveList moves() {
         return this.moveList;
+    }
+
+    @Override
+    public int spillCost(Node node) {
+        return 0;
     }
 
     @Override
