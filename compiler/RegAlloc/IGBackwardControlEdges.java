@@ -170,12 +170,12 @@ public class IGBackwardControlEdges extends InterferenceGraph {
      * @param flowGraph the flowgraph
      */
     public IGBackwardControlEdges(FlowGraph flowGraph) {
+        this.flowGraph = flowGraph;
         liveMap = new Hashtable<Node, TempList>();
         tempMap = new Hashtable<Integer, Temp>();
         this.computeLiveness(flowGraph);
         this.computeLiveRanges();
         this.buildGraph(flowGraph);
-        this.flowGraph = flowGraph;
     }
 
     public int getIterationCount() {
@@ -199,6 +199,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
 
     @Override
     public int spillCost(Node node) {
+        //compute the spill cost be analysis the node
         return 0;
     }
 

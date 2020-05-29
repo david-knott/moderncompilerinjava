@@ -9,6 +9,9 @@ TODO: Add invalid escape sequence to the for each loop symbol to prevent it from
 
 TODO: Implement spill cost, in particular give temps that are for spilling infinite cost.
 
+TODO: Enforce invariant that registers must be a subset of precoloured. There cannot be items in
+the registers templist that are not also present in the precoloured.
+
 *28th May 2020*
 Started the potential spill colouring implementation. In the middle
 of  forcing a spill, still need to save certain nodes as potential

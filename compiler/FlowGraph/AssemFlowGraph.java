@@ -24,10 +24,6 @@ public class AssemFlowGraph extends FlowGraph {
         return node;
     }
 
-    public AssemFlowGraph() {
-        //initialize the structures.
-    }
-
     public AssemFlowGraph(Assem.InstrList instrs) {
         //add all the labels to a hashtable first
         //add the labels to the node map

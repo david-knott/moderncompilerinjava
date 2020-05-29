@@ -27,6 +27,7 @@ public class RegAlloc implements TempMap {
 		FlowGraph fg = new AssemFlowGraph(instrList);
 		InterferenceGraph baig = new IGBackwardControlEdges(fg);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
+		/*
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
 			new GraphvisRenderer().render(ps, baig, this);
@@ -40,7 +41,7 @@ public class RegAlloc implements TempMap {
 			ps.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	private boolean hasSpills() {
@@ -53,7 +54,6 @@ public class RegAlloc implements TempMap {
 
 	private void rewrite() {
 		TempList spills = this.selectSpill();
-		System.out.println("Spills " + spills);
 		InstrList newList = null;
 		for (; instrList != null; instrList = instrList.tail) {
 			TempList spilledDefs = TempList.and(instrList.head.def(), spills);
@@ -93,7 +93,6 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		this.allocate();
-		this.instrList.dump();
 	}
 
 	@Override
