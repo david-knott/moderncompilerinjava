@@ -107,8 +107,8 @@ public abstract class Frame implements TempMap {
 
     abstract public TempList registers();
 
-	public abstract InstrList tempToMemory(Temp temp, Temp spillTemp); 
+	public abstract InstrList tempToMemory(Temp temp, Temp spillTemp, Access access); 
 
-    public abstract InstrList memoryToTemp(Temp temp, Temp spillTemp);
+    public abstract InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access);
     
 }

@@ -248,6 +248,7 @@ public class IntelFrame extends Frame {
             } else {
                 // create a location in the frame for the item
                 localOffset = localOffset - WORD_SIZE;
+                System.out.println("creating format offset");
                 this.moveFrameToFormal(localOffset, i);
                 local = new InFrame((localOffset));
             }
@@ -408,7 +409,7 @@ public class IntelFrame extends Frame {
             new InstrList(
                 new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
                 new InstrList(
-                    new OPER("sub %`d0, " + 0, new TempList(IntelFrame.rsp), null),
+                    new OPER("sub %`d0, " + this.localOffset, new TempList(IntelFrame.rsp), null),
                     null
                 ) 
             )
@@ -479,28 +480,18 @@ public class IntelFrame extends Frame {
         return stringBuilder.toString();
     }
 
-    private InFrame getInFrameAccess(Access access) {
-        if(access instanceof InFrame) {
-            return (InFrame)access;
-        } else {
-            throw new Error("Access is not of type InFrame");
-        }
-    }
-
     @Override
-    public InstrList tempToMemory(Temp temp, Temp spillTemp) {
-        InFrame inFrame = this.getInFrameAccess(this.allocLocal(true));
-        spillMap.put(temp, inFrame);
-        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move temp to new temp\n", spillTemp, temp);
-        Instr moveNewTempToFrame = new OPER("offset = " + inFrame.offset + "; Reg Allocator tempToMemory", null, new TempList(spillTemp, null));
+    public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
+
+        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0", spillTemp, temp);
+        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame)access).offset + "(%`d0)", this.precoloured, new TempList(spillTemp, null));
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null)); 
     }
 
     @Override
-    public InstrList memoryToTemp(Temp temp, Temp spillTemp) {
-        InFrame inFrame = this.spillMap.get(temp);
-        Instr moveFrameToNewTemp = new OPER("offset = " + inFrame.offset + "; Reg Allocator memory to temp", new TempList(spillTemp, null), null);
-        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0;\tspill - move new temp to temp\n", temp, spillTemp);
+    public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
+        Instr moveFrameToNewTemp = new OPER("movq " + ((InFrame)access).offset + "(%`s0), %`d0", new TempList(spillTemp, null), this.precoloured);
+        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0; mtt", temp, spillTemp);
         return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null)); 
     }
 }

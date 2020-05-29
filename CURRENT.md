@@ -1,7 +1,8 @@
 ## Diary
 
 *29th May 2020*
-Fixed rewrite bug, still need to copy it into the Intel Frame.
+Need to ensure that the memory accesses created for spills are used for defs and uses.
+TODO: Test this !
 
 Modified test assem instruction to output a string representation of itself.
 

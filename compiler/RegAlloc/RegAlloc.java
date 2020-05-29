@@ -3,10 +3,13 @@ package RegAlloc;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Hashtable;
 
 import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
+import Frame.Access;
+import Frame.AccessList;
 import Frame.Frame;
 import Graph.GraphvisRenderer;
 import Temp.Temp;
@@ -61,6 +64,7 @@ public class RegAlloc implements TempMap {
 	private void rewrite() {
 		TempList spills = this.selectSpill();
 		InstrList newList = null;
+		Hashtable<Temp, Access> accessHash = new Hashtable<Temp, Access>(); 
 		for (; instrList != null; instrList = instrList.tail) {
 			TempList spilledDefs = TempList.and(instrList.head.def(), spills);
 			TempList spilledUses = TempList.and(instrList.head.use(), spills);
@@ -69,16 +73,19 @@ public class RegAlloc implements TempMap {
 				continue;
 			}
 			for (; spilledUses != null; spilledUses = spilledUses.tail) {
+				Access access = accessHash.get(spilledUses.head);
 				Temp spillTemp = Temp.create();
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
-				InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head, spillTemp);
+				InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head, spillTemp, access);
 				newList = InstrList.append(newList, memoryToTemp);
 			}
 			newList = InstrList.append(newList, instrList.head);
 			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
 				Temp spillTemp = Temp.create();
+				Access access = this.frame.allocLocal(false);
+				accessHash.put(spilledDefs.head, access);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
-				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head, spillTemp);
+				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head, spillTemp, access);
 				newList = InstrList.append(newList, tempToMemory);
 			}
 		}
