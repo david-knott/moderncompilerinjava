@@ -8,6 +8,7 @@ import Assem.InstrList;
 import Canon.CanonFacadeImpl;
 import Canon.Canonicalization;
 import Frame.Frame;
+import Frame.Proc;
 import RegAlloc.RegAlloc;
 import Temp.TempMap;
 import Tree.Print;
@@ -100,16 +101,19 @@ public class ProcFrag extends Frag {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
         RegAlloc regAlloc = new RegAlloc(this.frame, instrs, false);
-        this.frame.procEntryExit3(instrs);
-        out.println("# Instructions: ");
+        Proc proc = this.frame.procEntryExit3(instrs);
         out.println("section .text");
-        for (; instrs != null; instrs = instrs.tail) {
-            out.print(instrs.head.format(regAlloc));
+        for (InstrList prolog = proc.prolog; prolog != null; prolog = prolog.tail) {
+            out.println(prolog.head.format(this.frame));
+        }
+        for (InstrList body = proc.body; body != null; body = body.tail) {
+            out.println(body.head.format(regAlloc));
+        }
+        for (InstrList epilog = proc.epilog; epilog != null; epilog = epilog.tail) {
+            out.println(epilog.head.format(this.frame));
         }
     }
 

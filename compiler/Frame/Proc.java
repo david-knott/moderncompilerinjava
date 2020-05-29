@@ -3,7 +3,14 @@ package Frame;
 import Assem.InstrList;
 
 public class Proc {
-
-	public Proc(String string, InstrList body, String string2) {
+	
+	public InstrList prolog;
+	public InstrList epilog;
+	public InstrList body;
+	
+	public Proc(InstrList prolog, InstrList body, InstrList epilog) {
+		this.prolog = prolog;
+		this.body = body;
+		this.epilog = epilog;
 	}
 }

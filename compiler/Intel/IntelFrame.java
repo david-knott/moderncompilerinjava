@@ -88,6 +88,8 @@ public class IntelFrame extends Frame {
      */
     private TempList registers = TempList.create(new Temp[]{
         rax,
+        rbx,
+        rcx,
         rdx,
         rdi,
         r8,
@@ -97,8 +99,7 @@ public class IntelFrame extends Frame {
         r12,
         r13,
         r14,
-        r15,
-        rbx
+        r15
     });
 
     /**
@@ -106,8 +107,12 @@ public class IntelFrame extends Frame {
      */
     private TempList precoloured = TempList.create(new Temp[]{
         rax,
+        rsp,
+        rbx,
+        rcx,
         rdx,
         rdi,
+        rbp,
         r8,
         r9,
         r10,
@@ -115,8 +120,7 @@ public class IntelFrame extends Frame {
         r12,
         r13,
         r14,
-        r15,
-        rbx
+        r15
     });
 
 
@@ -399,16 +403,26 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Proc procEntryExit3(Assem.InstrList body) {
-        /*
-        InstrList instrList = new InstrList(
-            new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null)), 
+        InstrList prolog = new InstrList(
+            new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), 
             new InstrList(
-                new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)), 
-                null
+                new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
+                new InstrList(
+                    new OPER("sub %`d0, " + 0, new TempList(IntelFrame.rsp), null),
+                    null
+                ) 
+            )
         );
-        move the stack pointer by the amount of space needed to allocate the frame.
-        */
-        return new Proc("PROC " + "name", body, "END" + "name");
+        InstrList epilog = new InstrList(
+            new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
+            new InstrList(
+                new OPER("pop %`d0", new TempList(IntelFrame.rbp), null),
+                new InstrList(
+                    new OPER("ret", null,  null)
+                )
+            )
+        );
+        return new Proc(prolog, body, epilog);
     }
 
     @Override
