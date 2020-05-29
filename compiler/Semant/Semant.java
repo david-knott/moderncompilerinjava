@@ -980,21 +980,21 @@ public class Semant {
                             forExp.pos, 
                             new VarExp(
                                 forExp.pos, 
-                                new SimpleVar(
+                                new SimpleVar( //var i
                                     forExp.pos, 
                                     forExp.var.name
                                 )
                             ), 
                             OpExp.LE, 
                             new VarExp(
-                                0, 
+                                forExp.pos, 
                                 new SimpleVar(
                                     0, 
-                                    Symbol.symbol("limit")
+                                    Symbol.symbol("limit") //is less than or equal to limit
                                 )
                             )
                         ), 
-                        new WhileExp(
+                        new WhileExp( //start while loop with true condition
                             forExp.pos, 
                             new IntExp(forExp.pos, 1),
                             new SeqExp(
@@ -1010,7 +1010,7 @@ public class Semant {
                                                     0, 
                                                     new SimpleVar(
                                                        0, 
-                                                        forExp.var.name
+                                                        forExp.var.name //break if i
                                                     )
                                                 ), 
                                                 OpExp.EQ,
@@ -1018,7 +1018,7 @@ public class Semant {
                                                     0, 
                                                     new SimpleVar(
                                                        0, 
-                                                       Symbol.symbol("limit")
+                                                       Symbol.symbol("limit") //is equal to limit
                                                     )
                                                 )
                                             ),

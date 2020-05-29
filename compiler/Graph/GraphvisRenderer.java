@@ -42,7 +42,8 @@ public class GraphvisRenderer implements GraphRenderer {
                 return "deeppink1";
             case "rbp":
                 return "pink1";
-
+            case "rcx":
+                return "pink2";
             default:
                 throw new Error(str + " has no mapping");
         }

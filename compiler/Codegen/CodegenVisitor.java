@@ -383,7 +383,7 @@ class CodegenVisitor implements TreeVisitor {
         var leftTemp = temp;
         cjump.right.accept(this);
         var rightTemp = temp;
-        emit(new OPER("cmp %`s0, %`d0", L(rightTemp, null), L(leftTemp, null)));
+        emit(new OPER("cmp %`s0, %`s1", null, L(leftTemp, L(rightTemp, null))));
         switch(cjump.relop) {
             case CJUMP.EQ:
                 emit(new OPER("je `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));

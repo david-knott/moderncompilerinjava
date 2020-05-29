@@ -10,6 +10,7 @@ import Canon.Canonicalization;
 import Frame.Frame;
 import Frame.Proc;
 import RegAlloc.RegAlloc;
+import Temp.DefaultMap;
 import Temp.TempMap;
 import Tree.Print;
 import Tree.StmList;
@@ -111,6 +112,7 @@ public class ProcFrag extends Frag {
         }
         for (InstrList body = proc.body; body != null; body = body.tail) {
             out.println(body.head.format(regAlloc));
+           // out.println(body.head.format(new DefaultMap()));
         }
         for (InstrList epilog = proc.epilog; epilog != null; epilog = epilog.tail) {
             out.println(epilog.head.format(this.frame));

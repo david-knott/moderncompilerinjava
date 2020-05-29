@@ -1,1 +1,1 @@
-dot -Tpng colour-graph.txt -o out.png;display out.png
+dot -Tpng colour-graph1.txt -o out.png;display out.png

@@ -11,7 +11,6 @@ class InFrame extends Access {
 
     InFrame(int os) {
         offset = os;
-        System.out.println(this + " new inframe access " + os + "(rbp)");
     }
 
     /**
