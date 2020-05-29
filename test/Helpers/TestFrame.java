@@ -54,8 +54,14 @@ public class TestFrame extends Frame {
 
     @Override
     public Access allocLocal(boolean escape) {
-        // TODO Auto-generated method stub
-        return null;
+        return new Access() {
+
+            @Override
+            public Exp exp(Exp framePtr) {
+                // TODO Auto-generated method stub
+                return null;
+            }
+        };
     }
 
     @Override

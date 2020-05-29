@@ -76,6 +76,7 @@ public class RegAllocTest {
                                         new InstrList(new TEST(new TempList(t2), new TempList(t3)),
                                                 new InstrList(new TEST(new TempList(t4), new TempList(t2)), null))))));
         RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
+        alloc.instrList.dump();
         assertTrue(alloc.iterations > 1);
     }
 
