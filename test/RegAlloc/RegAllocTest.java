@@ -30,7 +30,7 @@ public class RegAllocTest {
     }
 
     @Test
-    public void simple() {
+    public void noSpills() {
         Temp r0 = Temp.create("rbp");
         Temp r1 = Temp.create("rax");
         Temp r2 = Temp.create("rdx");
@@ -41,7 +41,7 @@ public class RegAllocTest {
         Temp t3 = Temp.create("t3");
         Temp t4 = Temp.create("t4");
         TempList precoloured = TempList.create(new Temp[] { r0, r1, r2, r3, r4 });
-        TempList registers = TempList.create(new Temp[] { r1, r2, r3, r4   });
+        TempList registers = TempList.create(new Temp[] { r1, r2, r3   });
         TestFrame testFrame = new TestFrame(precoloured, registers);
         InstrList instrList = new InstrList(new TEST(new TempList(t1, new TempList(r3)), new TempList(t2)),
                 new InstrList(new TEST(new TempList(t3), new TempList(t4)),
@@ -49,11 +49,8 @@ public class RegAllocTest {
                                 new InstrList(new TEST(new TempList(t4), new TempList(t1)),
                                         new InstrList(new TEST(new TempList(t2), new TempList(t3)),
                                                 new InstrList(new TEST(new TempList(t4), new TempList(t2)), null))))));
-        var fg = new AssemFlowGraph(instrList);
         RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
-        TempMapHelper helper = new TempMapHelper(alloc, registers);
-        alloc.instrList.dump();
-
+        assertEquals(1, alloc.iterations, "No spills means only one iteration");
     }
 
     @Test
@@ -76,7 +73,6 @@ TempList precoloured = TempList.create(new Temp[] { a, b, c });
         TempList registers = TempList.create(new Temp[] { b, c });
         TestFrame testFrame = new TestFrame(precoloured, registers);
 
-var fg = new AssemFlowGraph(instrList);
         RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
         TempMapHelper helper = new TempMapHelper(alloc, registers);
 
