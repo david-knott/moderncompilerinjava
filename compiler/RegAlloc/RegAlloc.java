@@ -22,10 +22,11 @@ public class RegAlloc implements TempMap {
 	public PotentialSpillColour colour;
 	public int iterations;
 	private TempList spillTemps;
+	private InterferenceGraph baig;
 
 	private void build() {
 		FlowGraph fg = new AssemFlowGraph(instrList);
-		InterferenceGraph baig = new IGBackwardControlEdges(fg);
+		baig = new IGBackwardControlEdges(fg);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
 		/*
 		try {
@@ -49,7 +50,12 @@ public class RegAlloc implements TempMap {
 	}
 
 	private TempList selectSpill() {
-		return TempList.andNot(new TempList(this.colour.spills().head), this.spillTemps);
+		System.out.println("Spill Select");
+		TempList originalTemps = TempList.andNot(new TempList(this.colour.spills().head), this.spillTemps);
+		for(TempList tl = originalTemps; tl != null; tl = tl.tail) {
+			System.out.println(tl.head + " cost: " + this.baig.spillCost(this.baig.tnode(tl.head)));
+		}
+		return originalTemps;
 	}
 
 	private void rewrite() {

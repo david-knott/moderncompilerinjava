@@ -20,6 +20,27 @@ public class IGBackwardControlEdges extends InterferenceGraph {
     private int iterationCount = 0;
     private FlowGraph flowGraph;
 
+    private Hashtable<Node, Integer> useCount = new Hashtable<Node, Integer>();
+    private Hashtable<Node, Integer> defCount = new Hashtable<Node, Integer>();
+
+    private void updateUseAndDefCounts() {
+        for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+            Node node = nodes.head;
+            for (TempList defs = flowGraph.def(node); defs != null; defs = defs.tail) {
+                Node defNode = this.tnode(defs.head);
+                if (defNode != null) {
+                    useCount.put(defNode, defCount.getOrDefault(node, 1) + 1);
+                }
+            }
+            for (TempList uses = flowGraph.use(node); uses != null; uses = uses.tail) {
+                Node useNode = this.tnode(uses.head);
+                if (useNode != null) {
+                    useCount.put(useNode, defCount.getOrDefault(node, 1) + 1);
+                }
+            }
+        }
+    }
+
     private Temp getTemp(Integer i) {
         if (tempMap.containsKey(i)) {
             return tempMap.get(i);
@@ -103,11 +124,11 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                 changed = changed || ((c1 != 0) || (c2 != 0));
             }
             /*
-            System.out.println("--- Iteration " + iterationCount + " ----");
-            for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
-                System.out.println(nodes.head + " " + liveInMap.get(nodes.head) + " " + liveOutMap.get(nodes.head));
-            }
-            System.out.println("---------------");*/
+             * System.out.println("--- Iteration " + iterationCount + " ----"); for
+             * (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+             * System.out.println(nodes.head + " " + liveInMap.get(nodes.head) + " " +
+             * liveOutMap.get(nodes.head)); } System.out.println("---------------");
+             */
             if (!changed)
                 break;
 
@@ -171,11 +192,12 @@ public class IGBackwardControlEdges extends InterferenceGraph {
      */
     public IGBackwardControlEdges(FlowGraph flowGraph) {
         this.flowGraph = flowGraph;
-        liveMap = new Hashtable<Node, TempList>();
-        tempMap = new Hashtable<Integer, Temp>();
+        this.liveMap = new Hashtable<Node, TempList>();
+        this.tempMap = new Hashtable<Integer, Temp>();
         this.computeLiveness(flowGraph);
         this.computeLiveRanges();
         this.buildGraph(flowGraph);
+        this.updateUseAndDefCounts();
     }
 
     public int getIterationCount() {
@@ -199,8 +221,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
 
     @Override
     public int spillCost(Node node) {
-        //compute the spill cost be analysis the node
-        return 0;
+        return this.defCount.getOrDefault(node, 0) + this.useCount.getOrDefault(node, 0);
     }
 
     @Override
