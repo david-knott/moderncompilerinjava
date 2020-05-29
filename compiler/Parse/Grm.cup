@@ -183,7 +183,7 @@ ifThenElse ::= IF exp:e1 THEN exp:e2 ELSE exp:e3 {: RESULT = new Absyn.IfExp(e1l
 
 whileExp ::= WHILE exp:e1 DO exp:e2 {: RESULT = new Absyn.WhileExp(e1left, (Absyn.Exp)e1, (Absyn.Exp)e2); :};
 
-forExp ::= FOR ID:i ASSIGN exp:e0 TO exp:e1 DO exp:e2 {: RESULT = new Absyn.ForExp(ileft, new Absyn.VarDec(ileft, Symbol.Symbol.symbol("<" + i ">"), null, e0), e1, e2); :};
+forExp ::= FOR ID:i ASSIGN exp:e0 TO exp:e1 DO exp:e2 {: RESULT = new Absyn.ForExp(ileft, new Absyn.VarDec(ileft, Symbol.Symbol.symbol("<" + i + ">"), null, e0), e1, e2); :};
 
 letExp ::= LET decList:e1 IN expList:e2 END {: RESULT = new Absyn.LetExp(e1left, (Absyn.DecList)e1, (Absyn.Exp)new Absyn.SeqExp(e1left, e2)); :};
 
