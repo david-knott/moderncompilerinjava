@@ -1,9 +1,14 @@
 package RegAlloc;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
 import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Frame.Frame;
+import Graph.GraphvisRenderer;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
@@ -21,6 +26,20 @@ public class RegAlloc implements TempMap {
 		FlowGraph fg = new AssemFlowGraph(instrList);
 		InterferenceGraph baig = new IGBackwardControlEdges(fg);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
+		try {
+			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
+			new GraphvisRenderer().render(ps, baig, this);
+			ps.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			PrintStream ps = new PrintStream(new FileOutputStream("./flow-graph" + this.iterations + ".txt"));
+			new GraphvisRenderer().render(ps, fg, this);
+			ps.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private boolean hasSpills() {
@@ -29,6 +48,7 @@ public class RegAlloc implements TempMap {
 
 	private void rewrite() {
 		TempList spills = this.colour.spills();
+		System.out.println("Spills:" + spills);
 		InstrList newList = null;
 		for (; instrList != null; instrList = instrList.tail) {
 			TempList spilledDefs = TempList.and(instrList.head.def(), spills);
@@ -37,14 +57,15 @@ public class RegAlloc implements TempMap {
 				newList = InstrList.append(newList, instrList.head);
 				continue;
 			}
-			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
-				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head);
-				newList = InstrList.append(newList, tempToMemory);
-			}
-			newList = InstrList.append(newList, instrList.head);
+			
 			for (; spilledUses != null; spilledUses = spilledUses.tail) {
 				InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head);
 				newList = InstrList.append(newList, memoryToTemp);
+			}
+			newList = InstrList.append(newList, instrList.head);
+			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
+				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head);
+				newList = InstrList.append(newList, tempToMemory);
 			}
 			
 		}
@@ -54,13 +75,11 @@ public class RegAlloc implements TempMap {
 	private void allocate() {
 		this.iterations++;
 		System.out.println(this.iterations);
-		this.instrList.dump();
 		this.build();
 		if (this.hasSpills()) {
 			this.rewrite();
-			// this.allocate();
+			this.allocate();
 		}
-		this.instrList.dump();
 	}
 
 	public RegAlloc(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {

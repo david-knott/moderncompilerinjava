@@ -1,5 +1,6 @@
 package Temp;
 
+import java.util.HashSet;
 import java.util.Hashtable;
 
 public class TempList {
@@ -104,9 +105,9 @@ public class TempList {
    }
 
    public static TempList create(Temp[] h) {
-      TempList tl = new TempList(h[0]);
+      TempList tl = null;
       for (int i = 1; i < h.length; i++) {
-         tl.append(h[i]);
+         tl = TempList.append(tl, h[i]);
       }
       return tl;
    }
@@ -123,13 +124,6 @@ public class TempList {
          throw new Error("h cannot be null");
       head = h;
       tail = t;
-   }
-
-   public void append(Temp t) {
-      TempList end = this;
-      for (; end.tail != null; end = end.tail)
-         ;
-      end.tail = new TempList(t);
    }
 
    public boolean contains(Temp n) {

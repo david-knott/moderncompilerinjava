@@ -1,0 +1,9 @@
+graph D{
+t4 [ style=filled fillcolor="brown" label="r10 [t4]"]
+t1 [ style=filled fillcolor="bisque2" label="rax [t1]"]
+t3 [ style=filled fillcolor="firebrick" label="rdi [t3]"]
+t2 [ style=filled fillcolor="deeppink1" label="rdx [t2]"]
+t1 -- {t2} [style=solid]
+t1 -- {t3} [style=solid]
+t1 -- {t4} [style=solid]
+}

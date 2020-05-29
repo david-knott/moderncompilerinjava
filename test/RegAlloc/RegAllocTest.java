@@ -35,12 +35,13 @@ public class RegAllocTest {
         Temp r1 = Temp.create("rax");
         Temp r2 = Temp.create("rdx");
         Temp r3 = Temp.create("rdi");
+        Temp r4 = Temp.create("r10");
         Temp t1 = Temp.create("t1");
         Temp t2 = Temp.create("t2");
         Temp t3 = Temp.create("t3");
         Temp t4 = Temp.create("t4");
-        TempList precoloured = TempList.create(new Temp[] { r0, r1, r2, r3 });
-        TempList registers = TempList.create(new Temp[] { r1, r2  });
+        TempList precoloured = TempList.create(new Temp[] { r0, r1, r2, r3, r4 });
+        TempList registers = TempList.create(new Temp[] { r1, r2, r3  });
         TestFrame testFrame = new TestFrame(precoloured, registers);
         InstrList instrList = new InstrList(new TEST(new TempList(t1, new TempList(r3)), new TempList(t2)),
                 new InstrList(new TEST(new TempList(t3), new TempList(t4)),

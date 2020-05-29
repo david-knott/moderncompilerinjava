@@ -1,0 +1,14 @@
+digraph D{
+0 [ label="test %null,  %rdx"]
+1 [ label="test %null,  %rdi"]
+2 [ label="test %rdi,  %null"]
+3 [ label="test %rdx,  %null"]
+4 [ label="test %rdi,  %null"]
+5 [ label="test %null,  %null"]
+0 -> {1}
+1 -> {2}
+2 -> {3}
+3 -> {4}
+4 -> {5}
+5 -> {}
+}

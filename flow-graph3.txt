@@ -1,0 +1,34 @@
+digraph D{
+0 [ label="test %null,  %rdx"]
+1 [ label="movq %rdx, %null; ttm"]
+2 [ label="movq %null, 0(%rax); ttm"]
+3 [ label="movq 0(%rax), %null; mtt"]
+4 [ label="movq %null, %null; mtt"]
+5 [ label="test %null,  %null"]
+6 [ label="test %null,  %null"]
+7 [ label="movq 0(%rax), %rdx; mtt"]
+8 [ label="movq %rdx, %rdx; mtt"]
+9 [ label="test %rdx,  %null"]
+10 [ label="movq %null, %rdx; ttm"]
+11 [ label="movq %rdx, 0(%rax); ttm"]
+12 [ label="test %null,  %null"]
+13 [ label="test %null,  %null"]
+14 [ label="movq %null, %null; ttm"]
+15 [ label="movq %null, 0(%rax); ttm"]
+0 -> {1}
+1 -> {2}
+2 -> {3}
+3 -> {4}
+4 -> {5}
+5 -> {6}
+6 -> {7}
+7 -> {8}
+8 -> {9}
+9 -> {10}
+10 -> {11}
+11 -> {12}
+12 -> {13}
+13 -> {14}
+14 -> {15}
+15 -> {}
+}

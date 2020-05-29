@@ -1,0 +1,46 @@
+digraph D{
+0 [ label="test %null,  %null"]
+1 [ label="movq %null, %null; ttm"]
+2 [ label="movq %null, 0(%rax); ttm"]
+3 [ label="movq 0(%rax), %null; mtt"]
+4 [ label="movq %null, %null; mtt"]
+5 [ label="test %null,  %null"]
+6 [ label="movq %null, %null; ttm"]
+7 [ label="movq %null, 0(%rax); ttm"]
+8 [ label="movq 0(%rax), %null; mtt"]
+9 [ label="movq %null, %null; mtt"]
+10 [ label="test %null,  %null"]
+11 [ label="movq 0(%rax), %null; mtt"]
+12 [ label="movq %null, %null; mtt"]
+13 [ label="test %null,  %null"]
+14 [ label="movq %null, %null; ttm"]
+15 [ label="movq %null, 0(%rax); ttm"]
+16 [ label="movq 0(%rax), %null; mtt"]
+17 [ label="movq %null, %null; mtt"]
+18 [ label="test %null,  %null"]
+19 [ label="test %null,  %null"]
+20 [ label="movq %null, %null; ttm"]
+21 [ label="movq %null, 0(%rax); ttm"]
+0 -> {1}
+1 -> {2}
+2 -> {3}
+3 -> {4}
+4 -> {5}
+5 -> {6}
+6 -> {7}
+7 -> {8}
+8 -> {9}
+9 -> {10}
+10 -> {11}
+11 -> {12}
+12 -> {13}
+13 -> {14}
+14 -> {15}
+15 -> {16}
+16 -> {17}
+17 -> {18}
+18 -> {19}
+19 -> {20}
+20 -> {21}
+21 -> {}
+}
