@@ -31,41 +31,22 @@ public class RegAlloc implements TempMap {
 		TempList spills = this.colour.spills();
 		InstrList newList = null;
 		for (; instrList != null; instrList = instrList.tail) {
-			boolean instructionWritten = false;
-			;
-			if (instrList.head.def() != null) {
-				TempList spilledDefs = instrList.head.def().and(spills);
-				for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
-					if (newList == null) {
-						newList = new InstrList(instrList.head, null);
-					} else {
-						newList.append(instrList.head);
-					}
-					InstrList tempToMemory = frame.tempToMemory(spilledDefs.head);
-					newList.append(tempToMemory);
-					instructionWritten = true;
-				}
+			TempList spilledDefs = TempList.and(instrList.head.def(), spills);
+			TempList spilledUses = TempList.and(instrList.head.use(), spills);
+			if (TempList.or(spilledDefs, spilledUses) == null) {
+				newList = InstrList.append(newList, instrList.head);
+				continue;
 			}
-			if (instrList.head.use() != null) {
-				TempList spilledUses = instrList.head.use().and(spills);
-				for (; spilledUses != null; spilledUses = spilledUses.tail) {
-					InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head);
-					if (newList == null) {
-						newList = memoryToTemp;
-					} else {
-						newList.append(memoryToTemp);
-					}
-					newList.append(instrList.head);
-					instructionWritten = true;
-				}
+			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
+				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head);
+				newList = InstrList.append(newList, tempToMemory);
 			}
-			if (!instructionWritten) {
-				if (newList == null) {
-					newList = new InstrList(instrList.head, null);
-				} else {
-					newList.append(instrList.head);
-				}
+			newList = InstrList.append(newList, instrList.head);
+			for (; spilledUses != null; spilledUses = spilledUses.tail) {
+				InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head);
+				newList = InstrList.append(newList, memoryToTemp);
 			}
+			
 		}
 		this.instrList = newList;
 	}
@@ -77,7 +58,7 @@ public class RegAlloc implements TempMap {
 		this.build();
 		if (this.hasSpills()) {
 			this.rewrite();
-			this.allocate();
+			// this.allocate();
 		}
 		this.instrList.dump();
 	}
