@@ -101,4 +101,10 @@ public class TigerTests {
         Main m = new Main("chap5", loadFile("./test/fixtures/forLoop.tig"));
         m.compile();
     }
+
+    @Test
+    public void functionAdd() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/functionAdd.tig"));
+        m.compile();
+    }
 }

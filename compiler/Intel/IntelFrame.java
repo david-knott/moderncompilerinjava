@@ -19,6 +19,7 @@ import Tree.TEMP;
 import Util.BoolList;
 import Assem.Instr;
 import Assem.InstrList;
+import Assem.LABEL;
 import Assem.OPER;
 import Codegen.Codegen;
 import Frame.*;
@@ -210,6 +211,9 @@ public class IntelFrame extends Frame {
      * @param frml the formal list, where true indicates the argument escapes
      */
     public IntelFrame(Label nm, BoolList frml) {
+        if(nm == null)
+            throw new Error("Label cannot be null");
+        this.name = nm;
         this.codege = new Codegen(this);
         int i = 0;
         while (frml != null) {
@@ -374,9 +378,15 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Proc procEntryExit3(Assem.InstrList body) {
-        InstrList prolog = new InstrList(new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), new InstrList(
-                new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
-                new InstrList(new OPER("sub %`d0, " + this.localOffset, new TempList(IntelFrame.rsp), null), null)));
+        InstrList prolog = new InstrList(
+            new LABEL(this.name.toString(), this.name),
+                new InstrList(new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), 
+                    new InstrList(new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
+                       new InstrList(new OPER("sub %`d0, " + this.localOffset, new TempList(IntelFrame.rsp), null), null
+                    )
+                )
+            )
+        );
         InstrList epilog = new InstrList(
                 new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
                 new InstrList(new OPER("pop %`d0", new TempList(IntelFrame.rbp), null),
