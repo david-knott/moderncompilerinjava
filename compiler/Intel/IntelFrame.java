@@ -17,7 +17,6 @@ import Tree.Stm;
 import Tree.StmList;
 import Tree.TEMP;
 import Util.BoolList;
-import Util.GenericLinkedList;
 import Assem.Instr;
 import Assem.InstrList;
 import Assem.OPER;
