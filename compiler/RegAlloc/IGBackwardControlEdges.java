@@ -157,19 +157,24 @@ public class IGBackwardControlEdges extends InterferenceGraph {
             TempList tempList = liveMap.get(n);
             var defs = flowGraph.def(n);
             var uses = flowGraph.use(n);
+            //compute the interference edges
             if (flowGraph.isMove(n)) {
+                boolean interferes = false;
                 // for each use temp that is not equals to liveout temp create edge
-                for (; uses != null; uses = uses.tail) { // dont need this loop, as only 1 use per moe ?
+                //for (; uses != null; uses = uses.tail) { // dont need this loop, as only 1 use per moe ?
                     for (; tempList != null; tempList = tempList.tail) {
                         // we can assume moves only have 1 src and 1 dest
                         if (uses.head != tempList.head && defs.head != tempList.head) {
                             Node from = this.getOrCreate(defs.head);
                             Node to = this.getOrCreate(tempList.head);
-                            this.moveList = new MoveList(from, to, this.moveList);
                             this.addEdge(from, to);
+                            interferes = true;
                         }
                     }
-                }
+                    if(!interferes) {
+                        this.moveList = new MoveList(this.tnode(flowGraph.use(n).head), this.tnode(flowGraph.def(n).head), this.moveList);
+                    }
+                //}
             } else {
                 // for each def temp and liveout temp create edge
                 for (; defs != null; defs = defs.tail) {
@@ -182,6 +187,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                     }
                 }
             }
+            //add non interfering edges that are moves
         }
     }
 
