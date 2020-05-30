@@ -38,9 +38,6 @@ import java.util.Hashtable;
  */
 public class IntelFrame extends Frame {
 
-    private int localOffset = 0;
-    private StmList callingConventions;
-    private Codegen codege;
     private static final int WORD_SIZE = 8;
     public static Temp rax = Temp.create("rax");
     public static Temp rsp = Temp.create("rsp");
@@ -86,50 +83,27 @@ public class IntelFrame extends Frame {
     /**
      * Registers that are available as colours for the register allocator.
      */
-    private TempList registers = TempList.create(new Temp[]{
-        rax,
-        rbx,
-        rcx,
-        rdx,
-        rdi,
-        r8,
-        r9,
-        r10,
-        r11,
-        r12,
-        r13,
-        r14,
-        r15
-    });
+    private TempList registers = TempList
+            .create(new Temp[] { rax, rbx, rcx, rdx, rdi, r8, r9, r10, r11, r12, r13, r14, r15 });
 
     /**
      * Registers that are available as colours for the register allocator.
      */
-    private TempList precoloured = TempList.create(new Temp[]{
-        rax,
-        rsp,
-        rbx,
-        rcx,
-        rdx,
-        rdi,
-        rbp,
-        r8,
-        r9,
-        r10,
-        r11,
-        r12,
-        r13,
-        r14,
-        r15
-    });
-
+    private TempList precoloured = TempList
+            .create(new Temp[] { rax, rsp, rbx, rcx, rdx, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15 });
 
     // return sink used to indicate that certain values are live at function exit
     private static TempList returnSink = new TempList(rsp, calleeSaves);
+
+    private int localOffset = 0;
+    private StmList callingConventions;
+    private Codegen codege;
     // map to store spilled temps and their related inframe accesses
     private Hashtable<Temp, InFrame> spillMap = new Hashtable<Temp, InFrame>();
     // map to store callee registers and the temp created to store them.
     private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
+
+    private AccessList accesses;
 
     private void addCallingConvention(Stm stm) {
         if (this.callingConventions == null) {
@@ -212,6 +186,10 @@ public class IntelFrame extends Frame {
         this.addCallingConvention(new Tree.MOVE(memDest, new Tree.TEMP(src)));
     }
 
+    private void modifyOffset() {
+        System.out.println("creating format offset");
+        localOffset = localOffset - WORD_SIZE;
+    }
 
     /**
      * Initialises a new instance of an Intel Frame activation record. The frml
@@ -240,38 +218,42 @@ public class IntelFrame extends Frame {
             var escape = i > 5 || frml.head;
             Access local;
             if (!escape) {
-                // create a new temp for the variable
                 Temp temp = Temp.create();
-                // moves calling convention register value into our temp
                 this.moveRegArgsToTemp(temp, i);
                 local = new InReg(temp);
             } else {
-                // create a location in the frame for the item
-                localOffset = localOffset - WORD_SIZE;
-                System.out.println("creating format offset");
                 this.moveFrameToFormal(localOffset, i);
-                local = new InFrame((localOffset));
+                local = this.allocLocal(true);
             }
-            if (super.formals == null)
-                super.formals = new AccessList(local, null);
-            else
-                super.formals.append(local);
+            super.formals = AccessList.append(super.formals, local);
             frml = frml.tail;
             i++;
         }
     }
 
     /**
-     * Allocates a local for storage in this frame.
+     * Allocates a local for storage in this frame or as a temporary.
+     * Adds access to internal linked list for later usage.
      */
     @Override
     public Access allocLocal(boolean escape) {
-        localOffset = localOffset - WORD_SIZE;
-        return escape ? new InFrame(localOffset) : new InReg(new Temp());
+        Access access = null;
+        if(escape) {
+            this.modifyOffset();
+            access = new InFrame(localOffset);
+        } else {
+            access = new InReg(Temp.create());
+        }
+        this.accesses = AccessList.append(this.accesses, access);
+        return access;
     }
 
     /**
-     * Creates a new Frame instance. Where name is
+     * Creates a new Frame instance. Where name is the name
+     * of the function and formals is a linked list of booleans
+     * that mark parameters as being in the frame or in registers.
+     * This stack frame is for Intel processors so the first 6 arguments
+     * are stored in temporaries. 
      * 
      * @param name    the name of the function.
      * @param formals the formal argument list, where a true indicates the variable
@@ -311,11 +293,10 @@ public class IntelFrame extends Frame {
     /**
      * Returns a linked list of statements that move the callee precoloured
      * registers into new temporaries. These may be spilled by the register
-     * allocator, or coloured to a free register. 
+     * allocator, or coloured to a free register.
      * 
-     * This moves callee saves to temporaries regardless of whether they are
-     * used or not. It would be better to only move items that are already in
-     * use.
+     * This moves callee saves to temporaries regardless of whether they are used or
+     * not. It would be better to only move items that are already in use.
      * 
      * @return a linked list of move statements.
      */
@@ -375,20 +356,10 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-       return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
+        return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
     }
 
-    private Assem.InstrList append(Assem.InstrList a, Assem.InstrList b) {
-        if (a == null)
-            return b;
-        else {
-            Assem.InstrList p;
-            for (p = a; p.tail != null; p = p.tail)
-                ;
-            p.tail = b;
-            return a;
-        }
-    }
+    
 
     /**
      * The return sink is an empty operation added to the end of a function. It is
@@ -396,7 +367,7 @@ public class IntelFrame extends Frame {
      * marked as live on exit from the function.
      */
     public Assem.InstrList procEntryExit2(Assem.InstrList body) {
-        return append(body, new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
+        return InstrList.append(body, new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
     }
 
     /**
@@ -404,25 +375,13 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Proc procEntryExit3(Assem.InstrList body) {
-        InstrList prolog = new InstrList(
-            new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), 
-            new InstrList(
+        InstrList prolog = new InstrList(new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), new InstrList(
                 new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
-                new InstrList(
-                    new OPER("sub %`d0, " + this.localOffset, new TempList(IntelFrame.rsp), null),
-                    null
-                ) 
-            )
-        );
+                new InstrList(new OPER("sub %`d0, " + this.localOffset, new TempList(IntelFrame.rsp), null), null)));
         InstrList epilog = new InstrList(
-            new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
-            new InstrList(
-                new OPER("pop %`d0", new TempList(IntelFrame.rbp), null),
-                new InstrList(
-                    new OPER("ret", null,  null)
-                )
-            )
-        );
+                new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
+                new InstrList(new OPER("pop %`d0", new TempList(IntelFrame.rbp), null),
+                        new InstrList(new OPER("ret", null, null))));
         return new Proc(prolog, body, epilog);
     }
 
@@ -463,7 +422,6 @@ public class IntelFrame extends Frame {
     public TempList registers() {
         return registers;
     }
-    
 
     /**
      * Returns a string representation of this frame.
@@ -484,14 +442,16 @@ public class IntelFrame extends Frame {
     public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
 
         Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0", spillTemp, temp);
-        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame)access).offset + "(%`d0)", this.precoloured, new TempList(spillTemp, null));
-        return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null)); 
+        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame) access).offset + "(%`d0)", this.precoloured,
+                new TempList(spillTemp, null));
+        return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null));
     }
 
     @Override
     public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
-        Instr moveFrameToNewTemp = new OPER("movq " + ((InFrame)access).offset + "(%`s0), %`d0", new TempList(spillTemp, null), this.precoloured);
+        Instr moveFrameToNewTemp = new OPER("movq " + ((InFrame) access).offset + "(%`s0), %`d0",
+                new TempList(spillTemp, null), this.precoloured);
         Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0; mtt", temp, spillTemp);
-        return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null)); 
+        return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null));
     }
 }
