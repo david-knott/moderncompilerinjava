@@ -111,7 +111,10 @@ public class RegAlloc implements TempMap {
 	public String tempMap(Temp t) {
 		String maps = this.colour.tempMap(t);
 		if (maps == null) {
-			return this.frame.tempMap(t);
+			maps = this.frame.tempMap(t);
+		}
+		if(maps == null) {
+			throw new Error("No map for " + t);
 		}
 		return maps;
 	}

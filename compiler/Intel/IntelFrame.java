@@ -90,7 +90,7 @@ public class IntelFrame extends Frame {
      * Registers that are available as colours for the register allocator.
      */
     private TempList precoloured = TempList
-            .create(new Temp[] { rax, rsp, rbx, rcx, rdx, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15 });
+            .create(new Temp[] { rax, rsp, rbx, rcx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15 });
 
     // return sink used to indicate that certain values are live at function exit
     private static TempList returnSink = new TempList(rsp, calleeSaves);
@@ -98,8 +98,6 @@ public class IntelFrame extends Frame {
     private int localOffset = 0;
     private StmList callingConventions;
     private Codegen codege;
-    // map to store spilled temps and their related inframe accesses
-    private Hashtable<Temp, InFrame> spillMap = new Hashtable<Temp, InFrame>();
     // map to store callee registers and the temp created to store them.
     private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
 
@@ -339,13 +337,13 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Returns a list of statements that move formal arguments from their calling
+     * Returns a list of Tree statements that move formal arguments from their calling
      * convention registers or frame locations to the temporaries that are used in
      * the function body.
      * 
      * @return a linked list of move statements.
      */
-    Stm moveArgs() {
+    private Stm moveArgs() {
         if (this.callingConventions == null) {
             return new EXP(new CONST(0));
         }
@@ -353,9 +351,10 @@ public class IntelFrame extends Frame {
     }
 
     /**
+     * Returns the Tree representation. This is has yet to be put into canonical form.
      * The idea here is that the register allocator will spill the callee Temps if
      * it needs to. The precoloured temps ( callee ) cannot be spilled as they are
-     * precoloured so we move them into new temps that are not coloured.
+     * precoloured so we move them into new temps that are not coloured. 
      */
     @Override
     public Stm procEntryExit1(Stm body) {

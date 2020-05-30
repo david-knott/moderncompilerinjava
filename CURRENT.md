@@ -1,5 +1,14 @@
 ## Diary
 
+*30th May 2020*
+Fixed bug in cmp register allocation.
+Fixed bug where functional label was not being written to asm.
+For loop looks correct
+
+TODO: Ensure that functions that do not return a value are handled correctly.
+
+TODO: FIgure out how to calculate out going parameter space.
+
 *29th May 2020*
 Need to ensure that the memory accesses created for spills are used for defs and uses.
 TODO: Test this !

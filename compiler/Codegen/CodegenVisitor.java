@@ -303,7 +303,6 @@ class CodegenVisitor implements TreeVisitor {
     public void visit(CALL call) {
         var name = (NAME)call.func;
         TempList l = munchArgs(0, call.args);
-        //result goes into rax
         temp = IntelFrame.rax;
         emit(new OPER("call " + name.label,  calldefs, l));
     }
