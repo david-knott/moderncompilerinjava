@@ -34,9 +34,10 @@ public class TranslateTest {
     @Before
     public void setup() {
         translator = new Translator(false, false);
-        frame = new IntelFrame(Label.create("test"), null);
+        Label label = Label.create("test");
+        frame = new IntelFrame(label, null);
         level = new Level(frame);
-        childLevel = new Level(level, Symbol.symbol("child"), null);
+        childLevel = new Level(level, label, null);
     }
 
     @Test

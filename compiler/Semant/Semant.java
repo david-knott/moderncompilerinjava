@@ -256,7 +256,8 @@ public class Semant {
             // creates a new level and a new frame and allocates
             // space for the formal parameters
             // for each formal parameter, we need to get its frame access
-            var functionEntry = new FunEntry(new Level(level, e.name, getBoolList(current.params)), Label.create(e.name),
+            Label functionLabel = Label.create();
+            var functionEntry = new FunEntry(new Level(level, functionLabel, getBoolList(current.params)), functionLabel,
                     getRecordType(current.params), functionReturnType);
             // add function entry into the value environment
             env.venv.put(current.name, functionEntry);

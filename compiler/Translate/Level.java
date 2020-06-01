@@ -35,9 +35,9 @@ public class Level {
      * @param name
      * @param fmls
      */
-    public Level(Level prnt, Symbol name, BoolList fmls) {
+    public Level(Level prnt, Label name, BoolList fmls) {
         parent = prnt;
-        frame = prnt.frame.newFrame(new Label(name), new BoolList(true, fmls));
+        frame = prnt.frame.newFrame(name, new BoolList(true, fmls));
         Frame.AccessList frameFormals = frame.formals;
         for(; frameFormals != null; frameFormals = frameFormals.tail) {
             if(formals == null){
