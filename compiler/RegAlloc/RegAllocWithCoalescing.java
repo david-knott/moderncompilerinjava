@@ -56,13 +56,12 @@ public class RegAllocWithCoalescing implements TempMap {
     private void build() {
         FlowGraph fg = new AssemFlowGraph(instrList);
         interferenceGraph = new IGBackwardControlEdges(fg);
-        //populate the precoloured.
         for(var tl = this.frame.registers(); tl != null; tl = tl.tail) {
             this.precoloured = NodeWorkList.append(this.precoloured, this.interferenceGraph.tnode(tl.head));
         }
         for (NodeList nodeList = fg.nodes(); nodeList != null; nodeList = nodeList.tail) {
             if (fg.isMove(nodeList.head)) {
-                workListMoves = Worklist.or(workListMoves, new InstructionWorkList(fg.instr(nodeList.head)));
+                workListMoves = InstructionWorkList.or(workListMoves, new InstructionWorkList(fg.instr(nodeList.head)));
                 for (TempList uod = TempList.or(fg.instr(nodeList.head).def(),
                         fg.instr(nodeList.head).def()); uod != null; uod = uod.tail) {
                     Node nuod = interferenceGraph.tnode(uod.head);
@@ -73,6 +72,12 @@ public class RegAllocWithCoalescing implements TempMap {
         }
     }
 
+    /**
+     * Add temps and their related nodes into the correct worklist.
+     * If the degree is greater or equal to K, we add to the spill work list
+     * If the node is move related, add it to the freeze work list.
+     * Otherwise add it to the simplify work list
+     */
     private void makeWorklist() {
         for (TempList tempList = initial; tempList != null; tempList = tempList.tail) {
             Node node = interferenceGraph.tnode(tempList.head);
@@ -95,6 +100,9 @@ public class RegAllocWithCoalescing implements TempMap {
         return nodeMoves(node) == null;
     }
 
+    /**
+     * Add nodes to the select stack and decrement their adjacent nodes degrees.
+     */
     private void simplify() {
         for (NodeWorkList nodeWorkList = this.simplifyWorkList; nodeWorkList != null; nodeWorkList = nodeWorkList.next) {
             stack.push(nodeWorkList.me);
@@ -104,6 +112,15 @@ public class RegAllocWithCoalescing implements TempMap {
         }
     }
 
+    /**
+     * Decrement node head's degree by one. If this node moves from > K to K
+     * we enable moves for this node and its adjacent nodes. We then remove this
+     * node from the spill work list.
+     * If the node is move related, we move it to the freeze worklist, if not,
+     * move it to the simplify worklist.
+     * This method can be called from either the simplify method or the combine method.
+     * @param head
+     */
     private void decrementDegree(Node head) {
         int d = this.degree.get(head);
         d = d - 1;
