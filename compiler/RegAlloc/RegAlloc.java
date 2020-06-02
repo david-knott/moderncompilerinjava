@@ -9,7 +9,6 @@ import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Frame.Access;
-import Frame.AccessList;
 import Frame.Frame;
 import Graph.GraphvisRenderer;
 import Temp.Temp;

@@ -5,6 +5,9 @@ import Temp.TempList;
 
 public class InstrList {
     
+	public static InstrList or(InstrList instrList, Instr instr) {
+		return null;
+	}
     /**
      * Return this set in reverse.
      * 
@@ -74,31 +77,6 @@ public class InstrList {
         tail = t;
     }
 
-    public InstrList reverse() {
-        InstrList reversed = null;
-        for (InstrList il = this; il != null; il = il.tail) {
-            if (reversed == null) {
-                reversed = new InstrList(il.head, null);
-            } else {
-                reversed = new InstrList(il.head, reversed);
-            }
-        }
-        return reversed;
-    }
-
-    public void append(Instr instr) {
-        InstrList end = this;
-        for (; end.tail != null; end = end.tail)
-            ;
-        end.tail = new InstrList(instr, null);
-    }
-
-    public void append(InstrList instrList) {
-        for (; instrList != null; instrList = instrList.tail) {
-            this.append(instrList.head);
-        }
-    }
-
     public int size() {
         int i = 0;
         InstrList end = this;
@@ -117,5 +95,6 @@ public class InstrList {
         }
         System.out.println("########################");
     }
+
 
 }
