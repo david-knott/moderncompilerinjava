@@ -81,9 +81,9 @@ abstract class Cx extends Exp {
 
     @Override
     Tree.Exp unEx() {
-        Label t = new Label();
-        Label f = new Label();
-        Temp r = new Temp();
+        Label t = Label.create();
+        Label f = Label.create();
+        Temp r = Temp.create();
         // move const 1 into temp r
         // call conditional statement with labels
         // add label false
@@ -160,7 +160,7 @@ class IfThenElseExp extends Exp {
      */
     @Override
     Tree.Exp unEx() {
-        var r = new Temp();
+        var r = Temp.create();
         return new Tree.ESEQ(
             new Tree.SEQ(
                 new Tree.SEQ(

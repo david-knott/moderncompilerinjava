@@ -55,7 +55,6 @@ public class IntelFrame extends Frame {
     public static Temp r13 = Temp.create("r13");// callee
     public static Temp r14 = Temp.create("r14");// callee
     public static Temp r15 = Temp.create("r15");// callee
-    public static TempList specialRegs = new TempList(rbp, new TempList(rsp, null));
 
     /**
      * A linked list of temporaries that represent registers that are saved upon
@@ -65,12 +64,6 @@ public class IntelFrame extends Frame {
      */
     public static TempList calleeSaves = new TempList(rbx,
             new TempList(r12, new TempList(r13, new TempList(r14, new TempList(r15, null)))));
-
-    /**
-     * A linked list of temporaries that are used to pass arguments to functions.
-     */
-    public static TempList argRegs = new TempList(rdi,
-            new TempList(rsi, new TempList(rdx, new TempList(rcx, new TempList(r8, new TempList(r9, null))))));
 
     /**
      * A linked list of temporaries that represent registers that are saved by the
@@ -84,17 +77,12 @@ public class IntelFrame extends Frame {
      * Registers that are available as colours for the register allocator.
      */
     private TempList registers = TempList
-            .create(new Temp[] { rax, rbx, rcx, rdx, rdi, r8, r9, r10, r11, r12, r13, r14, r15 });
-
-    /**
-     * Registers that are available as colours for the register allocator.
-     */
-    private TempList precoloured = TempList
             .create(new Temp[] { rax, rsp, rbx, rcx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15 });
 
     // return sink used to indicate that certain values are live at function exit
-    private static TempList returnSink = new TempList(rsp, calleeSaves);
-
+    // it also ensure thats rbp and rsp are not in use.
+    private static TempList returnSink = new TempList(rbp, new TempList(rsp, calleeSaves));
+    // offset within the frame
     private int localOffset = 0;
     private StmList callingConventions;
     private Codegen codege;
@@ -304,7 +292,7 @@ public class IntelFrame extends Frame {
     Stm calleeSaveList() {
         StmList list = null;
         for (TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
-            Temp calleeTemp = new Temp();
+            Temp calleeTemp = Temp.create();
             calleeTempMap.put(callee.head, calleeTemp);
             MOVE move = new MOVE(new TEMP(calleeTemp), new TEMP(callee.head));
             if (list == null) {
@@ -419,7 +407,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public String tempMap(Temp t) {
-        return this.precoloured.toTempMap().get(t);
+        return this.registers.toTempMap().get(t);
     }
 
     /**
@@ -448,9 +436,8 @@ public class IntelFrame extends Frame {
 
     @Override
     public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
-
         Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0", spillTemp, temp);
-        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame) access).offset + "(%`d0)", this.precoloured,
+        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame) access).offset + "(%`d0)", new TempList(this.FP()),
                 new TempList(spillTemp, null));
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null));
     }
@@ -458,7 +445,7 @@ public class IntelFrame extends Frame {
     @Override
     public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
         Instr moveFrameToNewTemp = new OPER("movq " + ((InFrame) access).offset + "(%`s0), %`d0",
-                new TempList(spillTemp, null), this.precoloured);
+                new TempList(spillTemp, null), new TempList(this.FP()));
         Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0; mtt", temp, spillTemp);
         return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null));
     }

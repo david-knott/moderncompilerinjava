@@ -4,6 +4,14 @@ import java.util.Hashtable;
 
 public class Temp implements Comparable<Temp> {
 
+   public static TempList all() {
+       TempList all = null;
+       for(String key : temps.keySet()) {
+            all = TempList.append(all, temps.get(key));
+       }
+       return all;
+   }
+
     private static Hashtable<String, Temp> temps = new Hashtable<String, Temp>();
     private static Hashtable<Temp, String> revTemps = new Hashtable<Temp, String>();
     private static int count;
@@ -31,7 +39,7 @@ public class Temp implements Comparable<Temp> {
 
     private int num;
 
-    public Temp() {
+    private Temp() {
         num = count++;
     }
 

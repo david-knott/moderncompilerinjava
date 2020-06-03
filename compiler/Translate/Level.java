@@ -48,7 +48,6 @@ public class Level {
         }
     }
 
-
     /**
      * Creates a local access within the frame for this level
      * @param escape should the variable escape or not

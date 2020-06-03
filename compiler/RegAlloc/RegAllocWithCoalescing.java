@@ -1,10 +1,6 @@
 package RegAlloc;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Hashtable;
-import java.util.Stack;
 
 import Assem.Instr;
 import Assem.InstrList;
@@ -12,7 +8,6 @@ import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Frame.Access;
 import Frame.Frame;
-import Graph.GraphvisRenderer;
 import Graph.Node;
 import Graph.NodeList;
 import Temp.Temp;
@@ -25,8 +20,7 @@ import Temp.TempMap;
 public class RegAllocWithCoalescing implements TempMap {
     public InstrList instrList;
     public Frame frame;
-    private TempList spillTemps;
-    private InterferenceGraph interferenceGraph;
+    //private TempList spillTemps;
 
     private InstructionWorkList workListMoves;
     private InstructionWorkList activeMoves;
@@ -50,23 +44,38 @@ public class RegAllocWithCoalescing implements TempMap {
     private NodeWorkList freezeWorkList;
     private NodeWorkList simplifyWorkList;
     private NodeWorkList coalescedNodes;
-    private Stack<Node> stack = new Stack<Node>();;
+    private NodeWorkList stack;
     private Hashtable<Node, Node> alias = new Hashtable<Node, Node>();
 
+    private InterferenceGraph interferenceGraph;
+    private FlowGraph flowGraph;
+
+    private void liveness() {
+        flowGraph = new AssemFlowGraph(instrList);
+        interferenceGraph = new IGBackwardControlEdges(flowGraph);
+    }
+
     private void build() {
-        FlowGraph fg = new AssemFlowGraph(instrList);
-        interferenceGraph = new IGBackwardControlEdges(fg);
+		for (TempList tempList = Temp.all(); tempList != null; tempList = tempList.tail) {
+            Temp temp = tempList.head;
+            if(!this.frame.registers().contains(temp)) {
+                this.initial = TempList.append(this.initial, temp);
+            }
+		}
+        //create precoloured nodeworklist.
         for(var tl = this.frame.registers(); tl != null; tl = tl.tail) {
             this.precoloured = NodeWorkList.append(this.precoloured, this.interferenceGraph.tnode(tl.head));
         }
-        for (NodeList nodeList = fg.nodes(); nodeList != null; nodeList = nodeList.tail) {
-            if (fg.isMove(nodeList.head)) {
-                workListMoves = InstructionWorkList.or(workListMoves, new InstructionWorkList(fg.instr(nodeList.head)));
-                for (TempList uod = TempList.or(fg.instr(nodeList.head).def(),
-                        fg.instr(nodeList.head).def()); uod != null; uod = uod.tail) {
+        //for each node in the flow graph, find the move related items.
+        for (NodeList nodeList = flowGraph.nodes(); nodeList != null; nodeList = nodeList.tail) {
+            if (flowGraph.isMove(nodeList.head)) {
+                workListMoves = InstructionWorkList.or(workListMoves, new InstructionWorkList(flowGraph.instr(nodeList.head)));
+                //for all uses or defs for the node and to move list.
+                for (TempList uod = TempList.or(flowGraph.instr(nodeList.head).def(),
+                        flowGraph.instr(nodeList.head).def()); uod != null; uod = uod.tail) {
                     Node nuod = interferenceGraph.tnode(uod.head);
                     InstructionWorkList instrList = moveList.get(nuod);
-                    moveList.put(nuod, InstructionWorkList.or(instrList, new InstructionWorkList(fg.instr(nodeList.head))));
+                    moveList.put(nuod, InstructionWorkList.or(instrList, new InstructionWorkList(flowGraph.instr(nodeList.head))));
                 }
             }
         }
@@ -105,7 +114,8 @@ public class RegAllocWithCoalescing implements TempMap {
      */
     private void simplify() {
         for (NodeWorkList nodeWorkList = this.simplifyWorkList; nodeWorkList != null; nodeWorkList = nodeWorkList.next) {
-            stack.push(nodeWorkList.me);
+            //stack.push(nodeWorkList.me);
+            this.stack = NodeWorkList.append(this.stack, nodeWorkList.me);
             for (NodeWorkList adjacent = this.adjacent(nodeWorkList.me); adjacent != null; adjacent = adjacent.next) {
                 this.decrementDegree(adjacent.me);
             }
@@ -249,15 +259,35 @@ public class RegAllocWithCoalescing implements TempMap {
         }
     }
 
-    private void selectSpill() {
+    /**
+     * Selects the node to spill from the spill worklist.
+     * @return a Node
+     */
+    private Node nodeToSpill() {
         Node m = this.spillWorkList.me;
+        return m;
+    }
+
+    private void selectSpill() {
+        Node m = this.nodeToSpill();
         this.spillWorkList = NodeWorkList.andOr(this.spillWorkList, new NodeWorkList(m));
         this.simplifyWorkList = NodeWorkList.or(this.simplifyWorkList, new NodeWorkList(m));
         this.freezeMoves(m);
     }
 
-    private void addEdge(Node me, Node u) {
-        throw new Error("Not impleented");
+    private void addEdge(Node u, Node v) {
+        if(this.inAdjacentSet(u, v) && u != v) {
+            this.addAdjacentSet(u, v);
+            this.addAdjacentSet(v, u);
+        }
+        if(!NodeWorkList.contains(this.precoloured, u)) {
+            this.adjList.put(u, NodeWorkList.or(this.adjList.get(u), new NodeWorkList(v)));
+            this.degree.put(u, this.degree.getOrDefault(u, 0));
+        }
+        if(!NodeWorkList.contains(this.precoloured, v)) {
+            this.adjList.put(v, NodeWorkList.or(this.adjList.get(v), new NodeWorkList(u)));
+            this.degree.put(v, this.degree.getOrDefault(v, 0));
+        }
     }
 
     private boolean conservative(NodeWorkList nodeWorkList) {
@@ -274,17 +304,28 @@ public class RegAllocWithCoalescing implements TempMap {
         throw new Error("Not impleented");
     }
 
-    private void addWorkList(Node u) {
+    private void addAdjacentSet(Node u, Node v) {
         throw new Error("Not impleented");
+    }
+
+    private void addWorkList(Node u) {
+        if(!NodeWorkList.contains(this.precoloured, u)
+        && !this.moveRelated(u)
+        && this.degree.get(u) < this.K) {
+            this.freezeWorkList = NodeWorkList.andOr(this.freezeWorkList, new NodeWorkList(u));
+            this.simplifyWorkList = NodeWorkList.or(this.simplifyWorkList, new NodeWorkList(u));
+        }
     }
 
     private NodeWorkList adjacent(Node me) {
-        throw new Error("Not impleented");
+        return NodeWorkList.andOr(this.adjList.get(me), NodeWorkList.or(this.stack, this.coalescedNodes));
     }
 
     private void assignColours() {
-        while (!this.stack.empty()) {
-            Node n = this.stack.pop();
+        while (this.stack != null) {
+
+            Node n = NodeWorkList.last(this.stack);
+            this.stack = NodeWorkList.andOr(this.stack, new NodeWorkList(n));
             TempList okColours = this.frame.registers();
             for (var w = this.adjList.get(n); w != null; w = w.next) {
                 if (NodeWorkList.contains(NodeWorkList.or(this.colouredNodes, this.precoloured), this.getAlias(w.me))) {
@@ -305,9 +346,21 @@ public class RegAllocWithCoalescing implements TempMap {
     }
 
     private void rewrite() {
+        NodeWorkList newTemps = null;
+        for(;this.spilledNodes != null; this.spilledNodes = this.spilledNodes.next) {
+            newTemps = NodeWorkList.or(newTemps, this.rewrite(new TempList(this.interferenceGraph.gtemp(this.spilledNodes.me))));
+        }
+        this.spilledNodes = null;
+        this.initial = null;
+        this.colouredNodes = null;
+        this.coalescedNodes = null;
+    }
+
+    private NodeWorkList rewrite(TempList spills) {
+        // this.spilledNodes
         // TempList spills = this.selectSpill();
-        TempList spills = null;
         InstrList newList = null;
+        NodeWorkList newTemps = null;
         Hashtable<Temp, Access> accessHash = new Hashtable<Temp, Access>();
         for (; instrList != null; instrList = instrList.tail) {
             TempList spilledDefs = TempList.and(instrList.head.def(), spills);
@@ -319,24 +372,29 @@ public class RegAllocWithCoalescing implements TempMap {
             for (; spilledUses != null; spilledUses = spilledUses.tail) {
                 Access access = accessHash.get(spilledUses.head);
                 Temp spillTemp = Temp.create();
-                this.spillTemps = TempList.append(this.spillTemps, spillTemp);
+                //TODO: temps do not have a corresponding node in the graph at this point.
+                //newTemps = NodeWorkList.append(newTemps, spillTemp);
+                //this.spillTemps = TempList.append(this.spillTemps, spillTemp);
                 InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head, spillTemp, access);
                 newList = InstrList.append(newList, memoryToTemp);
             }
             newList = InstrList.append(newList, instrList.head);
             for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
                 Temp spillTemp = Temp.create();
+                //newTemps = NodeWorkList.append(newTemps, spillTemp);
                 Access access = this.frame.allocLocal(false);
                 accessHash.put(spilledDefs.head, access);
-                this.spillTemps = TempList.append(this.spillTemps, spillTemp);
+                //this.spillTemps = TempList.append(this.spillTemps, spillTemp);
                 InstrList tempToMemory = frame.tempToMemory(spilledDefs.head, spillTemp, access);
                 newList = InstrList.append(newList, tempToMemory);
             }
         }
         this.instrList = newList;
+        return newTemps;
     }
 
     private void main() {
+        this.liveness();
         this.build();
         this.makeWorklist();
         do {
@@ -361,11 +419,11 @@ public class RegAllocWithCoalescing implements TempMap {
         }
     }
 
-    public RegAllocWithCoalescing(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {
+    public RegAllocWithCoalescing(Frame frame, InstrList instrList) {
         this.instrList = instrList;
         this.frame = frame;
         this.K = this.frame.registers().size();
-        
+        this.initial = null;
         this.main();
     }
 

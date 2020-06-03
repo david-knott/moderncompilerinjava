@@ -5,6 +5,7 @@ import java.util.Hashtable;
 
 public class TempList {
 
+
    public static boolean contains(TempList s, Temp n) {
       for (; s != null; s = s.tail) {
          if (s.head == n) {

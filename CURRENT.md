@@ -1,5 +1,9 @@
 ## Diary
 
+*3rd May 2020*
+Implementing coalescing algorithm.
+
+
 *30th May 2020*
 Fixed bug in cmp register allocation.
 Fixed bug where functional label was not being written to asm.

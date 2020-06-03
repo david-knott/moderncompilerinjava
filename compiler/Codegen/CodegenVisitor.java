@@ -154,7 +154,7 @@ class CodegenVisitor implements TreeVisitor {
                 var cnst = (CONST)treePattern.getNamedMatch("cnst");
                 exp.accept(this);
                 var src = temp;
-                temp = new Temp();
+                temp = Temp.create();
                 var dst = temp;
                 emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0", 
                     dst, src));
@@ -175,7 +175,7 @@ class CodegenVisitor implements TreeVisitor {
                 var cnst = (CONST)treePattern.getNamedMatch("cnst");
                 exp.accept(this);
                 var src = temp;
-                temp = new Temp();
+                temp = Temp.create();
                 var dst = temp;
                 emit(new Assem.MOVE("movq " + cnst.value + "(%`s0), %`d0", 
                     dst, src));
@@ -309,7 +309,7 @@ class CodegenVisitor implements TreeVisitor {
 
     @Override
     public void visit(CONST cnst) {
-        temp = new Temp();
+        temp = Temp.create();
         emit(new OPER("movq $" + cnst.value + ", %`d0", L(temp, null), null));
     }
 
@@ -323,7 +323,7 @@ class CodegenVisitor implements TreeVisitor {
         if(!tpl.match(exp)) {
             exp.exp.accept(this);
             var expTemp = temp;
-            temp = new Temp();
+            temp = Temp.create();
             emit(new Assem.MOVE("movq %`s0, %`d0", temp, expTemp));
         }
     }
@@ -343,7 +343,7 @@ class CodegenVisitor implements TreeVisitor {
         if(!tpl.match(op)) {
             op.exp.accept(this);
             var mem = temp;
-            temp = new Temp();
+            temp = Temp.create();
             emit(new Assem.MOVE("movq (%`s0), %`d0", temp, mem));
         }
     }
@@ -361,7 +361,7 @@ class CodegenVisitor implements TreeVisitor {
 
     @Override
     public void visit(NAME op) {
-        temp = new Temp();
+        temp = Temp.create();
         emit(new Assem.OPER("movq " + op.label + ", %`d0", L(temp, null), null));
     }
 

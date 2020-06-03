@@ -28,4 +28,8 @@ class NodeWorkList {
 		return null;
 	}
 
+	public static Node last(NodeWorkList nodeWorkList) {
+		return null;
+	}
+
 }

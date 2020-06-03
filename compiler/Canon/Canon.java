@@ -139,7 +139,7 @@ public class Canon {
         else {
             Tree.Exp a = exps.head;
             if (a instanceof Tree.CALL) {
-                Temp.Temp t = new Temp.Temp();
+                Temp.Temp t = Temp.Temp.create();
                 Tree.Exp e = new Tree.ESEQ(new Tree.MOVE(new Tree.TEMP(t), a), new Tree.TEMP(t));
                 return reorder(new Tree.ExpList(e, exps.tail));
             } else {
@@ -148,7 +148,7 @@ public class Canon {
                 if (commute(bb.stm, aa.exp))
                     return new StmExpList(seq(aa.stm, bb.stm), new Tree.ExpList(aa.exp, bb.exps));
                 else {
-                    Temp.Temp t = new Temp.Temp();
+                    Temp.Temp t = Temp.Temp.create();
                     return new StmExpList(seq(aa.stm, seq(new Tree.MOVE(new Tree.TEMP(t), aa.exp), bb.stm)),
                             new Tree.ExpList(new Tree.TEMP(t), bb.exps));
                 }

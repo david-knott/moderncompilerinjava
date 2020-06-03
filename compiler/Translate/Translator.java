@@ -194,7 +194,7 @@ public class Translator {
      */
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
         if(!this.arrayBoundsCheck) {
-            Temp arrayPointer = new Temp();
+            Temp arrayPointer = Temp.create();
             ExpList args = new ExpList(
                 transSizeExp.exp.unEx(), 
                 new ExpList(
@@ -223,7 +223,7 @@ public class Translator {
                     null
                 )
             );
-            Temp arrayPointer = new Temp();
+            Temp arrayPointer = Temp.create();
             return new Ex(
                 new ESEQ(
                     new MOVE(
