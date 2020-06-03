@@ -59,6 +59,11 @@ public class AssemFlowGraph extends FlowGraph {
     }
 
     @Override
+    public Node node(Instr instr) {
+        return invNodeMap.get(instr);
+    }
+
+    @Override
     public TempList def(Node node) {
         return instr(node).def();
     }

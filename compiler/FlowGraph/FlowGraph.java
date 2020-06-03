@@ -2,6 +2,7 @@ package FlowGraph;
 
 import Temp.TempList;
 import Graph.NodeList;
+import Assem.Instr;
 import Graph.Node;
 
 /**
@@ -30,7 +31,10 @@ public abstract class FlowGraph extends Graph.Graph {
 	 */
 	public abstract boolean isMove(Node node);
 
-	public abstract Assem.Instr instr(Node node);
+	public abstract Instr instr(Node node);
+
+	public abstract Node node(Instr instr);
+
 
 	/**
 	 * Print a human-readable dump for debugging.

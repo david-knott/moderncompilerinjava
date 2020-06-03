@@ -9,6 +9,7 @@ class InstructionWorkList {
     public InstructionWorkList prev;
 
     InstructionWorkList(Instr me) {
+		this.me = me;
     }
 
 	public static InstructionWorkList and(InstructionWorkList instrList, InstructionWorkList or) {
@@ -26,6 +27,10 @@ class InstructionWorkList {
 
 	public static InstructionWorkList or(InstructionWorkList constrainedMoves,
 			InstructionWorkList instructionWorkList) {
+		return null;
+	}
+
+	public static InstructionWorkList or(InstructionWorkList constrainedMoves, Instr head) {
 		return null;
 	}
 
