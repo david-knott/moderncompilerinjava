@@ -80,6 +80,7 @@ public class Main {
         }
         findEscape.traverse(this.ast.absyn);
         Frag frags = this.semant.getTreeFragments(this.ast.absyn);
+        out.println(".globl tigermain");
         for(; frags != null; frags = frags.next) {
             frags.process(out);
         }

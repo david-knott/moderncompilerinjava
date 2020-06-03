@@ -1,7 +1,12 @@
 ## Diary
 
 *3rd May 2020*
-Implementing coalescing algorithm.
+Implementing coalescing algorithm. 
+
+Going to ensure that the non coalesce version works first.
+
+$ gcc -Wimplicit-function-declaration  -Wl,--wrap,getchar test.s runtime.c  -o test.out && ./test.out
+
 
 
 *30th May 2020*

@@ -10,6 +10,7 @@ import Canon.Canonicalization;
 import Frame.Frame;
 import Frame.Proc;
 import RegAlloc.RegAlloc;
+import Temp.CombineMap;
 import Temp.DefaultMap;
 import Temp.TempMap;
 import Tree.Print;
@@ -104,14 +105,14 @@ public class ProcFrag extends Frag {
         }
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
-        RegAlloc regAlloc = new RegAlloc(this.frame, instrs, false);
+        TempMap tempMap = new CombineMap(this.frame, new RegAlloc(this.frame, instrs, false));
         Proc proc = this.frame.procEntryExit3(instrs);
-        out.println("section .text");
+        out.println(".text");
         for (InstrList prolog = proc.prolog; prolog != null; prolog = prolog.tail) {
             out.println(prolog.head.format(this.frame));
         }
         for (InstrList body = proc.body; body != null; body = body.tail) {
-            out.println(body.head.format(regAlloc));
+            out.println(body.head.format(tempMap));
            // out.println(body.head.format(new DefaultMap()));
         }
         for (InstrList epilog = proc.epilog; epilog != null; epilog = epilog.tail) {

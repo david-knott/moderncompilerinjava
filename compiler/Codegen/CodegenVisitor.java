@@ -276,7 +276,7 @@ class CodegenVisitor implements TreeVisitor {
             case BINOP.LSHIFT:
                 break;
             case BINOP.MINUS:
-                emit(new OPER("sub %`s0 %`d0", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
+                emit(new OPER("sub %`s0, %`d0", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
                 break;
             case BINOP.MUL:
                 emit(new OPER(";comment\n", null, null));
@@ -288,7 +288,7 @@ class CodegenVisitor implements TreeVisitor {
                 emit(new OPER("or %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
                 break;
             case BINOP.PLUS:
-                emit(new OPER("add %`s0 %`d0", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
+                emit(new OPER("add %`s0, %`d0", L(rightTemp, null), L(leftTemp, L(rightTemp, null))));
                 break;
             case BINOP.RSHIFT:
                 break;

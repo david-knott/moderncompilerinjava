@@ -39,14 +39,14 @@ import java.util.Hashtable;
 public class IntelFrame extends Frame {
 
     private static final int WORD_SIZE = 8;
-    public static Temp rax = Temp.create("rax");
+    public static Temp rbp = Temp.create("rbp");// callee saved
     public static Temp rsp = Temp.create("rsp");
+    public static Temp rax = Temp.create("rax");
     public static Temp rbx = Temp.create("rbx");// callee save
     public static Temp rcx = Temp.create("rcx");// 4th argu
     public static Temp rdx = Temp.create("rdx");// 3rd argu
     public static Temp rsi = Temp.create("rsi");// 2lrd argu
     public static Temp rdi = Temp.create("rdi");// 1st argu
-    public static Temp rbp = Temp.create("rbp");// callee saved
     public static Temp r8 = Temp.create("r8");// 5th argup
     public static Temp r9 = Temp.create("r9");// 6th argup
     public static Temp r10 = Temp.create("r10");// scratch
@@ -56,39 +56,75 @@ public class IntelFrame extends Frame {
     public static Temp r14 = Temp.create("r14");// callee
     public static Temp r15 = Temp.create("r15");// callee
 
+    private static TempList registers = new TempList(
+     /*   rax, new TempList( */
+            rbx, new TempList(
+                rcx, new TempList(
+                    rdx, new TempList(
+                        rsi, new TempList(
+                            rdi, new TempList(
+                                r8, new TempList(
+                                    r9, new TempList(
+                                        r10, new TempList(
+                                            r11, new TempList(
+                                                r12, new TempList(
+                                                    r13, new TempList(
+                                                        r14, new TempList(
+                                                            r15
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+      /*  ) */
+    );
+
     /**
      * A linked list of temporaries that represent registers that are saved upon
      * entry and restored upon exit by the callee function. The caller can be
      * guaranteed that these registers will contain the same values when the callee
      * returns.
      */
-    public static TempList calleeSaves = new TempList(rbx,
-            new TempList(r12, new TempList(r13, new TempList(r14, new TempList(r15, null)))));
+    public static TempList calleeSaves = new TempList(
+        rbx, new TempList(
+            r12, new TempList(
+                r13, new TempList(
+                    r14
+                )
+            )
+        )
+    );
 
     /**
      * A linked list of temporaries that represent registers that are saved by the
      * caller and restored by the caller. The callee is free to clobber the values
      * in these registers and not worry about restoring them.
      */
-    public static TempList callerSaves = new TempList(rcx, new TempList(rdx, new TempList(rdi,
-            new TempList(rsi, new TempList(r8, new TempList(r9, new TempList(r10, new TempList(r11, null))))))));
-
-    /**
-     * Registers that are available as colours for the register allocator.
-     */
-    private static TempList registers = TempList
-            .create(new Temp[] { rax, rsp, rbx, rcx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15 });
+    public static TempList callerSaves = new TempList(
+        r10, new TempList(
+            r11
+        )
+    );
 
     // return sink used to indicate that certain values are live at function exit
     // it also ensure thats rbp and rsp are not in use.
-    private static TempList returnSink = new TempList(rbp, new TempList(rsp, calleeSaves));
-    // map to store callee registers and the temp created to store them.
-    private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
+    private static TempList returnSink = new TempList(rsp, new TempList(rbp, calleeSaves));
+
     // offset within the frame
     private int localOffset = 0;
     private StmList callingConventions;
     private Codegen codegen;
     private AccessList accesses;
+    // map to store callee registers and the temp created to store them.
+    private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
+    private TempList tempMap = new TempList(rsp, new TempList(rbp, registers));
 
     private void addCallingConvention(Stm stm) {
         if (this.callingConventions == null) {
@@ -363,16 +399,16 @@ public class IntelFrame extends Frame {
     @Override
     public Proc procEntryExit3(Assem.InstrList body) {
         InstrList prolog = new InstrList(
-            new LABEL(this.name.toString(), this.name),
+                new OPER(this.name.toString() + ":", null, null),
                 new InstrList(new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), 
-                    new InstrList(new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
-                       new InstrList(new OPER("sub %`d0, " + this.localOffset, new TempList(IntelFrame.rsp), null), null
+                    new InstrList(new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
+                       new InstrList(new OPER("sub $" + this.localOffset + ", %`d0", new TempList(IntelFrame.rsp), null), null
                     )
                 )
             )
         );
         InstrList epilog = new InstrList(
-                new OPER("movq %`s0 %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
+                new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
                 new InstrList(new OPER("pop %`d0", new TempList(IntelFrame.rbp), null),
                         new InstrList(new OPER("ret", null, null))));
         return new Proc(prolog, body, epilog);
@@ -388,7 +424,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public String string(Label l, String literal) {
-        return l + "  db " + literal.length() + ",'" + literal + "'";
+        return l + ":  db " + literal.length() + ",'" + literal + "'";
     }
 
     /**
@@ -404,7 +440,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public String tempMap(Temp t) {
-        return this.registers.toTempMap().get(t);
+        return tempMap.toTempMap().get(t);
     }
 
     /**

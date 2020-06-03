@@ -21,7 +21,7 @@ public class DataFrag extends Frag {
 
 	@Override
 	public void process(PrintStream out) {
-		out.println("section .data");
+		out.println(".data");
 		out.println(this.data);
 	}
 

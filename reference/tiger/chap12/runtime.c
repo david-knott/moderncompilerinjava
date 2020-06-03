@@ -56,8 +56,6 @@ void flush()
 struct string consts[256];
 struct string empty = {0, ""};
 
-int tigermain(int i);
-
 int main()
 {
   int i;
@@ -137,11 +135,9 @@ int not(int i)
 
 #undef getchar
 
-struct string *getchar2()
-{
-  int i = getc(stdin);
-  if (i == EOF)
-    return &empty;
-  else
-    return consts + i;
+
+struct string *__wrap_getchar()
+{int i=getc(stdin);
+ if (i==EOF) return &empty;
+ else return consts+i;
 }
