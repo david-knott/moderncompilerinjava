@@ -9,7 +9,6 @@ import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Frame.Access;
 import Frame.Frame;
-import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
@@ -17,11 +16,11 @@ import Temp.TempMap;
 /**
  * RegAllocWithCoalescing class manages the spilling.
  */
-public class RegAllocWithCoalescing implements TempMap {
+public class RegAllocCoalesce implements TempMap {
     public InstrList instrList;
     public Frame frame;
-    //private TempList spillTemps;
 
+    //move related worklists
     private InstructionWorkList workListMoves;
     private InstructionWorkList activeMoves;
     private InstructionWorkList frozenMoves;
@@ -434,7 +433,7 @@ public class RegAllocWithCoalescing implements TempMap {
         }
     }
 
-    public RegAllocWithCoalescing(Frame frame, InstrList instrList) {
+    public RegAllocCoalesce(Frame frame, InstrList instrList) {
         this.instrList = instrList;
         this.frame = frame;
         this.K = this.frame.registers().size();

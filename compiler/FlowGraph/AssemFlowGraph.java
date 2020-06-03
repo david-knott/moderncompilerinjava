@@ -54,6 +54,7 @@ public class AssemFlowGraph extends FlowGraph {
         }
     }
 
+    @Override
     public Assem.Instr instr(Node node) {
         return nodeMap.get(node);
     }

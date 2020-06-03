@@ -76,19 +76,18 @@ public class IntelFrame extends Frame {
     /**
      * Registers that are available as colours for the register allocator.
      */
-    private TempList registers = TempList
+    private static TempList registers = TempList
             .create(new Temp[] { rax, rsp, rbx, rcx, rdx, rsi, rdi, rbp, r8, r9, r10, r11, r12, r13, r14, r15 });
 
     // return sink used to indicate that certain values are live at function exit
     // it also ensure thats rbp and rsp are not in use.
     private static TempList returnSink = new TempList(rbp, new TempList(rsp, calleeSaves));
+    // map to store callee registers and the temp created to store them.
+    private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
     // offset within the frame
     private int localOffset = 0;
     private StmList callingConventions;
-    private Codegen codege;
-    // map to store callee registers and the temp created to store them.
-    private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
-
+    private Codegen codegen;
     private AccessList accesses;
 
     private void addCallingConvention(Stm stm) {
@@ -200,7 +199,7 @@ public class IntelFrame extends Frame {
         if(nm == null)
             throw new Error("Label cannot be null");
         this.name = nm;
-        this.codege = new Codegen(this);
+        this.codegen = new Codegen(this);
         int i = 0;
         while (frml != null) {
             // first arg is static link
@@ -349,8 +348,6 @@ public class IntelFrame extends Frame {
         return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
     }
 
-    
-
     /**
      * The return sink is an empty operation added to the end of a function. It is
      * used by the flow analysis to ensure that certain precoloured temporaries are
@@ -399,7 +396,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public InstrList codegen(Stm head) {
-        return this.codege.codegen(head);
+        return this.codegen.codegen(head);
     }
 
     /**

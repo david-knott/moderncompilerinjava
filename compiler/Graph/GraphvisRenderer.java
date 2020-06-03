@@ -42,6 +42,8 @@ public class GraphvisRenderer implements GraphRenderer {
                 return "deeppink1";
             case "rbp":
                 return "pink1";
+            case "rsp":
+                return "orange";
             case "rcx":
                 return "pink2";
             default:
