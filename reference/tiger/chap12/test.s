@@ -24,6 +24,6 @@ pop %rbp
 ret
 .data
 L0:
-	.long  2
-	.ascii "hi"
+	.long  0xe
+	.ascii "hi david knott"
 
