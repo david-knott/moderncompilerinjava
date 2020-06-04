@@ -4,6 +4,17 @@ public class ExpTyList {
     public ExpTy expTy;
     public ExpTyList tail;
 
+	public static ExpTyList append(ExpTyList list, ExpTy item) {
+        if(list == null) {
+            return new ExpTyList(item, null);
+        }
+        while (list.tail != null) {
+            list = list.tail;
+        }
+        list.tail = new ExpTyList(item, null);
+        return list.tail;
+    }
+
     public ExpTyList(ExpTy et, ExpTyList t) {
         if (et == null)
             throw new IllegalArgumentException("ExpTy et cannot be null");
@@ -56,4 +67,5 @@ public class ExpTyList {
         }
         return allExceptLast;
     }
+
 }

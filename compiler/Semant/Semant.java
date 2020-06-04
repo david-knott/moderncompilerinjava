@@ -568,12 +568,14 @@ public class Semant {
             var argExpList = callExp.args;
             // Type check first
             // TODO: Refactor node add
+            ExpTyList expTyList = null;
             for (RECORD fmlType = funEntry.formals; fmlType != null; fmlType = fmlType.tail) {
                 if (argExpList == null) {
                     env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
                     break;
                 }
                 var transArg = transExp(argExpList.head);
+                expTyList = ExpTyList.append(expTyList, transArg);
                 if (transArg.ty.actual() != fmlType.fieldType.actual()) {
                     env.errorMsg.add(
                             new ArgumentMismatchError(callExp.pos, fmlType.fieldType.actual(), transArg.ty.actual()));
@@ -583,11 +585,8 @@ public class Semant {
             if (argExpList != null) {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
             }
-            // translation generation
-            // loop through the actual arguments
-            // passed to the function reference
+            /*
             argExpList = callExp.args;
-            ExpTyList expTyList = null;
             if (argExpList != null) {
                 // translate the argument and add to list
                 expTyList = new ExpTyList(transExp(argExpList.head));
@@ -596,7 +595,7 @@ public class Semant {
                     expTyList.append(transExp(argExpList.head));
                     argExpList = argExpList.tail;
                 }
-            }
+            }*/
             
             return new ExpTy(translate.call(level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
         } else {

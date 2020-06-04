@@ -362,7 +362,7 @@ class CodegenVisitor implements TreeVisitor {
     @Override
     public void visit(NAME op) {
         temp = Temp.create();
-        emit(new Assem.OPER("movq " + op.label + ", %`d0", L(temp, null), null));
+        emit(new Assem.OPER("movq $" + op.label + ", %`d0", L(temp, null), null));
     }
 
     @Override
