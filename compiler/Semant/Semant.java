@@ -585,18 +585,6 @@ public class Semant {
             if (argExpList != null) {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
             }
-            /*
-            argExpList = callExp.args;
-            if (argExpList != null) {
-                // translate the argument and add to list
-                expTyList = new ExpTyList(transExp(argExpList.head));
-                argExpList = argExpList.tail;
-                while (argExpList != null) {
-                    expTyList.append(transExp(argExpList.head));
-                    argExpList = argExpList.tail;
-                }
-            }*/
-            
             return new ExpTy(translate.call(level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
