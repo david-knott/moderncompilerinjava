@@ -585,8 +585,7 @@ public class Semant {
             if (argExpList != null) {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
             }
-            boolean useStaticLink = false;
-            return new ExpTy(translate.call(useStaticLink, level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
+            return new ExpTy(translate.call(!funEntry.level.isTopLevel(), level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
             return new ExpTy(translate.Noop(), INT);

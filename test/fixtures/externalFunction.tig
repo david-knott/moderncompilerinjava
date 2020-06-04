@@ -1,5 +1,7 @@
 let
-
+var a:int := 77
 in
-print("hi david knott")
+
+
+print(chr(a))
 end

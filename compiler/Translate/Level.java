@@ -29,6 +29,16 @@ public class Level {
     }
 
     /**
+     * Returns true if this level is the top level. This is used
+     * to identify functions that are in the runtime.c file and
+     * not the assembly.
+     * @return
+     */
+    public boolean isTopLevel() {
+        return this.parent == null;
+    }
+
+    /**
      * Creates a new static nesting level, using the supplied level as it parent.
      * The symbol name relates to the function that is linked to this level.
      * @param prnt

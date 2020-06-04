@@ -57,7 +57,7 @@ public class IntelFrame extends Frame {
     public static Temp r15 = Temp.create("r15");// callee
 
     private static TempList registers = new TempList(
-     /*   rax, new TempList( */
+        rax, new TempList( 
             rbx, new TempList(
                 rcx, new TempList(
                     rdx, new TempList(
@@ -83,7 +83,7 @@ public class IntelFrame extends Frame {
                     )
                 )
             )
-      /*  ) */
+        ) 
     );
 
     /**

@@ -232,7 +232,7 @@ class CodegenVisitor implements TreeVisitor {
 
     private void registerExpTreePatterns(){
         var tb = new TreePatternBuilder();
-        //handle call
+        //handle call without a result.
         tpl.add(
             tb.addRoot(
                 new EXPNode("exp")
@@ -303,7 +303,7 @@ class CodegenVisitor implements TreeVisitor {
     public void visit(CALL call) {
         var name = (NAME)call.func;
         TempList l = munchArgs(0, call.args);
-        temp = IntelFrame.rax;
+        temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
         emit(new OPER("call " + name.label,  calldefs, l));
     }
 

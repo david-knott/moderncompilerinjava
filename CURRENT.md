@@ -6,6 +6,7 @@ Implementing coalescing algorithm.
 Going to ensure that the non coalesce version works first.
 
 $ gcc -no-pie -Wimplicit-function-declaration  -Wl,--wrap,getchar test.s runtime.c  -o test.out && ./test.out
+$ gcc -no-pie  -Wl,--wrap,getchar test.s runtime.c  -o test.out && ./test.out 
 
 https://cs.lmu.edu/~ray/notes/gasexamples/
 
