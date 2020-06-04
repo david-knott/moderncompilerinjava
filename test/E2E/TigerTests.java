@@ -85,6 +85,12 @@ public class TigerTests {
     }
 
     @Test
+    public void ifCondition() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/ifCondition.tig"));
+        m.compile();
+    }
+
+    @Test
     public void whileLoop() throws FileNotFoundException {
         Main m = new Main("chap5", loadFile("./test/fixtures/whileLoop.tig"));
         m.compile();

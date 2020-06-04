@@ -113,11 +113,13 @@ public class IntelFrame extends Frame {
         rax, new TempList(
             rcx, new TempList(
                 rdx, new TempList(
-                    rdi, new TempList(
-                        rsi, new TempList(
+                    rsi, new TempList(
+                        rdi, new TempList(
                             r8, new TempList(
                                 r9, new TempList(
-                                    r10
+                                    r10, new TempList(
+                                        r11
+                                    )
                                 )
                             )
                         )
@@ -129,7 +131,7 @@ public class IntelFrame extends Frame {
 
     // return sink used to indicate that certain values are live at function exit
     // it also ensure thats rbp and rsp are not in use.
-    private static TempList returnSink = new TempList(rsp, new TempList(rbp, calleeSaves));
+    private static TempList returnSink = new TempList(rbp, new TempList(rsp, calleeSaves));
 
     // offset within the frame
     private int localOffset = 0;
@@ -138,7 +140,7 @@ public class IntelFrame extends Frame {
     private AccessList accesses;
     // map to store callee registers and the temp created to store them.
     private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
-    private TempList tempMap = new TempList(rsp, new TempList(rbp, registers));
+    private TempList tempMap = new TempList(rbp, new TempList(rsp, registers));
 
     private void addCallingConvention(Stm stm) {
         if (this.callingConventions == null) {

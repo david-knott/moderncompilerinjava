@@ -240,7 +240,11 @@ class CodegenVisitor implements TreeVisitor {
                 new CallNode("call1")   
             ).build(), treePattern -> {
             var call = (CALL)treePattern.getNamedMatch("call1");
-            call.accept(this);
+            var name = (NAME)call.func;
+            //TempList callerSaves = this.callerSave();
+            TempList l = munchArgs(0, call.args);
+            emit(new OPER("call " + name.label,  calldefs, l));
+            //this.callerRestore(callerSaves);
         });
     }
     
@@ -299,12 +303,32 @@ op.right.accept(this);
         }
     }
 
+    public TempList callerSave() {
+        TempList temps = null;
+        for(TempList callerSave = IntelFrame.callerSaves; callerSave != null; callerSave = callerSave.tail) {
+            Temp newTemp = Temp.create();
+            temps = TempList.append(temps, newTemp);
+            emit(new Assem.MOVE("move %`s0, %`d0", newTemp, callerSave.head));
+        }
+        return temps;
+    }
+    
+    public void callerRestore(TempList temps) {
+        for(TempList callerSave = IntelFrame.callerSaves; callerSave != null; callerSave = callerSave.tail) {
+            Temp newTemp = temps.head;
+            emit(new Assem.MOVE("move %`s0, %`d0", callerSave.head, newTemp));
+            temps = temps.tail;
+        }
+    }
+
     @Override
     public void visit(CALL call) {
         var name = (NAME)call.func;
+        //TempList callerSaves = this.callerSave();
         TempList l = munchArgs(0, call.args);
         temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
         emit(new OPER("call " + name.label,  calldefs, l));
+        //this.callerRestore(callerSaves);
     }
 
     @Override

@@ -51,10 +51,10 @@ public class RegAlloc implements TempMap {
 	}
 
 	private TempList selectSpill() {
-		System.out.println("Spill Select");
+	//	System.out.println("Spill Select");
 		TempList originalTemps = TempList.andNot(new TempList(this.colour.spills().head), this.spillTemps);
 		for(TempList tl = originalTemps; tl != null; tl = tl.tail) {
-			System.out.println(tl.head + " cost: " + this.baig.spillCost(this.baig.tnode(tl.head)));
+			//System.out.println(tl.head + " cost: " + this.baig.spillCost(this.baig.tnode(tl.head)));
 		}
 		return originalTemps;
 	}
@@ -80,7 +80,7 @@ public class RegAlloc implements TempMap {
 			newList = InstrList.append(newList, instrList.head);
 			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
 				Temp spillTemp = Temp.create();
-				Access access = this.frame.allocLocal(false);
+				Access access = this.frame.allocLocal(true);
 				accessHash.put(spilledDefs.head, access);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
 				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head, spillTemp, access);
