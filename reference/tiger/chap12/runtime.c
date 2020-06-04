@@ -48,6 +48,14 @@ void print(struct string *s)
     putchar(*p);
 }
 
+void rttest() {
+	putchar('t');
+	putchar('e');
+	putchar('s');
+	putchar('t');
+  fflush(stdout);
+}
+
 void flush()
 {
   fflush(stdout);

@@ -109,8 +109,8 @@ public class TigerTests {
     }
 
     @Test
-    public void externalFunction() throws FileNotFoundException {
-        Main m = new Main("chap5", loadFile("./test/fixtures/externalFunction.tig"));
+    public void print() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/print.tig"));
         m.compile();
     }
 }

@@ -1,7 +1,0 @@
-let
-var a:int := 77
-in
-
-
-print(chr(a))
-end

@@ -520,7 +520,17 @@ public class Semant {
                 env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
             }
             return new ExpTy(translate.equalsOperator(EQ, transExpLeft, transExpRight), INT);
+        case Absyn.OpExp.NE:
+            // the order here is important,
+            // expRigth.coerceTo(expLeft) is not the same as
+            // the reverse
+            if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
+                env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
+            }
+            return new ExpTy(translate.equalsOperator(NE, transExpLeft, transExpRight), INT);
         }
+
+
         throw new Error("OpExp - Unknown operator " + e.oper);
     }
 

@@ -12,6 +12,9 @@ https://cs.lmu.edu/~ray/notes/gasexamples/
 
 String print Wasn't working because I was writing the argument into rsi and not rdi
 
+$ break test.s:1
+$ si - next instruction
+$ info registers
 
 *30th May 2020*
 Fixed bug in cmp register allocation.

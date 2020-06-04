@@ -4,26 +4,42 @@ tigermain:
 pushq %rbp
 movq %rsp, %rbp
 sub $0, %rsp
-L1:
-movq %rbx, %rbx
-movq %r12, %rsi
-movq %r13, %rdx
-movq %r14, %rcx
-movq $80, %rax
-movq %rax, %rax
-movq %rax, %rdi
-call chr
-movq %rax, %rax
-movq %rax, %rdi
-call print
-movq %rbx, %rbx
-movq %rsi, %r12
-movq %rdx, %r13
-movq %rcx, %r14
-jmp L0
+L5:
+mov %rbx, %r9 # visit(MOVE)
+mov %r12, %r8 # visit(MOVE)
+mov %r13, %rsi # visit(MOVE)
+mov %r14, %rdx # visit(MOVE)
+mov %r15, %rcx # visit(MOVE)
+mov $10, %rax
+mov %rax, %rbx # visit(MOVE)
+L2:
+mov $0, %rax
+cmp %rbx, %rax
+jne L3
 L0:
+mov %rbx, %rax
+mov %r9, %rbx # visit(MOVE)
+mov %r8, %r12 # visit(MOVE)
+mov %rsi, %r13 # visit(MOVE)
+mov %rdx, %r14 # visit(MOVE)
+mov %rcx, %r15 # visit(MOVE)
+jmp L4
+L6:
+L3:
+mov $1, %rax
+sub %rax, %rbx
+mov %rbx, %rbx # visit(MOVE)
+mov $L1, %rax
+mov %rax, %rdi
+call print
+jmp L2
+L4:
 
 movq %rbp, %rsp
 pop %rbp
 ret
+.data
+L1:
+	.long  0x8
+	.ascii "beatrice"
 

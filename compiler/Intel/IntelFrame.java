@@ -96,7 +96,9 @@ public class IntelFrame extends Frame {
         rbx, new TempList(
             r12, new TempList(
                 r13, new TempList(
-                    r14
+                    r14, new TempList (
+                        r15
+                    )
                 )
             )
         )
@@ -108,8 +110,20 @@ public class IntelFrame extends Frame {
      * in these registers and not worry about restoring them.
      */
     public static TempList callerSaves = new TempList(
-        r10, new TempList(
-            r11
+        rax, new TempList(
+            rcx, new TempList(
+                rdx, new TempList(
+                    rdi, new TempList(
+                        rsi, new TempList(
+                            r8, new TempList(
+                                r9, new TempList(
+                                    r10
+                                )
+                            )
+                        )
+                    )
+                )
+            )
         )
     );
 
