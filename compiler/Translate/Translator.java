@@ -513,7 +513,7 @@ public class Translator {
      * @param result the return type of the callee function
      * @return
      */
-    public Exp call(Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList expTyList, Type result) {
+    public Exp call(boolean useStaticLink, Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList expTyList, Type result) {
         if (callerLevel == null)
             throw new IllegalArgumentException("Caller level cannot be null");
         if (calleeLevel == null)
@@ -548,9 +548,13 @@ public class Translator {
             );
         }
         //add current frames frame pointer as parameter to call
-        ExpList expList = new ExpList(staticLink, null);
+        //ExpList expList = new ExpList(staticLink, null);
+        ExpList expList = null;
+        if(useStaticLink) {
+            expList = ExpList.append(expList, staticLink);
+        }
         while(expTyList != null){
-            expList.append(expTyList.expTy.exp.unEx());
+            expList = ExpList.append(expList, expTyList.expTy.exp.unEx());
             expTyList = expTyList.tail;
         }
         //TODO: Why are these the same

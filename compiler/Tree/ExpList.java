@@ -19,4 +19,15 @@ public class ExpList {
         last.tail = new ExpList(exp, null);
         return last.tail;
     }
+
+	public static ExpList append(ExpList last, Exp exp) {
+        if(last == null) {
+            return new ExpList(exp, null);
+        }
+        while (last.tail != null) {
+            last = last.tail;
+        }
+        last.tail = new ExpList(exp, null);
+        return last.tail;
+	}
 }
