@@ -39,7 +39,7 @@ class CodegenVisitor implements TreeVisitor {
      * the callee is invoked, this in turn means they are live across the function call.
      * Which means they will interfere with all other temporaries within that function.
      */
-    private TempList calldefs = IntelFrame.callerSaves;
+    private TempList calldefs = new TempList(IntelFrame.rax, IntelFrame.callerSaves);
 
 	private TempList L(Temp h, TempList t) {
         return new TempList(h, t);

@@ -110,7 +110,7 @@ public class IntelFrame extends Frame {
      * in these registers and not worry about restoring them.
      */
     public static TempList callerSaves = new TempList(
-        rax, new TempList(
+     //   rax, new TempList(
             rcx, new TempList(
                 rdx, new TempList(
                     rsi, new TempList(
@@ -126,7 +126,7 @@ public class IntelFrame extends Frame {
                     )
                 )
             )
-        )
+     //   )
     );
 
     // return sink used to indicate that certain values are live at function exit
@@ -419,7 +419,7 @@ public class IntelFrame extends Frame {
                 new OPER(this.name.toString() + ":", null, null),
                 new InstrList(new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), 
                     new InstrList(new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
-                       new InstrList(new OPER("sub $" + this.localOffset + ", %`d0", new TempList(IntelFrame.rsp), null), null
+                       new InstrList(new OPER("add $" + this.localOffset + ", %`d0", new TempList(IntelFrame.rsp), null), null
                     )
                 )
             )
@@ -486,17 +486,17 @@ public class IntelFrame extends Frame {
 
     @Override
     public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
-        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0", spillTemp, temp);
-        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame) access).offset + "(%`d0)", new TempList(this.FP()),
+        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0 # spill", spillTemp, temp);
+        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame) access).offset + "(%`d0) # spill", new TempList(this.FP()),
                 new TempList(spillTemp, null));
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null));
     }
 
     @Override
     public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
-        Instr moveFrameToNewTemp = new OPER("movq " + ((InFrame) access).offset + "(%`s0), %`d0",
+        Instr moveFrameToNewTemp = new OPER("movq " + ((InFrame) access).offset + "(%`s0), %`d0 # spill",
                 new TempList(spillTemp, null), new TempList(this.FP()));
-        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0; mtt", temp, spillTemp);
+        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0 # spill", temp, spillTemp);
         return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null));
     }
 }

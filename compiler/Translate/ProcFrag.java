@@ -105,7 +105,9 @@ public class ProcFrag extends Frag {
         }
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
-        TempMap tempMap = new CombineMap(this.frame, new RegAlloc(this.frame, instrs, false));
+        RegAlloc regAlloc = new RegAlloc(this.frame, instrs, false);
+        TempMap tempMap = new CombineMap(this.frame, regAlloc);
+        instrs = regAlloc.instrList;
         Proc proc = this.frame.procEntryExit3(instrs);
         out.println(".text");
         for (InstrList prolog = proc.prolog; prolog != null; prolog = prolog.tail) {
