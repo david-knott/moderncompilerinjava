@@ -3,6 +3,7 @@ package RegAlloc;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import Assem.Instr;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Graph.NodeList;
@@ -14,6 +15,7 @@ class Liveness {
     private Hashtable<Node, BitSet> liveOutMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, TempList> liveMap;
     private Hashtable<Integer, Temp> tempMap;
+    private FlowGraph flowGraph;
 
     private Temp getTemp(Integer i) {
         if (tempMap.containsKey(i)) {
@@ -86,21 +88,30 @@ class Liveness {
 
         } while (true);
     }
-
+    
     private void computeLiveRanges() {
+        /// add live ranges as tempLists to liveOutmap
         for (Node n : liveOutMap.keySet()) {
             var bitMap = liveOutMap.get(n);
             for (int i = 0; i < bitMap.size(); i++) {
                 if (bitMap.get(i)) {
-                    TempList tempList = liveMap.get(n);
+                    TempList tempList = this.liveMap.get(n);
                     Temp temp = getTemp(i);
                     if (temp != null) {
-                        tempList = new TempList(temp, tempList);
-                        liveMap.put(n, tempList);
+                        tempList = TempList.append(tempList, temp);
+                        this.liveMap.put(n, tempList);
                     }
                 }
             }
         }
+    }
+
+    public TempList liveMap(Node node) {
+        return this.liveMap.get(node);
+    }
+
+    public TempList liveMap(Instr instr) {
+        return this.liveMap.get(flowGraph.node(instr));
     }
 
     public Liveness(FlowGraph flowGraph) {
@@ -108,6 +119,7 @@ class Liveness {
         this.tempMap = new Hashtable<Integer, Temp>();
         this.computeLiveness(flowGraph);
         this.computeLiveRanges();
+        this.flowGraph = flowGraph;
     }
 
     public TempWorkList liveOut(Node node) {

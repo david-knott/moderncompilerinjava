@@ -406,7 +406,7 @@ op.right.accept(this);
         var leftTemp = temp;
         cjump.right.accept(this);
         var rightTemp = temp;
-        emit(new OPER("cmp %`s0, %`s1", null, L(leftTemp, L(rightTemp, null))));
+        emit(new OPER("cmp %`s0, %`s1", null, L(rightTemp, L(leftTemp, null))));
         switch(cjump.relop) {
             case CJUMP.EQ:
                 emit(new OPER("je `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));

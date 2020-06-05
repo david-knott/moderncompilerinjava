@@ -11,15 +11,11 @@ import Temp.Temp;
 import Temp.TempList;
 
 public class IGBackwardControlEdges extends InterferenceGraph {
-    private Hashtable<Node, BitSet> liveInMap = new Hashtable<Node, BitSet>();
-    private Hashtable<Node, BitSet> liveOutMap = new Hashtable<Node, BitSet>();
-    private Hashtable<Node, TempList> liveMap;
-    private Hashtable<Integer, Temp> tempMap;
     private Hashtable<Temp, Node> tempNodeMap = new Hashtable<Temp, Node>();
     private Hashtable<Node, Temp> nodeTempMap = new Hashtable<Node, Temp>();
     private MoveList moveList = null;
-    private int iterationCount = 0;
     private FlowGraph flowGraph;
+    private Liveness liveness;
 
     private Hashtable<Node, Integer> useCount = new Hashtable<Node, Integer>();
     private Hashtable<Node, Integer> defCount = new Hashtable<Node, Integer>();
@@ -42,32 +38,6 @@ public class IGBackwardControlEdges extends InterferenceGraph {
         }
     }
 
-    private Temp getTemp(Integer i) {
-        if (tempMap.containsKey(i)) {
-            return tempMap.get(i);
-        }
-        return null;
-    }
-
-    private BitSet fromTempList(TempList tempList) {
-        BitSet bs = new BitSet();
-        for (; tempList != null; tempList = tempList.tail) {
-            bs.set(tempList.head.hashCode());
-        }
-        return bs;
-    }
-
-    private int compare(BitSet lhs, BitSet rhs) {
-        if (lhs.equals(rhs))
-            return 0;
-        BitSet xor = (BitSet) lhs.clone();
-        xor.xor(rhs);
-        int firstDifferent = xor.length() - 1;
-        if (firstDifferent == -1)
-            return 0;
-        return rhs.get(firstDifferent) ? 1 : -1;
-    }
-
     private Node getOrCreate(Temp temp) {
         if (tempNodeMap.containsKey(temp)) {
             return tempNodeMap.get(temp);
@@ -78,76 +48,10 @@ public class IGBackwardControlEdges extends InterferenceGraph {
         return newNode;
     }
 
-    private void computeLiveness(FlowGraph flowGraph) {
-        for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
-            var node = nodes.head;
-            for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
-                tempMap.put(tl.head.hashCode(), tl.head);
-            }
-        }
-        // initialise maps with empty bit sets
-        for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
-            liveInMap.put(nodes.head, new BitSet());
-            liveOutMap.put(nodes.head, new BitSet());
-        }
-        // calculate live ranges using liveness equations, except in reverse this time.
-        boolean changed = false;
-        do {
-            changed = false;
-            iterationCount++;
-            for (NodeList nodes = flowGraph.nodes().reverse(); nodes != null; nodes = nodes.tail) {
-                var node = nodes.head;
-                BitSet liveInPrev = (BitSet) liveInMap.get(node).clone();
-                BitSet liveOutPrev = (BitSet) liveOutMap.get(node).clone();
-                // reverse, calculate liveout first
-                BitSet liveOut = new BitSet();
-                for (var succ = node.succ(); succ != null; succ = succ.tail) {
-                    BitSet liveInPred = (BitSet) (liveInMap.get(succ.head).clone());
-                    liveOut.or(liveInPred);
-                }
-                liveOutMap.put(node, liveOut);
-                // calculate live in.
-                BitSet liveIn = (BitSet) this.fromTempList(flowGraph.use(node)).clone();
-                BitSet def = (BitSet) this.fromTempList(flowGraph.def(node)).clone();
-                // BitSet dif = (BitSet)liveOutPrev.clone();
-                BitSet dif = (BitSet) liveOutPrev.clone();
-                dif.andNot(def);
-                liveIn.or(dif);
-                // record the liveIn and liveOut for this node
-                liveInMap.put(node, liveIn);
-                var c1 = compare(liveIn, liveInPrev);
-                var c2 = compare(liveOut, liveOutPrev);
-                changed = changed || ((c1 != 0) || (c2 != 0));
-            }
-            if (!changed)
-                break;
-
-        } while (true);
-    }
-    
-    private void computeLiveRanges() {
-        /// add live ranges as tempLists to liveOutmap
-        for (Node n : liveOutMap.keySet()) {
-            var bitMap = liveOutMap.get(n);
-            for (int i = 0; i < bitMap.size(); i++) {
-                if (bitMap.get(i)) {
-                    TempList tempList = this.liveMap.get(n);
-                    Temp temp = getTemp(i);
-                    if (temp != null) {
-                        tempList = TempList.append(tempList, temp);
-                        this.liveMap.put(n, tempList);
-                    }
-                }
-            }
-        }
-    }
-
-    public TempList liveMap(Instr instr) {
-        return this.liveMap.get(flowGraph.node(instr));
-    }
 
     private void buildGraph(FlowGraph flowGraph) {
-        for (Node n : this.liveMap.keySet()) {
+        for(NodeList nodeList = this.flowGraph.nodes(); nodeList != null; nodeList = nodeList.tail) {
+            Node n = nodeList.head;
             var defs = flowGraph.def(n);
             var uses = flowGraph.use(n);
             //compute the interference edges
@@ -155,7 +59,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                 boolean interferes = false;
                 // for each use temp that is not equals to liveout temp create edge
                 //for (; uses != null; uses = uses.tail) { // dont need this loop, as only 1 use per moe ?
-                    for (TempList tempList = this.liveMap.get(n); tempList != null; tempList = tempList.tail) {
+                    for (TempList tempList = this.liveness.liveMap(n); tempList != null; tempList = tempList.tail) {
                         // we can assume moves only have 1 src and 1 dest
                         if (uses.head != tempList.head && defs.head != tempList.head) {
                             Node from = this.getOrCreate(defs.head);
@@ -171,7 +75,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
             } else {
                 // for each def temp and liveout temp create edge
                 for (; defs != null; defs = defs.tail) {
-                    for (TempList tempList = this.liveMap.get(n); tempList != null; tempList = tempList.tail) {
+                    for (TempList tempList = this.liveness.liveMap(n); tempList != null; tempList = tempList.tail) {
                         if (tempList.head != defs.head) {
                             Node to = this.getOrCreate(tempList.head);
                             Node from = this.getOrCreate(defs.head);
@@ -189,18 +93,11 @@ public class IGBackwardControlEdges extends InterferenceGraph {
      * 
      * @param flowGraph the flowgraph
      */
-    public IGBackwardControlEdges(FlowGraph flowGraph) {
+    public IGBackwardControlEdges(FlowGraph flowGraph, Liveness liveness) {
         this.flowGraph = flowGraph;
-        this.liveMap = new Hashtable<Node, TempList>();
-        this.tempMap = new Hashtable<Integer, Temp>();
-        this.computeLiveness(flowGraph);
-        this.computeLiveRanges();
+        this.liveness = liveness;
         this.buildGraph(flowGraph);
         this.updateUseAndDefCounts();
-    }
-
-    public int getIterationCount() {
-        return this.iterationCount;
     }
 
     @Override

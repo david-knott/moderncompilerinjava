@@ -25,10 +25,12 @@ public class RegAlloc implements TempMap {
 	public int iterations;
 	private TempList spillTemps;
 	private IGBackwardControlEdges baig;
+	private Liveness liveness;
 
 	private void build() {
 		FlowGraph fg = new AssemFlowGraph(instrList);
-		this.baig = new IGBackwardControlEdges(fg);
+		this.liveness = new Liveness(fg);
+		this.baig = new IGBackwardControlEdges(fg, this.liveness);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
@@ -119,7 +121,7 @@ public class RegAlloc implements TempMap {
 public void dumpLiveness() {
 		System.out.println("### Liveness");
 		for(InstrList instrList = this.instrList; instrList != null; instrList = instrList.tail) {
-            System.out.println(instrList.head.format(this.frame) + " => " + this.baig.liveMap(instrList.head));
+            System.out.println(instrList.head.format(this.frame) + " => " + this.liveness.liveMap(instrList.head));
         }
     }
 

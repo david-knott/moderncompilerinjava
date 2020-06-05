@@ -19,7 +19,6 @@ import Tree.TEMP;
 import Util.BoolList;
 import Assem.Instr;
 import Assem.InstrList;
-import Assem.LABEL;
 import Assem.OPER;
 import Codegen.Codegen;
 import Frame.*;

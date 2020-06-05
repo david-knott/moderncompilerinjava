@@ -1,6 +1,6 @@
 let
-	var a:int := 99
+	var a:int := 10 
 in
-	while a > 0 do if a = 1 then break else a := a - 1;
+	while a > 0 do if a = 5 then break else a := a - 1;
 	a
 end
