@@ -131,7 +131,8 @@ public class IntelFrame extends Frame {
 
     // return sink used to indicate that certain values are live at function exit
     // it also ensure thats rbp and rsp are not in use.
-    private static TempList returnSink = new TempList(rbp, new TempList(rsp, calleeSaves));
+    //private static TempList returnSink = new TempList(rbp, new TempList(rsp, calleeSaves));
+    private static TempList returnSink = calleeSaves;
 
     // offset within the frame
     private int localOffset = 0;
@@ -224,7 +225,6 @@ public class IntelFrame extends Frame {
     }
 
     private void modifyOffset() {
-        System.out.println("creating format offset");
         localOffset = localOffset - WORD_SIZE;
     }
 
@@ -363,7 +363,7 @@ public class IntelFrame extends Frame {
      */
     Stm calleeRestoreList() {
         StmList list = null;
-        for (TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
+        for (TempList callee = TempList.reverse(IntelFrame.calleeSaves); callee != null; callee = callee.tail) {
             Temp calleeTemp = calleeTempMap.get(callee.head);
             MOVE move = new MOVE(new TEMP(callee.head), new TEMP(calleeTemp));
             if (list == null) {
@@ -398,6 +398,7 @@ public class IntelFrame extends Frame {
     @Override
     public Stm procEntryExit1(Stm body) {
         return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
+
     }
 
     /**

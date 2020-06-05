@@ -3,6 +3,7 @@ package RegAlloc;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import Assem.Instr;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Graph.NodeList;
@@ -22,6 +23,7 @@ public class IGForwardControlEdges extends InterferenceGraph {
     private Hashtable<Node, Temp> nodeTempMap = new Hashtable<Node, Temp>();
     private MoveList moveList = null;
     private int iterationCount = 0;
+    private FlowGraph flowGraph;
 
     private Temp getTemp(Integer i) {
         if (tempMap.containsKey(i)) {
@@ -65,6 +67,7 @@ public class IGForwardControlEdges extends InterferenceGraph {
      * @param flowGraph the flowgraph
      */
     public IGForwardControlEdges(FlowGraph flowGraph) {
+        this.flowGraph = flowGraph;
         liveMap = new Hashtable<Node, TempList>();
         tempMap = new Hashtable<Integer, Temp>();
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
@@ -115,11 +118,6 @@ public class IGForwardControlEdges extends InterferenceGraph {
                 //loop or if c1 was changed or c2 was changed
                 changed = changed || c1 != 0 || c2 != 0;
             }
-            System.out.println("--- Iteration " + iterationCount + " ----");
-            for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
-                System.out.println(nodes.head + " " + liveInMap.get(nodes.head) + " " + liveOutMap.get(nodes.head));
-            }
-            System.out.println("---------------");
             if (!changed)
                 break;
         } while (true);
@@ -131,7 +129,7 @@ public class IGForwardControlEdges extends InterferenceGraph {
                     TempList tempList = liveMap.get(n);
                     Temp temp = getTemp(i);
                     if (temp != null) {
-                        tempList = new TempList(temp, tempList);
+                        tempList = TempList.append(tempList, temp);
                         liveMap.put(n, tempList);
                     }
                 }
@@ -168,6 +166,10 @@ public class IGForwardControlEdges extends InterferenceGraph {
             }
         }
 
+    }
+
+    public TempList liveMap(Instr instr) {
+        return this.liveMap.get(flowGraph.node(instr));
     }
 
     public int getIterationCount() {

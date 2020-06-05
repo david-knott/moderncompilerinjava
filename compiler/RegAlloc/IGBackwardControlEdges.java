@@ -3,6 +3,7 @@ package RegAlloc;
 import java.util.BitSet;
 import java.util.Hashtable;
 
+import Assem.Instr;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Graph.NodeList;
@@ -92,11 +93,6 @@ public class IGBackwardControlEdges extends InterferenceGraph {
         // calculate live ranges using liveness equations, except in reverse this time.
         boolean changed = false;
         do {
-            /*
-             * changed <- false loop ( ) if old and new sets not equal changed <- true if
-             * changed = false break
-             * 
-             */
             changed = false;
             iterationCount++;
             for (NodeList nodes = flowGraph.nodes().reverse(); nodes != null; nodes = nodes.tail) {
@@ -128,27 +124,30 @@ public class IGBackwardControlEdges extends InterferenceGraph {
 
         } while (true);
     }
-
+    
     private void computeLiveRanges() {
         /// add live ranges as tempLists to liveOutmap
         for (Node n : liveOutMap.keySet()) {
             var bitMap = liveOutMap.get(n);
             for (int i = 0; i < bitMap.size(); i++) {
                 if (bitMap.get(i)) {
-                    TempList tempList = liveMap.get(n);
+                    TempList tempList = this.liveMap.get(n);
                     Temp temp = getTemp(i);
                     if (temp != null) {
-                        tempList = new TempList(temp, tempList);
-                        liveMap.put(n, tempList);
+                        tempList = TempList.append(tempList, temp);
+                        this.liveMap.put(n, tempList);
                     }
                 }
             }
         }
     }
 
+    public TempList liveMap(Instr instr) {
+        return this.liveMap.get(flowGraph.node(instr));
+    }
+
     private void buildGraph(FlowGraph flowGraph) {
-        for (Node n : liveMap.keySet()) {
-            TempList tempList = liveMap.get(n);
+        for (Node n : this.liveMap.keySet()) {
             var defs = flowGraph.def(n);
             var uses = flowGraph.use(n);
             //compute the interference edges
@@ -156,7 +155,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                 boolean interferes = false;
                 // for each use temp that is not equals to liveout temp create edge
                 //for (; uses != null; uses = uses.tail) { // dont need this loop, as only 1 use per moe ?
-                    for (; tempList != null; tempList = tempList.tail) {
+                    for (TempList tempList = this.liveMap.get(n); tempList != null; tempList = tempList.tail) {
                         // we can assume moves only have 1 src and 1 dest
                         if (uses.head != tempList.head && defs.head != tempList.head) {
                             Node from = this.getOrCreate(defs.head);
@@ -172,7 +171,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
             } else {
                 // for each def temp and liveout temp create edge
                 for (; defs != null; defs = defs.tail) {
-                    for (; tempList != null; tempList = tempList.tail) {
+                    for (TempList tempList = this.liveMap.get(n); tempList != null; tempList = tempList.tail) {
                         if (tempList.head != defs.head) {
                             Node to = this.getOrCreate(tempList.head);
                             Node from = this.getOrCreate(defs.head);

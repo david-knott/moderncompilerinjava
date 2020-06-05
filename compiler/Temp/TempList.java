@@ -201,7 +201,7 @@ public class TempList {
       StringBuilder builder = new StringBuilder();
       builder.append("[");
       for (TempList s = this; s != null; s = s.tail) {
-         builder.append(s.head);
+         builder.append(s.head + "=>" + Temp.name(s.head));
          if (s.tail != null) {
             builder.append(",");
          }
