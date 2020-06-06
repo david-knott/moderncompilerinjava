@@ -325,6 +325,8 @@ class CodegenVisitor implements TreeVisitor {
     @Override
     public void visit(MOVE op) {
         if(!tpl.match(op)) {
+            
+
             op.dst.accept(this);
             var mem = temp;
             op.src.accept(this);

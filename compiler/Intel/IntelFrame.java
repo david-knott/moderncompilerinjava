@@ -37,7 +37,7 @@ import java.util.Hashtable;
  */
 public class IntelFrame extends Frame {
 
-    private static final int WORD_SIZE = 8;
+    private static final int WORD_SIZE = 4;
     public static Temp rbp = Temp.create("rbp");// callee saved
     public static Temp rsp = Temp.create("rsp");
     public static Temp rax = Temp.create("eax");
