@@ -52,8 +52,8 @@ public class TigerTests {
     }
 
     @Test
-    public void print() throws FileNotFoundException {
-        Main m = new Main("chap5", loadFile("./test/fixtures/print.tig"));
+    public void arrayDec() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/arrayDec.tig"));
         m.compile();
     }
 }

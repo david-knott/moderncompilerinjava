@@ -35,8 +35,8 @@ public class Translator {
     private boolean dumpCanonicalTree;
 
     public Translator() {
-        this.arrayBoundsCheck = true;
-        this.nullRecordCheck = true;
+        this.arrayBoundsCheck = false;
+        this.nullRecordCheck = false;
         this.dumpGraphs = false;
         this.dumpAbsyn = false;
         this.dumpTree = false;
@@ -234,7 +234,6 @@ public class Translator {
                 )
             );
         }
-
     }
 
     /**
@@ -262,11 +261,7 @@ public class Translator {
                     baseExp, 
                     new BINOP(
                         BINOP.MUL, 
-                        new BINOP(
-                            BINOP.PLUS,
-                            indexExp, 
-                            new CONST(1)
-                        ),
+                        indexExp,
                         new CONST(level.frame.wordSize())
                     )
                 )                

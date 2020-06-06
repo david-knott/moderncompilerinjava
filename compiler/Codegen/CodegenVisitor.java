@@ -80,9 +80,9 @@ class CodegenVisitor implements TreeVisitor {
                 break;
         }
         if (finalPos != null) {
-            emit(new Assem.MOVE("mov %`s0, %`d0", finalPos, argTemp));
+            emit(new Assem.MOVE("movl %`s0, %`d0", finalPos, argTemp));
         } else {
-            emit(new Assem.MOVE("mov %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)", IntelFrame.rsp, argTemp));
+            emit(new Assem.MOVE("movl %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)", IntelFrame.rsp, argTemp));
         }
         if (args.tail == null) {
             return L(argTemp, null);
@@ -111,7 +111,7 @@ class CodegenVisitor implements TreeVisitor {
                 var cnst = (CONST)treePattern.getNamedMatch("c1");
                 var cnst2 = (CONST)treePattern.getNamedMatch("c2");
                 //special move where there is no src register
-                emit(new Assem.OPER("mov %" + cnst2.value + ", " + cnst.value + "(%`d0)", L(temp.temp, null), null));
+                emit(new Assem.OPER("movl %" + cnst2.value + ", " + cnst.value + "(%`d0)", L(temp.temp, null), null));
             }
         );
         tpl.add(
@@ -132,7 +132,7 @@ class CodegenVisitor implements TreeVisitor {
                 var temp1 = (TEMP)treePattern.getNamedMatch("temp1");
                 var temp2 = (TEMP)treePattern.getNamedMatch("temp2");
                 var cnst = (CONST)treePattern.getNamedMatch("c1");
-                emit(new Assem.MOVE("mov " + cnst.value + "(%`s0), %`d0", temp1.temp, temp2.temp));
+                emit(new Assem.MOVE("movl " + cnst.value + "(%`s0), %`d0", temp1.temp, temp2.temp));
             }
         );
     }
@@ -156,7 +156,7 @@ class CodegenVisitor implements TreeVisitor {
                 var src = temp;
                 temp = Temp.create();
                 var dst = temp;
-                emit(new Assem.MOVE("mov " + cnst.value + "(%`s0), %`d0", 
+                emit(new Assem.MOVE("movl " + cnst.value + "(%`s0), %`d0", 
                     dst, src));
             }
         );
@@ -177,59 +177,12 @@ class CodegenVisitor implements TreeVisitor {
                 var src = temp;
                 temp = Temp.create();
                 var dst = temp;
-                emit(new Assem.MOVE("mov " + cnst.value + "(%`s0), %`d0", 
+                emit(new Assem.MOVE("movl " + cnst.value + "(%`s0), %`d0", 
                     dst, src));
             }
         );
     }
      
-    private void registerBinopTreePatterns(){
-        var tb = new TreePatternBuilder();
-        /*
-        tpl.add(
-            tb.addRoot(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new ConstNode("c1")
-            ).addSibling(
-                new ExpNode("exp")
-            )
-            .build(), treePattern -> {
-                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
-                var exp = (Exp)treePattern.getNamedMatch("exp");
-                exp.accept(this);
-                var expR = temp;
-                emit(new Assem.OPER("add $" + cnst1.value + ", %`d0\t;add literal\n", L(expR, null), L(expR, null)));
-            }
-        );
-        */
-        /*
-        tpl.add(
-            tb.addRoot(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new MemNode("m1")
-            ).addChild(
-                new BinopNode("b2", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new ConstNode("c1")
-            ).addSibling(
-                new ExpNode("exp")
-            ).getParent().getParent().getParent().addChild(
-                new ConstNode("c2")
-            )
-            .build(), treePattern -> {
-                var cnst1 = (CONST)treePattern.getNamedMatch("c1");
-                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
-                var exp = (Exp)treePattern.getNamedMatch("exp");
-                exp.accept(this);
-                var expR = temp;
-                emit(new Assem.OPER("add $" + cnst1.value + " " + cnst2.value + ", %`d0\t;add memory offset\n", L(expR, null), L(expR, null)));
-            }
-        );
-        */
-    }
-
     private void registerExpTreePatterns(){
         var tb = new TreePatternBuilder();
         //handle call without a result.
@@ -241,10 +194,8 @@ class CodegenVisitor implements TreeVisitor {
             ).build(), treePattern -> {
             var call = (CALL)treePattern.getNamedMatch("call1");
             var name = (NAME)call.func;
-            //TempList callerSaves = this.callerSave();
             TempList l = munchArgs(0, call.args);
             emit(new OPER("call " + name.label,  calldefs, l));
-            //this.callerRestore(callerSaves);
         });
     }
     
@@ -254,7 +205,6 @@ class CodegenVisitor implements TreeVisitor {
         registerExpTreePatterns();
         registerMoveTreePatterns();
         registerMemTreePatterns();
-        registerBinopTreePatterns();
     }
 
     @Override
@@ -262,7 +212,7 @@ class CodegenVisitor implements TreeVisitor {
         if(tpl.match(op)) {
             return;
         }
-op.right.accept(this);
+        op.right.accept(this);
         var rightTemp = temp;
         op.left.accept(this);
         var leftTemp = temp;
@@ -274,9 +224,9 @@ op.right.accept(this);
             case BINOP.ARSHIFT:
                 break;
             case BINOP.DIV:
-                emit(new Assem.MOVE("mov %`s0, %`d0", IntelFrame.rax, leftTemp));
+                emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
                 emit(new OPER("div  %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, null) ));
-                emit(new Assem.MOVE("mov %`s0, %`d0", rightTemp, IntelFrame.rax));
+                emit(new Assem.MOVE("movl %`s0, %`d0", rightTemp, IntelFrame.rax));
                 break;
             case BINOP.LSHIFT:
                 break;
@@ -284,9 +234,9 @@ op.right.accept(this);
                 emit(new OPER("sub %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
                 break;
             case BINOP.MUL:
-                emit(new Assem.MOVE("mov %`s0, %`d0", IntelFrame.rax, leftTemp));
+                emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
                 emit(new OPER("mul %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
-                emit(new Assem.MOVE("mov %`s0, %`d0", rightTemp, IntelFrame.rax));
+                emit(new Assem.MOVE("movl %`s0, %`d0", rightTemp, IntelFrame.rax));
                 break;
             case BINOP.OR:
                 emit(new OPER("or %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
@@ -334,7 +284,7 @@ op.right.accept(this);
     @Override
     public void visit(CONST cnst) {
         temp = Temp.create();
-        emit(new OPER("mov $" + cnst.value + ", %`d0", L(temp, null), null));
+        emit(new OPER("movl $" + cnst.value + ", %`d0", L(temp, null), null));
     }
 
     @Override
@@ -348,7 +298,7 @@ op.right.accept(this);
             exp.exp.accept(this);
             var expTemp = temp;
             temp = Temp.create();
-            emit(new Assem.MOVE("mov %`s0, %`d0", temp, expTemp));
+            emit(new Assem.MOVE("movl %`s0, %`d0", temp, expTemp));
         }
     }
 
@@ -368,7 +318,7 @@ op.right.accept(this);
             op.exp.accept(this);
             var mem = temp;
             temp = Temp.create();
-            emit(new Assem.MOVE("mov (%`s0), %`d0", temp, mem));
+            emit(new Assem.MOVE("movl (%`s0), %`d0", temp, mem));
         }
     }
 
@@ -379,14 +329,14 @@ op.right.accept(this);
             var mem = temp;
             op.src.accept(this);
             var exp = temp;
-            emit(new Assem.MOVE("mov %`s0, %`d0 # visit(MOVE)", mem, exp));
+            emit(new Assem.MOVE("movl %`s0, %`d0 # visit(MOVE)", mem, exp));
         }
     }
 
     @Override
     public void visit(NAME op) {
         temp = Temp.create();
-        emit(new Assem.OPER("mov $" + op.label + ", %`d0", L(temp, null), null));
+        emit(new Assem.OPER("movl $" + op.label + ", %`d0", L(temp, null), null));
     }
 
     @Override
