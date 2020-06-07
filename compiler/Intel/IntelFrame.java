@@ -240,8 +240,8 @@ public class IntelFrame extends Frame {
      * registers into the frame temporaries, or ensure that we access frame
      * variables using the correct offset relative to the new base pointer.
      * 
-     * The frml list is by default non escaping, except for variables that are
-     * marked as must escape.
+     * The frml list is a reference to formal parameters as variables within the 
+     * current stack frame. It does not reflect the calling conventions.  
      * 
      * @param nm   the label for the related function
      * @param frml the formal list, where true indicates the argument escapes
@@ -253,10 +253,8 @@ public class IntelFrame extends Frame {
         this.codegen = new Codegen(this);
         int i = 0;
         while (frml != null) {
-            // first arg is static link
-            var escape = i > 5 || frml.head;
             Access local;
-            if (!escape) {
+            if (!frml.head) {
                 Temp temp = Temp.create();
                 this.moveRegArgsToTemp(temp, i);
                 local = new InReg(temp);

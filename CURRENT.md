@@ -1,7 +1,14 @@
 ## Diary
 
+*7th June 2020*
+Reimplementing Tile Matching as some assembly was incorrect due to a bug in the previous implementation.
+Employing a visitor pattern ( again ! ), to do the tile matching. 
+
+Array read is working now. I had to use the 32 bit registers instead of the 64 bit ones. Array write isn't due
+to tile matching bug.
+
 *3rd May 2020*
-Implementing coalescing algorithm. 
+~~Implementing coalescing algorithm~~
 
 Going to ensure that the non coalesce version works first.
 

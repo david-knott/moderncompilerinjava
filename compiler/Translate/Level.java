@@ -40,7 +40,9 @@ public class Level {
 
     /**
      * Creates a new static nesting level, using the supplied level as it parent.
-     * The symbol name relates to the function that is linked to this level.
+     * The symbol name relates to the function that is linked to this level. 
+     * Note that we create a the formal list with the first argument as the static 
+     * link.
      * @param prnt
      * @param name
      * @param fmls

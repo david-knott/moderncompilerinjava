@@ -322,11 +322,33 @@ class CodegenVisitor implements TreeVisitor {
         }
     }
 
+    /**
+     * addPattern(
+     * new MOVET(
+     *  new TEMPT("t1"),
+     *  new MEMT(
+     *      new BINOPT(PLUS,
+     *          new TEMP("t2"),
+     *          new BINOP(MULT,
+     *              new CONSTT("c1"),
+     *              new CONSTT("c2")
+     *          )
+     *      )
+     *  )
+     * )), x => {
+     * 
+     * 
+     * });
+     * 
+     * 
+     * 
+     * 
+     */
+
+    
     @Override
     public void visit(MOVE op) {
         if(!tpl.match(op)) {
-            
-
             op.dst.accept(this);
             var mem = temp;
             op.src.accept(this);
