@@ -23,20 +23,41 @@ public class TilePatterns {
     public static TilePattern MOVE_TEMP_TO_OFFSET_MEM_2 = new MOVET(
             new MEMT(new BINOPT(1 /* add */, new TEMPT("temp2"), new CONSTT("const1"))), new TEMPT("temp1"));
     public static TilePattern MOVE_TEMP_TO_MEM = new MOVET(new MEMT(new TEMPT("temp2")), new TEMPT("temp1"));
+
     public static TilePattern MOVE_TEMP_TO_TEMP = new MOVET(
-        new TEMPT("temp1"),
-        new TEMPT("temp2")
+        new TEMPT("dst"),
+        new TEMPT("src")
+    );
+
+    public static TilePattern MOVE_CONST_TO_ARRAY_INDEX = new MOVET(
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS,
+                new TEMPT("temp1"),
+                new BINOPT(
+                    BINOP.MUL, 
+                    new CONSTT("const1"),
+                    new CONSTT("const2")
+                )
+            )
+        ),
+        new CONSTT("const3")
+    );
+
+    public static TilePattern EXP_CALL = new EXPT(
+        new CALLT("call")
     );
 
 }
 
 class TilePatternMatcher implements TilePatternVisitor {
     private Object exp;
+    private Object originalRef;
     private Hashtable<String, Object> captures = new Hashtable<String, Object>();
     private boolean matches = true;
 
     public TilePatternMatcher(Object exp) { /* TODO: is this a bad idea ? */
-        this.exp = exp;
+        this.originalRef = exp;
     }
 
     public Object getCapture(String key) {
@@ -44,6 +65,7 @@ class TilePatternMatcher implements TilePatternVisitor {
     }
 
     public boolean isMatch(TilePattern tilePattern) {
+        this.exp = this.originalRef;
         tilePattern.accept(this);
         return this.matches;
     }

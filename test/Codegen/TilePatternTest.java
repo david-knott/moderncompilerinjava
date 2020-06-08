@@ -29,8 +29,8 @@ public class TilePatternTest {
         MOVE move = new MOVE(new TEMP(t1), new TEMP(t2)); 
         TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(move);
         assertTrue(tilePatternMatcher.isMatch(TilePatterns.MOVE_TEMP_TO_TEMP));
-        assertEquals(t1, ((TEMP)tilePatternMatcher.getCapture("temp1")).temp);
-        assertEquals(t2, ((TEMP)tilePatternMatcher.getCapture("temp2")).temp);
+        assertEquals(t2, ((TEMP)tilePatternMatcher.getCapture("src")).temp);
+        assertEquals(t1, ((TEMP)tilePatternMatcher.getCapture("dst")).temp);
     }
 
     @Test

@@ -26,8 +26,6 @@ import Tree.TreeVisitor;
 
 class CodegenVisitor implements TreeVisitor {
 
-    private TreePatternList tpl;
-
     Assem.InstrList iList = null, last = null;
     private Temp temp;
     private Frame frame;
@@ -90,128 +88,13 @@ class CodegenVisitor implements TreeVisitor {
         return L(argTemp, munchArgs(i + 1, args.tail));
     }
 
-    private void registerMoveTreePatterns(){
-        var tb = new TreePatternBuilder();
-        tpl.add(
-            tb.addRoot(
-                new MoveNode("move")
-            ).addChild(
-                new MemNode("m1")
-            ).addChild(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new TempNode("temp")
-            ).addSibling(
-                new ConstNode("c1")
-            ).getParent().getParent().getParent().addChild(
-                new ConstNode("c2")
-            )
-            .build(), treePattern -> {
-                var temp = (TEMP)treePattern.getNamedMatch("temp");
-                var cnst = (CONST)treePattern.getNamedMatch("c1");
-                var cnst2 = (CONST)treePattern.getNamedMatch("c2");
-                //special move where there is no src register
-                emit(new Assem.OPER("movl %" + cnst2.value + ", " + cnst.value + "(%`d0)", L(temp.temp, null), null));
-            }
-        );
-        tpl.add(
-            tb.addRoot(
-                new MoveNode("move")
-            ).addChild(
-                new TempNode("temp1")
-            ).getParent().addChild(
-                new MemNode("m1")
-            ).addChild(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new TempNode("temp2")
-            ).addSibling(
-                new ConstNode("c1")
-            )
-            .build(), treePattern -> {
-                var temp1 = (TEMP)treePattern.getNamedMatch("temp1");
-                var temp2 = (TEMP)treePattern.getNamedMatch("temp2");
-                var cnst = (CONST)treePattern.getNamedMatch("c1");
-                emit(new Assem.MOVE("movl " + cnst.value + "(%`s0), %`d0", temp1.temp, temp2.temp));
-            }
-        );
-    }
-
-    private void registerMemTreePatterns(){
-        var tb = new TreePatternBuilder();
-        tpl.add(
-            tb.addRoot(
-                new MemNode("mem")
-            ).addChild(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new ConstNode("cnst")
-            ).addSibling(
-                new ExpNode("exp")
-            )
-            .build(), treePattern -> {
-                var exp = (Exp)treePattern.getNamedMatch("exp");
-                var cnst = (CONST)treePattern.getNamedMatch("cnst");
-                exp.accept(this);
-                var src = temp;
-                temp = Temp.create();
-                var dst = temp;
-                emit(new Assem.MOVE("movl " + cnst.value + "(%`s0), %`d0", 
-                    dst, src));
-            }
-        );
-        tpl.add(
-            tb.addRoot(
-                new MemNode("mem")
-            ).addChild(
-                new BinopNode("b1", x -> {return x.binop == BINOP.PLUS;})
-            ).addChild(
-                new ExpNode("exp")
-            ).addSibling(
-                new ConstNode("cnst")
-            )
-            .build(), treePattern -> {
-                var exp = (Exp)treePattern.getNamedMatch("exp");
-                var cnst = (CONST)treePattern.getNamedMatch("cnst");
-                exp.accept(this);
-                var src = temp;
-                temp = Temp.create();
-                var dst = temp;
-                emit(new Assem.MOVE("movl " + cnst.value + "(%`s0), %`d0", 
-                    dst, src));
-            }
-        );
-    }
-     
-    private void registerExpTreePatterns(){
-        var tb = new TreePatternBuilder();
-        //handle call without a result.
-        tpl.add(
-            tb.addRoot(
-                new EXPNode("exp")
-            ).addChild(
-                new CallNode("call1")   
-            ).build(), treePattern -> {
-            var call = (CALL)treePattern.getNamedMatch("call1");
-            var name = (NAME)call.func;
-            TempList l = munchArgs(0, call.args);
-            emit(new OPER("call " + name.label,  calldefs, l));
-        });
-    }
     
     public CodegenVisitor(Frame frame) {
         this.frame = frame;
-        tpl = new TreePatternList();
-        registerExpTreePatterns();
-        registerMoveTreePatterns();
-        registerMemTreePatterns();
     }
 
     @Override
     public void visit(BINOP op) {
-        if(tpl.match(op)) {
-            return;
-        }
         op.right.accept(this);
         var rightTemp = temp;
         op.left.accept(this);
@@ -253,38 +136,18 @@ class CodegenVisitor implements TreeVisitor {
         }
     }
 
-    public TempList callerSave() {
-        TempList temps = null;
-        for(TempList callerSave = IntelFrame.callerSaves; callerSave != null; callerSave = callerSave.tail) {
-            Temp newTemp = Temp.create();
-            temps = TempList.append(temps, newTemp);
-            emit(new Assem.MOVE("move %`s0, %`d0", newTemp, callerSave.head));
-        }
-        return temps;
-    }
-    
-    public void callerRestore(TempList temps) {
-        for(TempList callerSave = IntelFrame.callerSaves; callerSave != null; callerSave = callerSave.tail) {
-            Temp newTemp = temps.head;
-            emit(new Assem.MOVE("move %`s0, %`d0", callerSave.head, newTemp));
-            temps = temps.tail;
-        }
-    }
-
     @Override
     public void visit(CALL call) {
         var name = (NAME)call.func;
-        //TempList callerSaves = this.callerSave();
         TempList l = munchArgs(0, call.args);
         temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
         emit(new OPER("call " + name.label,  calldefs, l));
-        //this.callerRestore(callerSaves);
     }
 
     @Override
     public void visit(CONST cnst) {
         temp = Temp.create();
-        emit(new OPER("movl $" + cnst.value + ", %`d0", L(temp, null), null));
+        emit(new OPER("movl $" + cnst.value + ", %`d0 # const", L(temp, null), null));
     }
 
     @Override
@@ -294,11 +157,17 @@ class CodegenVisitor implements TreeVisitor {
 
     @Override
     public void visit(EXP exp) {
-        if(!tpl.match(exp)) {
+        TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(exp);
+        if(tilePatternMatcher.isMatch(TilePatterns.EXP_CALL)) {
+            CALL call = (CALL)tilePatternMatcher.getCapture("call");
+            var name = (NAME) call.func;
+            TempList l = munchArgs(0, call.args);
+            emit(new OPER("call " + name.label + " # exp call ( no return value )", calldefs, l));
+        } else {
             exp.exp.accept(this);
             var expTemp = temp;
             temp = Temp.create();
-            emit(new Assem.MOVE("movl %`s0, %`d0", temp, expTemp));
+            emit(new Assem.MOVE("movl %`s0, %`d0 # default exp", temp, expTemp));
         }
     }
 
@@ -314,12 +183,10 @@ class CodegenVisitor implements TreeVisitor {
 
     @Override
     public void visit(MEM op) {
-        if(!tpl.match(op)) {
-            op.exp.accept(this);
-            var mem = temp;
-            temp = Temp.create();
-            emit(new Assem.MOVE("movl (%`s0), %`d0", temp, mem));
-        }
+        op.exp.accept(this);
+        var mem = temp;
+        temp = Temp.create();
+        emit(new Assem.MOVE("movl (%`s0), %`d0 # default mem", temp, mem));
     }
 
     /**
@@ -348,12 +215,24 @@ class CodegenVisitor implements TreeVisitor {
     
     @Override
     public void visit(MOVE op) {
-        if(!tpl.match(op)) {
-            op.dst.accept(this);
-            var mem = temp;
-            op.src.accept(this);
-            var exp = temp;
-            emit(new Assem.MOVE("movl %`s0, %`d0 # visit(MOVE)", mem, exp));
+        TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(op);
+        if(tilePatternMatcher.isMatch(TilePatterns.MOVE_TEMP_TO_TEMP)) {
+            TEMP dst = (TEMP)tilePatternMatcher.getCapture("dst");
+            TEMP src = (TEMP)tilePatternMatcher.getCapture("src");
+            emit(new Assem.MOVE("movl %`s0, %`d0 # move temp to temp", dst.temp, src.temp));
+        } else if(tilePatternMatcher.isMatch(TilePatterns.MOVE_CONST_TO_ARRAY_INDEX)) {
+            TEMP dst = (TEMP)tilePatternMatcher.getCapture("temp1");
+            int const1 = (Integer)tilePatternMatcher.getCapture("const1");
+            int const2 = (Integer)tilePatternMatcher.getCapture("const2");
+            int const3 = (Integer)tilePatternMatcher.getCapture("const3");
+            emit(new Assem.OPER("movl $" + const3 + ", " +  (const1 * const2) + "(%`d0) # move const to array index", new TempList(dst.temp), null));
+        } else {
+        //    throw new Error("No tile defined.");
+        op.dst.accept(this);
+        var mem = temp;
+        op.src.accept(this);
+        var exp = temp;
+        emit(new Assem.MOVE("movl %`s0, %`d0 # default move", mem, exp));
         }
     }
 
@@ -381,37 +260,39 @@ class CodegenVisitor implements TreeVisitor {
         cjump.right.accept(this);
         var rightTemp = temp;
         emit(new OPER("cmp %`s0, %`s1", null, L(rightTemp, L(leftTemp, null))));
+        String op = "";
         switch(cjump.relop) {
             case CJUMP.EQ:
-                emit(new OPER("je `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "je";
             break;
             case CJUMP.GE:
-                emit(new OPER("jge `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jge";
             break;
             case CJUMP.GT:
-                emit(new OPER("jg `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jg";
             break;
             case CJUMP.LE:
-                emit(new OPER("jle `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jle";
             break;
             case CJUMP.LT:
-                emit(new OPER("jl `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jl";
             break;
             case CJUMP.NE:
-                emit(new OPER("jne `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jne";
             break;
             case CJUMP.UGE:
-                emit(new OPER("jae `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jae";
             break;
             case CJUMP.UGT:
-                emit(new OPER("ja `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "ja";
             break;
             case CJUMP.ULE:
-                emit(new OPER("jbe `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jbe";
             break;
             case CJUMP.ULT:
-                emit(new OPER("jb `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
+                op = "jb";
             break;
         }
+        emit(new OPER(op + " `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
     }
 }
