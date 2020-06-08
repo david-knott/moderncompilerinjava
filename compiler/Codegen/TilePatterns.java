@@ -23,6 +23,10 @@ public class TilePatterns {
     public static TilePattern MOVE_TEMP_TO_OFFSET_MEM_2 = new MOVET(
             new MEMT(new BINOPT(1 /* add */, new TEMPT("temp2"), new CONSTT("const1"))), new TEMPT("temp1"));
     public static TilePattern MOVE_TEMP_TO_MEM = new MOVET(new MEMT(new TEMPT("temp2")), new TEMPT("temp1"));
+    public static TilePattern MOVE_TEMP_TO_TEMP = new MOVET(
+        new TEMPT("temp1"),
+        new TEMPT("temp2")
+    );
 
 }
 
@@ -108,7 +112,7 @@ class TilePatternMatcher implements TilePatternVisitor {
             movet.dst.accept(this);
             this.exp = move.src;
             movet.src.accept(this);
-
+            return;
         }
         this.matches = false;
     }
