@@ -24,6 +24,7 @@ public class TilePatterns {
             new MEMT(new BINOPT(1 /* add */, new TEMPT("temp2"), new CONSTT("const1"))), new TEMPT("temp1"));
     public static TilePattern MOVE_TEMP_TO_MEM = new MOVET(new MEMT(new TEMPT("temp2")), new TEMPT("temp1"));
 
+    //for testing only.
     public static TilePattern MOVE_TEMP_TO_TEMP = new MOVET(
         new TEMPT("dst"),
         new TEMPT("src")
@@ -33,16 +34,49 @@ public class TilePatterns {
         new MEMT(
             new BINOPT(
                 BINOP.PLUS,
-                new TEMPT("temp1"),
+                new TEMPT("temp1"), //base address
                 new BINOPT(
                     BINOP.MUL, 
-                    new CONSTT("const1"),
-                    new CONSTT("const2")
+                    new CONSTT("const1"), //index
+                    new CONSTT("const2") //word size
                 )
             )
         ),
         new CONSTT("const3")
     );
+
+    public static TilePattern MOVE_TEMP_TO_ARRAY_INDEX_EXP = new MOVET(
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS,
+                new ExpT("base"), //base address
+                new BINOPT(
+                    BINOP.MUL, 
+                    new ExpT("index"), //index
+                    new CONSTT("wordSize") //word size
+                )
+            )
+        ),
+        new ExpT("value")
+    );
+
+    public static TilePattern MOVE_ARRAY_INDEX_EXP_TO_TEMP = new MOVET(
+        new ExpT("temp"),
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS,
+                new ExpT("base"), //base address
+                new BINOPT(
+                    BINOP.MUL, 
+                    new ExpT("index"), //index
+                    new CONSTT("wordSize") //word size
+                )
+            )
+        )
+    );
+
+
+
 
     public static TilePattern EXP_CALL = new EXPT(
         new CALLT("call")
