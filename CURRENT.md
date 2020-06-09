@@ -1,4 +1,6 @@
 ## Diary
+*8th June 2020*
+Introduced new patterns for array type patterns. Unfortunately there is a bug where both the index expression and value expression are both being assigned to eax. This is either due to incorrect use / defs on instructions or a problem with pattern matcher.
 
 *7th June 2020*
 Reimplementing Tile Matching as some assembly was incorrect due to a bug in the previous implementation.
