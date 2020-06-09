@@ -146,12 +146,6 @@
         }
 
         @Override
-        public void visit(CONST cnst) {
-            temp = Temp.create();
-            emit(new OPER("movl $" + cnst.value + ", %`d0 # const", L(temp, null), null));
-        }
-
-        @Override
         public void visit(ESEQ op) {
             throw new Error("Not implemented.");
         }
@@ -172,75 +166,62 @@
             }
         }
 
-        @Override
-        public void visit(JUMP op) {
-            emit(new OPER("jmp `j0", null, null, op.targets));
-        }
-
-        @Override
-        public void visit(LABEL op) {
-            emit(new Assem.LABEL(op.label.toString() + ":", op.label));
-        }
 
         @Override
         public void visit(MEM op) {
             op.exp.accept(this);
             var mem = temp;
             temp = Temp.create();
-            emit(new Assem.MOVE("movl (%`s0), %`d0 # default mem", temp, mem));
+            emit(new Assem.MOVE("movl %`s0, (%`d0) # default mem load", temp, mem));
         }
     
         @Override
         public void visit(MOVE op) {
-            TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(op);
+    //        TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(op);
+            /*
             if(tilePatternMatcher.isMatch(TilePatterns.MOVE_TEMP_TO_ARRAY_INDEX_EXP)) {
                 Exp baseExp = (Exp)tilePatternMatcher.getCapture("base");
-                baseExp.accept(this);
-                Temp baseTemp = temp;
                 Exp indexExp = (Exp)tilePatternMatcher.getCapture("index");
-                indexExp.accept(this);
-                Temp indexTemp = temp;
                 Exp value = (Exp)tilePatternMatcher.getCapture("value");
                 value.accept(this);
                 Temp valueTemp = temp;
+                baseExp.accept(this);
+                Temp baseTemp = temp;
+                indexExp.accept(this);
+                Temp indexTemp = temp;
                 int const2 = (Integer)tilePatternMatcher.getCapture("wordSize");
-                emit(new Assem.OPER("movl $`s0, " +  (const2) + "(%`d1 `d0) # move temp to array index", new TempList(baseTemp, new TempList(indexTemp)), new TempList(valueTemp)));
-            } else if(tilePatternMatcher.isMatch(TilePatterns.MOVE_ARRAY_INDEX_EXP_TO_TEMP)) {
+                emit(new Assem.OPER("movl $`s0, (%`s1, %`d0, " + const2 +") # move temp to mem array index", 
+                        new TempList(baseTemp), 
+                        new TempList(valueTemp, new TempList(indexTemp))
+                        )
+                );
+            }*/
+            /*
+            if(tilePatternMatcher.isMatch(TilePatterns.MOVE_ARRAY_INDEX_EXP_TO_TEMP)) {
                 Exp baseExp = (Exp)tilePatternMatcher.getCapture("base");
                 baseExp.accept(this);
                 Temp baseTemp = temp;
+                Exp tempExp = (Exp)tilePatternMatcher.getCapture("temp");
+                tempExp.accept(this);
+                Temp valueTemp = temp;
                 Exp indexExp = (Exp)tilePatternMatcher.getCapture("index");
                 indexExp.accept(this);
                 Temp indexTemp = temp;
-                Exp value = (Exp)tilePatternMatcher.getCapture("value");
-                value.accept(this);
-                Temp valueTemp = temp;
                 int const2 = (Integer)tilePatternMatcher.getCapture("wordSize");
-                emit(new Assem.OPER("movl " +  (const2) + "(%`s1 `s0), $`d0  # move array index to temp", new TempList(valueTemp), new TempList(baseTemp, new TempList(indexTemp))));
-            } else {
-                op.dst.accept(this);
-                var mem = temp;
+                emit(new Assem.OPER("movl " +  (const2) + "(%`s1 `s0), $`d0  # move mem array index to temp", new TempList(valueTemp), new TempList(baseTemp, new TempList(indexTemp))));
+            }  else { */
+                op .dst.accept(this);
+                var dst = temp;
                 op.src.accept(this);
-                var exp = temp;
-                emit(new Assem.MOVE("movl %`s0, %`d0 # default move", mem, exp));
-            }
-        }
-
-        @Override
-        public void visit(NAME op) {
-            temp = Temp.create();
-            emit(new Assem.OPER("movl $" + op.label + ", %`d0", L(temp, null), null));
+                var src = temp;
+                emit(new Assem.MOVE("movl %`s0, %`d0 # default move", dst, src));
+            //}
         }
 
         @Override
         public void visit(SEQ seq) {
             seq.left.accept(this);
             seq.right.accept(this);
-        }
-
-        @Override
-        public void visit(TEMP op) {
-            this.temp = op.temp;
         }
 
         @Override
@@ -285,4 +266,33 @@
             }
             emit(new OPER(op + " `j0", null, null, new LabelList(cjump.iftrue, new LabelList(cjump.iffalse, null))));
         }
+
+        @Override
+        public void visit(CONST cnst) {
+            temp = Temp.create();
+            emit(new OPER("movl $" + cnst.value + ", %`d0 # const", L(temp, null), null));
+        }
+
+        @Override
+        public void visit(JUMP op) {
+            emit(new OPER("jmp `j0", null, null, op.targets));
+        }
+
+        @Override
+        public void visit(LABEL op) {
+            emit(new Assem.LABEL(op.label.toString() + ":", op.label));
+        }
+
+        @Override
+        public void visit(NAME op) {
+            temp = Temp.create();
+            emit(new Assem.OPER("movl $" + op.label + ", %`d0 # default name", L(temp, null), null));
+        }
+
+        @Override
+        public void visit(TEMP op) {
+            this.temp = op.temp;
+        }
+
+
     }

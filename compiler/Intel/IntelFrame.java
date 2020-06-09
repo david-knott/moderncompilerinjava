@@ -416,15 +416,16 @@ public class IntelFrame extends Frame {
                 new OPER(this.name.toString() + ":", null, null),
                 new InstrList(new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), 
                     new InstrList(new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
-                       new InstrList(new OPER("addq $" + this.localOffset + ", %`d0", new TempList(IntelFrame.rsp), null), null
+                       new InstrList(new OPER("addq $" + this.localOffset + ", %`d0", new TempList(IntelFrame.rsp), null), 
+                         new InstrList(new OPER("# start main", null , null), null)
                     )
                 )
             )
         );
-        InstrList epilog = new InstrList(
-                new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
+        InstrList epilog = new InstrList(new OPER("# end main", null, null), new InstrList(
+            new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
                 new InstrList(new OPER("popq %`d0", new TempList(IntelFrame.rbp), null),
-                        new InstrList(new OPER("ret", null, null))));
+                        new InstrList(new OPER("ret", null,  null)))));
         return new Proc(prolog, body, epilog);
     }
 

@@ -12,37 +12,11 @@ import Tree.MOVE;
 import Tree.TEMP;
 
 public class TilePatterns {
-    public static TilePattern MOVE_OFFSET_MEM_TO_TEMP_1 = new MOVET(new TEMPT("temp1"),
-            new MEMT(new BINOPT(1 /* add */, new CONSTT("const1"), new TEMPT("temp2"))));
-    public static TilePattern MOVE_OFFSET_MEM_EXP_TO_TEMP = new MOVET(new TEMPT("temp1"),
-            new MEMT(new BINOPT(1 /* add */, new CONSTT("const1"), new ExpT("exp"))));
-    public static TilePattern MOVE_OFFSET_MEM_TO_TEMP_2 = new MOVET(new TEMPT("temp1"),
-            new MEMT(new BINOPT(1 /* add */, new TEMPT("temp2"), new CONSTT("const1"))));
-    public static TilePattern MOVE_TEMP_TO_OFFSET_MEM_1 = new MOVET(
-            new MEMT(new BINOPT(1 /* add */, new CONSTT("const1"), new TEMPT("temp2"))), new TEMPT("temp1"));
-    public static TilePattern MOVE_TEMP_TO_OFFSET_MEM_2 = new MOVET(
-            new MEMT(new BINOPT(1 /* add */, new TEMPT("temp2"), new CONSTT("const1"))), new TEMPT("temp1"));
-    public static TilePattern MOVE_TEMP_TO_MEM = new MOVET(new MEMT(new TEMPT("temp2")), new TEMPT("temp1"));
 
     //for testing only.
     public static TilePattern MOVE_TEMP_TO_TEMP = new MOVET(
         new TEMPT("dst"),
         new TEMPT("src")
-    );
-
-    public static TilePattern MOVE_CONST_TO_ARRAY_INDEX = new MOVET(
-        new MEMT(
-            new BINOPT(
-                BINOP.PLUS,
-                new TEMPT("temp1"), //base address
-                new BINOPT(
-                    BINOP.MUL, 
-                    new CONSTT("const1"), //index
-                    new CONSTT("const2") //word size
-                )
-            )
-        ),
-        new CONSTT("const3")
     );
 
     public static TilePattern MOVE_TEMP_TO_ARRAY_INDEX_EXP = new MOVET(
@@ -74,9 +48,6 @@ public class TilePatterns {
             )
         )
     );
-
-
-
 
     public static TilePattern EXP_CALL = new EXPT(
         new CALLT("call")

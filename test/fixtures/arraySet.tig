@@ -2,8 +2,6 @@ let
     
     type intArray = array of int
     var row := intArray [10] of 66 
-    var y:int := 3
 in
-    row[1] :=55;
-    y := row[1]
+    row[5] :=55
 end
