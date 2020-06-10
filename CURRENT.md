@@ -1,7 +1,9 @@
 ## Diary
 *10th June 2020*
-Finished new implementation of codegen pattern matching for store and array store.
+Finished new implementation of codegen tiling implementation for store and array store.
 Realized that store operations only use temporaries, they do not define them.
+
+The old code gen tiling implementation classes where removed.
 
 TODO: Figure out how to unit test all the code snippets.
 
