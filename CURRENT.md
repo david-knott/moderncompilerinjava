@@ -1,4 +1,10 @@
 ## Diary
+*10th June 2020*
+Finished new implementation of codegen pattern matching for store and array store.
+Realized that store operations only use temporaries, they do not define them.
+
+TODO: Figure out how to unit test all the code snippets.
+
 *8th June 2020*
 Introduced new patterns for array type patterns. Unfortunately there is a bug where both the index expression and value expression are both being assigned to eax. This is either due to incorrect use / defs on instructions or a problem with pattern matcher.
 
