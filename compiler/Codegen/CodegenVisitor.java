@@ -183,6 +183,23 @@
         @Override
         public void visit(MOVE op) {
             TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(op);
+            if (tilePatternMatcher.isMatch(TilePatterns.LOAD_ARRAY)) {
+                Exp src = (Exp) tilePatternMatcher.getCapture("base");
+                src.accept(this);
+                Temp srcTemp = temp;
+                Exp dstExp = (Exp) tilePatternMatcher.getCapture("dst");
+                dstExp.accept(this);
+                Temp dstTemp = temp;
+                Exp indexExp = (Exp) tilePatternMatcher.getCapture("index");
+                indexExp.accept(this);
+                Temp indexTemp = temp;
+                int wordSize = (Integer) tilePatternMatcher.getCapture("wordSize");
+                emit(new Assem.OPER("movl (%`s0, %`s1, " + wordSize +"), %`d0 # load array", 
+                        new TempList(dstTemp), 
+                        new TempList(indexTemp, new TempList(srcTemp))
+                        ));
+                return;
+            }
             // notice that store to memory operations only use and dont define variables.
             if (tilePatternMatcher.isMatch(TilePatterns.STORE_ARRAY)) {
                 Exp dst = (Exp) tilePatternMatcher.getCapture("base");

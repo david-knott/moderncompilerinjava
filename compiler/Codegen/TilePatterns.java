@@ -43,6 +43,23 @@ public class TilePatterns {
         new ExpT("src")
     );
 
+    public static TilePattern LOAD_ARRAY = new MOVET(
+        new ExpT("dst"),
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS,
+                new ExpT("base"), //base address exp
+                new BINOPT(
+                    BINOP.MUL, 
+                    new ExpT("index"), //index exp
+                    new CONSTT("wordSize") //word size
+                )
+            )
+        )
+    );
+
+
+
     public static TilePattern EXP_CALL = new EXPT(
         new CALLT("call")
     );
@@ -68,7 +85,7 @@ class TilePatternMatcher implements TilePatternVisitor {
     public Object getCapture(String key) {
         if(this.captures.containsKey(key)) {
         Object capture = this.captures.get(key);
-        return this.captures.remove(key)
+        return this.captures.remove(key);
         } else {
             throw new Error("Key " + key + " does not exist as capture");
         }

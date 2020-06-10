@@ -7,6 +7,8 @@ The old code gen tiling implementation classes where removed.
 
 TODO: Figure out how to unit test all the code snippets.
 
+TODO: Check load array code gen tile.
+
 *8th June 2020*
 Introduced new patterns for array type patterns. Unfortunately there is a bug where both the index expression and value expression are both being assigned to eax. This is either due to incorrect use / defs on instructions or a problem with pattern matcher.
 
