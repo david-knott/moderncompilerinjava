@@ -2,6 +2,8 @@ package Codegen;
 
 import java.util.Hashtable;
 
+import javax.xml.catalog.Catalog;
+
 import Tree.BINOP;
 import Tree.CALL;
 import Tree.CONST;
@@ -19,34 +21,26 @@ public class TilePatterns {
         new TEMPT("src")
     );
 
-    public static TilePattern MOVE_TEMP_TO_ARRAY_INDEX_EXP = new MOVET(
+    public static TilePattern STORE = new MOVET(
+        new MEMT(
+            new ExpT("dst")
+        ),
+        new ExpT("src")
+    );
+
+    public static TilePattern STORE_ARRAY = new MOVET(
         new MEMT(
             new BINOPT(
                 BINOP.PLUS,
-                new ExpT("base"), //base address
+                new ExpT("base"), //base address exp
                 new BINOPT(
                     BINOP.MUL, 
-                    new ExpT("index"), //index
+                    new ExpT("index"), //index exp
                     new CONSTT("wordSize") //word size
                 )
             )
         ),
-        new ExpT("value")
-    );
-
-    public static TilePattern MOVE_ARRAY_INDEX_EXP_TO_TEMP = new MOVET(
-        new ExpT("temp"),
-        new MEMT(
-            new BINOPT(
-                BINOP.PLUS,
-                new ExpT("base"), //base address
-                new BINOPT(
-                    BINOP.MUL, 
-                    new ExpT("index"), //index
-                    new CONSTT("wordSize") //word size
-                )
-            )
-        )
+        new ExpT("src")
     );
 
     public static TilePattern EXP_CALL = new EXPT(
@@ -65,8 +59,19 @@ class TilePatternMatcher implements TilePatternVisitor {
         this.originalRef = exp;
     }
 
+    /**
+     * Returns the captured item and removes it from the internal hashtable.
+     * If item is not present an exception is thrown/
+     * @param key the key
+     * @return the captured object.
+     */
     public Object getCapture(String key) {
-        return this.captures.get(key);
+        if(this.captures.containsKey(key)) {
+        Object capture = this.captures.get(key);
+        return this.captures.remove(key)
+        } else {
+            throw new Error("Key " + key + " does not exist as capture");
+        }
     }
 
     public boolean isMatch(TilePattern tilePattern) {

@@ -16,6 +16,31 @@ public class TigerTests {
     }
 
     @Test
+    public void plus() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/plus.tig"));
+        m.compile();
+    }
+
+    @Test
+    public void minus() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/minus.tig"));
+        m.compile();
+    }
+
+    @Test
+    public void mult() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/mult.tig"));
+        m.compile();
+    }
+
+    @Test
+    public void div() throws FileNotFoundException {
+        Main m = new Main("chap5", loadFile("./test/fixtures/div.tig"));
+        m.compile();
+    }
+
+
+    @Test
     public void assign() throws FileNotFoundException {
         Main m = new Main("chap5", loadFile("./test/fixtures/assign.tig"));
         m.compile();

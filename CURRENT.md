@@ -2,6 +2,15 @@
 *8th June 2020*
 Introduced new patterns for array type patterns. Unfortunately there is a bug where both the index expression and value expression are both being assigned to eax. This is either due to incorrect use / defs on instructions or a problem with pattern matcher.
 
+Problems with the tiling, in particular selection of instructions that write to memory and ones that write to temps, load and stores.
+I was investigating if its possible to implement these without tiling, I dont think it is as the IR tree are ambigpous regarding
+loading and storing. If MEM is left child of MOVE, it means store, anywhere else, it means fetch.
+
+eg MOVE(MEM, exp) -> store exp value to location of MEM
+
+MOVE(TEMP, MEM) -> load value in address of MEM into TEMP
+
+
 *7th June 2020*
 Reimplementing Tile Matching as some assembly was incorrect due to a bug in the previous implementation.
 Employing a visitor pattern ( again ! ), to do the tile matching. 

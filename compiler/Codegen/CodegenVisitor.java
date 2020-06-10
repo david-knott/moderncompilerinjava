@@ -95,11 +95,17 @@
 
         @Override
         public void visit(BINOP op) {
-            op.right.accept(this);
-            var rightTemp = temp;
+            // Order of visitation is important.
+            // If reversed, the wrong temp is used
+            // in the following instructiom 
+            // ( set test arraySet.tig )
+            // The right temp is the item that
+            // contains our result, hence it is
+            // evaluated last.
             op.left.accept(this);
             var leftTemp = temp;
-            
+            op.right.accept(this);
+            var rightTemp = temp;
             switch (op.binop) {
                 case BINOP.AND:
                     emit(new OPER("and %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
@@ -108,7 +114,7 @@
                     break;
                 case BINOP.DIV:
                     emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
-                    emit(new OPER("div  %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, null) ));
+                    emit(new OPER("div %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
                     emit(new Assem.MOVE("movl %`s0, %`d0", rightTemp, IntelFrame.rax));
                     break;
                 case BINOP.LSHIFT:
@@ -117,8 +123,8 @@
                     emit(new OPER("sub %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
                     break;
                 case BINOP.MUL:
-                    emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
                     //multiply rax by value in right temp, place value in rax:rdx
+                    emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
                     emit(new OPER("mul %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
                     emit(new Assem.MOVE("movl %`s0, %`d0", rightTemp, IntelFrame.rax));
                     break;
@@ -166,56 +172,53 @@
             }
         }
 
-
         @Override
         public void visit(MEM op) {
             op.exp.accept(this);
             var mem = temp;
             temp = Temp.create();
-            emit(new Assem.MOVE("movl %`s0, (%`d0) # default mem load", temp, mem));
+            emit(new Assem.MOVE("movl %`s0, (%`d0) # default load", temp, mem));
         }
     
         @Override
         public void visit(MOVE op) {
-    //        TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(op);
-            /*
-            if(tilePatternMatcher.isMatch(TilePatterns.MOVE_TEMP_TO_ARRAY_INDEX_EXP)) {
-                Exp baseExp = (Exp)tilePatternMatcher.getCapture("base");
-                Exp indexExp = (Exp)tilePatternMatcher.getCapture("index");
-                Exp value = (Exp)tilePatternMatcher.getCapture("value");
-                value.accept(this);
-                Temp valueTemp = temp;
-                baseExp.accept(this);
-                Temp baseTemp = temp;
+            TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(op);
+            // notice that store to memory operations only use and dont define variables.
+            if (tilePatternMatcher.isMatch(TilePatterns.STORE_ARRAY)) {
+                Exp dst = (Exp) tilePatternMatcher.getCapture("base");
+                dst.accept(this);
+                Temp dstTemp = temp;
+                Exp srcExp = (Exp) tilePatternMatcher.getCapture("src");
+                srcExp.accept(this);
+                Temp srcTemp = temp;
+                Exp indexExp = (Exp) tilePatternMatcher.getCapture("index");
                 indexExp.accept(this);
                 Temp indexTemp = temp;
-                int const2 = (Integer)tilePatternMatcher.getCapture("wordSize");
-                emit(new Assem.OPER("movl $`s0, (%`s1, %`d0, " + const2 +") # move temp to mem array index", 
-                        new TempList(baseTemp), 
-                        new TempList(valueTemp, new TempList(indexTemp))
-                        )
-                );
-            }*/
-            /*
-            if(tilePatternMatcher.isMatch(TilePatterns.MOVE_ARRAY_INDEX_EXP_TO_TEMP)) {
-                Exp baseExp = (Exp)tilePatternMatcher.getCapture("base");
-                baseExp.accept(this);
-                Temp baseTemp = temp;
-                Exp tempExp = (Exp)tilePatternMatcher.getCapture("temp");
-                tempExp.accept(this);
-                Temp valueTemp = temp;
-                Exp indexExp = (Exp)tilePatternMatcher.getCapture("index");
-                indexExp.accept(this);
-                Temp indexTemp = temp;
-                int const2 = (Integer)tilePatternMatcher.getCapture("wordSize");
-                emit(new Assem.OPER("movl " +  (const2) + "(%`s1 `s0), $`d0  # move mem array index to temp", new TempList(valueTemp), new TempList(baseTemp, new TempList(indexTemp))));
-            }  else { */
-                op .dst.accept(this);
-                var dst = temp;
-                op.src.accept(this);
-                var src = temp;
-                emit(new Assem.MOVE("movl %`s0, %`d0 # default move", dst, src));
-            //}
+                int wordSize = (Integer) tilePatternMatcher.getCapture("wordSize");
+                emit(new Assem.OPER("movl $`s0, (%`s1, %`s2, " + wordSize +") # store array", 
+                        null, 
+                        new TempList(srcTemp, new TempList(indexTemp, new TempList(dstTemp)))
+                        ));
+                return;
+            }
+            if (tilePatternMatcher.isMatch(TilePatterns.STORE)) {
+                Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
+                dst.accept(this);
+                Temp dstTemp = this.temp;
+                Exp src = (Exp) tilePatternMatcher.getCapture("src");
+                src.accept(this);
+                Temp srcTemp = this.temp;
+                emit(new Assem.OPER("movl %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
+                return;
+            } 
+
+            // Unmatched tile case.
+            op.dst.accept(this);
+            var dst = temp;
+            op.src.accept(this);
+            var src = temp;
+            emit(new Assem.MOVE("movl %`s0, %`d0 # default move", dst, src));
+
         }
 
         @Override
@@ -293,6 +296,4 @@
         public void visit(TEMP op) {
             this.temp = op.temp;
         }
-
-
     }
