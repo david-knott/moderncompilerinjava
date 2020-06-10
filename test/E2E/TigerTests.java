@@ -39,7 +39,6 @@ public class TigerTests {
         m.compile();
     }
 
-
     @Test
     public void assign() throws FileNotFoundException {
         Main m = new Main("chap5", loadFile("./test/fixtures/assign.tig"));
