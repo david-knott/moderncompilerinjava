@@ -1,7 +1,6 @@
 //#undef __STDC__
 #include <stdio.h>
 #include <stdlib.h>
-
 int *initArray(int size, int init)
 {
   int i;
@@ -46,6 +45,11 @@ void print(struct string *s)
   unsigned char *p = s->chars;
   for (i = 0; i < s->length; i++, p++)
     putchar(*p);
+}
+
+void itoa(int x) 
+{
+  printf("%i", x);
 }
 
 void rttest() {

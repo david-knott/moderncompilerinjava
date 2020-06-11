@@ -108,7 +108,9 @@
             var rightTemp = temp;
             switch (op.binop) {
                 case BINOP.AND:
-                    emit(new OPER("and %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
+                    this.temp = Temp.create();
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # and lexp -> r", this.temp, leftTemp));
+                    emit(new OPER("and %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.ARSHIFT:
                     break;
@@ -120,19 +122,24 @@
                 case BINOP.LSHIFT:
                     break;
                 case BINOP.MINUS:
-                    emit(new OPER("sub %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
+                    this.temp = Temp.create();
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # minus lexp -> r", this.temp, leftTemp));
+                    emit(new OPER("sub %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.MUL:
-                    //multiply rax by value in right temp, place value in rax:rdx
                     emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
                     emit(new OPER("mul %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
                     emit(new Assem.MOVE("movl %`s0, %`d0", rightTemp, IntelFrame.rax));
                     break;
                 case BINOP.OR:
-                    emit(new OPER("or %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
+                    this.temp = Temp.create();
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # or lexp -> r", this.temp, leftTemp));
+                    emit(new OPER("or %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.PLUS:
-                    emit(new OPER("add %`s0, %`d0", L(leftTemp, null), L(rightTemp, L(leftTemp, null))));
+                    this.temp = Temp.create();
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # add lexp -> r", this.temp, leftTemp));
+                    emit(new OPER("add %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.RSHIFT:
                     break;

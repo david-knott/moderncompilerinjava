@@ -21,6 +21,8 @@ public class Env {
         venv = new GenericTable<Entry>();
         venv.put(Symbol.symbol("print"),
                 new FunEntry(outerMost, Label.create("print"), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.VOID));
+        venv.put(Symbol.symbol("itoa"),
+                new FunEntry(outerMost, Label.create("itoa"), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.VOID));
         venv.put(Symbol.symbol("flush"), new FunEntry(outerMost, Label.create("flush"), null, Semant.VOID));
         venv.put(Symbol.symbol("getchar"), new FunEntry(outerMost, Label.create("getchar"), null, Semant.STRING));
         venv.put(Symbol.symbol("ord"), new FunEntry(outerMost, Label.create("ord"),
