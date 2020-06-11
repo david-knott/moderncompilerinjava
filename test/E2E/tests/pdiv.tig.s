@@ -11,14 +11,14 @@ movl %r12d, %r12d # default move
 movl %r13d, %r13d # default move
 movl %r14d, %r14d # default move
 movl %r15d, %r15d # default move
-movl $3, %eax # const
+movl $8, %eax # const
 movl %eax, %eax # default move
-movl $4, %ecx # const
+movl $2, %ecx # const
 movl %ecx, %ecx # default move
-movl %eax, %eax # mul lexp -> r
-movl %eax, %eax # mul r -> rax
-mul %ecx # mul rax * rexp 
-movl %eax, %eax # mul rax -> r
+movl %eax, %eax # div lexp -> r
+movl %eax, %eax # div r -> rax
+div %ecx # div rax * rexp 
+movl %eax, %eax # div rax -> r
 movl %eax, %edi
 call itoa # exp call ( no return value )
 movl %r15d, %r15d # default move

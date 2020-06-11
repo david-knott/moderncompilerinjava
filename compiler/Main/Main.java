@@ -28,7 +28,7 @@ interface CompilerDestination {
 
 class FileSource implements CompilerSource {
     
-    public Source(String fileName) {
+    public FileSource(String fileName) {
         
     }
     
@@ -47,7 +47,7 @@ class FileSource implements CompilerSource {
 
 class FileDestination implements CompilerDestination {
     
-    public Source(String fileName) {
+    public FileDestination(String fileName) {
         
     }
     

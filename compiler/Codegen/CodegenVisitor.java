@@ -115,9 +115,11 @@
                 case BINOP.ARSHIFT:
                     break;
                 case BINOP.DIV:
-                    emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
-                    emit(new OPER("div %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
-                    emit(new Assem.MOVE("movl %`s0, %`d0", rightTemp, IntelFrame.rax));
+                    this.temp = Temp.create();
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # div lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # div r -> rax", IntelFrame.rax, this.temp));
+                    emit(new OPER("div %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # div rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.LSHIFT:
                     break;
@@ -127,9 +129,11 @@
                     emit(new OPER("sub %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.MUL:
-                    emit(new Assem.MOVE("movl %`s0, %`d0", IntelFrame.rax, leftTemp));
-                    emit(new OPER("mul %`s0", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
-                    emit(new Assem.MOVE("movl %`s0, %`d0", rightTemp, IntelFrame.rax));
+                    this.temp = Temp.create();
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # mul lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # mul r -> rax", IntelFrame.rax, this.temp));
+                    emit(new OPER("mul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                    emit(new Assem.MOVE("movl %`s0, %`d0 # mul rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.OR:
                     this.temp = Temp.create();

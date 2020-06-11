@@ -6,7 +6,7 @@ shopt -s nullglob
 for f in ./tests/*.tig; do
 
 /home/david/bin/jdk-14+36/bin/java -cp ../../bin Main.Main $f
-gcc -w -no-pie -Wimplicit-function-declaration -Wl,--wrap,getchar $f.s ./runtime.c -o $f.out
+gcc -g -w -no-pie -Wimplicit-function-declaration -Wl,--wrap,getchar $f.s ./runtime.c -o $f.out
 ACTUAL=$($f.out)
 EXPECTED=$(cat $f.result)
 if [ "$ACTUAL" != "$EXPECTED" ]
