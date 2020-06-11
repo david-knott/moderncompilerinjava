@@ -39,18 +39,6 @@ public class Main {
     private boolean allVarsEscape = false;
     private FindEscape findEscape = new FindEscape(allVarsEscape);
 
-    public Main(final String filename) throws FileNotFoundException {
-        this(filename, new java.io.FileInputStream(filename));
-    }
-
-    public Main(final String name, final InputStream inputStream) {
-        this.name = name;
-        this.inputStream = inputStream;
-        this.errorMsg = new ErrorMsg(this.name);
-        this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
-        this.semant = new Semant(errorMsg, topLevel, this.translate);
-    }
-
     /**
      * Compiles the program. Using the parser we parse the source code and create an
      * abstract syntax tree. The abstract syntax tree is traversed and we mark
@@ -63,9 +51,13 @@ public class Main {
      * 
      * @return
      */
-    public int compile()  {
-        PrintStream out = System.out; // java.io.PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
-        // parsse the input stream
+    public Main(final String name) throws FileNotFoundException {
+        this.name = name;
+        this.inputStream = new java.io.FileInputStream(this.name);
+        this.errorMsg = new ErrorMsg(this.name);
+        this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
+        this.semant = new Semant(errorMsg, topLevel, this.translate);
+
         try {
             java_cup.runtime.Symbol rootSymbol = parser.parse();
             this.ast = (Program) rootSymbol.value;
@@ -80,11 +72,32 @@ public class Main {
         }
         findEscape.traverse(this.ast.absyn);
         Frag frags = this.semant.getTreeFragments(this.ast.absyn);
-        out.println(".globl tigermain");
-        for(; frags != null; frags = frags.next) {
-            frags.process(out);
+
+        PrintStream out = null;
+        try {
+            out = new PrintStream(new java.io.FileOutputStream(this.name + ".s"));
+            out.println(".globl tigermain");
+            for (; frags != null; frags = frags.next) {
+                frags.process(out);
+            }
+            out.close();
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+            throw new Error(e1.toString());
+        } finally {
+            if (out != null) {
+                out.close();
+            }
         }
-        out.close();
-        return 0;
+
     }
+
+    /*
+     * public Main(final String name, final InputStream inputStream) { this.name =
+     * name; this.inputStream = inputStream; this.errorMsg = new
+     * ErrorMsg(this.name); this.parser = new Grm(new Yylex(this.inputStream,
+     * this.errorMsg), this.errorMsg); this.semant = new Semant(errorMsg, topLevel,
+     * this.translate); }
+     */
+
 }

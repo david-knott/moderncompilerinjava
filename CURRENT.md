@@ -1,4 +1,7 @@
 ## Diary
+*11th June 2020*
+Figured out how to test output of compiler, see tests E2E
+
 *10th June 2020*
 Finished new implementation of codegen tiling implementation for store and array store.
 Realized that store operations only use temporaries, they do not define them.
