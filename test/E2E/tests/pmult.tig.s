@@ -17,7 +17,7 @@ movl $4, %ecx # const
 movl %ecx, %ecx # default move
 movl %eax, %eax # mul lexp -> r
 movl %eax, %eax # mul r -> rax
-mul %ecx # mul rax * rexp 
+imul %ecx # mul rax * rexp 
 movl %eax, %eax # mul rax -> r
 movl %eax, %edi
 call itoa # exp call ( no return value )

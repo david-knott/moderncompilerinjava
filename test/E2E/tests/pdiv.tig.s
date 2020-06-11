@@ -17,7 +17,8 @@ movl $2, %ecx # const
 movl %ecx, %ecx # default move
 movl %eax, %eax # div lexp -> r
 movl %eax, %eax # div r -> rax
-div %ecx # div rax * rexp 
+xor %edx, %edx # div clear bits rdx 
+idiv %ecx # div rax * rexp 
 movl %eax, %eax # div rax -> r
 movl %eax, %edi
 call itoa # exp call ( no return value )

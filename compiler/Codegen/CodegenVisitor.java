@@ -118,7 +118,8 @@
                     this.temp = Temp.create();
                     emit(new Assem.MOVE("movl %`s0, %`d0 # div lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movl %`s0, %`d0 # div r -> rax", IntelFrame.rax, this.temp));
-                    emit(new OPER("div %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                    emit(new OPER("xor %`s0, %`d0 # div clear bits rdx ", L(IntelFrame.rdx, null), L(IntelFrame.rdx, null)));
+                    emit(new OPER("idiv %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
                     emit(new Assem.MOVE("movl %`s0, %`d0 # div rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.LSHIFT:
@@ -132,7 +133,7 @@
                     this.temp = Temp.create();
                     emit(new Assem.MOVE("movl %`s0, %`d0 # mul lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movl %`s0, %`d0 # mul r -> rax", IntelFrame.rax, this.temp));
-                    emit(new OPER("mul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                    emit(new OPER("imul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
                     emit(new Assem.MOVE("movl %`s0, %`d0 # mul rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.OR:
