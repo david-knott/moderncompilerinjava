@@ -1,6 +1,6 @@
 ## Diary
 *11th June 2020*
-Problem with stack management for function calls. Seems to adding a rbx move
+Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link
 
 Figured out how to test output of compiler, see tests/E2E. This will run all compile all files in a specified directory
 and check the output against a test.result file.

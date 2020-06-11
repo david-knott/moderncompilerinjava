@@ -1,4 +1,6 @@
 let
+function fa(): int =
+3
 in
-itoa(3)
+itoa(fa())
 end
