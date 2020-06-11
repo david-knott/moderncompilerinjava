@@ -17,6 +17,57 @@ import Translate.Frag;
 import Translate.Level;
 import Translate.Translator;
 
+interface CompilerSource {
+    
+}
+
+interface CompilerDestination {
+    
+}
+
+
+class FileSource implements CompilerSource {
+    
+    public Source(String fileName) {
+        
+    }
+    
+    void openFile() {
+        
+    }
+    
+    void closeFile() {
+        
+    }
+    
+    void read() {
+        
+    }
+}
+
+class FileDestination implements CompilerDestination {
+    
+    public Source(String fileName) {
+        
+    }
+    
+    void openFile() {
+        
+    }
+    
+    public void println(String str) {
+        
+    }
+    
+    public void print(String str) {
+        
+    }
+    
+    void closeFile() {
+        
+    }
+}
+
 /**
  * Main class that executes the compiler.
  */
