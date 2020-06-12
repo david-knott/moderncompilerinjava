@@ -4,16 +4,16 @@ public class ExpTyList {
     public ExpTy expTy;
     public ExpTyList tail;
 
-	public static ExpTyList append(ExpTyList list, ExpTy item) {
-        if(list == null) {
-            return new ExpTyList(item, null);
+    public static ExpTyList append(ExpTyList me, ExpTy t) {
+        if (me == null) {
+            return new ExpTyList(t);
         }
-        while (list.tail != null) {
-            list = list.tail;
+        if (me.tail == null) {
+            return new ExpTyList(me.expTy, new ExpTyList(t));
         }
-        list.tail = new ExpTyList(item, null);
-        return list.tail;
+        return new ExpTyList(me.expTy, ExpTyList.append(me.tail, t));
     }
+
 
     public ExpTyList(ExpTy et, ExpTyList t) {
         if (et == null)
@@ -39,6 +39,7 @@ public class ExpTyList {
         return reversed;
     }
 
+    /*
     public ExpTyList append(ExpTy et) {
         if (et == null)
             throw new IllegalArgumentException("ExpTy et cannot be null");
@@ -48,7 +49,7 @@ public class ExpTyList {
         }
         last.tail = new ExpTyList(et, null);
         return last.tail;
-    }
+    }*/
 
     public ExpTyList last(){
         var head = this;
@@ -62,7 +63,7 @@ public class ExpTyList {
         var head = this;
         ExpTyList allExceptLast = new ExpTyList(expTy);
         while (head.tail != null) {
-            allExceptLast.append(head.expTy);
+            allExceptLast = ExpTyList.append(allExceptLast, head.expTy);
             head = head.tail;
         }
         return allExceptLast;

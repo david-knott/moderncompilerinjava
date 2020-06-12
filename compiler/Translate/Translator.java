@@ -626,7 +626,7 @@ public class Translator {
             if(expTyList.tail == null) {
                 break;
             }
-            allExceptLast.append(expTyList.expTy);
+            allExceptLast = ExpTyList.append(allExceptLast, expTyList.expTy);
         }
         //using the sequence and the last item build eseq
         ExpTy last = expTyList.expTy;

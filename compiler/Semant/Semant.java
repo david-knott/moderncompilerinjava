@@ -411,11 +411,7 @@ public class Semant {
         while(decList != null){
             var transDec = transDec(decList.head);
             var et = new ExpTy(transDec, Semant.VOID);
-            if(irDecList == null){
-                irDecList = new ExpTyList(et);
-            } else {
-                irDecList.append(et);
-            }
+            irDecList = ExpTyList.append(irDecList, et);
             decList = decList.tail;
         }
         ExpTy irBody = transExp(e.body);
@@ -618,7 +614,7 @@ public class Semant {
         ExpTyList etList = new ExpTyList(transExp(expList.head), null);
         expList = expList.tail;
         while(expList != null) {
-            etList.append(transExp(expList.head));
+            etList = ExpTyList.append(etList, transExp(expList.head));
             expList = expList.tail;
         }
         
@@ -696,7 +692,7 @@ public class Semant {
             var recordFieldsTail = recordExp.fields.tail;
             recordType = recordType.tail;
             while (recordFieldsTail != null) {
-                expTyList.append(transFieldListExp(recordFieldsTail, recordType));
+                expTyList = ExpTyList.append(expTyList, transFieldListExp(recordFieldsTail, recordType));
                 recordFieldsTail = recordFieldsTail.tail;
                 recordType = recordType.tail;
             }
