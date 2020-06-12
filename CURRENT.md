@@ -1,4 +1,8 @@
 ## Diary
+*12th June 2020*
+Changed code to use the x64 registers. Fixed intel stack frame bug. Function test now passes.
+
+
 *11th June 2020*
 Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link
 
