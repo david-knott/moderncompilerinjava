@@ -1,6 +1,5 @@
 package Translate;
 
-import Translate.Exp;
 import Types.Type;
 
 public class ExpTy {

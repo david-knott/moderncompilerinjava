@@ -394,7 +394,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-        return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
+        return new SEQ(moveArgs(), new SEQ(calleeSaveList(), new SEQ(body, calleeRestoreList())));
 
     }
 

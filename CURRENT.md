@@ -2,6 +2,8 @@
 *12th June 2020*
 Changed code to use the x64 registers. Fixed intel stack frame bug. Function test now passes.
 
+Bug in function calls with more than 0 arguments. Static link doesn't appear to be added.
+
 
 *11th June 2020*
 Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link

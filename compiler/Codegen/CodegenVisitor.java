@@ -37,7 +37,7 @@
          * the callee is invoked, this in turn means they are live across the function call.
          * Which means they will interfere with all other temporaries within that function.
          */
-        private TempList calldefs = new TempList(IntelFrame.rax, IntelFrame.callerSaves);
+        private TempList calldefs = IntelFrame.callerSaves;
 
         private TempList L(Temp h, TempList t) {
             return new TempList(h, t);
@@ -78,9 +78,9 @@
                     break;
             }
             if (finalPos != null) {
-                emit(new Assem.MOVE("movq %`s0, %`d0", finalPos, argTemp));
+                emit(new Assem.MOVE("movq %`s0, %`d0 # move arg to temp", finalPos, argTemp));
             } else {
-                emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)", IntelFrame.rsp, argTemp));
+                emit(new Assem.OPER("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`s1) # move arg to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
             if (args.tail == null) {
                 return L(argTemp, null);
@@ -160,7 +160,7 @@
             var name = (NAME)call.func;
             TempList l = munchArgs(0, call.args);
             temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
-            emit(new OPER("call " + name.label + " # default call",  calldefs, l));
+            emit(new OPER("call " + name.label + " # default call",  L(IntelFrame.rax, IntelFrame.callerSaves), l));
         }
 
         @Override
@@ -175,7 +175,7 @@
                 CALL call = (CALL)tilePatternMatcher.getCapture("call");
                 var name = (NAME) call.func;
                 TempList l = munchArgs(0, call.args);
-                emit(new OPER("call " + name.label + " # exp call ( no return value )", calldefs, l));
+                emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callerSaves, l));
             } else {
                 exp.exp.accept(this);
                 var expTemp = temp;
@@ -251,7 +251,6 @@
                 emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
             } 
-
             // Unmatched tile case.
             op.dst.accept(this);
             var dst = temp;

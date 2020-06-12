@@ -34,7 +34,6 @@ import Temp.Label;
 import Translate.Exp;
 import Translate.ExpTy;
 import Translate.ExpTyList;
-import Translate.Frag;
 import Translate.FragList;
 import Translate.Level;
 import Translate.Translator;

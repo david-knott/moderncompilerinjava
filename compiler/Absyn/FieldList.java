@@ -8,6 +8,7 @@ public class FieldList extends Absyn {
    public FieldList tail;
    public boolean escape = true;
 
+
    public FieldList(int p, Symbol n, Symbol t, FieldList x) {
       pos = p;
       name = n;
