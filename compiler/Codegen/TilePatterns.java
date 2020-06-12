@@ -28,6 +28,17 @@ public class TilePatterns {
         new ExpT("src")
     );
 
+    public static TilePattern STORE_2 = new MOVET(
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS, 
+                new CONSTT("offset"),
+                new ExpT("dst")
+            )
+        ),
+        new ExpT("src")
+    );
+
     public static TilePattern STORE_ARRAY = new MOVET(
         new MEMT(
             new BINOPT(
@@ -84,8 +95,7 @@ class TilePatternMatcher implements TilePatternVisitor {
      */
     public Object getCapture(String key) {
         if(this.captures.containsKey(key)) {
-        Object capture = this.captures.get(key);
-        return this.captures.remove(key);
+            return this.captures.remove(key);
         } else {
             throw new Error("Key " + key + " does not exist as capture");
         }
@@ -93,6 +103,7 @@ class TilePatternMatcher implements TilePatternVisitor {
 
     public boolean isMatch(TilePattern tilePattern) {
         this.exp = this.originalRef;
+        this.matches = true;
         tilePattern.accept(this);
         return this.matches;
     }

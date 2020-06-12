@@ -17,8 +17,3 @@ public abstract class Frag {
     public abstract Frame getFrame();
 
 }
-
-
-
-
-

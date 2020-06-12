@@ -14,6 +14,7 @@ import Parse.Yylex;
 import Semant.Semant;
 import Temp.Label;
 import Translate.Frag;
+import Translate.FragList;
 import Translate.Level;
 import Translate.Translator;
 
@@ -122,14 +123,13 @@ public class Main {
             }
         }
         findEscape.traverse(this.ast.absyn);
-        Frag frags = this.semant.getTreeFragments(this.ast.absyn);
-
+        FragList frags = FragList.reverse(this.semant.getTreeFragments(this.ast.absyn));
         PrintStream out = null;
         try {
             out = new PrintStream(new java.io.FileOutputStream(this.name + ".s"));
-            out.println(".globl tigermain");
-            for (; frags != null; frags = frags.next) {
-                frags.process(out);
+            out.println(".global tigermain");
+            for (; frags != null; frags = frags.tail) {
+                frags.head.process(out);
             }
             out.close();
         } catch (FileNotFoundException e1) {

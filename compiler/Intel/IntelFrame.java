@@ -37,23 +37,23 @@ import java.util.Hashtable;
  */
 public class IntelFrame extends Frame {
 
-    private static final int WORD_SIZE = 4;
+    private static final int WORD_SIZE = 8;
     public static Temp rbp = Temp.create("rbp");// callee saved
     public static Temp rsp = Temp.create("rsp");
-    public static Temp rax = Temp.create("eax");
-    public static Temp rbx = Temp.create("ebx");// callee save
-    public static Temp rcx = Temp.create("ecx");// 4th argu
-    public static Temp rdx = Temp.create("edx");// 3rd argu
-    public static Temp rsi = Temp.create("esi");// 2lrd argu
-    public static Temp rdi = Temp.create("edi");// 1st argu
-    public static Temp r8 = Temp.create("r8d");// 5th argup
-    public static Temp r9 = Temp.create("r9d");// 6th argup
-    public static Temp r10 = Temp.create("r10d");// scratch
-    public static Temp r11 = Temp.create("r11d");// scratch
-    public static Temp r12 = Temp.create("r12d");// callee
-    public static Temp r13 = Temp.create("r13d");// callee
-    public static Temp r14 = Temp.create("r14d");// callee
-    public static Temp r15 = Temp.create("r15d");// callee
+    public static Temp rax = Temp.create("rax");
+    public static Temp rbx = Temp.create("rbx");// callee save
+    public static Temp rcx = Temp.create("rcx");// 4th argu
+    public static Temp rdx = Temp.create("rdx");// 3rd argu
+    public static Temp rsi = Temp.create("rsi");// 2lrd argu
+    public static Temp rdi = Temp.create("rdi");// 1st argu
+    public static Temp r8 = Temp.create("r8");// 5th argup
+    public static Temp r9 = Temp.create("r9");// 6th argup
+    public static Temp r10 = Temp.create("r10");// scratch
+    public static Temp r11 = Temp.create("r11");// scratch
+    public static Temp r12 = Temp.create("r12");// callee
+    public static Temp r13 = Temp.create("r13");// callee
+    public static Temp r14 = Temp.create("r14");// callee
+    public static Temp r15 = Temp.create("r15");// callee
 
     private static TempList registers = new TempList(
         rax, new TempList( 
@@ -223,8 +223,9 @@ public class IntelFrame extends Frame {
         this.addCallingConvention(new Tree.MOVE(memDest, new Tree.TEMP(src)));
     }
 
-    private void modifyOffset() {
+    private int getOffset() {
         localOffset = localOffset - WORD_SIZE;
+        return localOffset;
     }
 
     /**
@@ -259,8 +260,8 @@ public class IntelFrame extends Frame {
                 this.moveRegArgsToTemp(temp, i);
                 local = new InReg(temp);
             } else {
-                this.moveFrameToFormal(localOffset, i);
                 local = this.allocLocal(true);
+                this.moveFrameToFormal(this.localOffset, i);
             }
             super.formals = AccessList.append(super.formals, local);
             frml = frml.tail;
@@ -276,8 +277,7 @@ public class IntelFrame extends Frame {
     public Access allocLocal(boolean escape) {
         Access access = null;
         if(escape) {
-            this.modifyOffset();
-            access = new InFrame(localOffset);
+            access = new InFrame(this.getOffset());
         } else {
             access = new InReg(Temp.create());
         }

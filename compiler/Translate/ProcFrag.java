@@ -85,7 +85,7 @@ public class ProcFrag extends Frag {
         StmList stmList = canonicalization.canon(this.body);
         TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
         try {
-            PrintStream ps = new PrintStream(new FileOutputStream("./tree.txt"));
+            PrintStream ps = new PrintStream(new FileOutputStream("./tree_" + this.frame.name + ".txt"));
             var print = new Print(ps, tempmap);
             ps.println("# Before canonicalization: ");
             print.prStm(this.body);
@@ -95,7 +95,7 @@ public class ProcFrag extends Frag {
         }
 
         try {
-            PrintStream ps = new PrintStream(new FileOutputStream("./canon.txt"));
+            PrintStream ps = new PrintStream(new FileOutputStream("./canon_" + this.frame.name + ".txt"));
             var print = new Print(ps, tempmap);
             ps.println("# After canonicalization: ");
             prStmList(print, stmList);

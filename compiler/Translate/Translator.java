@@ -26,7 +26,7 @@ import Types.Type;
  */
 public class Translator {
 
-    private Frag frags;
+    private FragList fragList;
     private boolean arrayBoundsCheck;
     private boolean nullRecordCheck;
     private boolean dumpGraphs;
@@ -60,8 +60,8 @@ public class Translator {
      * 
      * @return
      */
-    public Frag getResult() {
-        return frags;
+    public FragList getResult() {
+        return this.fragList;
     }
 
     /**
@@ -69,12 +69,7 @@ public class Translator {
      * @param procFrag
      */
     public void addFrag(Frag procFrag){
-        if (frags == null) {
-            frags = procFrag;
-        } else {
-            procFrag.next = frags;
-            frags = procFrag;
-        }
+        this.fragList = FragList.append(this.fragList, procFrag);
     }
 
     /**

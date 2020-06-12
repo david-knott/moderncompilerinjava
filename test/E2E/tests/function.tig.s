@@ -1,4 +1,4 @@
-.globl tigermain
+.global tigermain
 .text
 tigermain:
 pushq %rbp
@@ -6,21 +6,21 @@ movq %rsp, %rbp
 addq $0, %rsp
 # start main
 L2:
-movl %ebx, %ebx # default move
-movl %r12d, %r12d # default move
-movl %r13d, %r13d # default move
-movl %r14d, %r14d # default move
-movl %r15d, %r15d # default move
-movl %rbp, %edi
+movq %rbx, %rbx # default move
+movq %r12, %r12 # default move
+movq %r13, %r13 # default move
+movq %r14, %r14 # default move
+movq %r15, %r15 # default move
+movq %rbp, %rdi
 call L0 # default call
-movl %eax, %eax # default move
-movl %eax, %edi
+movq %rax, %rax # default move
+movq %rax, %rdi
 call itoa # exp call ( no return value )
-movl %r15d, %r15d # default move
-movl %r14d, %r14d # default move
-movl %r13d, %r13d # default move
-movl %r12d, %r12d # default move
-movl %ebx, %ebx # default move
+movq %r15, %r15 # default move
+movq %r14, %r14 # default move
+movq %r13, %r13 # default move
+movq %r12, %r12 # default move
+movq %rbx, %rbx # default move
 jmp L1
 L1:
 
@@ -32,26 +32,22 @@ ret
 L0:
 pushq %rbp
 movq %rsp, %rbp
-addq $-4, %rsp
+addq $-8, %rsp
 # start main
 L4:
-movl %ebx, %ebx # default move
-movl %r12d, %ecx # default move
-movl %r13d, %edx # default move
-movl %r14d, %esi # default move
-movl %r15d, %edi # default move
-movl $0, %eax # const
-movl %eax, %eax # add lexp -> r
-add %rbp, %eax
-movl %eax, (%eax) # default load
-movl %edi, %eax # default move
-movl $3, %eax # const
-movl %eax, %eax # default move
-movl %edi, %r15d # default move
-movl %esi, %r14d # default move
-movl %edx, %r13d # default move
-movl %ecx, %r12d # default move
-movl %ebx, %ebx # default move
+movq %rbx, %rbx # default move
+movq %r12, %rcx # default move
+movq %r13, %rdx # default move
+movq %r14, %rsi # default move
+movq %r15, %rdi # default move
+movq %rdi, -8(%rbp) # store to offset
+movq $3, %rax # const
+movq %rax, %rax # default move
+movq %rdi, %r15 # default move
+movq %rsi, %r14 # default move
+movq %rdx, %r13 # default move
+movq %rcx, %r12 # default move
+movq %rbx, %rbx # default move
 jmp L3
 L3:
 

@@ -35,6 +35,7 @@ import Translate.Exp;
 import Translate.ExpTy;
 import Translate.ExpTyList;
 import Translate.Frag;
+import Translate.FragList;
 import Translate.Level;
 import Translate.Translator;
 import Types.ARRAY;
@@ -79,7 +80,7 @@ public class Semant {
      * @param absyn
      * @return
      */
-    public Frag getTreeFragments(Absyn.Exp absyn) {
+    public FragList getTreeFragments(Absyn.Exp absyn) {
         var trans = this.transExp(absyn);
         translate.procEntryExit(level, trans.exp);
         return translate.getResult();

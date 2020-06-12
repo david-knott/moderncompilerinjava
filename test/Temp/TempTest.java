@@ -12,7 +12,6 @@ import Assem.InstrList;
 import Assem.TEST;
 import Canon.CanonFacadeImpl;
 import Frame.Frame;
-import Helpers.TestFrame;
 import Intel.IntelFrame;
 import Semant.Semant;
 import Temp.Label;

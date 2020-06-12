@@ -32,6 +32,7 @@ public class RegAlloc implements TempMap {
 		this.liveness = new Liveness(fg);
 		this.baig = new IGBackwardControlEdges(fg, this.liveness);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
+		/*
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
 			new GraphvisRenderer().render(ps, baig, this);
@@ -45,7 +46,7 @@ public class RegAlloc implements TempMap {
 			ps.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	private boolean hasSpills() {

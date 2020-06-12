@@ -78,9 +78,9 @@
                     break;
             }
             if (finalPos != null) {
-                emit(new Assem.MOVE("movl %`s0, %`d0", finalPos, argTemp));
+                emit(new Assem.MOVE("movq %`s0, %`d0", finalPos, argTemp));
             } else {
-                emit(new Assem.MOVE("movl %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)", IntelFrame.rsp, argTemp));
+                emit(new Assem.MOVE("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`d0)", IntelFrame.rsp, argTemp));
             }
             if (args.tail == null) {
                 return L(argTemp, null);
@@ -109,41 +109,41 @@
             switch (op.binop) {
                 case BINOP.AND:
                     this.temp = Temp.create();
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # and lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # and lexp -> r", this.temp, leftTemp));
                     emit(new OPER("and %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.ARSHIFT:
                     break;
                 case BINOP.DIV:
                     this.temp = Temp.create();
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # div lexp -> r", this.temp, leftTemp));
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # div r -> rax", IntelFrame.rax, this.temp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # div lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # div r -> rax", IntelFrame.rax, this.temp));
                     emit(new OPER("xor %`s0, %`d0 # div clear bits rdx ", L(IntelFrame.rdx, null), L(IntelFrame.rdx, null)));
                     emit(new OPER("idiv %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # div rax -> r", this.temp, IntelFrame.rax));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # div rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.LSHIFT:
                     break;
                 case BINOP.MINUS:
                     this.temp = Temp.create();
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # minus lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # minus lexp -> r", this.temp, leftTemp));
                     emit(new OPER("sub %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.MUL:
                     this.temp = Temp.create();
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # mul lexp -> r", this.temp, leftTemp));
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # mul r -> rax", IntelFrame.rax, this.temp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # mul lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # mul r -> rax", IntelFrame.rax, this.temp));
                     emit(new OPER("imul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # mul rax -> r", this.temp, IntelFrame.rax));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # mul rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.OR:
                     this.temp = Temp.create();
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # or lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # or lexp -> r", this.temp, leftTemp));
                     emit(new OPER("or %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.PLUS:
                     this.temp = Temp.create();
-                    emit(new Assem.MOVE("movl %`s0, %`d0 # add lexp -> r", this.temp, leftTemp));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # add lexp -> r", this.temp, leftTemp));
                     emit(new OPER("add %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
                 case BINOP.RSHIFT:
@@ -180,7 +180,7 @@
                 exp.exp.accept(this);
                 var expTemp = temp;
                 temp = Temp.create();
-                emit(new Assem.MOVE("movl %`s0, %`d0 # default exp", temp, expTemp));
+                emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
             }
         }
 
@@ -189,7 +189,7 @@
             op.exp.accept(this);
             var mem = temp;
             temp = Temp.create();
-            emit(new Assem.MOVE("movl %`s0, (%`d0) # default load", temp, mem));
+            emit(new Assem.MOVE("movq %`s0, (%`d0) # default load", temp, mem));
         }
     
         @Override
@@ -206,7 +206,7 @@
                 indexExp.accept(this);
                 Temp indexTemp = temp;
                 int wordSize = (Integer) tilePatternMatcher.getCapture("wordSize");
-                emit(new Assem.OPER("movl (%`s0, %`s1, " + wordSize +"), %`d0 # load array", 
+                emit(new Assem.OPER("movq (%`s0, %`s1, " + wordSize +"), %`d0 # load array", 
                         new TempList(dstTemp), 
                         new TempList(indexTemp, new TempList(srcTemp))
                         ));
@@ -224,10 +224,21 @@
                 indexExp.accept(this);
                 Temp indexTemp = temp;
                 int wordSize = (Integer) tilePatternMatcher.getCapture("wordSize");
-                emit(new Assem.OPER("movl $`s0, (%`s1, %`s2, " + wordSize +") # store array", 
+                emit(new Assem.OPER("movq $`s0, (%`s1, %`s2, " + wordSize +") # store array", 
                         null, 
                         new TempList(srcTemp, new TempList(indexTemp, new TempList(dstTemp)))
                         ));
+                return;
+            }
+            if (tilePatternMatcher.isMatch(TilePatterns.STORE_2)) {
+                int offset = (Integer) tilePatternMatcher.getCapture("offset");
+                Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
+                dst.accept(this);
+                Temp dstTemp = this.temp;
+                Exp src = (Exp) tilePatternMatcher.getCapture("src");
+                src.accept(this);
+                Temp srcTemp = this.temp;
+                emit(new Assem.OPER("movq %`s0, " + offset + "(%`s1) # store to offset", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
             }
             if (tilePatternMatcher.isMatch(TilePatterns.STORE)) {
@@ -237,7 +248,7 @@
                 Exp src = (Exp) tilePatternMatcher.getCapture("src");
                 src.accept(this);
                 Temp srcTemp = this.temp;
-                emit(new Assem.OPER("movl %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
+                emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
             } 
 
@@ -246,7 +257,7 @@
             var dst = temp;
             op.src.accept(this);
             var src = temp;
-            emit(new Assem.MOVE("movl %`s0, %`d0 # default move", dst, src));
+            emit(new Assem.MOVE("movq %`s0, %`d0 # default move", dst, src));
 
         }
 
@@ -302,7 +313,7 @@
         @Override
         public void visit(CONST cnst) {
             temp = Temp.create();
-            emit(new OPER("movl $" + cnst.value + ", %`d0 # const", L(temp, null), null));
+            emit(new OPER("movq $" + cnst.value + ", %`d0 # const", L(temp, null), null));
         }
 
         @Override
@@ -318,7 +329,7 @@
         @Override
         public void visit(NAME op) {
             temp = Temp.create();
-            emit(new Assem.OPER("movl $" + op.label + ", %`d0 # default name", L(temp, null), null));
+            emit(new Assem.OPER("movq $" + op.label + ", %`d0 # default name", L(temp, null), null));
         }
 
         @Override
