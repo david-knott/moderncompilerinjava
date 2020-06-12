@@ -17,3 +17,4 @@ echo "Test Result: $f passed."
 fi
 done
 #rm -rf ./tests/*.out
+#rm -rf ./tests/*.s

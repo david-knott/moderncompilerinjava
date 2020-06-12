@@ -1,0 +1,6 @@
+let
+function fa(a: int, b: int, c: int): int =
+a + b + c
+in
+itoa(fa(2, 4, 3))
+end

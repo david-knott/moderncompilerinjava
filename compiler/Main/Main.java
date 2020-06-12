@@ -13,7 +13,6 @@ import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
 import Temp.Label;
-import Translate.Frag;
 import Translate.FragList;
 import Translate.Level;
 import Translate.Translator;

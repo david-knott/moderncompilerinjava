@@ -33,4 +33,4 @@ L0:
 # end main
 movq %rbp, %rsp
 popq %rbp
-ret
+retq

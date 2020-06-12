@@ -11,6 +11,7 @@ import FlowGraph.FlowGraph;
 import Frame.Access;
 import Frame.Frame;
 import Graph.GraphvisRenderer;
+import Temp.CombineMap;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
@@ -32,21 +33,20 @@ public class RegAlloc implements TempMap {
 		this.liveness = new Liveness(fg);
 		this.baig = new IGBackwardControlEdges(fg, this.liveness);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
-		/*
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
-			new GraphvisRenderer().render(ps, baig, this);
+			new GraphvisRenderer().render(ps, baig, new CombineMap(this, this.frame));
 			ps.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./flow-graph" + this.iterations + ".txt"));
-			new GraphvisRenderer().render(ps, fg, this);
+			new GraphvisRenderer().render(ps, fg, new CombineMap(this, this.frame));
 			ps.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 
 	private boolean hasSpills() {
@@ -97,8 +97,10 @@ public class RegAlloc implements TempMap {
 		this.iterations++;
 		this.build();
 		if (this.hasSpills()) {
-			this.rewrite();
-			this.allocate();
+			throw new Error("Spills not implemented");
+
+			//this.rewrite();
+			//this.allocate();
 		}
 	}
 
@@ -107,9 +109,9 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		this.allocate();
-	//	this.dumpUsesAndDefs();
-//		this.dumpLiveness();
-		//this.baig.show(System.out);
+		this.dumpUsesAndDefs();
+		this.dumpLiveness();
+		this.baig.show(System.out);
 	}
 
 	public void dumpUsesAndDefs() {

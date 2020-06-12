@@ -69,22 +69,19 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                         }
                     }
                     if(!interferes) {
-                        this.moveList = new MoveList(this.tnode(flowGraph.use(n).head), this.tnode(flowGraph.def(n).head), this.moveList);
+                    //    this.moveList = new MoveList(this.tnode(flowGraph.use(n).head), this.tnode(flowGraph.def(n).head), this.moveList);
                     }
                 //}
             } else {
                 // for each def temp and liveout temp create edge
                 for (; defs != null; defs = defs.tail) {
                     for (TempList tempList = this.liveness.liveMap(n); tempList != null; tempList = tempList.tail) {
-                        if (tempList.head != defs.head) {
-                            Node to = this.getOrCreate(tempList.head);
-                            Node from = this.getOrCreate(defs.head);
-                            this.addEdge(from, to);
-                        }
+                        Node to = this.getOrCreate(tempList.head);
+                        Node from = this.getOrCreate(defs.head);
+                        this.addEdge(from, to);
                     }
                 }
             }
-            //add non interfering edges that are moves
         }
     }
 

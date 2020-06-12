@@ -31,7 +31,7 @@ L1:
 # end main
 movq %rbp, %rsp
 popq %rbp
-ret
+retq
 .text
 L0:
 pushq %rbp
@@ -61,4 +61,4 @@ L3:
 # end main
 movq %rbp, %rsp
 popq %rbp
-ret
+retq

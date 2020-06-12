@@ -14,37 +14,37 @@ public class GraphvisRenderer implements GraphRenderer {
         if (str == null)
             return "white";
         switch (str) {
-            case "eax":
+            case "rax":
                 return "bisque2";
-            case "esi":
+            case "rsi":
                 return "antiquewhite4";
-            case "r8d":
+            case "r8":
                 return "aquamarine4";
-            case "r9d":
+            case "r9":
                 return "blue1";
-            case "r10d":
+            case "r10":
                 return "brown";
-            case "r11d":
+            case "r11":
                 return "burlywood";
-            case "r12d":
+            case "r12":
                 return "coral";
-            case "r13d":
+            case "r13":
                 return "cyan3";
-            case "r14d":
+            case "r14":
                 return "darkgoldenrod3";
-            case "r15d":
+            case "r15":
                 return "dimgrey";
-            case "ebx":
+            case "rbx":
                 return "white";
-            case "edi":
+            case "rdi":
                 return "firebrick";
-            case "edx":
+            case "rdx":
                 return "deeppink1";
-            case "ebp":
+            case "rbp":
                 return "pink1";
-            case "esp":
+            case "rsp":
                 return "orange";
-            case "ecx":
+            case "rcx":
                 return "pink2";
             default:
                 throw new Error(str + " has no mapping");

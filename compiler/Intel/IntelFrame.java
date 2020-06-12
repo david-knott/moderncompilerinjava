@@ -90,6 +90,14 @@ public class IntelFrame extends Frame {
      * entry and restored upon exit by the callee function. The caller can be
      * guaranteed that these registers will contain the same values when the callee
      * returns.
+     * 
+     * These are also used in the return sink operation, added to the end of a function
+     * body. This flags these registers as live or in use at function exit. 
+     * This would mean these variables will interfere with any other variables inside this
+     * function.
+     * 
+     * Finally, these registers are saved to new temporaries at start of function body
+     * and restored from these temporaries at the end of the function body.
      */
     public static TempList calleeSaves = new TempList(
         rbx, new TempList(
@@ -107,6 +115,8 @@ public class IntelFrame extends Frame {
      * A linked list of temporaries that represent registers that are saved by the
      * caller and restored by the caller. The callee is free to clobber the values
      * in these registers and not worry about restoring them.
+     * 
+     * These are used in a call and added as definitions.
      */
     public static TempList callerSaves = new TempList(
      //   rax, new TempList(
@@ -125,13 +135,8 @@ public class IntelFrame extends Frame {
                     )
                 )
             )
-     //   )
+    //    )
     );
-
-    // return sink used to indicate that certain values are live at function exit
-    // it also ensure thats rbp and rsp are not in use.
-    //private static TempList returnSink = new TempList(rbp, new TempList(rsp, calleeSaves));
-    private static TempList returnSink = calleeSaves;
 
     // offset within the frame
     private int localOffset = 0;
@@ -178,7 +183,6 @@ public class IntelFrame extends Frame {
             default:
                 // allocate space on frame
                 InFrame inFrame = (InFrame) this.allocLocal(true);
-                // move item at frame location into temp
                 var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
                 this.addCallingConvention(new Tree.MOVE(new Tree.TEMP(dest), memLocation));
                 return;
@@ -333,7 +337,7 @@ public class IntelFrame extends Frame {
      * allocator, or coloured to a free register.
      * 
      * This moves callee saves to temporaries regardless of whether they are used or
-     * not. It would be better to only move items that are already in use.
+     * not. It is hoped the regiser coalescing will clean these up.
      * 
      * @return a linked list of move statements.
      */
@@ -394,8 +398,18 @@ public class IntelFrame extends Frame {
      */
     @Override
     public Stm procEntryExit1(Stm body) {
-        return new SEQ(moveArgs(), new SEQ(calleeSaveList(), new SEQ(body, calleeRestoreList())));
-
+        return new SEQ(
+            moveArgs(), 
+            new SEQ(
+                calleeSaveList(), 
+                new SEQ(
+                    body, 
+                    calleeRestoreList()
+                )
+            )
+        );
+     //   return new SEQ(moveArgs(),  body);
+       // return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
     }
 
     /**
@@ -404,7 +418,9 @@ public class IntelFrame extends Frame {
      * marked as live on exit from the function.
      */
     public Assem.InstrList procEntryExit2(Assem.InstrList body) {
-        return InstrList.append(body, new Assem.InstrList(new Assem.OPER("", null, returnSink), null));
+        return InstrList.append(
+            body, new Assem.InstrList(
+                new Assem.OPER("# sink ", null, IntelFrame.calleeSaves)));
     }
 
     /**
@@ -414,7 +430,7 @@ public class IntelFrame extends Frame {
     public Proc procEntryExit3(Assem.InstrList body) {
         InstrList prolog = new InstrList(
                 new OPER(this.name.toString() + ":", null, null),
-                new InstrList(new OPER("pushq %`d0", new TempList(IntelFrame.rbp), null), 
+                new InstrList(new OPER("pushq %`s0", null, new TempList(IntelFrame.rbp)), 
                     new InstrList(new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
                        new InstrList(new OPER("addq $" + this.localOffset + ", %`d0", new TempList(IntelFrame.rsp), null), 
                          new InstrList(new OPER("# start main", null , null), null)
@@ -425,7 +441,7 @@ public class IntelFrame extends Frame {
         InstrList epilog = new InstrList(new OPER("# end main", null, null), new InstrList(
             new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
                 new InstrList(new OPER("popq %`d0", new TempList(IntelFrame.rbp), null),
-                        new InstrList(new OPER("ret", null,  null)))));
+                        new InstrList(new OPER("retq", null,  null)))));
         return new Proc(prolog, body, epilog);
     }
 

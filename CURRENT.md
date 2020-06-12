@@ -4,6 +4,20 @@ Changed code to use the x64 registers. Fixed intel stack frame bug. Function tes
 
 Bug in function calls with more than 0 arguments. Static link doesn't appear to be added.
 
+Fixed
+
+Bug with 3 arguments to function.  Instructions that move calling convention registers into
+their correct places is colouring incorrectly.
+
+movq %rdi, -8(%rbp) # store to offset
+movq %rsi, %rax # default move
+movq %rdx, %rcx # default move
+movq %rcx, %rdx # default move
+
+See that rdx -> rcx, the rcx -> rdx
+
+I am wondering if I need to generate the interference graph across the entire programme.
+
 
 *11th June 2020*
 Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link

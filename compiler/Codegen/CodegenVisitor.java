@@ -30,15 +30,6 @@
         private Temp temp;
         private Frame frame;
 
-        /**
-         * A linked list of temporaries that are used in liveness
-         * analysis to flag caller saved registers ( registers that caller must manage )
-         * as being destination nodes or defs. This means they are defined at the point 
-         * the callee is invoked, this in turn means they are live across the function call.
-         * Which means they will interfere with all other temporaries within that function.
-         */
-        private TempList calldefs = IntelFrame.callerSaves;
-
         private TempList L(Temp h, TempList t) {
             return new TempList(h, t);
         }
@@ -160,7 +151,7 @@
             var name = (NAME)call.func;
             TempList l = munchArgs(0, call.args);
             temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
-            emit(new OPER("call " + name.label + " # default call",  L(IntelFrame.rax, IntelFrame.callerSaves), l));
+            emit(new OPER("call " + name.label + " # default call",  L(temp, IntelFrame.callerSaves), l));
         }
 
         @Override
