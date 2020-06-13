@@ -14,9 +14,9 @@ movq %r15, %r15 # default move
 movq %rbp, %rdi # move arg to temp
 movq $2, %rax # const
 movq %rax, %rsi # move arg to temp
-movq $4, %rdx # const
+movq $3, %rdx # const
 movq %rdx, %rdx # move arg to temp
-movq $3, %rcx # const
+movq $4, %rcx # const
 movq %rcx, %rcx # move arg to temp
 call L0 # default call
 movq %rax, %rax # default move
@@ -43,17 +43,17 @@ addq $-8, %rsp
 L4:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
-movq %rdx, %rcx # default move
-movq %rcx, %rdx # default move
+movq %rdx, %rdx # default move
+movq %rcx, %rcx # default move
 movq %rbx, %rbx # default move
 movq %r12, %rsi # default move
 movq %r13, %rdi # default move
 movq %r14, %r8 # default move
 movq %r15, %r9 # default move
 movq %rax, %rax # add lexp -> r
-add %rcx, %rax
-movq %rax, %rax # add lexp -> r
 add %rdx, %rax
+movq %rax, %rax # add lexp -> r
+add %rcx, %rax
 movq %rax, %rax # default move
 movq %r9, %r15 # default move
 movq %r8, %r14 # default move

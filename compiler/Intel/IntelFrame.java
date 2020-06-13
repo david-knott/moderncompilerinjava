@@ -93,7 +93,7 @@ public class IntelFrame extends Frame {
      * 
      * These are also used in the return sink operation, added to the end of a function
      * body. This flags these registers as live or in use at function exit. 
-     * This would mean these variables will interfere with any other variables inside this
+     * This would mean these variables will interfere with defined variables inside this
      * function.
      * 
      * Finally, these registers are saved to new temporaries at start of function body

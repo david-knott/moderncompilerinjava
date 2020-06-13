@@ -23,7 +23,7 @@ movq %r12, %r12 # default move
 movq %rbx, %rbx # default move
 jmp L1
 L1:
-
+# sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
@@ -50,7 +50,7 @@ movq %rcx, %r12 # default move
 movq %rbx, %rbx # default move
 jmp L3
 L3:
-
+# sink 
 # end main
 movq %rbp, %rsp
 popq %rbp

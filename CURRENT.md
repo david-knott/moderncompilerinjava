@@ -18,6 +18,17 @@ See that rdx -> rcx, the rcx -> rdx
 
 I am wondering if I need to generate the interference graph across the entire programme.
 
+If a var is in use[n] then it is live in at node n.
+
+eg x <- y, // y must be live in.
+
+If a var is in line in at node n, it is in live out at all nodes m in pred[m]
+
+If a var is live out at node n and not defined at node n, the var is also live in at n.
+
+eg var is used at node 2, therefore its live out at node 1, if not defined at node 1, must
+also be live in at node 1.
+
 
 *11th June 2020*
 Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link

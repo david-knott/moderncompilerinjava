@@ -29,7 +29,7 @@ movq %r12, %r12 # default move
 movq %rbx, %rbx # default move
 jmp L0
 L0:
-
+# sink 
 # end main
 movq %rbp, %rsp
 popq %rbp

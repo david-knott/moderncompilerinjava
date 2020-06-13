@@ -4,16 +4,18 @@ import java.util.BitSet;
 import java.util.Hashtable;
 
 import Assem.Instr;
+import Assem.InstrList;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Graph.NodeList;
+import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempList;
 
 class Liveness {
     private Hashtable<Node, BitSet> liveInMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, BitSet> liveOutMap = new Hashtable<Node, BitSet>();
-    private Hashtable<Node, TempList> liveMap;
+    private Hashtable<Node, TempList> liveMapHash;
     private Hashtable<Integer, Temp> tempMap;
     private FlowGraph flowGraph;
 
@@ -43,10 +45,63 @@ class Liveness {
         return rhs.get(firstDifferent) ? 1 : -1;
     }
 
+    private void computeLivenessForward(FlowGraph flowGraph) {
+        for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+            var node = nodes.head;
+            for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
+                tempMap.put(tl.head.hashCode(), tl.head);
+            }
+            for (var tl = flowGraph.use(node); tl != null; tl = tl.tail) {
+                tempMap.put(tl.head.hashCode(), tl.head);
+            }
+        }
+        // initialise maps with empty bit sets
+        for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+            liveInMap.put(nodes.head, new BitSet());
+            liveOutMap.put(nodes.head, new BitSet());
+        }
+        // calculate live ranges using liveness equations, except in reverse this time.
+        boolean changed = false;
+        do {
+            changed = false;
+            for (NodeList nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
+                var node = nodes.head;
+                BitSet liveInPrev = (BitSet)liveInMap.get(node).clone();
+                BitSet liveOutPrev = (BitSet)liveOutMap.get(node).clone();
+                //calculate out[n] - def[n]
+                BitSet def = (BitSet) this.fromTempList(flowGraph.def(node)).clone();
+                BitSet dif = (BitSet) liveOutPrev.clone();
+                dif.andNot(def);
+                //calculate use[n] union ( out[n] - def[n])
+                BitSet liveIn = (BitSet) this.fromTempList(flowGraph.use(node)).clone();
+                liveIn.or(dif);
+                liveInMap.put(node, liveIn);
+                //calculate SUC UNION in[s]
+                BitSet liveOut = new BitSet();
+                for (var succ = node.succ(); succ != null; succ = succ.tail) {
+                    BitSet liveInSucc = (BitSet) (liveInMap.get(succ.head).clone());
+                    liveOut.or(liveInSucc);
+                }
+                liveOutMap.put(node, liveOut);
+                var c1 = compare(liveIn, liveInPrev);
+                var c2 = compare(liveOut, liveOutPrev);
+                //changed is true, if it was previously changed in this
+                //loop or if c1 was changed or c2 was changed
+                changed = changed || c1 != 0 || c2 != 0;
+            }
+            if (!changed)
+                break;
+
+        } while (true);
+    }
+
     private void computeLiveness(FlowGraph flowGraph) {
         for (var nodes = flowGraph.nodes(); nodes != null; nodes = nodes.tail) {
             var node = nodes.head;
             for (var tl = flowGraph.def(node); tl != null; tl = tl.tail) {
+                tempMap.put(tl.head.hashCode(), tl.head);
+            }
+            for (var tl = flowGraph.use(node); tl != null; tl = tl.tail) {
                 tempMap.put(tl.head.hashCode(), tl.head);
             }
         }
@@ -88,18 +143,18 @@ class Liveness {
 
         } while (true);
     }
-    
+
     private void computeLiveRanges() {
         /// add live ranges as tempLists to liveOutmap
         for (Node n : liveOutMap.keySet()) {
             var bitMap = liveOutMap.get(n);
             for (int i = 0; i < bitMap.size(); i++) {
                 if (bitMap.get(i)) {
-                    TempList tempList = this.liveMap.get(n);
+                    TempList tempList = this.liveMapHash.get(n);
                     Temp temp = getTemp(i);
                     if (temp != null) {
                         tempList = TempList.append(tempList, temp);
-                        this.liveMap.put(n, tempList);
+                        this.liveMapHash.put(n, tempList);
                     }
                 }
             }
@@ -107,24 +162,35 @@ class Liveness {
     }
 
     public TempList liveMap(Node node) {
-        return this.liveMap.get(node);
+        return this.liveMapHash.get(node);
     }
 
     public TempList liveMap(Instr instr) {
-        return this.liveMap.get(flowGraph.node(instr));
+        Node node = flowGraph.node(instr);
+        if(node == null) {
+            throw new Error("Node not found for instruction " + instr);
+        }
+        return this.liveMapHash.get(node);
     }
 
     public Liveness(FlowGraph flowGraph) {
-        this.liveMap = new Hashtable<Node, TempList>();
+        this.liveMapHash = new Hashtable<Node, TempList>();
         this.tempMap = new Hashtable<Integer, Temp>();
-        this.computeLiveness(flowGraph);
+        this.computeLivenessForward(flowGraph);
         this.computeLiveRanges();
         this.flowGraph = flowGraph;
     }
 
+	public void dumpLiveness(InstrList instrList) {
+		System.out.println("### Liveness");
+		for(; instrList != null; instrList = instrList.tail) {
+            System.out.println(instrList.head.format(new DefaultMap()) + " => " + this.liveMap(instrList.head));
+        }
+    }
+
     public TempWorkList liveOut(Node node) {
         TempWorkList nodeWorkList = null;
-        for (TempList tempList = this.liveMap.get(node); tempList != null; tempList = tempList.tail) {
+        for (TempList tempList = this.liveMapHash.get(node); tempList != null; tempList = tempList.tail) {
             nodeWorkList = TempWorkList.append(nodeWorkList, tempList.head);
         }
         return nodeWorkList;

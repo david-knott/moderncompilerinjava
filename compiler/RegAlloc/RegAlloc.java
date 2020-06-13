@@ -109,9 +109,9 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		this.allocate();
-		this.dumpUsesAndDefs();
-		this.dumpLiveness();
-		this.baig.show(System.out);
+		//this.dumpUsesAndDefs();
+		//this.dumpLiveness();
+		//this.baig.show(System.out);
 	}
 
 	public void dumpUsesAndDefs() {
@@ -121,7 +121,7 @@ public class RegAlloc implements TempMap {
 		}
 	}
 
-public void dumpLiveness() {
+	public void dumpLiveness() {
 		System.out.println("### Liveness");
 		for(InstrList instrList = this.instrList; instrList != null; instrList = instrList.tail) {
             System.out.println(instrList.head.format(this.frame) + " => " + this.liveness.liveMap(instrList.head));
