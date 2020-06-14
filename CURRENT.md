@@ -1,5 +1,9 @@
 ## Diary
 *14th June 2020*
+Started six argument function call ( actually 7 arguments as the first item is a static link). 
+The last item will be pushed onto the stack. At present we push the 7th to the stack. We
+meed to ensure we access this correctly from inside the caller.
+
 Fixed calling convention bug where temps being moved into calling convention temporaries
 were clobbering other calling convention registers, This mean the called functions were
 getting the wrong arguments. THis was fixed by adding both the expression temporaries and

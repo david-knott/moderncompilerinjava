@@ -73,7 +73,8 @@
                 emit(new Assem.MOVE("movq %`s0, %`d0 # move arg to temp", finalPos, argTemp));
                 tl = TempList.append(tl, finalPos);
             } else {
-                emit(new Assem.OPER("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`s1) # move arg to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
+               // emit(new Assem.OPER("movq %`s1, " + ((i - 5) * frame.wordSize()) + "(%`s0) # move arg to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
+                emit(new Assem.OPER("pushq %`s1 # move arg to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
             if (args.tail == null) {
                // return L(argTemp, null);
