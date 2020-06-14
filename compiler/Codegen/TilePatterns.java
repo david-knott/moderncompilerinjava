@@ -21,6 +21,23 @@ public class TilePatterns {
         new TEMPT("src")
     );
 
+    public static TilePattern LOAD = new MOVET(
+        new ExpT("dst"),
+        new MEMT(
+            new ExpT("src")
+        )
+    );
+
+    public static TilePattern LOAD_2 = new MOVET(
+        new ExpT("dst"),
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS, 
+                new CONSTT("offset"), 
+                new ExpT("src"))
+        )
+    );
+
     public static TilePattern STORE = new MOVET(
         new MEMT(
             new ExpT("dst")

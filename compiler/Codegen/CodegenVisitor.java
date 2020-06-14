@@ -226,6 +226,17 @@
                         ));
                 return;
             }
+            if (tilePatternMatcher.isMatch(TilePatterns.LOAD_2)) {
+                int offset = (Integer) tilePatternMatcher.getCapture("offset");
+                Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
+                dst.accept(this);
+                Temp dstTemp = this.temp;
+                Exp src = (Exp) tilePatternMatcher.getCapture("src");
+                src.accept(this);
+                Temp srcTemp = this.temp;
+                emit(new Assem.OPER("movq " + offset + "(%`s0), %`d0 # load to offset", new TempList(dstTemp), new TempList(srcTemp)));
+                return;
+            }
             if (tilePatternMatcher.isMatch(TilePatterns.STORE_2)) {
                 int offset = (Integer) tilePatternMatcher.getCapture("offset");
                 Exp dst = (Exp) tilePatternMatcher.getCapture("dst");

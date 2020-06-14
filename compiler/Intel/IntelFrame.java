@@ -156,8 +156,8 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * Generates statements that move from argument registers or frame locations
-     * into a dest temporary.
+     * Moves from calling convention registers or mem locations
+     * into a local temporary.
      */
     private void moveRegArgsToTemp(Temp dest, int i) {
         Temp src;
@@ -181,9 +181,13 @@ public class IntelFrame extends Frame {
                 src = r9;
                 break;
             default:
-                // allocate space on frame
-                InFrame inFrame = (InFrame) this.allocLocal(true);
-                var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
+                //i > 5, 
+                int frameArgPos = i - 6;
+                //rbp + 8: return address
+                //rpb + 16 : frame arg1
+                //rpb + 24 : frame arg2
+                int offset = 16 + (frameArgPos * 8); 
+                var memLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(offset), new TEMP(this.FP())));
                 this.addCallingConvention(new Tree.MOVE(new Tree.TEMP(dest), memLocation));
                 return;
         }
@@ -191,8 +195,7 @@ public class IntelFrame extends Frame {
     }
 
     /*
-     * Generates statements that move from argument registers or frame locations
-     * into a frame location.
+     * Moves from calling conventions registers and frame into current frame.
      */
     private void moveFrameToFormal(int offset, int i) {
         Temp src;

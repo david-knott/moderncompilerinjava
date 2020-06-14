@@ -24,6 +24,8 @@ movq $5, %r9 # const
 movq %r9, %r9 # move arg to temp
 movq $6, %r10 # const
 pushq %r10 # move arg to stack
+movq $7, %r11 # const
+pushq %r11 # move arg to stack
 call L0 # default call
 movq %rax, %rax # default move
 movq %rax, %rdi # move arg to temp
@@ -54,11 +56,12 @@ movq %rcx, %rdi # default move
 movq %r8, %r8 # default move
 movq %r9, %r9 # default move
 movq 16(%rbp), %rax # load to offset
+movq 24(%rbp), %rcx # load to offset
 movq %rbx, %rbx # default move
-movq %r12, %rcx # default move
-movq %r13, %r10 # default move
-movq %r14, %r11 # default move
-movq %r15, %r12 # default move
+movq %r12, %r10 # default move
+movq %r13, %r11 # default move
+movq %r14, %r12 # default move
+movq %r15, %r13 # default move
 movq %rsi, %rsi # add lexp -> r
 add %rdx, %rsi
 movq %rsi, %rdx # add lexp -> r
@@ -69,11 +72,13 @@ movq %rdx, %rdx # add lexp -> r
 add %r9, %rdx
 movq %rdx, %rdx # add lexp -> r
 add %rax, %rdx
-movq %rdx, %rax # default move
-movq %r12, %r15 # default move
-movq %r11, %r14 # default move
-movq %r10, %r13 # default move
-movq %rcx, %r12 # default move
+movq %rdx, %rax # add lexp -> r
+add %rcx, %rax
+movq %rax, %rax # default move
+movq %r13, %r15 # default move
+movq %r12, %r14 # default move
+movq %r11, %r13 # default move
+movq %r10, %r12 # default move
 movq %rbx, %rbx # default move
 jmp L3
 L3:

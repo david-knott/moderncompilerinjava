@@ -9,7 +9,7 @@ were clobbering other calling convention registers, This mean the called functio
 getting the wrong arguments. THis was fixed by adding both the expression temporaries and
 the calling convention registers into the 'use/src' field for the call instruction. 
 
-Added green and red colours to test script that generates programs and tests them.
+Added green and red colours to test script that generates programs and tests them
 
 *12th June 2020*
 Changed code to use the x64 registers. Fixed intel stack frame bug. Function test now passes.
