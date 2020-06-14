@@ -5,7 +5,6 @@ import java.util.Hashtable;
 
 public class TempList {
 
-
    public static boolean contains(TempList s, Temp n) {
       for (; s != null; s = s.tail) {
          if (s.head == n) {
@@ -60,6 +59,23 @@ public class TempList {
          return new TempList(me.head, new TempList(t));
       }
       return new TempList(me.head, TempList.append(me.tail, t));
+   }
+
+   public static TempList append(TempList me, TempList end) {
+      if (me == null && end == null) {
+         return null;
+      }
+      if (me == null && end != null) {
+         return end;
+      }
+      if (me != null && end == null) {
+         return me;
+      }
+      TempList res = me;
+      for (; end != null; end = end.tail) {
+         res = TempList.append(res, end.head);
+      }
+      return res;
    }
 
    /**
@@ -142,9 +158,6 @@ public class TempList {
       return andNot;
    }
 
-   public Temp head;
-   public TempList tail;
-
    public static TempList create(Temp h) {
       return new TempList(h, null);
    }
@@ -156,6 +169,9 @@ public class TempList {
       }
       return tl;
    }
+
+   public Temp head;
+   public TempList tail;
 
    public TempList(Temp h) {
       if (h == null)

@@ -152,10 +152,8 @@ class Liveness {
                 if (bitMap.get(i)) {
                     TempList tempList = this.liveMapHash.get(n);
                     Temp temp = getTemp(i);
-                    if (temp != null) {
-                        tempList = TempList.append(tempList, temp);
-                        this.liveMapHash.put(n, tempList);
-                    }
+                    tempList = TempList.append(tempList, temp);
+                    this.liveMapHash.put(n, tempList);
                 }
             }
         }
@@ -176,7 +174,7 @@ class Liveness {
     public Liveness(FlowGraph flowGraph) {
         this.liveMapHash = new Hashtable<Node, TempList>();
         this.tempMap = new Hashtable<Integer, Temp>();
-        this.computeLivenessForward(flowGraph);
+        this.computeLiveness(flowGraph);
         this.computeLiveRanges();
         this.flowGraph = flowGraph;
     }

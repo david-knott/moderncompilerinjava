@@ -2,5 +2,5 @@ let
 function fa(a: int, b: int, c: int, d: int): int =
 a + b + c + d
 in
-itoa(fa(2, 3, 4, 10))
+itoa(fa(1, 2, 3, 4))
 end

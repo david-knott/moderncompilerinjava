@@ -11,9 +11,9 @@ ACTUAL=$($f.out)
 EXPECTED=$(cat $f.result)
 if [ "$ACTUAL" != "$EXPECTED" ]
 then
-echo "Test Result: $f failed."
+echo -e "\e[91mTest Result: $f failed.\e[0m"
 else
-echo "Test Result: $f passed."
+echo -e "\e[92mTest Result: $f passed.\e[0m"
 fi
 done
 #rm -rf ./tests/*.out

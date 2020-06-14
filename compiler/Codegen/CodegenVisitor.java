@@ -47,6 +47,7 @@
             return null;
             args.head.accept(this);
             var argTemp = temp;
+            TempList tl = new TempList(argTemp);
             Temp finalPos = null;
             switch (i) {
                 case 0:
@@ -70,13 +71,16 @@
             }
             if (finalPos != null) {
                 emit(new Assem.MOVE("movq %`s0, %`d0 # move arg to temp", finalPos, argTemp));
+                tl = TempList.append(tl, finalPos);
             } else {
                 emit(new Assem.OPER("movq %`s0, " + ((i - 5) * frame.wordSize()) + "(%`s1) # move arg to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
             if (args.tail == null) {
-                return L(argTemp, null);
+               // return L(argTemp, null);
+               return tl;
             }
-            return L(argTemp, munchArgs(i + 1, args.tail));
+            //return L(argTemp, munchArgs(i + 1, args.tail));
+            return TempList.append(tl,munchArgs(i + 1, args.tail));
         }
 
         

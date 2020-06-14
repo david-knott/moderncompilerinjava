@@ -109,8 +109,8 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		this.allocate();
-		//this.dumpUsesAndDefs();
-		//this.dumpLiveness();
+	//	this.dumpUsesAndDefs();
+//		this.dumpLiveness();
 		//this.baig.show(System.out);
 	}
 
