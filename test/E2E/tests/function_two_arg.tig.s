@@ -11,13 +11,13 @@ movq %r12, %r12 # default move
 movq %r13, %r13 # default move
 movq %r14, %r14 # default move
 movq %r15, %r15 # default move
+movq $9, %rax # const
+movq %rax, %rdx # move arg to temp
+movq $5, %rcx # const
+movq %rcx, %rsi # move arg to temp
 movq %rbp, %rdi # move arg to temp
-movq $5, %rax # const
-movq %rax, %rsi # move arg to temp
-movq $9, %rcx # const
-movq %rcx, %rdx # move arg to temp
 call L0 # default call
-movq %rax, %rax # default move
+movq %rax, %rax # rax to temp 
 movq %rax, %rdi # move arg to temp
 call itoa # exp call ( no return value )
 movq %r15, %r15 # default move

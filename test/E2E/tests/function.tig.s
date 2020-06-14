@@ -13,7 +13,7 @@ movq %r14, %r14 # default move
 movq %r15, %r15 # default move
 movq %rbp, %rdi # move arg to temp
 call L0 # default call
-movq %rax, %rax # default move
+movq %rax, %rax # rax to temp 
 movq %rax, %rdi # move arg to temp
 call itoa # exp call ( no return value )
 movq %r15, %r15 # default move

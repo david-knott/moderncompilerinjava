@@ -81,7 +81,7 @@
                return tl;
             }
             //return L(argTemp, munchArgs(i + 1, args.tail));
-            return TempList.append(tl,munchArgs(i + 1, args.tail));
+            return TempList.append(tl,munchArgs(i - 1, args.tail));
         }
 
         
@@ -154,7 +154,7 @@
         @Override
         public void visit(CALL call) {
             var name = (NAME)call.func;
-            TempList l = munchArgs(0, call.args);
+            TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
             temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
             emit(new OPER("call " + name.label + " # default call",  L(temp, IntelFrame.callerSaves), l));
         }
@@ -170,7 +170,7 @@
             if(tilePatternMatcher.isMatch(TilePatterns.EXP_CALL)) {
                 CALL call = (CALL)tilePatternMatcher.getCapture("call");
                 var name = (NAME) call.func;
-                TempList l = munchArgs(0, call.args);
+                TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callerSaves, l));
             } else {
                 exp.exp.accept(this);
@@ -258,6 +258,25 @@
                 emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
             } 
+            if (tilePatternMatcher.isMatch(TilePatterns.MOVE_CALL)) {
+                Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
+                dst.accept(this);
+                Temp dstTemp = this.temp;
+                CALL call = (CALL) tilePatternMatcher.getCapture("call");
+             //   call.func.accept(this);
+              //  Temp funcTemp = this.temp;
+              //  call.accept(this);
+              //  Temp srcTemp = this.temp;
+                TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
+                this.temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
+                emit(new OPER("call " + ((NAME)call.func).label +  " # default call",  L(temp, IntelFrame.callerSaves), l));
+                emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
+//                emit(new OPER("call " + call.label + " # default call",  L(temp, IntelFrame.callerSaves), l));
+  //              emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
+                return;
+            } 
+
+
             // Unmatched tile case.
             op.dst.accept(this);
             var dst = temp;

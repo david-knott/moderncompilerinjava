@@ -12,6 +12,27 @@ public class ExpList {
         return new ExpList(me.head, ExpList.append(me.tail, t));
     }
 
+    /**
+     * Return this set in reverse.
+     * 
+     * @return a new linked list with this lists elements in reverse.
+     */
+    public static ExpList reverse(ExpList me) {
+        if(me == null) {
+            return null;
+        }
+        if (me.tail == null) {
+            return new ExpList(me.head);
+        }
+        return ExpList.append(ExpList.reverse(me.tail), me.head);
+    }
+
+    public static int size(ExpList me) {
+        if(me == null) return 0;
+        return me.size();
+
+    }
+
     public Exp head;
     public ExpList tail;
 
@@ -34,5 +55,13 @@ public class ExpList {
         }
         last.tail = new ExpList(exp, null);
         return last.tail;
+    }
+
+    public int size() {
+        int i = 0;
+        for(ExpList me = this; me != null; me = me.tail) {
+            i++;
+        }
+        return i;
     }
 }

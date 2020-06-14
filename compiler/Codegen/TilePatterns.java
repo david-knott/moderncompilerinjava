@@ -86,7 +86,10 @@ public class TilePatterns {
         )
     );
 
-
+    public static TilePattern MOVE_CALL = new MOVET(
+        new ExpT("dst"),
+        new CALLT("call")
+    );
 
     public static TilePattern EXP_CALL = new EXPT(
         new CALLT("call")
