@@ -69,9 +69,9 @@ public class FindEscape {
     private void traverseExp(int depth, LetExp letExp) {
         this.escEnv.beginScope();
         for (var dec = letExp.decs; dec != null; dec = dec.tail) {
-            traverseDec(depth + 1, dec.head);
+            traverseDec(depth, dec.head);
         }
-        traverseExp(depth + 1, letExp.body);
+        traverseExp(depth, letExp.body);
         this.escEnv.endScope();
     }
 
@@ -180,6 +180,7 @@ public class FindEscape {
 
     private void traverseDec(int depth, Absyn.FunctionDec e) {
         this.escEnv.beginScope();
+        depth = depth + 1;
         for (var fl = e.params; fl != null; fl = fl.tail) {
             var formalEscape = new FormalEscape(depth, fl);
             this.escEnv.put(fl.name, formalEscape);

@@ -2,5 +2,5 @@ let
 function fa(a: int, b: int): int =
 a + b
 in
-itoa(fa(5, 9))
+printi(fa(5, 9))
 end

@@ -1,8 +1,10 @@
 ## Diary
 *15th June 2020*
-Started testing static link functionality.
+~~ Should a function be able to access a variable defined in the parent level ? It does work, if it should ! ~~
 
-Should a function be able to access a variable defined in the parent level ?
+https://cs.lmu.edu/~ray/notes/writingacompiler/
+
+Started testing static link functionality. Working now
 
 Learning how to examine the stack using gdb. In particular checking that
 variables are in the correct place on the stack. 

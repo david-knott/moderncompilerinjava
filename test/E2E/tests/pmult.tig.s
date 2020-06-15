@@ -20,7 +20,7 @@ movq %rax, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
 movq %rax, %rax # mul rax -> r
 movq %rax, %rdi # move arg to temp
-call itoa # exp call ( no return value )
+call printi # exp call ( no return value )
 movq %r15, %r15 # default move
 movq %r14, %r14 # default move
 movq %r13, %r13 # default move

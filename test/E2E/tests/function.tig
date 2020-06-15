@@ -2,5 +2,5 @@ let
 function fa(): int =
 3
 in
-itoa(fa())
+printi(fa())
 end

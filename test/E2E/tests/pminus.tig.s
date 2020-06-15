@@ -18,7 +18,7 @@ movq %rdx, %rdx # default move
 movq %rcx, %rcx # minus lexp -> r
 sub %rdx, %rcx
 movq %rcx, %rdi # move arg to temp
-call itoa # exp call ( no return value )
+call printi # exp call ( no return value )
 movq %r14, %r15 # default move
 movq %r13, %r14 # default move
 movq %r12, %r13 # default move

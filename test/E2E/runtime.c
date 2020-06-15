@@ -47,7 +47,7 @@ void print(struct string *s)
     putchar(*p);
 }
 
-void itoa(int x) 
+void printi(int x) 
 {
   printf("%i", x);
 }

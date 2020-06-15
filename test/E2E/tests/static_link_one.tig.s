@@ -3,7 +3,7 @@
 tigermain:
 pushq %rbp
 movq %rsp, %rbp
-addq $0, %rsp
+addq $-8, %rsp
 # start main
 L2:
 movq %rbx, %rbx # default move
@@ -11,15 +11,19 @@ movq %r12, %r12 # default move
 movq %r13, %r13 # default move
 movq %r14, %r14 # default move
 movq %r15, %r15 # default move
+movq $-8, %rax # const
+movq %rbp, %rcx # add lexp -> r
+add %rax, %rcx
+movq $3, %rax # const
+movq %rax, (%rcx) # store
 movq $3, %rax # const
 movq %rax, %rax # default move
-movq $10, %rax # const
 movq %rax, %rsi # move arg to temp
 movq %rbp, %rdi # move arg to temp
 call L0 # default call
 movq %rax, %rax # rax to temp 
 movq %rax, %rdi # move arg to temp
-call itoa # exp call ( no return value )
+call printi # exp call ( no return value )
 movq %r15, %r15 # default move
 movq %r14, %r14 # default move
 movq %r13, %r13 # default move
@@ -41,19 +45,29 @@ addq $-8, %rsp
 L4:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
-movq %rbx, %rcx # default move
-movq %r12, %rdx # default move
+movq %rbx, %rbx # default move
+movq %r12, %rcx # default move
 movq %r13, %rsi # default move
 movq %r14, %rdi # default move
 movq %r15, %r8 # default move
-movq %rax, %rax # add lexp -> r
-add %rbx, %rax
+movq $-8, %rdx # const
+movq %rdx, %rdx # add lexp -> r
+add %rbp, %rdx
+movq (%rdx), %rdx # default load
+movq $-8, %r9 # const
+movq %rdx, %rdx # add lexp -> r
+add %r9, %rdx
+movq (%rdx), %rdx # default load
+movq %rax, %rax # mul lexp -> r
+movq %rax, %rax # mul r -> rax
+imul %rdx # mul rax * rexp 
+movq %rax, %rax # mul rax -> r
 movq %rax, %rax # default move
 movq %r8, %r15 # default move
 movq %rdi, %r14 # default move
 movq %rsi, %r13 # default move
-movq %rdx, %r12 # default move
-movq %rcx, %rbx # default move
+movq %rcx, %r12 # default move
+movq %rbx, %rbx # default move
 jmp L3
 L3:
 # sink 
