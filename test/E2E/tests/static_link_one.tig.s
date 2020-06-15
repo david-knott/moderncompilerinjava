@@ -18,11 +18,11 @@ movq $4, %rax # const
 movq %rax, (%rcx) # store
 movq $3, %rax # const
 movq %rax, %rax # default move
-movq %rax, %rsi # move arg to temp
-movq %rbp, %rdi # move arg to temp
+movq %rax, %rsi # move arg 1 to temp
+movq %rbp, %rdi # move arg 0 to temp
 call L0 # default call
 movq %rax, %rax # rax to temp 
-movq %rax, %rdi # move arg to temp
+movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
 movq %r15, %r15 # default move
 movq %r14, %r14 # default move

@@ -20,7 +20,7 @@ movq %rax, %rax # div r -> rax
 xor %rdx, %rdx # div clear bits rdx 
 idiv %rcx # div rax * rexp 
 movq %rax, %rax # div rax -> r
-movq %rax, %rdi # move arg to temp
+movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
 movq %r15, %r15 # default move
 movq %r14, %r14 # default move

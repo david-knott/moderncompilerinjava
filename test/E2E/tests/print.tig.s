@@ -12,7 +12,7 @@ movq %r13, %r12 # default move
 movq %r14, %r13 # default move
 movq %r15, %r14 # default move
 movq $L0, %rcx # default name
-movq %rcx, %rdi # move arg to temp
+movq %rcx, %rdi # move arg 0 to temp
 call print # exp call ( no return value )
 movq %r14, %r15 # default move
 movq %r13, %r14 # default move
