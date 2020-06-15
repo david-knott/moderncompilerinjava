@@ -1,6 +1,6 @@
 ## Diary
 *15th June 2020*
-~~ Should a function be able to access a variable defined in the parent level ? It does work, if it should ! ~~
+~~Should a function be able to access a variable defined in the parent level ? It does work, if it should !~~
 
 https://cs.lmu.edu/~ray/notes/writingacompiler/
 
