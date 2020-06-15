@@ -52,33 +52,35 @@ addq $-8, %rsp
 # start main
 L4:
 movq %rdi, -8(%rbp) # store to offset
-movq %rsi, %rsi # default move
-movq %rdx, %rdi # default move
-movq %rcx, %r10 # default move
-movq %r8, %r8 # default move
-movq %r9, %r9 # default move
-movq 16(%rbp), %rax # load to offset
-movq 24(%rbp), %rcx # load to offset
-movq 32(%rbp), %rdx # load to offset
+movq %rsi, %rax # default move
+movq %rdx, %rdx # default move
+movq %rcx, %rsi # default move
+movq %r8, %rdi # default move
+movq %r9, %r8 # default move
+movq 16(%rbp), %rcx # load to offset
+movq 24(%rbp), %r9 # load to offset
+movq 32(%rbp), %r10 # load to offset
 movq %rbx, %rbx # default move
 movq %r12, %r11 # default move
 movq %r13, %r12 # default move
 movq %r14, %r13 # default move
 movq %r15, %r14 # default move
-movq %rsi, %rsi # add lexp -> r
-add %rdi, %rsi
-movq %rsi, %rsi # add lexp -> r
-add %r10, %rsi
-movq %rsi, %rsi # add lexp -> r
-add %r8, %rsi
-movq %rsi, %rsi # add lexp -> r
-add %r9, %rsi
-movq %rsi, %rsi # add lexp -> r
-add %rax, %rsi
-movq %rsi, %rax # add lexp -> r
+movq %rax, %rax # mul lexp -> r
+movq %rax, %rax # mul r -> rax
+imul %rdx # mul rax * rexp 
+movq %rax, %rax # mul rax -> r
+movq %rax, %rax # add lexp -> r
+add %rsi, %rax
+movq %rax, %rax # add lexp -> r
+add %rdi, %rax
+movq %rax, %rax # add lexp -> r
+add %r8, %rax
+movq %rax, %rax # add lexp -> r
 add %rcx, %rax
 movq %rax, %rax # add lexp -> r
-add %rdx, %rax
+add %r9, %rax
+movq %rax, %rax # add lexp -> r
+add %r10, %rax
 movq %rax, %rax # default move
 movq %r14, %r15 # default move
 movq %r13, %r14 # default move
