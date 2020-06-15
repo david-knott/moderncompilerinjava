@@ -14,7 +14,7 @@ movq %r15, %r15 # default move
 movq $-8, %rax # const
 movq %rbp, %rcx # add lexp -> r
 add %rax, %rcx
-movq $3, %rax # const
+movq $4, %rax # const
 movq %rax, (%rcx) # store
 movq $3, %rax # const
 movq %rax, %rax # default move
