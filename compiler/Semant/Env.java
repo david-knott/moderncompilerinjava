@@ -2,6 +2,7 @@ package Semant;
 
 import Types.RECORD;
 import Types.Type;
+import ErrorMsg.ErrorMsg;
 import Symbol.GenericTable;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
@@ -11,10 +12,10 @@ import Translate.Level;
 public class Env {
     GenericTable<Entry> venv;
     GenericTable<Type> tenv;
-    ErrorMsg.ErrorMsg errorMsg;
+    ErrorMsg errorMsg;
     Level outerMost;
 
-    Env(ErrorMsg.ErrorMsg err, Level om) {
+    Env(ErrorMsg err, Level om) {
         errorMsg = err;
         outerMost = om;
         // initialize function values
@@ -54,5 +55,9 @@ public class Env {
 
     public SymbolTable<Entry> getVEnv() {
         return this.venv;
+    }
+
+    public ErrorMsg getErrorMsg() {
+            return this.errorMsg;
     }
 }

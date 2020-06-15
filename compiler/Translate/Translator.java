@@ -141,8 +141,11 @@ public class Translator {
         if(level == access.home){
             return exp;
         } else {
+            //get current frames static link ( in rbp - 8),
+            //lookup value, which is a pointer to the previous
+            //frames static link, etc
             var slinkLevel = level;
-            int staticLinkOffset = 0;
+            int staticLinkOffset = -8;
             while (slinkLevel != access.home) {
                 exp = new MEM(
                     new BINOP(

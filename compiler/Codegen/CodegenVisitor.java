@@ -185,7 +185,7 @@
             op.exp.accept(this);
             var mem = temp;
             temp = Temp.create();
-            emit(new Assem.MOVE("movq %`s0, (%`d0) # default load", temp, mem));
+            emit(new Assem.MOVE("movq (%`s0), %`d0 # default load", temp, mem));
         }
     
         @Override

@@ -1,4 +1,21 @@
 ## Diary
+*15th June 2020*
+Started testing static link functionality.
+
+Should a function be able to access a variable defined in the parent level ?
+
+Learning how to examine the stack using gdb. In particular checking that
+variables are in the correct place on the stack. 
+
+First, For each frame check that memory location at rbp - 8 equals the parent frame base pointer.
+Next ??
+
+Handy link for gdb debugging.
+
+https://web.stanford.edu/class/archive/cs/cs107/cs107.1196/lab7/
+
+
+TODO: If semant contains an error, translate is still executed. The compiler should halt in this case.
 *14th June 2020*
 Started six argument function call ( actually 7 arguments as the first item is a static link). 
 The last item will be pushed onto the stack. At present we push the 7th to the stack. We

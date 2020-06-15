@@ -123,6 +123,10 @@ public class Main {
         }
         findEscape.traverse(this.ast.absyn);
         FragList frags = FragList.reverse(this.semant.getTreeFragments(this.ast.absyn));
+        if(this.semant.getEnv().getErrorMsg().getCompilerErrors().size() != 0) {
+            System.out.println("type check error");
+            System.exit(1);
+        }
         PrintStream out = null;
         try {
             out = new PrintStream(new java.io.FileOutputStream(this.name + ".s"));

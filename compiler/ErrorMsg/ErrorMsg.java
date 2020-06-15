@@ -22,6 +22,7 @@ public class ErrorMsg {
     }
 
     public void add(CompilerError compilerError){
+        anyErrors = true;
         compilerErrors.add(compilerError);
     }
 
