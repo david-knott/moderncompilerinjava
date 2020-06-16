@@ -1,8 +1,12 @@
 package Semant;
 
 import Translate.ExpTy;
+import Types.ARRAY;
 import Types.INT;
+import Types.NIL;
 import Types.RECORD;
+import Types.STRING;
+import Types.VOID;
 
 /**
  * Validation methods for semantic type checking.
@@ -14,11 +18,11 @@ class SemantValidator {
     }
     
     public static boolean isString(ExpTy expTy) {
-        return false;   
+        return expTy.ty.actual() instanceof STRING;   
     }
     
     public static boolean isArray(ExpTy expTy) {
-        return false;   
+        return expTy.ty.actual() instanceof ARRAY;   
     }
     
     public static boolean isRecord(ExpTy expTy) {
@@ -26,14 +30,14 @@ class SemantValidator {
     }
     
     public static boolean isNil(ExpTy expTy) {
-        return false;   
+        return expTy.ty.actual() instanceof NIL;   
     }
     
     public static boolean sameType(ExpTy expTy1, ExpTy expTy2) {
-        return false;   
+        return expTy1.ty.coerceTo(expTy2.ty);   
     }
     
     public static boolean isVoid(ExpTy expTy) {
-        return false;   
+        return expTy.ty.actual() instanceof VOID;   
     }    
 }

@@ -165,12 +165,9 @@ public class Semant {
      * @return
      */
     ExpTy transVar(final Absyn.FieldVar e) {
-        final var varExp = transVar(e.var);
-        final var varType = varExp.ty.actual();
-        
-        if (!SemantValidator.isRecord(varExp)) {
-            env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
-        }
+        var varExp = transVar(e.var);
+        var varType = varExp.ty.actual();
+        SemantValidator.isRecord(varExp);
         // iterate through each record field till we find a match
         int i = 0;
         // TODO: Refactor node add
@@ -194,23 +191,14 @@ public class Semant {
      * @return
      */
     ExpTy transVar(final Absyn.SubscriptVar e) {
-        final var indexExp = e.index;
-        final var transIndexExp = transExp(indexExp);
+        var indexExp = e.index;
+        var transIndexExp = transExp(indexExp);
         // translate the index expression and check its an INT
-        if(!SemantValidator.isInt(transIndexExp)) {
-            env.errorMsg.add(new TypeMismatchError(e.pos, transIndexExp.ty.actual()));
-            //TODO: tidy this up
-            return new ExpTy(translate.Noop(), VOID);
-        }
+        SemantValidator.isInt(transIndexExp);
         // translate the variable and check its an instance of an ARRAY
-        final var translatedArrayVar = transVar(e.var);
-        final Types.Type elementType = translatedArrayVar.ty.actual();
-        if (!(elementType.actual() instanceof ARRAY)) {
-            env.errorMsg.add(new TypeMismatchError(e.pos, elementType.actual()));
-            //TODO: tidy this up
-            return new ExpTy(translate.Noop(), VOID);
-        }
-        // type checking is complete, translate to IL
+        var translatedArrayVar = transVar(e.var);
+        Types.Type elementType = translatedArrayVar.ty.actual();
+        SemantValidator.isArray(translatedArrayVar);
         var translateExp = translate.subscriptVar(transIndexExp, translatedArrayVar, level);
         return new ExpTy(translateExp, ((ARRAY) elementType).element);
     }
@@ -715,44 +703,7 @@ public class Semant {
     ExpTy transExp(final Absyn.AssignExp assignExp) {
         var transVar = transVar(assignExp.var); // lvalue
         var transExp = transExp(assignExp.exp); // rvalue
-        if(transExp.exp == null) {
-            //TODO: handle l value and r value
-          //  env.errorMsg.add(new UndefinedVariableError(assignExp.var.pos, assignExp.exp));
-            return new ExpTy(translate.Noop(), Semant.VOID);
-        }
-        if(transVar.exp == null) {
-            //TODO: handle l value and r value
-          //  env.errorMsg.add(new UndefinedVariableError(assignExp.var.pos, assignExp.exp));
-            return new ExpTy(translate.Noop(), Semant.VOID);
-        }
-        // check to see if we are trying to assign to a readonly variable
-        if (assignExp.var instanceof SimpleVar) {
-            var simpleVar = (SimpleVar) assignExp.var;
-            var varEntry = (VarEntry) env.venv.get(simpleVar.name);
-            if (varEntry == null) {
-                env.errorMsg.add(new UndefinedVariableError(assignExp.var.pos, simpleVar.name));
-                return new ExpTy(translate.Noop(), Semant.VOID);
-                
-            } else {
-                if (varEntry.readOnly) {
-                    env.errorMsg.add(new VariableAssignError(assignExp.pos, simpleVar.name));
-                }
-            }
-            //
-        } else if (assignExp.var instanceof SubscriptVar) {
-            // var subscriptVar = (SubscriptVar) assignExp.var;
-            //
-
-        } else if (assignExp.var instanceof FieldVar) {
-            // var fieldVar = (FieldVar) assignExp.var;
-
-        } else {
-            throw new RuntimeException("Unhandled type " + assignExp.var);
-        }
-
-        if(!transVar.ty.coerceTo(transExp.ty)){
-            env.errorMsg.add(new TypeMismatchError(assignExp.pos, transVar.ty.actual(), transExp.ty.actual()));
-        }
+        SemantValidator.sameType(transVar, transExp);
         return new ExpTy(translate.assign(level, transVar, transExp), Semant.VOID);
     }
 
@@ -784,20 +735,13 @@ public class Semant {
         env.tenv.beginScope();
         env.venv.beginScope();
         var testExp = transExp(whileExp.test);
-        if (testExp.ty.actual() != INT) {
-            env.errorMsg.add(new TypeMismatchError(whileExp.test.pos, testExp.ty.actual(), Semant.INT));
-        }
-        // end of loop label
-        var loopEnd = new Label();
-        // pass in the end loop label so that breaks can jump to it
-        var transBody = new Semant(env, loopEnd, level, translate).transExp(whileExp.body);
-        //if (transBody.ty.actual() != Semant.VOID) {
-        if (!transBody.ty.coerceTo(Semant.VOID)) {
-            env.errorMsg.add(new TypeMismatchError(whileExp.pos, transBody.ty.actual(), Semant.VOID));
-        }
+        SemantValidator.isInt(testExp);
+        var loopExit = new Label();
+        var transBody = new Semant(this.env, loopExit, this.level, this.translate).transExp(whileExp.body);
+        SemantValidator.isVoid(transBody);
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(translate.whileL(level, loopEnd, testExp, transBody), Semant.VOID);
+        return new ExpTy(translate.whileL(this.level, loopExit, testExp, transBody), Semant.VOID);
 
     }
 
@@ -823,9 +767,7 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.IfExp ifExp) {
         var testExp = transExp(ifExp.test);
-        if (testExp.ty.actual() != INT) {
-            env.errorMsg.add(new TypeMismatchError(ifExp.test.pos, testExp.ty.actual(), Semant.INT));
-        }
+        SemantValidator.isInt(testExp);
         var thenExp = transExp(ifExp.thenclause);
         var elseExp = ifExp.elseclause != null ? transExp(ifExp.elseclause) : null;
         if (elseExp != null && !elseExp.ty.coerceTo(thenExp.ty)) {
@@ -958,8 +900,7 @@ public class Semant {
                             forExp.pos,
                             Symbol.symbol("int")
                         ),
-                        forExp.hi,
-                        false /* dont escape */
+                        forExp.hi
                     ),
                     null
                 )
@@ -973,7 +914,7 @@ public class Semant {
                             forExp.pos, 
                             new VarExp(
                                 forExp.pos, 
-                                new SimpleVar( //var i readonly as symbol contains illegal chars
+                                new SimpleVar(
                                     forExp.pos, 
                                     forExp.var.name
                                 )
@@ -982,7 +923,7 @@ public class Semant {
                             new VarExp(
                                 forExp.pos, 
                                 new SimpleVar(
-                                    0, 
+                                    forExp.pos, 
                                     Symbol.symbol("limit") //is less than or equal to limit
                                 )
                             )

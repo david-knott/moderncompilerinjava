@@ -2,6 +2,8 @@
 JAVA_HOME=/home/david/bin/jdk-14+36/bin
 #JAVA_HOME=/usr/bin
 shopt -s nullglob
+rm -rf ./tests/*.out
+rm -rf ./tests/*.s
 $JAVA_HOME/javac -sourcepath ../../compiler/ -d ../../bin ../../compiler/**/*.java
 for f in ./tests/*.tig; do
 
@@ -16,5 +18,3 @@ else
 echo -e "\e[92mTest Result: $f passed.\e[0m"
 fi
 done
-#rm -rf ./tests/*.out
-#rm -rf ./tests/*.s
