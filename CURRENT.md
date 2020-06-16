@@ -6,8 +6,8 @@ the FindEscape module throws an error for the same reason.
 
 I have changed the grammar back to the original version were use use the unaltered symbol.
 
-#TODO: ##Make for loop indexer readonly
-#TODO: ##Modify Translator.call to create tree instructions that move to RV for a function that doesn't return VOID.
+TODO: Make for loop indexer readonly
+TODO: Modify Translator.call to create tree instructions that move to RV for a function that doesn't return VOID.
 See lines 557 and 560
 
 For loop is passing now, although the index variable could be modified. It appears that spilling works too.
@@ -30,7 +30,7 @@ Handy link for gdb debugging.
 https://web.stanford.edu/class/archive/cs/cs107/cs107.1196/lab7/
 
 
-#TODO: ##If semant contains an error, translate is still executed. The compiler should halt in this case.
+TODO: If semant contains an error, translate is still executed. The compiler should halt in this case.
 *14th June 2020*
 Started six argument function call ( actually 7 arguments as the first item is a static link). 
 The last item will be pushed onto the stack. At present we push the 7th to the stack. We
