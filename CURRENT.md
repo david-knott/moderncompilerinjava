@@ -1,8 +1,13 @@
 ## Diary
 *16th June 2020*
-For loop readonly index variable doesn't work. I wrapped the index token in < > to protect it.
+Added tests for array, record and recursive functions. They all pass.
+
+For loop is passing now, although the index variable could be modified. It appears that spilling works too.
+
+~~For loop readonly index variable doesn't work. I wrapped the index token in < > to protect it.
 Unfortunately when we attempt to use it within the loop the symbol cannot be found. Similarily
-the FindEscape module throws an error for the same reason.
+the FindEscape module throws an error for the same reason.~~
+
 
 I have changed the grammar back to the original version were use use the unaltered symbol.
 
@@ -10,8 +15,9 @@ TODO: Make for loop indexer readonly
 TODO: Modify Translator.call to create tree instructions that move to RV for a function that doesn't return VOID.
 See lines 557 and 560
 TODO: Investigate parameter passing & register allocation when I remove the register arguments from the caller register set.
+TODO: Add tests for arrays and records with bounds checking enabled
+TODO: Implement semant type checking with details writen to system out similar to javac.
 
-For loop is passing now, although the index variable could be modified. It appears that spilling works too.
 
 *15th June 2020*
 ~~Should a function be able to access a variable defined in the parent level ? It does work, if it should !~~
