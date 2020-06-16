@@ -1,0 +1,5 @@
+let
+var a:int := 4
+in
+for j := 0 to a-1  do printi(j)
+end

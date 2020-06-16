@@ -11,8 +11,10 @@ public class Codegen {
     }
 
     public Assem.InstrList codegen(Tree.Stm stm) {
-        var cg = new CodegenVisitor(frame);
-        stm.accept(cg);
-        return cg.iList;
+        TileCost tileCost = new TileCost();
+        MaximumMunch maximumMunch = new MaximumMunch(frame);
+        stm.accept(tileCost);
+        stm.accept(maximumMunch);
+        return maximumMunch.iList;
     }
 }

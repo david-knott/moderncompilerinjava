@@ -167,7 +167,8 @@ public class Semant {
     ExpTy transVar(final Absyn.FieldVar e) {
         final var varExp = transVar(e.var);
         final var varType = varExp.ty.actual();
-        if (!(varType.actual() instanceof RECORD)) {
+        
+        if (!SemantValidator.isRecord(varExp)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, varType.actual()));
         }
         // iterate through each record field till we find a match
@@ -196,7 +197,7 @@ public class Semant {
         final var indexExp = e.index;
         final var transIndexExp = transExp(indexExp);
         // translate the index expression and check its an INT
-        if (transIndexExp.ty.actual() != INT) {
+        if(!SemantValidator.isInt(transIndexExp)) {
             env.errorMsg.add(new TypeMismatchError(e.pos, transIndexExp.ty.actual()));
             //TODO: tidy this up
             return new ExpTy(translate.Noop(), VOID);
@@ -945,7 +946,6 @@ public class Semant {
     }
 
     private LetExp rewriteForExp(ForExp forExp){
-        // create readonly var for forExp.var.name
         return new LetExp(
             forExp.pos,
             new DecList(
@@ -973,7 +973,7 @@ public class Semant {
                             forExp.pos, 
                             new VarExp(
                                 forExp.pos, 
-                                new SimpleVar( //var i
+                                new SimpleVar( //var i readonly as symbol contains illegal chars
                                     forExp.pos, 
                                     forExp.var.name
                                 )
