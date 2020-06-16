@@ -10,7 +10,7 @@ I have change the grammar back to the original version were use use the symbol a
 Modify Translator.call to create tree instructions that move to RV for a function that doesn't return VOID.
 See lines 557 and 560
 
-For loop is still failing as it needs to spill and spilling hasn't been tested yet.
+For loop is passing now, although the index variable could be modified. It appears that spilling works too.
 
 *15th June 2020*
 ~~Should a function be able to access a variable defined in the parent level ? It does work, if it should !~~
