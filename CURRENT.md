@@ -9,6 +9,7 @@ I have changed the grammar back to the original version were use use the unalter
 TODO: Make for loop indexer readonly
 TODO: Modify Translator.call to create tree instructions that move to RV for a function that doesn't return VOID.
 See lines 557 and 560
+TODO: Investigate parameter passing & register allocation when I remove the register arguments from the caller register set.
 
 For loop is passing now, although the index variable could be modified. It appears that spilling works too.
 
