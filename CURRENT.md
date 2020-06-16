@@ -1,5 +1,6 @@
 ## Diary
 *16th June 2020*
+
 Added tests for array, record and recursive functions. They all pass.
 
 For loop is passing now, although the index variable could be modified. It appears that spilling works too.
@@ -20,6 +21,7 @@ TODO: Implement semant type checking with details writen to system out similar t
 
 
 *15th June 2020*
+
 ~~Should a function be able to access a variable defined in the parent level ? It does work, if it should !~~
 
 https://cs.lmu.edu/~ray/notes/writingacompiler/
@@ -51,6 +53,7 @@ the calling convention registers into the 'use/src' field for the call instructi
 Added green and red colours to test script that generates programs and tests them
 
 *12th June 2020*
+
 Changed code to use the x64 registers. Fixed intel stack frame bug. Function test now passes.
 
 Bug in function calls with more than 0 arguments. Static link doesn't appear to be added.
@@ -82,6 +85,7 @@ also be live in at node 1.
 
 
 *11th June 2020*
+
 Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link
 
 Figured out how to test output of compiler, see tests/E2E. This will run all compile all files in a specified directory
@@ -90,6 +94,7 @@ and check the output against a test.result file.
 Main.java was refactored and some obsolete unit tests were removed.
 
 *10th June 2020*
+
 Finished new implementation of codegen tiling implementation for store and array store.
 Realized that store operations only use temporaries, they do not define them.
 
@@ -112,6 +117,7 @@ MOVE(TEMP, MEM) -> load value in address of MEM into TEMP
 
 
 *7th June 2020*
+
 Reimplementing Tile Matching as some assembly was incorrect due to a bug in the previous implementation.
 Employing a visitor pattern ( again ! ), to do the tile matching. 
 
@@ -119,6 +125,7 @@ Array read is working now. I had to use the 32 bit registers instead of the 64 b
 to tile matching bug.
 
 *3rd May 2020*
+
 ~~Implementing coalescing algorithm~~
 
 Going to ensure that the non coalesce version works first.
@@ -144,6 +151,7 @@ TODO: Ensure that functions that do not return a value are handled correctly.
 TODO: FIgure out how to calculate out going parameter space.
 
 *29th May 2020*
+
 Need to ensure that the memory accesses created for spills are used for defs and uses.
 TODO: Test this !
 
@@ -157,6 +165,7 @@ TODO: Enforce invariant that registers must be a subset of precoloured. There ca
 the registers templist that are not also present in the precoloured.
 
 *28th May 2020*
+
 Started the potential spill colouring implementation. In the middle
 of  forcing a spill, still need to save certain nodes as potential
 spills.
@@ -173,6 +182,7 @@ TODO: All append, prepend operations are OO. Set operations are functional.
 
 
 *27th May 2020*
+
 Implemented Liveness equations using java.util.BitSet. Tests were not passing.
 The issue was caused by the implementation of the BitSet. It changes the bits within
 the target set, rather than creating a new one. This was affecting the equations.
