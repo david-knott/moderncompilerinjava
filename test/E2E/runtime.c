@@ -10,7 +10,7 @@ int *initArray(int size, int init)
   return a;
 }
 
-int *allocRecord(int size)
+int *initRecord(int size)
 {
   int i;
   int *p, *a;
