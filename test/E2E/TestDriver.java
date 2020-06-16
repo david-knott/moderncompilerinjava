@@ -13,7 +13,7 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void test() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/tests/static_link_one.tig"});
+        Main.main(new String[]{"./test/E2E/tests/for.tig"});
     }
 
 }

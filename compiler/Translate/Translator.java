@@ -9,6 +9,7 @@ import Tree.CALL;
 import Tree.CJUMP;
 import Tree.CONST;
 import Tree.ESEQ;
+import Tree.EXP;
 import Tree.ExpList;
 import Tree.JUMP;
 import Tree.LABEL;
@@ -553,8 +554,10 @@ public class Translator {
         //TODO: Why are these the same
         if(result.coerceTo(Semant.VOID)){
             return new Ex(new CALL(new NAME(functionLabel), expList));
+          //  return new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
         } else {
             return new Ex(new CALL(new NAME(functionLabel), expList));
+          //  return new Nx(new MOVE(new TEMP(callerLevel.frame.RV()), new CALL(new NAME(functionLabel), expList)));
         }
     }
 

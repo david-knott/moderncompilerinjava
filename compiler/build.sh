@@ -39,6 +39,7 @@ then
     cd ..
     java -cp bin JLex.Main Parse/Tiger.lex
     mv Parse/Tiger.lex.java Parse/Yylex.java
+    exit;
 fi
 
 # compile java cup and create grammar parser
@@ -54,6 +55,7 @@ then
   fi
   mv Grm.java Parse
   mv sym.java Parse
+  exit;
 fi
 
 javac -d bin Symbol/*.java Absyn/*.java ErrorMsg/*.java Parse/*.java Types/*.java Semant/*.java Main/*.java

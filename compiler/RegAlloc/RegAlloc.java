@@ -97,10 +97,10 @@ public class RegAlloc implements TempMap {
 		this.iterations++;
 		this.build();
 		if (this.hasSpills()) {
-			throw new Error("Spills not implemented");
+		//	throw new Error("Spills not implemented");
 
-			//this.rewrite();
-			//this.allocate();
+			this.rewrite();
+			this.allocate();
 		}
 	}
 

@@ -1,4 +1,17 @@
 ## Diary
+*16th June 2020*
+For loop readonly index variable doesn't work. I wrapped the index token in < > to protect it.
+Unfortunately when we attempt to use it within the loop the symbol cannot be found. Similarily
+the FindEscape module throws an error because symbol is in the symbol table like this <j> and we
+use it like this j
+
+I have change the grammar back to the original version were use use the symbol as is.
+
+Modify Translator.call to create tree instructions that move to RV for a function that doesn't return VOID.
+See lines 557 and 560
+
+For loop is still failing as it needs to spill and spilling hasn't been tested yet.
+
 *15th June 2020*
 ~~Should a function be able to access a variable defined in the parent level ? It does work, if it should !~~
 

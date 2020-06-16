@@ -209,13 +209,14 @@ public class FindEscape {
     }
 
     private void traverseVar(int depth, SimpleVar simpleVar) {
-        var sv = this.escEnv.get(simpleVar.name);
-        if(sv == null){
-            throw new Error("simplevar " + simpleVar.name + " is null.");
+        var escape = this.escEnv.get(simpleVar.name);
+        //escape is null if using loop var within a for loop
+        if(escape == null){
+            throw new Error("Symbol '" + simpleVar.name + "' has not been declared.");
         }
         // we check for undefined variable in the semant phase
-        if (this.allVarsEscape ||  sv.depth < depth) {
-            sv.setEscape();
+        if (this.allVarsEscape ||  escape.depth < depth) {
+            escape.setEscape();
         }
     }
 
