@@ -12,7 +12,9 @@ MaximumMunch expression for store array is commented out as it doesn't work.
 
 Record assign is generating a seg fault.
 
-Multiplying the word size * 2 ( 16 ) when indexing the array makes test pass. I have no idea why. See translator.subScriptVar.
+Modified runtime.c to use longs instead of ints. Longs are 64 bit
+
+~~Multiplying the word size * 2 ( 16 ) when indexing the array makes test pass. I have no idea why. See translator.subScriptVar.~~
 
 Test for 2 breaks in a while works, although I am not sure if it is working just by accident.
 
