@@ -261,7 +261,7 @@ public class Translator {
                     new BINOP(
                         BINOP.MUL, 
                         indexExp,
-                        new CONST(level.frame.wordSize() * 2)
+                        new CONST(level.frame.wordSize())
                     )
                 )                
             ));

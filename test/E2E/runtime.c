@@ -1,21 +1,21 @@
 //#undef __STDC__
 #include <stdio.h>
 #include <stdlib.h>
-int *initArray(int size, int init)
+long *initArray(int size, int init)
 {
   int i;
-  int *a = (int *)malloc(size * sizeof(int));
+  long *a = (long *)malloc(size * sizeof(long));
   for (i = 0; i < size; i++)
     a[i] = init;
   return a;
 }
 
-int *initRecord(int size)
+long *initRecord(int size)
 {
   int i;
-  int *p, *a;
-  p = a = (int *)malloc(size);
-  for (i = 0; i < size; i += sizeof(int))
+  long *p, *a;
+  p = a = (long *)malloc(size);
+  for (i = 0; i < size; i += sizeof(long))
     *p++ = 0;
   return a;
 }

@@ -21,7 +21,7 @@ movq %rax, %rax # default move
 movq %rax, %rax # spill
 movq %rax, -8(%rbp) # spill
 movq $0, %rax # const
-movq $16, %rcx # const
+movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
@@ -33,7 +33,7 @@ add %rdx, %rax
 movq $10, %rcx # const
 movq %rcx, (%rax) # store
 movq $9, %rax # const
-movq $16, %rcx # const
+movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
@@ -45,7 +45,7 @@ add %rdx, %rax
 movq $9, %rcx # const
 movq %rcx, (%rax) # store
 movq $5, %rax # const
-movq $16, %rcx # const
+movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
@@ -57,7 +57,7 @@ add %rdx, %rax
 movq $5, %rcx # const
 movq %rcx, (%rax) # store
 movq $5, %rax # const
-movq $16, %rcx # const
+movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
@@ -70,7 +70,7 @@ movq (%rax), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
 movq $0, %rax # const
-movq $16, %rcx # const
+movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
@@ -83,7 +83,7 @@ movq (%rax), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
 movq $9, %rax # const
-movq $16, %rcx # const
+movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 

@@ -19,7 +19,7 @@ call initArray # default call
 movq %rax, %rax # rax to temp 
 movq %rax, %rcx # default move
 movq $0, %rax # const
-movq $16, %rdx # const
+movq $8, %rdx # const
 movq %rax, %rax # mul lexp -> r
 movq %rax, %rax # mul r -> rax
 imul %rdx # mul rax * rexp 
