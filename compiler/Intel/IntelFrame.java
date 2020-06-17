@@ -508,17 +508,21 @@ public class IntelFrame extends Frame {
 
     @Override
     public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
-        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0 # spill", spillTemp, temp);
-        Instr moveNewTempToFrame = new OPER("movq %`s0, " + ((InFrame) access).offset + "(%`d0) # spill", new TempList(this.FP()),
-                new TempList(spillTemp, null));
+        int offset = ((InFrame) access).offset;
+        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0 # spill s", spillTemp, temp);
+        Instr moveNewTempToFrame = new OPER("movq %`s1, " + offset + "(%`s0) # spill s", 
+                null,
+                new TempList(this.FP(), new TempList(spillTemp, null)));
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null));
     }
 
     @Override
     public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
-        Instr moveFrameToNewTemp = new OPER("movq " + ((InFrame) access).offset + "(%`s0), %`d0 # spill",
-                new TempList(spillTemp, null), new TempList(this.FP()));
-        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0 # spill", temp, spillTemp);
+        int offset = ((InFrame) access).offset;
+        Instr moveFrameToNewTemp = new OPER("movq " + offset + "(%`s0), %`d0 # spill l",
+                new TempList(spillTemp), 
+                new TempList(this.FP()));
+        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0 # spill l", temp, spillTemp);
         return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null));
     }
 }

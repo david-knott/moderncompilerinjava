@@ -6,27 +6,27 @@ movq %rsp, %rbp
 addq $0, %rsp
 # start main
 L1:
-movq %rbx, %rax # default move
-movq %r12, %rbx # default move
-movq %r13, %r12 # default move
-movq %r14, %r13 # default move
-movq %r15, %r14 # default move
-movq $0, %rcx # const
-movq $6, %rdx # const
-movq %rcx, %rcx # minus lexp -> r
-sub %rdx, %rcx
+movq %rbx, %rbx # default move
+movq %r12, %r12 # default move
+movq %r13, %r13 # default move
+movq %r14, %r14 # default move
+movq %r15, %r15 # default move
+movq $0, %rax # const
+movq $6, %rcx # const
+movq %rax, %rax # minus lexp -> r
+sub %rcx, %rax
+movq %rax, %rax # default move
+movq $4, %rcx # const
 movq %rcx, %rcx # default move
-movq $4, %rdx # const
-movq %rdx, %rdx # default move
-movq %rcx, %rcx # add lexp -> r
-add %rdx, %rcx
-movq %rcx, %rdi # move arg 0 to temp
+movq %rax, %rax # add lexp -> r
+add %rcx, %rax
+movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
-movq %r14, %r15 # default move
-movq %r13, %r14 # default move
-movq %r12, %r13 # default move
-movq %rbx, %r12 # default move
-movq %rax, %rbx # default move
+movq %r15, %r15 # default move
+movq %r14, %r14 # default move
+movq %r13, %r13 # default move
+movq %r12, %r12 # default move
+movq %rbx, %rbx # default move
 jmp L0
 L0:
 # sink 

@@ -327,8 +327,7 @@ public class Translator {
      * @return
      */
     public Exp record(Level level, ExpTyList expTyList) {
-        Temp recordPointer = IntelFrame.rax;//new Temp();
-        //Temp recordPointer = new Temp();
+        Temp recordPointer =  Temp.create();
         Stm stm = fieldList(recordPointer, expTyList, level);
         int total = 0;
         for (var s = expTyList; s != null; s = s.tail) total++;

@@ -15,19 +15,19 @@ movq $0, %rax # const
 movq %rax, %rsi # move arg 1 to temp
 movq $10, %rcx # const
 movq %rcx, %rdi # move arg 0 to temp
-call initArray # default call
+call initArray # move call
 movq %rax, %rax # rax to temp 
 movq %rax, %rax # default move
-movq %rax, %rax # spill
-movq %rax, -8(%rbp) # spill
+movq %rax, %rax # spill s
+movq %rax, -8(%rbp) # spill s
 movq $0, %rax # const
 movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
-movq -8(%rbp), %rax # spill
-movq %rax, %rax # spill
+movq -8(%rbp), %rax # spill l
+movq %rax, %rax # spill l
 movq %rax, %rax # add lexp -> r
 add %rdx, %rax
 movq $10, %rcx # const
@@ -38,8 +38,8 @@ movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
-movq -8(%rbp), %rax # spill
-movq %rax, %rax # spill
+movq -8(%rbp), %rax # spill l
+movq %rax, %rax # spill l
 movq %rax, %rax # add lexp -> r
 add %rdx, %rax
 movq $9, %rcx # const
@@ -50,8 +50,8 @@ movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
-movq -8(%rbp), %rax # spill
-movq %rax, %rax # spill
+movq -8(%rbp), %rax # spill l
+movq %rax, %rax # spill l
 movq %rax, %rax # add lexp -> r
 add %rdx, %rax
 movq $5, %rcx # const
@@ -62,8 +62,8 @@ movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
-movq -8(%rbp), %rax # spill
-movq %rax, %rax # spill
+movq -8(%rbp), %rax # spill l
+movq %rax, %rax # spill l
 movq %rax, %rax # add lexp -> r
 add %rdx, %rax
 movq (%rax), %rax # default load
@@ -75,8 +75,8 @@ movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
-movq -8(%rbp), %rax # spill
-movq %rax, %rax # spill
+movq -8(%rbp), %rax # spill l
+movq %rax, %rax # spill l
 movq %rax, %rax # add lexp -> r
 add %rdx, %rax
 movq (%rax), %rax # default load
@@ -88,8 +88,8 @@ movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
 imul %rcx # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
-movq -8(%rbp), %rax # spill
-movq %rax, %rax # spill
+movq -8(%rbp), %rax # spill l
+movq %rax, %rax # spill l
 movq %rax, %rax # add lexp -> r
 add %rdx, %rax
 movq (%rax), %rax # default load

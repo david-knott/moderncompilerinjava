@@ -6,30 +6,30 @@ movq %rsp, %rbp
 addq $0, %rsp
 # start main
 L6:
-movq %rbx, %rax # default move
-movq %r12, %rbx # default move
-movq %r13, %r12 # default move
-movq %r14, %r13 # default move
-movq %r15, %r14 # default move
-movq $2, %rcx # const
-movq %rcx, %rcx # default move
-movq $1, %rdx # const
-cmp %rdx, %rcx
+movq %rbx, %rbx # default move
+movq %r12, %r12 # default move
+movq %r13, %r13 # default move
+movq %r14, %r14 # default move
+movq %r15, %r15 # default move
+movq $2, %rax # const
+movq %rax, %rax # default move
+movq $1, %rcx # const
+cmp %rcx, %rax
 je L2
 L3:
-movq $L1, %rcx # default name
-movq %rcx, %rdi # move arg 0 to temp
+movq $L1, %rax # default name
+movq %rax, %rdi # move arg 0 to temp
 call print # exp call ( no return value )
 L4:
-movq %r14, %r15 # default move
-movq %r13, %r14 # default move
-movq %r12, %r13 # default move
-movq %rbx, %r12 # default move
-movq %rax, %rbx # default move
+movq %r15, %r15 # default move
+movq %r14, %r14 # default move
+movq %r13, %r13 # default move
+movq %r12, %r12 # default move
+movq %rbx, %rbx # default move
 jmp L5
 L2:
-movq $L0, %rcx # default name
-movq %rcx, %rdi # move arg 0 to temp
+movq $L0, %rax # default name
+movq %rax, %rdi # move arg 0 to temp
 call print # exp call ( no return value )
 jmp L4
 L5:

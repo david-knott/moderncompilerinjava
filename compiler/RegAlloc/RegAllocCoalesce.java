@@ -386,19 +386,14 @@ public class RegAllocCoalesce implements TempMap {
             for (; spilledUses != null; spilledUses = spilledUses.tail) {
                 Access access = accessHash.get(spilledUses.head);
                 Temp spillTemp = Temp.create();
-                //TODO: temps do not have a corresponding node in the graph at this point.
-                //newTemps = NodeWorkList.append(newTemps, spillTemp);
-                //this.spillTemps = TempList.append(this.spillTemps, spillTemp);
                 InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head, spillTemp, access);
                 newList = InstrList.append(newList, memoryToTemp);
             }
             newList = InstrList.append(newList, instrList.head);
             for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
                 Temp spillTemp = Temp.create();
-                //newTemps = NodeWorkList.append(newTemps, spillTemp);
                 Access access = this.frame.allocLocal(false);
                 accessHash.put(spilledDefs.head, access);
-                //this.spillTemps = TempList.append(this.spillTemps, spillTemp);
                 InstrList tempToMemory = frame.tempToMemory(spilledDefs.head, spillTemp, access);
                 newList = InstrList.append(newList, tempToMemory);
             }
