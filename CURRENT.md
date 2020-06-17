@@ -1,4 +1,19 @@
 ## Diary
+*17th June 2020*
+Working on record and array assignment.
+
+MaximumMunch expression for store array is commented out as it doesn't work.
+
+Record assign is generating a seg fault.
+
+Multiplying the word size * 2 ( 16 ) when indexing the array makes test pass. I have no idea why. See translator.subScriptVar.
+
+Test for 2 breaks in a while works, although I am not sure if it is working just by accident.
+
+~~TODO: Test 2 breaks in while~~
+TODO: Rewrite for loop without translation to while, ensure it can use a break statement
+TODO: Investigate alternatives to creating a new semantic scope for while breaks, readonly vars etc.
+
 *16th June 2020*
 
 Added tests for array, record and recursive functions. They all pass.

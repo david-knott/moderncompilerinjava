@@ -720,7 +720,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
-        return transExp(rewriteForExp(forExp));
+        return new Semant(this.env, this.breakScopeLabel, this.level, this.translate).transExp(rewriteForExp(forExp));
     }
 
     /**

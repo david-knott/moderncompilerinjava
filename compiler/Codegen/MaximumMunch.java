@@ -155,7 +155,6 @@
                 emit(new Assem.MOVE("movq %`s0, %`d0 # move arg " + i + " to temp", finalPos, argTemp));
                 tl = TempList.append(tl, finalPos);
             } else {
-               // emit(new Assem.OPER("movq %`s1, " + ((i - 5) * frame.wordSize()) + "(%`s0) # move arg to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
                 emit(new Assem.OPER("pushq %`s1 # move arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
             if (args.tail == null) {
@@ -291,6 +290,7 @@
                 return;
             }
             // notice that store to memory operations only use and dont define variables.
+            /*
             if (tilePatternMatcher.isMatch(TilePatterns.STORE_ARRAY)) {
                 Exp dst = (Exp) tilePatternMatcher.getCapture("base");
                 dst.accept(this);
@@ -302,12 +302,12 @@
                 indexExp.accept(this);
                 Temp indexTemp = temp;
                 int wordSize = (Integer) tilePatternMatcher.getCapture("wordSize");
-                emit(new Assem.OPER("movq $`s0, (%`s1, %`s2, " + wordSize +") # store array", 
+                emit(new Assem.OPER("movq %`s0, (%`s1, %`s2, " + 8 +") # store array", 
                         null, 
-                        new TempList(srcTemp, new TempList(indexTemp, new TempList(dstTemp)))
+                        new TempList(srcTemp, new TempList(dstTemp, new TempList(indexTemp)))
                         ));
                 return;
-            }
+            }*/
             if (tilePatternMatcher.isMatch(TilePatterns.LOAD_2)) {
                 int offset = (Integer) tilePatternMatcher.getCapture("offset");
                 Exp dst = (Exp) tilePatternMatcher.getCapture("dst");

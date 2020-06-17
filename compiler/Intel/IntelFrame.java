@@ -231,7 +231,7 @@ public class IntelFrame extends Frame {
     }
 
     private int getOffset() {
-        localOffset = localOffset - WORD_SIZE;
+        localOffset = localOffset - this.wordSize();
         return localOffset;
     }
 
@@ -327,7 +327,12 @@ public class IntelFrame extends Frame {
     }
 
     /**
-     * The word size for this architecture.
+     * The word size for this architecture. This is used in the allocation
+     * of space on the heap and for stack offset calculations.
+     * Note that word size refers to 'processor word' in the context of
+     * CPU architecures. For a 64 bit system, this means our word size is 
+     * 8, for a 32 bit system, the word size would be 4. 
+     * This is different to a WORD, which is always 16 bits.
      */
     @Override
     public int wordSize() {
