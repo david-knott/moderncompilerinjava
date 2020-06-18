@@ -24,8 +24,8 @@ movq %rdx, %rdx # move arg 2 to temp
 movq $1, %rsi # const
 movq %rsi, %rsi # move arg 1 to temp
 movq %rbp, %rdi # move arg 0 to temp
-call L0 # move call
-movq %rax, %rax # rax to temp 
+call L0 # default call
+movq %rax, %rax # default move
 movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
 movq %r15, %r15 # default move
@@ -48,28 +48,28 @@ addq $-8, %rsp
 # start main
 L4:
 movq %rdi, -8(%rbp) # store to offset
-movq %rsi, %rsi # default move
+movq %rsi, %rax # default move
 movq %rdx, %rdx # default move
-movq %rcx, %rdi # default move
-movq %r8, %r8 # default move
-movq %r9, %r9 # default move
-movq 16(%rbp), %rax # load to offset
+movq %rcx, %rsi # default move
+movq %r8, %rdi # default move
+movq %r9, %r8 # default move
+movq 16(%rbp), %r9 # load to offset
 movq %rbx, %rbx # default move
 movq %r12, %rcx # default move
 movq %r13, %r10 # default move
 movq %r14, %r11 # default move
 movq %r15, %r12 # default move
-movq %rsi, %rsi # add lexp -> r
-add %rdx, %rsi
-movq %rsi, %rdx # add lexp -> r
-add %rdi, %rdx
-movq %rdx, %rdx # add lexp -> r
-add %r8, %rdx
-movq %rdx, %rdx # add lexp -> r
-add %r9, %rdx
-movq %rdx, %rdx # add lexp -> r
-add %rax, %rdx
-movq %rdx, %rax # default move
+movq %rax, %rax # add lexp -> r
+add %rdx, %rax
+movq %rax, %rax # add lexp -> r
+add %rsi, %rax
+movq %rax, %rax # add lexp -> r
+add %rdi, %rax
+movq %rax, %rax # add lexp -> r
+add %r8, %rax
+movq %rax, %rax # add lexp -> r
+add %r9, %rax
+movq %rax, %rax # default move
 movq %r12, %r15 # default move
 movq %r11, %r14 # default move
 movq %r10, %r13 # default move

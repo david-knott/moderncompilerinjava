@@ -48,6 +48,11 @@ public class IGBackwardControlEdges extends InterferenceGraph {
         return newNode;
     }
 
+    public void addEdge(Node from, Node to) {
+        if(from == to) return;
+        super.addEdge(from, to);
+    }
+
 
     private void buildGraph(FlowGraph flowGraph) {
         for(NodeList nodeList = this.flowGraph.nodes(); nodeList != null; nodeList = nodeList.tail) {

@@ -1,6 +1,9 @@
 package Temp;
 
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Temp implements Comparable<Temp> {
 
@@ -12,7 +15,7 @@ public class Temp implements Comparable<Temp> {
        return all;
    }
 
-    private static Hashtable<String, Temp> temps = new Hashtable<String, Temp>();
+    private static LinkedHashMap<String, Temp> temps = new LinkedHashMap<String, Temp>();
     private static Hashtable<Temp, String> revTemps = new Hashtable<Temp, String>();
     private static int count;
 

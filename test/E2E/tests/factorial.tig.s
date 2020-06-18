@@ -14,8 +14,8 @@ movq %r15, %r15 # default move
 movq $5, %rax # const
 movq %rax, %rsi # move arg 1 to temp
 movq %rbp, %rdi # move arg 0 to temp
-call L0 # move call
-movq %rax, %rax # rax to temp 
+call L0 # default call
+movq %rax, %rax # default move
 movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
 movq %r15, %r15 # default move
@@ -60,8 +60,8 @@ movq %rcx, %rcx # add lexp -> r
 add %rbp, %rcx
 movq (%rcx), %rcx # default load
 movq %rcx, %rdi # move arg 0 to temp
-call L0 # move call
-movq %rax, %rcx # rax to temp 
+call L0 # default call
+movq %rax, %rcx # default move
 movq -16(%rbp), %rax # spill l
 movq %rax, %rax # spill l
 movq %rax, %rax # mul lexp -> r

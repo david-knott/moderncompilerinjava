@@ -15,8 +15,8 @@ movq $0, %rax # const
 movq %rax, %rsi # move arg 1 to temp
 movq $10, %rcx # const
 movq %rcx, %rdi # move arg 0 to temp
-call initArray # move call
-movq %rax, %rax # rax to temp 
+call initArray # default call
+movq %rax, %rax # default move
 movq %rax, %rcx # default move
 movq $0, %rax # const
 movq $8, %rdx # const

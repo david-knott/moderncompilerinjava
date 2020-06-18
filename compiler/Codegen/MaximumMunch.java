@@ -129,7 +129,7 @@
             return null;
             args.head.accept(this);
             var argTemp = temp;
-            TempList tl = null;//new TempList(argTemp);
+            TempList tl = new TempList(argTemp);
             Temp finalPos = null;
             switch (i) {
                 case 0:
@@ -153,15 +153,15 @@
             }
             if (finalPos != null) {
                 emit(new Assem.MOVE("movq %`s0, %`d0 # move arg " + i + " to temp", finalPos, argTemp));
-                tl = TempList.append(tl, finalPos);
+               tl = TempList.append(tl, finalPos);
             } else {
                 emit(new Assem.OPER("pushq %`s1 # move arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
             if (args.tail == null) {
-               // return L(argTemp, null);
+              // return L(argTemp, null);
                return tl;
             }
-            //return L(argTemp, munchArgs(i + 1, args.tail));
+           // return L(argTemp, munchArgs(i + 1, args.tail));
             return TempList.append(tl,munchArgs(i - 1, args.tail));
         }
 
@@ -253,6 +253,7 @@
                 var name = (NAME) call.func;
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", L(frame.RV(), IntelFrame.callerSaves), l));
+               // emit(new Assem.MOVE("movq %`s0, %`d0 # move rax -> rax", frame.RV(), frame.RV()));
             } else {
                 exp.exp.accept(this);
                 var expTemp = temp;
@@ -340,23 +341,18 @@
                 emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
             } 
+            /*
             if (tilePatternMatcher.isMatch(TilePatterns.MOVE_CALL)) {
                 Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
                 dst.accept(this);
                 Temp dstTemp = this.temp;
                 CALL call = (CALL) tilePatternMatcher.getCapture("call");
-             //   call.func.accept(this);
-              //  Temp funcTemp = this.temp;
-              //  call.accept(this);
-              //  Temp srcTemp = this.temp;
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 this.temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
                 emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  L(temp, IntelFrame.callerSaves), l));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
-//                emit(new OPER("call " + call.label + " # default call",  L(temp, IntelFrame.callerSaves), l));
-  //              emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
-            } 
+            } */
 
 
             // Unmatched tile case.

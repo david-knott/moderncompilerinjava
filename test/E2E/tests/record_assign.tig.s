@@ -13,8 +13,8 @@ movq %r14, %r14 # default move
 movq %r15, %r15 # default move
 movq $24, %rax # const
 movq %rax, %rdi # move arg 0 to temp
-call initRecord # move call
-movq %rax, %rax # rax to temp 
+call initRecord # default call
+movq %rax, %rax # default move
 movq $0, %rcx # const
 movq %rax, %rdx # add lexp -> r
 add %rcx, %rdx

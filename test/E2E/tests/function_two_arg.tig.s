@@ -16,8 +16,8 @@ movq %rax, %rdx # move arg 2 to temp
 movq $5, %rcx # const
 movq %rcx, %rsi # move arg 1 to temp
 movq %rbp, %rdi # move arg 0 to temp
-call L0 # move call
-movq %rax, %rax # rax to temp 
+call L0 # default call
+movq %rax, %rax # default move
 movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )
 movq %r15, %r15 # default move

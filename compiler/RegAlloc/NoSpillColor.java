@@ -13,7 +13,7 @@ import Temp.TempMap;
 /**
  * Graph Colouring implementation.
  */
-class Colour implements TempMap {
+class NoSpillColor implements TempMap {
 
 	private Hashtable<Node, Integer> degrees = new Hashtable<Node, Integer>();
 	private Stack<Node> simpleStack = new Stack<Node>();
@@ -21,7 +21,7 @@ class Colour implements TempMap {
 	private TempList registers;
 	private Hashtable<Temp, Temp> coloured = new Hashtable<Temp, Temp>();
 
-	public Colour(InterferenceGraph graph, TempMap precoloured, TempList registers, boolean dumpGraph) {
+	public NoSpillColor(InterferenceGraph graph, TempMap precoloured, TempList registers, boolean dumpGraph) {
 		this.precoloured = precoloured;
 		this.registers = registers;
 		//graph.show(System.out);
@@ -67,7 +67,6 @@ class Colour implements TempMap {
 				}
 			}
 			if (colours.isEmpty()) {
-				// mark node as potential spill.
 				throw new Error("Spill not implemented");
 			} else {
 				Temp color = colours.iterator().next();

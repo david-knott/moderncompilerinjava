@@ -46,6 +46,7 @@ public class PotentialSpillColour implements TempMap {
 		}
 		// k colours for our graph
 		int k = registers.size();
+		System.out.println("registers:" + k);
 		// phase 'select'
 		// phase 'select < k'
 		// add nodes with degree less than k to stack
@@ -57,7 +58,7 @@ public class PotentialSpillColour implements TempMap {
 				Node node = nodeList.head;
 				int nodeDegree =  degrees.get(node);
 				if (nodeDegree < k) {
-				//	System.out.println("Less than significant degree left (" + nodeDegree + ")");
+					System.out.println(graph.gtemp(node) + " :less than significant degree left (" + nodeDegree + ")");
 					this.reduceDegree(node);
 					this.simpleStack.push(node);
 					initialNodes = initialNodes.remove(node);
@@ -68,8 +69,8 @@ public class PotentialSpillColour implements TempMap {
 				Node node = initialNodes.head;
 				initialNodes = initialNodes.tail;
 				this.reduceDegree(node);
-			//	System.out.println("Only significant degree left");
-				this.simpleStack.push(node); // mark as potential spill
+				System.out.println(graph.gtemp(node) +" :only significant degree left");
+				this.simpleStack.push(node); // mark as potential for spilling.
 			}
 
 		} while (initialNodes != null);
@@ -77,30 +78,36 @@ public class PotentialSpillColour implements TempMap {
 		// select phase
 		while (!this.simpleStack.isEmpty()) {
 			Node node = this.simpleStack.pop();
+			Temp tempForNode = graph.gtemp(node);
 			// is this node a potential spill ?
+			System.out.print("Adding colours:");
 			HashSet<Temp> colours = new HashSet<Temp>();
 			for (var c = this.registers; c != null; c = c.tail) {
+				System.out.print(c.head + " ");
 				colours.add(c.head);
 			}
+			System.out.println();;
 			for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				if (null != this.precoloured.tempMap(graph.gtemp(adj.head))) { // is the node precoloured ?
 					colours.remove(graph.gtemp(adj.head));
+					System.out.println(tempForNode + " :removing colour " + graph.gtemp(adj.head) + " as this is a precoloured node.");
 					continue;
 				}
 				if (coloured.containsKey(graph.gtemp(adj.head))) { // an adjacent node is already coloured
 					var c = coloured.get(graph.gtemp(adj.head));
 					colours.remove(c);
+					System.out.println(tempForNode + " :removing colour " + c + " as already assigned.");
 					continue;
 				}
 			}
 			// assign colour to node
 			if (colours.isEmpty()) {
-			//	 System.out.println("No colours to assign");
-				addSpill(graph.gtemp(node));
+				System.out.println("--->" + tempForNode + ": no colours to assign, need to spill");
+				addSpill(tempForNode);
 			} else {
 				Temp color = colours.iterator().next();
-		//		System.out.println("Assigning color " + color);
-				coloured.put(graph.gtemp(node), color);
+				System.out.println(tempForNode + ":Assigning color " + color);
+				coloured.put(tempForNode, color);
 			}
 		}
 	}
