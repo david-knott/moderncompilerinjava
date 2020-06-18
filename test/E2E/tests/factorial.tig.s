@@ -45,7 +45,7 @@ movq %r13, %r13 # default move
 movq %r14, %r14 # default move
 movq %r15, %r15 # default move
 movq $1, %rcx # const
-cmp %rcx, %rax
+cmp %rax, %rcx
 je L1
 L2:
 movq %rax, %rax # default move
@@ -66,7 +66,7 @@ movq -16(%rbp), %rax # spill l
 movq %rax, %rax # spill l
 movq %rax, %rax # mul lexp -> r
 movq %rax, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rax # mul rax -> r
 movq %rax, %rax # default move
 L3:

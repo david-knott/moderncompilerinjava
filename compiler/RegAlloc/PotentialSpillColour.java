@@ -58,7 +58,7 @@ public class PotentialSpillColour implements TempMap {
 				Node node = nodeList.head;
 				int nodeDegree =  degrees.get(node);
 				if (nodeDegree < k) {
-					System.out.println(graph.gtemp(node) + " :less than significant degree left (" + nodeDegree + ")");
+		//			System.out.println(graph.gtemp(node) + " :less than significant degree left (" + nodeDegree + ")");
 					this.reduceDegree(node);
 					this.simpleStack.push(node);
 					initialNodes = initialNodes.remove(node);
@@ -69,7 +69,7 @@ public class PotentialSpillColour implements TempMap {
 				Node node = initialNodes.head;
 				initialNodes = initialNodes.tail;
 				this.reduceDegree(node);
-				System.out.println(graph.gtemp(node) +" :only significant degree left");
+//				System.out.println(graph.gtemp(node) +" :only significant degree left");
 				this.simpleStack.push(node); // mark as potential for spilling.
 			}
 
@@ -90,23 +90,23 @@ public class PotentialSpillColour implements TempMap {
 			for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				if (null != this.precoloured.tempMap(graph.gtemp(adj.head))) { // is the node precoloured ?
 					colours.remove(graph.gtemp(adj.head));
-					System.out.println(tempForNode + " :removing colour " + graph.gtemp(adj.head) + " as this is a precoloured node.");
+		//			System.out.println(tempForNode + " :removing colour " + graph.gtemp(adj.head) + " as this is a precoloured node.");
 					continue;
 				}
 				if (coloured.containsKey(graph.gtemp(adj.head))) { // an adjacent node is already coloured
 					var c = coloured.get(graph.gtemp(adj.head));
 					colours.remove(c);
-					System.out.println(tempForNode + " :removing colour " + c + " as already assigned.");
+				//	System.out.println(tempForNode + " :removing colour " + c + " as already assigned.");
 					continue;
 				}
 			}
 			// assign colour to node
 			if (colours.isEmpty()) {
-				System.out.println("--->" + tempForNode + ": no colours to assign, need to spill");
+		//		System.out.println("--->" + tempForNode + ": no colours to assign, need to spill");
 				addSpill(tempForNode);
 			} else {
 				Temp color = colours.iterator().next();
-				System.out.println(tempForNode + ":Assigning color " + color);
+			//	System.out.println(tempForNode + ":Assigning color " + color);
 				coloured.put(tempForNode, color);
 			}
 		}

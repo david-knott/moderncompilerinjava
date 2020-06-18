@@ -22,7 +22,7 @@ movq $0, %rax # const
 movq $8, %rdx # const
 movq %rax, %rax # mul lexp -> r
 movq %rax, %rax # mul r -> rax
-imul %rdx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rax # mul rax -> r
 movq %rcx, %rcx # add lexp -> r
 add %rax, %rcx

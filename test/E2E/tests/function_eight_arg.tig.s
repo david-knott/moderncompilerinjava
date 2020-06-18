@@ -67,7 +67,7 @@ movq %r14, %r13 # default move
 movq %r15, %r14 # default move
 movq %rax, %rax # mul lexp -> r
 movq %rax, %rax # mul r -> rax
-imul %rdx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rax # mul rax -> r
 movq %rax, %rax # add lexp -> r
 add %rcx, %rax

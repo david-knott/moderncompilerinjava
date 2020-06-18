@@ -17,7 +17,7 @@ movq $4, %rcx # const
 movq %rcx, %rcx # default move
 movq %rax, %rax # mul lexp -> r
 movq %rax, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rax # mul rax -> r
 movq %rax, %rdi # move arg 0 to temp
 call printi # exp call ( no return value )

@@ -60,7 +60,7 @@ add %r9, %rdx
 movq (%rdx), %rdx # default load
 movq %rax, %rax # mul lexp -> r
 movq %rax, %rax # mul r -> rax
-imul %rdx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rax # mul rax -> r
 movq %rax, %rax # default move
 movq %r8, %r15 # default move

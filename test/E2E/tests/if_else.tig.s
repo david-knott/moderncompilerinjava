@@ -14,7 +14,7 @@ movq %r15, %r15 # default move
 movq $2, %rax # const
 movq %rax, %rax # default move
 movq $2, %rcx # const
-cmp %rcx, %rax
+cmp %rax, %rcx
 je L2
 L3:
 movq $L1, %rax # default name

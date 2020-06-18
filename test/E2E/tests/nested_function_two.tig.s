@@ -127,7 +127,7 @@ movq (%r9), %r9 # default load
 movq %rax, %rax # div lexp -> r
 movq %rax, %rax # div r -> rax
 xor %rdx, %rdx # div clear bits rdx 
-idiv %r9 # div rax * rexp 
+idiv %rax # div rax * rexp 
 movq %rax, %rax # div rax -> r
 movq %rax, %rax # default move
 movq %r8, %r15 # default move

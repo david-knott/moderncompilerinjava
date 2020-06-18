@@ -24,7 +24,7 @@ movq $0, %rax # const
 movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
 movq -8(%rbp), %rax # spill l
 movq %rax, %rax # spill l
@@ -36,7 +36,7 @@ movq $9, %rax # const
 movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
 movq -8(%rbp), %rax # spill l
 movq %rax, %rax # spill l
@@ -48,7 +48,7 @@ movq $5, %rax # const
 movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
 movq -8(%rbp), %rax # spill l
 movq %rax, %rax # spill l
@@ -60,7 +60,7 @@ movq $5, %rax # const
 movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
 movq -8(%rbp), %rax # spill l
 movq %rax, %rax # spill l
@@ -73,7 +73,7 @@ movq $0, %rax # const
 movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
 movq -8(%rbp), %rax # spill l
 movq %rax, %rax # spill l
@@ -86,7 +86,7 @@ movq $9, %rax # const
 movq $8, %rcx # const
 movq %rax, %rdx # mul lexp -> r
 movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
+imul %rax # mul rax * rexp 
 movq %rax, %rdx # mul rax -> r
 movq -8(%rbp), %rax # spill l
 movq %rax, %rax # spill l
