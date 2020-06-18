@@ -52,45 +52,6 @@
 51: t54 interferes with:t22 t21 t20 t19 t18 
 52: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L19: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -409,52 +370,6 @@ t17 cost: 2
 59: t54 interferes with:t22 t21 t20 t19 t18 
 60: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L19: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -782,20 +697,6 @@ L18:                                                |                           
 26: t29 interferes with:t22 t21 t20 t19 t18 
 27: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -919,13 +820,6 @@ L3:                                                 |                           
 20: t28 interferes with:t27 t26 t25 t24 t23 
 21: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L5: : def => null, use => null
 movq %t3, %t23 # default move : def => [t23=>t23], use => [t3=>rbx]
@@ -1025,23 +919,6 @@ L4:                                                 |                           
 30: t17 interferes with:t22 t21 t20 t19 t18 
 31: t39 interferes with:t22 t21 t20 t19 t18 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L7: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -1210,25 +1087,6 @@ t31 cost: 2
 32: t17 interferes with:t22 t21 t20 t19 t18 
 33: t39 interferes with:t22 t21 t20 t19 t18 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L7: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -1394,11 +1252,6 @@ L6:                                          |                             |   |
 17: t11 interferes with:t20 t19 t18 t17 t16 
 18: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L1: : def => null, use => null
 movq %t3, %t16 # default move : def => [t16=>t16], use => [t3=>rbx]
@@ -1479,20 +1332,6 @@ L0:                                                |                            
 28: t34 interferes with:t33 t32 t31 t30 t29 
 29: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t29 # default move : def => [t29=>t29], use => [t3=>rbx]
@@ -1633,26 +1472,6 @@ L1:                                                 |                           
 29: t48 interferes with:t28 t27 t26 t25 t24 t23 t22 
 30: t49 interferes with:t28 t27 t26 t25 t24 t23 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -1804,17 +1623,6 @@ L3:                                          |                             |   |
 24: t31 interferes with:t30 t29 t28 t27 t26 
 25: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t26 # default move : def => [t26=>t26], use => [t3=>rbx]
@@ -1930,20 +1738,6 @@ L1:                                                 |                           
 22: t40 interferes with:t25 t24 t23 t22 t21 t20 
 23: t2 interferes with:t25 t24 t23 t22 t21 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -2061,16 +1855,6 @@ L3:                                          |                             |   |
 23: t30 interferes with:t29 t28 t27 t26 t25 
 24: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t25 # default move : def => [t25=>t25], use => [t3=>rbx]
@@ -2177,18 +1961,6 @@ L1:                                                 |                           
 19: t37 interferes with:t24 t23 t22 t21 t20 t19 
 20: t2 interferes with:t24 t23 t22 t21 t20 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -2294,13 +2066,6 @@ L3:                                          |                             |   |
 20: t27 interferes with:t26 t25 t24 t23 t22 
 21: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t22 # default move : def => [t22=>t22], use => [t3=>rbx]
@@ -2382,14 +2147,6 @@ L1:                                                 |                           
 12: t30 interferes with:t21 t20 t19 t18 t17 t16 
 13: t2 interferes with:t21 t20 t19 t18 t17 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -2484,19 +2241,6 @@ L3:                                          |                             |   |
 27: t33 interferes with:t32 t31 t30 t29 t28 
 28: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t28 # default move : def => [t28=>t28], use => [t3=>rbx]
@@ -2629,24 +2373,6 @@ L1:                                                 |                           
 27: t46 interferes with:t27 t26 t25 t24 t23 t22 
 28: t2 interferes with:t27 t26 t25 t24 t23 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -2785,18 +2511,6 @@ L3:                                          |                             |   |
 26: t32 interferes with:t31 t30 t29 t28 t27 
 27: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t27 # default move : def => [t27=>t27], use => [t3=>rbx]
@@ -2921,22 +2635,6 @@ L1:                                                 |                           
 25: t43 interferes with:t26 t25 t24 t23 t22 t21 
 26: t2 interferes with:t26 t25 t24 t23 t22 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -3062,15 +2760,6 @@ L3:                                          |                             |   |
 22: t29 interferes with:t28 t27 t26 t25 t24 
 23: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t24 # default move : def => [t24=>t24], use => [t3=>rbx]
@@ -3168,16 +2857,6 @@ L1:                                                 |                           
 16: t34 interferes with:t23 t22 t21 t20 t19 t18 
 17: t2 interferes with:t23 t22 t21 t20 t19 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -3273,12 +2952,6 @@ L3:                                          |                             |   |
 19: t26 interferes with:t25 t24 t23 t22 t21 
 20: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t21 # default move : def => [t21=>t21], use => [t3=>rbx]
@@ -3352,12 +3025,6 @@ L1:                                                 |                           
 10: t2 interferes with:t20 t19 t18 t17 t16 
 11: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -3437,14 +3104,6 @@ L3:                                          |                             |   |
 21: t28 interferes with:t27 t26 t25 t24 t23 
 22: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t23 # default move : def => [t23=>t23], use => [t3=>rbx]
@@ -3533,14 +3192,6 @@ L1:                                                 |                           
 13: t31 interferes with:t22 t21 t20 t19 t18 t17 
 14: t2 interferes with:t22 t21 t20 t19 t18 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -3630,16 +3281,6 @@ L3:                                          |                             |   |
 22: t3 interferes with:t15 t14 t13 t12 
 23: t25 interferes with:t21 t20 t19 t18 t17 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L6: : def => null, use => null
 movq %t3, %t17 # default move : def => [t17=>t17], use => [t3=>rbx]
@@ -3756,16 +3397,6 @@ L5:                                                |                            
 22: t3 interferes with:t15 t14 t13 t12 
 23: t25 interferes with:t21 t20 t19 t18 t17 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L6: : def => null, use => null
 movq %t3, %t17 # default move : def => [t17=>t17], use => [t3=>rbx]
@@ -3884,18 +3515,6 @@ L5:                                                |                            
 24: t11 interferes with:t22 t21 t20 t19 t18 
 25: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L1: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -3998,13 +3617,6 @@ L0:                                                 |                           
 20: t31 interferes with:t30 t29 t28 t27 t26 
 21: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L3: : def => null, use => null
 movq %t3, %t26 # default move : def => [t26=>t26], use => [t3=>rbx]
@@ -4092,11 +3704,6 @@ L2:                                                 |                           
 18: t11 interferes with:t25 t24 t23 t22 t21 t2 
 19: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L5: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -4184,24 +3791,6 @@ L4:                                           |                             |   
 24: t5 interferes with:t20 t19 t18 t17 t16 t2 
 25: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L7: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -4337,13 +3926,6 @@ L6:                                          |                             |   |
 20: t36 interferes with:t35 t34 t33 t32 t31 
 21: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t3, %t31 # default move : def => [t31=>t31], use => [t3=>rbx]
@@ -4431,11 +4013,6 @@ L3:                                                 |                           
 18: t11 interferes with:t30 t29 t28 t27 t26 t2 
 19: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L6: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -4517,11 +4094,6 @@ L5:                                           |                             |   
 18: t11 interferes with:t25 t24 t23 t22 t21 t2 
 19: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L8: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -4612,30 +4184,6 @@ L7:                                          |                             |   |
 30: t2 interferes with:t55 t20 t19 t18 t17 t16 t5 
 31: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L10: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -4800,16 +4348,6 @@ L9:                                          |                             |   |
 22: t11 interferes with:t22 t21 t20 t19 t18 
 23: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L1: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -4914,16 +4452,6 @@ L0:                                                 |                           
 22: t11 interferes with:t22 t21 t20 t19 t18 
 23: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L1: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -5019,16 +4547,6 @@ L0:                                                 |                           
 22: t11 interferes with:t22 t21 t20 t19 t18 
 23: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L1: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -5130,16 +4648,6 @@ L0:                                                 |                           
 22: t11 interferes with:t22 t21 t20 t19 t18 
 23: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L1: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -5231,12 +4739,6 @@ L0:                                                 |                           
 18: t11 interferes with:t20 t19 t18 t17 t16 
 19: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t16 # default move : def => [t16=>t16], use => [t3=>rbx]
@@ -5337,35 +4839,6 @@ Chaining type dec
 41: t44 interferes with:t22 t21 t20 t19 t18 
 42: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L9: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -5588,40 +5061,6 @@ t17 cost: 2
 47: t44 interferes with:t22 t21 t20 t19 t18 
 48: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L9: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -5857,23 +5296,6 @@ Chaining type dec
 29: t32 interferes with:t22 t21 t20 t19 t18 
 30: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L3: : def => null, use => null
 movq %t3, %t18 # default move : def => [t18=>t18], use => [t3=>rbx]
@@ -6010,17 +5432,6 @@ L2:                                                 |                           
 24: t28 interferes with:t27 t26 t25 t24 t23 
 25: t3 interferes with:t15 t14 t13 t12 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L2: : def => null, use => null
 movq %t3, %t23 # default move : def => [t23=>t23], use => [t3=>rbx]
@@ -6127,19 +5538,6 @@ L1:                                                 |                           
 19: t2 interferes with:t38 t22 t21 t20 t19 t18 
 20: t5 interferes with:t22 t21 t20 t19 t18 t2 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t7, -8(%t0) # store to offset : def => null, use => [t7=>rdi,t0=>rbp]
@@ -6256,16 +5654,6 @@ L3:                                          |                             |   |
 22: t24 interferes with:t21 t20 t19 t18 t17 t16 
 23: t25 interferes with:t24 t21 t20 t19 t18 t17 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t3, %t17 # default move : def => [t17=>t17], use => [t3=>rbx]
@@ -6392,22 +5780,6 @@ t16 cost: 2
 29: t25 interferes with:t24 t21 t20 t19 t18 t17 t0 
 30: t31 interferes with:t21 t20 t19 t18 t17 t0 
 registers:14
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
-Adding colours:t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14 t15 
 ### Uses and Defs
 L4: : def => null, use => null
 movq %t3, %t17 # default move : def => [t17=>t17], use => [t3=>rbx]

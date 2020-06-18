@@ -80,13 +80,13 @@ public class PotentialSpillColour implements TempMap {
 			Node node = this.simpleStack.pop();
 			Temp tempForNode = graph.gtemp(node);
 			// is this node a potential spill ?
-			System.out.print("Adding colours:");
+//			System.out.print("Adding colours:");
 			HashSet<Temp> colours = new HashSet<Temp>();
 			for (var c = this.registers; c != null; c = c.tail) {
-				System.out.print(c.head + " ");
+		//		System.out.print(c.head + " ");
 				colours.add(c.head);
 			}
-			System.out.println();;
+	//		System.out.println();;
 			for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				if (null != this.precoloured.tempMap(graph.gtemp(adj.head))) { // is the node precoloured ?
 					colours.remove(graph.gtemp(adj.head));
