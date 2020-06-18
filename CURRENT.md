@@ -1,4 +1,10 @@
 ## Diary
+*18th June 2020*
+
+Register Allocation. Is it working ?
+
+Investigating use/defs for calling functions.
+
 *17th June 2020*
 Working on record and array assignment.
 
@@ -6,7 +12,8 @@ Add rax to def list for function call that doesn't return a value.
 This is to ensure it is not clobbered in the calling function. Unfortunately
 this is breaking lots of other tests due to spill errors. This does fix record assign however.
 
-I think there is a bug in the spilling. Focus on the while loop.
+I think there is a bug in the spilling. Focus on the while loop. It seems strange that a simple
+while loop with 1 variable would require spilling.
 
 MaximumMunch expression for store array is commented out as it doesn't work.
 

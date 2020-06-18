@@ -94,13 +94,17 @@ public class RegAlloc implements TempMap {
 	}
 
 	private void allocate() {
-		if(this.iterations > 2) 
+		if(this.iterations > 6) 
 		throw new Error("No many iterations");
 		this.iterations++;
 		this.build();
+		this.dumpUsesAndDefs();
+		this.dumpLiveness();
 		if (this.hasSpills()) {
+			throw new Error("Spill disabled");
+			/*
 			this.rewrite();
-			this.allocate();
+			this.allocate();*/
 		}
 	}
 
@@ -109,8 +113,7 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		this.allocate();
-	//	this.dumpUsesAndDefs();
-//		this.dumpLiveness();
+		
 		//this.baig.show(System.out);
 	}
 

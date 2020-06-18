@@ -1,6 +1,8 @@
 package Main;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
@@ -18,26 +20,42 @@ import Translate.Level;
 import Translate.Translator;
 
 interface CompilerSource {
-    
+
 }
 
 interface CompilerDestination {
-    
+
 }
 
-
+interface FileSourceReader {
+    public void read(FileInputStream fileInputStream);
+}
 class FileSource implements CompilerSource {
-    
+
+    private FileInputStream fileInputStream = null;
+
     public FileSource(String fileName) {
-        
+        try {
+            this.fileInputStream = new FileInputStream(fileName);
+
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
-    
-    void openFile() {
-        
+
+    void read(FileSourceReader reader) {
+
     }
-    
+
     void closeFile() {
-        
+
+        try {
+            this.fileInputStream.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     void read() {
@@ -47,8 +65,16 @@ class FileSource implements CompilerSource {
 
 class FileDestination implements CompilerDestination {
     
+    private FileInputStream fileInputStream = null;
+
     public FileDestination(String fileName) {
-        
+        try {
+            this.fileInputStream = new FileInputStream(fileName);
+
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     void openFile() {
@@ -104,6 +130,12 @@ public class Main {
      */
     public Main(final String name) throws FileNotFoundException {
         this.name = name;
+        /*
+        FileSource compilerSource = new FileSource(name);
+        compilerSource.read(x -> {
+            this.parser = new Grm(new Yylex(x, this.errorMsg), this.errorMsg);
+        });*/
+        
         this.inputStream = new java.io.FileInputStream(this.name);
         this.errorMsg = new ErrorMsg(this.name);
         this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
@@ -121,6 +153,7 @@ public class Main {
                 throw new Error(e.toString());
             }
         }
+        
         findEscape.traverse(this.ast.absyn);
         FragList frags = FragList.reverse(this.semant.getTreeFragments(this.ast.absyn));
         if(this.semant.getEnv().getErrorMsg().getCompilerErrors().size() != 0) {
@@ -130,6 +163,7 @@ public class Main {
         PrintStream out = null;
         try {
             out = new PrintStream(new java.io.FileOutputStream(this.name + ".s"));
+            out = System.out;
             out.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
                 frags.head.process(out);
