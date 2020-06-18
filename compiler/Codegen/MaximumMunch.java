@@ -196,7 +196,7 @@
                     emit(new Assem.MOVE("movq %`s0, %`d0 # div lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # div r -> rax", IntelFrame.rax, this.temp));
                     emit(new OPER("xor %`s0, %`d0 # div clear bits rdx ", L(IntelFrame.rdx, null), L(IntelFrame.rdx, null)));
-                    emit(new OPER("idiv %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                    emit(new OPER("idiv %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(IntelFrame.rax, L(rightTemp, null))));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # div rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.LSHIFT:
@@ -210,7 +210,7 @@
                     this.temp = Temp.create();
                     emit(new Assem.MOVE("movq %`s0, %`d0 # mul lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # mul r -> rax", IntelFrame.rax, this.temp));
-                    emit(new OPER("imul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                    emit(new OPER("imul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(IntelFrame.rax, L(rightTemp, null))));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # mul rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.OR:
@@ -376,7 +376,9 @@
             var leftTemp = temp;
             cjump.right.accept(this);
             var rightTemp = temp;
-            emit(new OPER("cmp %`s0, %`s1", null, L(rightTemp, L(leftTemp, null))));
+            var first = leftTemp.hashCode() > rightTemp.hashCode() ? rightTemp : leftTemp;
+            var second = leftTemp.hashCode() > rightTemp.hashCode() ? leftTemp : rightTemp;
+            emit(new OPER("cmp %`s0, %`s1", null, L(first, L(second, null))));
             String op = "";
             switch(cjump.relop) {
                 case CJUMP.EQ:

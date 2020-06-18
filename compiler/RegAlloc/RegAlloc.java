@@ -73,7 +73,7 @@ public class RegAlloc implements TempMap {
 		for(TempList spill = spills; spill != null; spill = spill.tail) {
 			Access access = this.frame.allocLocal(true);
 			accessHash.put(spill.head, access);
-			break;
+			//break;
 		}
 		InstrList newList = null;
 		for (; instrList != null; instrList = instrList.tail) {

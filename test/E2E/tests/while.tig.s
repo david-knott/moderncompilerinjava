@@ -17,7 +17,9 @@ movq %rax, %rax # spill s
 movq %rax, -8(%rbp) # spill s
 L1:
 movq $0, %rcx # const
-cmp %rcx, %rax
+movq -8(%rbp), %rax # spill l
+movq %rax, %rax # spill l
+cmp %rax, %rcx
 jg L2
 L0:
 movq %r15, %r15 # default move
