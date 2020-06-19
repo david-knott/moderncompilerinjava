@@ -1,0 +1,146 @@
+public class HelloWorld{
+
+     public static void main(String []args){
+        System.out.println("Hello World");
+        HelloWorld hw = new HelloWorld();
+        hw.test();
+     
+     }
+     
+     public void test() {
+         
+        TempList tl = new TempList(
+            new Temp(1), 
+            new TempList(
+                new Temp(2), 
+                new TempList(
+                    new Temp(3),
+                    new TempList(
+                        new Temp(9),
+                        new TempList(
+                            new Temp(5),
+                            new TempList(
+                                new Temp(6)    
+                            )
+                        )
+                    )
+                )
+            )
+        );
+        
+        System.out.println(tl);
+        System.out.println(tl.sort());
+        
+        TempList t2 = new TempList(
+            new Temp(1)
+        );
+        
+        System.out.println(t2);
+        System.out.println(t2.sort());
+        
+                TempList t3 = new TempList(
+            new Temp(100),
+            new TempList(
+                new Temp(10)    
+            )
+        );
+        
+        System.out.println(t3);
+        System.out.println(t3.sort());
+        
+     }
+     
+     class TempList {
+         public Temp head;
+         public TempList tail;
+         public TempList(Temp h) {
+             this.head = h;
+             this.tail = null;
+         }
+         public TempList merge(TempList one, TempList two) {
+             if(one == null) {
+                 return two;
+             }
+             if(two == null) {
+                 return one;
+             }
+             TempList result = null;
+             if(one.head.id < two.head.id) {
+                 result = one;
+                 result.tail = merge(one.tail, two);
+             } else {
+                 result = two;
+                 result.tail = merge(one, two.tail);
+             }
+             return result;
+         }
+         
+         public TempList sort() {
+             return this.sort(this);
+         }
+         
+         public TempList sort(TempList tl) {
+            if(tl.tail == null) {
+                return new TempList(tl.head);
+            }
+            TempList[] split = tl.split();
+            TempList first = sort(split[0]); //new list
+            TempList second = sort(split[1]); //new list
+            return merge(first, second);
+         }
+         
+         public TempList[] split() {
+             if(this.tail == null) {
+                 return new TempList[]{new TempList(this.head), null};
+             }
+             TempList slow = this, fast = this.tail;
+             while(fast != null && (fast = fast.tail) != null) {
+                 //advance fast by 1 + 1 from check above
+                 fast = fast.tail;
+                 //advance slow by 1
+                 slow = slow.tail;
+             }
+            //slow is last item in first list
+            //advance slow to first item in last list
+            slow = slow.tail;
+            //build new lists
+            TempList first = null;
+            TempList second = null;
+            TempList tl = this;
+             for(; tl != slow; tl = tl.tail) {
+                first = new TempList(tl.head, first);
+             }     
+
+             for(; tl != null; tl = tl.tail) {
+                second = new TempList(tl.head, second);
+             }     
+
+             return new TempList[]{first, second};
+         }
+         
+
+         public TempList(Temp h, TempList t) {
+             this.head = h;
+             this.tail = t;
+         }
+         
+         public String toString() {
+             String s = "[";
+             for(TempList tl = this; tl != null; tl = tl.tail) {
+                 s = s + " " + tl.head;
+             }
+             s = s + "]";
+             return s;
+         }
+     }
+     
+     class Temp {
+         public int id;
+         public Temp(int i) {
+             id = i;
+         }
+         public String toString() {
+             return Integer.toString(id);
+         }
+     }
+}
