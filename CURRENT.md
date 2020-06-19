@@ -1,7 +1,12 @@
 ## Diary
 *19th June 2020*
-In the code generation, where there are combinations of instructions that use a move followed by an OPERATION.
-We need to be careful when spilling.
+Fixed sorting bug in Temps which was breaking register allocation.
+
+Still a bug in for loops if we at a printi() statement inside the loop.
+This causes the loop to repeated spill. I have no idea why.
+
+~~In the code generation, where there are combinations of instructions that use a move followed by an OPERATION
+We need to be careful when spilling.~~
 
 *18th June 2020*
 
