@@ -46,7 +46,7 @@ public class PotentialSpillColour implements TempMap {
 		}
 		// k colours for our graph
 		int k = registers.size();
-		System.out.println("registers:" + k);
+	//	System.out.println("registers:" + k);
 		// phase 'select'
 		// phase 'select < k'
 		// add nodes with degree less than k to stack

@@ -1,7 +1,11 @@
 ## Diary
+*19th June 2020*
+In the code generation, where there are combinations of instructions that use a move followed by an OPERATION.
+We need to be careful when spilling.
+
 *18th June 2020*
 
-Register Allocation. Is it working ?
+Register Allocation. Is it working ? I added some code the dumps the live ranges is a visual format.
 
 Investigating use/defs for calling functions.
 

@@ -163,7 +163,7 @@ public class Main {
         PrintStream out = null;
         try {
             out = new PrintStream(new java.io.FileOutputStream(this.name + ".s"));
-          //  out = System.out;
+            //out = System.out;
             out.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
                 frags.head.process(out);

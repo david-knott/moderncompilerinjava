@@ -10,8 +10,13 @@ public abstract class Instr {
   public abstract Targets jumps();
 
   private Temp.Temp nthTemp(Temp.TempList l, int i) {
-    if (i == 0)
+    if (i == 0) {
+
+      if(l == null) {
+        throw new Error("L is null:" + assem);
+      }
       return l.head;
+    }
     else
       return nthTemp(l.tail, i - 1);
   }

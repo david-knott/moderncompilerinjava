@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.SystemMenuBar;
-
 import Assem.InstrList;
 import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
@@ -38,6 +36,7 @@ public class RegAlloc implements TempMap {
 		this.baig = new IGBackwardControlEdges(fg, this.liveness);
 		this.baig.show(System.out);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
+		/*
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
 			new GraphvisRenderer().render(ps, baig, new CombineMap(this, this.frame));
@@ -51,7 +50,7 @@ public class RegAlloc implements TempMap {
 			ps.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	private boolean hasSpills() {
@@ -62,6 +61,7 @@ public class RegAlloc implements TempMap {
 	//	System.out.println("Spill Select");
 		TempList originalTemps = TempList.andNot(new TempList(this.colour.spills().head), this.spillTemps);
 		for(TempList tl = originalTemps; tl != null; tl = tl.tail) {
+			
 			System.out.println(tl.head + " cost: " + this.baig.spillCost(this.baig.tnode(tl.head)));
 		}
 		return originalTemps;

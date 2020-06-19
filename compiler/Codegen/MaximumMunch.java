@@ -24,88 +24,6 @@
     import Tree.TEMP;
     import Tree.TreeVisitor;
 
-    class TileCost implements TreeVisitor {
-
-        @Override
-        public void visit(BINOP op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(CALL op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(CONST op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(ESEQ op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(EXP op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(JUMP op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(LABEL op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(MEM op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(MOVE op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(NAME op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(SEQ op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(TEMP op) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void visit(CJUMP cjump) {
-            // TODO Auto-generated method stub
-
-        }
-        
-    }
-
     class MaximumMunch implements TreeVisitor {
 
         Assem.InstrList iList = null, last = null;
@@ -172,17 +90,12 @@
 
         @Override
         public void visit(BINOP op) {
-            // Order of visitation is important.
-            // If reversed, the wrong temp is used
-            // in the following instructiom 
-            // ( set test arraySet.tig )
-            // The right temp is the item that
-            // contains our result, hence it is
-            // evaluated last.
             op.left.accept(this);
             var leftTemp = temp;
+            Validator.assertNotNull(leftTemp);
             op.right.accept(this);
             var rightTemp = temp;
+            Validator.assertNotNull(rightTemp);
             switch (op.binop) {
                 case BINOP.AND:
                     this.temp = Temp.create();
@@ -196,7 +109,7 @@
                     emit(new Assem.MOVE("movq %`s0, %`d0 # div lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # div r -> rax", IntelFrame.rax, this.temp));
                     emit(new OPER("xor %`s0, %`d0 # div clear bits rdx ", L(IntelFrame.rdx, null), L(IntelFrame.rdx, null)));
-                    emit(new OPER("idiv %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(IntelFrame.rax, L(rightTemp, null))));
+                    emit(new OPER("idiv %`s0 # div rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # div rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.LSHIFT:
@@ -210,7 +123,7 @@
                     this.temp = Temp.create();
                     emit(new Assem.MOVE("movq %`s0, %`d0 # mul lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # mul r -> rax", IntelFrame.rax, this.temp));
-                    emit(new OPER("imul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(IntelFrame.rax, L(rightTemp, null))));
+                    emit(new OPER("imul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # mul rax -> r", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.OR:
@@ -266,6 +179,7 @@
         public void visit(MEM op) {
             op.exp.accept(this);
             var mem = temp;
+            Validator.assertNotNull(mem);
             temp = Temp.create();
             emit(new Assem.MOVE("movq (%`s0), %`d0 # default load", temp, mem));
         }
@@ -374,11 +288,11 @@
         public void visit(CJUMP cjump) {
             cjump.left.accept(this);
             var leftTemp = temp;
+            Validator.assertNotNull(leftTemp);
             cjump.right.accept(this);
             var rightTemp = temp;
-            var first = leftTemp.hashCode() > rightTemp.hashCode() ? rightTemp : leftTemp;
-            var second = leftTemp.hashCode() > rightTemp.hashCode() ? leftTemp : rightTemp;
-            emit(new OPER("cmp %`s0, %`s1", null, L(first, L(second, null))));
+            Validator.assertNotNull(rightTemp);
+            emit(new OPER("cmp %`s0, %`s1", null, L(rightTemp, L(leftTemp, null))));
             String op = "";
             switch(cjump.relop) {
                 case CJUMP.EQ:

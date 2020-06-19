@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import Assem.InstrList;
+import Assem.MOVE;
 import Canon.CanonFacadeImpl;
 import Canon.Canonicalization;
 import Frame.Frame;
@@ -12,6 +13,7 @@ import Frame.Proc;
 import RegAlloc.RegAlloc;
 import Temp.CombineMap;
 import Temp.DefaultMap;
+import Temp.Temp;
 import Temp.TempMap;
 import Tree.Print;
 import Tree.StmList;
@@ -83,7 +85,7 @@ public class ProcFrag extends Frag {
     @Override
     public void process(PrintStream out) {
         StmList stmList = canonicalization.canon(this.body);
-        TempMap tempmap = new Temp.CombineMap(this.frame, new Temp.DefaultMap());
+        TempMap tempmap = new CombineMap(this.frame, new DefaultMap());
         try {
             PrintStream ps = new PrintStream(new FileOutputStream("./tree_" + this.frame.name + ".txt"));
             var print = new Print(ps, tempmap);
@@ -114,9 +116,17 @@ public class ProcFrag extends Frag {
             out.println(prolog.head.format(this.frame));
         }
         for (InstrList body = proc.body; body != null; body = body.tail) {
-            out.println(body.head.format(tempMap));
-            //out.println(body.head.format(new DefaultMap()));
-            
+            if(body.head instanceof MOVE) {
+                Temp def = body.head.def().head;
+                Temp use = body.head.use().head;
+                if(tempMap.tempMap(def) != tempMap.tempMap(use)) {
+                }
+
+                    out.println(body.head.format(tempMap));
+            }
+            else {
+                out.println(body.head.format(tempMap));
+            }
         }
         for (InstrList epilog = proc.epilog; epilog != null; epilog = epilog.tail) {
             out.println(epilog.head.format(this.frame));

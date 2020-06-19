@@ -1,9 +1,20 @@
 package Temp;
 
-import java.util.HashSet;
 import java.util.Hashtable;
 
 public class TempList {
+
+   public static void checkOrder(TempList test) {
+      int hc = -1;
+      TempList tempList = test;
+      for(;tempList != null; tempList = tempList.tail) {
+         if(hc < tempList.head.hashCode()) {
+            hc = tempList.head.hashCode();
+         } else {
+            throw new Error("TempList is not ordered: " + hc + ">=" + tempList.head.hashCode() + " " + test);
+         }
+      }
+   }
 
    public static boolean contains(TempList s, Temp n) {
       for (; s != null; s = s.tail) {
@@ -14,19 +25,69 @@ public class TempList {
       return false;
    }
 
-   public static TempList sort(TempList tempList) {
-      if (tempList == null || tempList.tail == null) {
-         return tempList;
-      }
-      /*
-       * 2) Else divide the linked list into two halves. FrontBackSplit(head, &a, &b);
-       * a and b are two halves 3) Sort the two halves a and b. MergeSort(a);
-       * MergeSort(b); 4) Merge the sorted a and b (using SortedMerge() discussed
-       * here) and update the head pointer using headRef. headRef = SortedMerge(a, b);
-       */
+   public static TempList merge(TempList one, TempList two) {
+             if(one == null) {
+                 return two;
+             }
+             if(two == null) {
+                 return one;
+             }
+             TempList result = null;
+             if(one.head.hashCode()  < two.head.hashCode()) {
+                 result = one;
+                 result.tail = merge(one.tail, two);
+             } else {
+                 result = two;
+                 result.tail = merge(one, two.tail);
+             }
+             return result;
+         }
+         
+         public TempList sort() {
+             return TempList.sort(this);
+         }
+         
+         public static TempList sort(TempList tl) {
+            if(tl == null) {
+               return null;
+            }
+            if(tl.tail == null) {
+                return new TempList(tl.head);
+            }
+            TempList[] split = tl.split();
+            TempList first = sort(split[0]); //new list
+            TempList second = sort(split[1]); //new list
+            return merge(first, second);
+         }
+         
+         public TempList[] split() {
+            if (this.tail == null) {
+               return new TempList[] { new TempList(this.head), null };
+            }
+            TempList slow = this, fast = this.tail;
+            while (fast != null && (fast = fast.tail) != null) {
+               // advance fast by 1 + 1 from check above
+               fast = fast.tail;
+               // advance slow by 1
+               slow = slow.tail;
+            }
+            // slow is last item in first list
+            // advance slow to first item in last list
+            slow = slow.tail;
+            // build new lists
+            TempList first = null;
+            TempList second = null;
+            TempList tl = this;
+            for (; tl != slow; tl = tl.tail) {
+               first = new TempList(tl.head, first);
+            }
 
-      return tempList;
-   }
+            for (; tl != null; tl = tl.tail) {
+               second = new TempList(tl.head, second);
+            }
+
+            return new TempList[] { first, second };
+         }
 
    /**
     * Return this set in reverse.
@@ -61,6 +122,12 @@ public class TempList {
       return new TempList(me.head, TempList.append(me.tail, t));
    }
 
+   /**
+    * Append two two tists.
+    * @param me
+    * @param end
+    * @return
+    */
    public static TempList append(TempList me, TempList end) {
       if (me == null && end == null) {
          return null;
@@ -87,8 +154,14 @@ public class TempList {
     * @return
     */
    public static TempList and(TempList me, TempList tempList) {
-      me = TempList.sort(me);
+ //     me = TempList.mergeSort(me);
+  //    tempList = TempList.mergeSort(tempList);
+  //    TempList.checkOrder(me);
+  //    TempList.checkOrder(tempList);
+me = TempList.sort(me);
       tempList = TempList.sort(tempList);
+      TempList.checkOrder(me);
+      TempList.checkOrder(tempList);
       if (me == null || tempList == null)
          return null;
       TempList and = null;
@@ -115,6 +188,8 @@ public class TempList {
          return null;
       me = TempList.sort(me);
       tempList = TempList.sort(tempList);
+      TempList.checkOrder(me);
+      TempList.checkOrder(tempList);
       TempList or = null;
       while (me != null && tempList != null) {
          if (me.head.compareTo(tempList.head) > 0) {
@@ -149,6 +224,8 @@ public class TempList {
       }
       me = TempList.sort(me);
       tempList = TempList.sort(tempList);
+      TempList.checkOrder(me);
+      TempList.checkOrder(tempList);
       TempList andNot = null;
       for (; me != null; me = me.tail) {
          if (!tempList.contains(me)) {

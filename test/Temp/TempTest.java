@@ -15,8 +15,6 @@ import Frame.Frame;
 import Intel.IntelFrame;
 import Semant.Semant;
 import Temp.Label;
-import Temp.Temp;
-import Temp.TempList;
 import Translate.Exp;
 import Tree.CALL;
 import Tree.EXP;
