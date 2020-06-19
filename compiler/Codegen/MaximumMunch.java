@@ -181,7 +181,7 @@
             var mem = temp;
             Validator.assertNotNull(mem);
             temp = Temp.create();
-            emit(new Assem.MOVE("movq (%`s0), %`d0 # default load", temp, mem));
+            emit(new Assem.OPER("movq (%`s0), %`d0 # default load", new TempList(temp), new TempList(mem)));
         }
     
         @Override
@@ -255,7 +255,7 @@
                 emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
             } 
-            /*
+            
             if (tilePatternMatcher.isMatch(TilePatterns.MOVE_CALL)) {
                 Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
                 dst.accept(this);
@@ -266,7 +266,7 @@
                 emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  L(temp, IntelFrame.callerSaves), l));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
                 return;
-            } */
+            } 
 
 
             // Unmatched tile case.
