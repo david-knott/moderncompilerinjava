@@ -60,11 +60,16 @@ public class RegAlloc implements TempMap {
 	private TempList selectSpill() {
 	//	System.out.println("Spill Select");
 		TempList originalTemps = TempList.andNot(new TempList(this.colour.spills().head), this.spillTemps);
+		TempList lowestSpillCost = null;
+		int sp = 0;
 		for(TempList tl = originalTemps; tl != null; tl = tl.tail) {
-			
-			System.out.println(tl.head + " cost: " + this.baig.spillCost(this.baig.tnode(tl.head)));
+			int vsp = this.baig.spillCost(this.baig.tnode(tl.head));
+			if(lowestSpillCost == null || sp < vsp) {
+				lowestSpillCost = tl;
+				sp = vsp;
+			}
 		}
-		return originalTemps;
+		return lowestSpillCost;
 	}
 
 	private void rewrite() {
@@ -73,7 +78,7 @@ public class RegAlloc implements TempMap {
 		for(TempList spill = spills; spill != null; spill = spill.tail) {
 			Access access = this.frame.allocLocal(true);
 			accessHash.put(spill.head, access);
-			//break;
+			break;
 		}
 		InstrList newList = null;
 		for (; instrList != null; instrList = instrList.tail) {
@@ -103,9 +108,8 @@ public class RegAlloc implements TempMap {
 	}
 
 	private void allocate() {
-		if(this.iterations > 6) 
+		if(this.iterations++ > 7) 
 		throw new Error("No many iterations");
-		this.iterations++;
 		this.build();
 		this.dumpUsesAndDefs();
 		this.dumpLiveness();

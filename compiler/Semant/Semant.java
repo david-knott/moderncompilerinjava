@@ -1,25 +1,10 @@
 package Semant;
 
-import Absyn.AssignExp;
-import Absyn.BreakExp;
-import Absyn.DecList;
-import Absyn.ExpList;
+
 import Absyn.FieldList;
-import Absyn.FieldVar;
-import Absyn.ForExp;
 import Absyn.FunctionDec;
-import Absyn.IfExp;
-import Absyn.IntExp;
-import Absyn.LetExp;
-import Absyn.NameTy;
-import Absyn.OpExp;
-import Absyn.SeqExp;
-import Absyn.SimpleVar;
-import Absyn.SubscriptVar;
 import Absyn.TypeDec;
-import Absyn.VarDec;
-import Absyn.VarExp;
-import Absyn.WhileExp;
+import Codegen.Validator;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
 import ErrorMsg.FieldNotDefinedError;
@@ -28,7 +13,6 @@ import ErrorMsg.TypeMismatchError;
 import ErrorMsg.TypeNotIntError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
-import ErrorMsg.VariableAssignError;
 import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
@@ -333,11 +317,7 @@ public class Semant {
      */
     Exp transDec(final Absyn.VarDec e) {
         ExpTy initExpTy = transExp(e.init);
-        //TODO: Tidy this up, this happens when the
-        //init expression cannot be translated
-        if(initExpTy.exp == null){
-            return translate.Noop();
-        }
+        Validator.assertNotNull(e.init);
         Types.Type type = initExpTy.ty.actual();
         Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
         // if the expression type is not null
@@ -720,7 +700,21 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.ForExp forExp) {
-        return new Semant(this.env, this.breakScopeLabel, this.level, this.translate).transExp(rewriteForExp(forExp));
+        env.tenv.beginScope();
+        env.venv.beginScope();
+        var access = level.allocLocal(false);
+        var varEntry = new VarEntry(Semant.INT, access);
+        env.venv.put(forExp.var.name, varEntry);
+        ExpTy explo = transExp(forExp.var.init);
+        SemantValidator.isInt(explo);
+        ExpTy exphi = transExp(forExp.hi);
+        SemantValidator.isInt(exphi);
+        var loopExit = new Label();
+        ExpTy expbody = new Semant(this.env, this.breakScopeLabel, this.level, this.translate).transExp(forExp.body);
+        SemantValidator.isVoid(expbody);
+        env.venv.endScope();
+        env.tenv.endScope();
+        return new ExpTy(this.translate.forL(level,  loopExit,access, explo, exphi, expbody), Semant.VOID);
     }
 
     /**
@@ -737,11 +731,11 @@ public class Semant {
         var testExp = transExp(whileExp.test);
         SemantValidator.isInt(testExp);
         var loopExit = new Label();
-        var transBody = new Semant(this.env, loopExit, this.level, this.translate).transExp(whileExp.body);
-        SemantValidator.isVoid(transBody);
+        var expboody = new Semant(this.env, loopExit, this.level, this.translate).transExp(whileExp.body);
+        SemantValidator.isVoid(expboody);
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(translate.whileL(this.level, loopExit, testExp, transBody), Semant.VOID);
+        return new ExpTy(translate.whileL(this.level, loopExit, testExp, expboody), Semant.VOID);
 
     }
 
@@ -885,110 +879,5 @@ public class Semant {
             return null;
         }
         return cached;
-    }
-
-    private LetExp rewriteForExp(ForExp forExp){
-        return new LetExp(
-            forExp.pos,
-            new DecList(
-                forExp.var,
-                new DecList(
-                    new VarDec(
-                        forExp.pos,
-                        Symbol.symbol("limit"),
-                        new NameTy(
-                            forExp.pos,
-                            Symbol.symbol("int")
-                        ),
-                        forExp.hi
-                    ),
-                    null
-                )
-            ), 
-            new SeqExp(
-                forExp.pos,
-                new ExpList(
-                    new IfExp(
-                        forExp.pos, 
-                        new OpExp(
-                            forExp.pos, 
-                            new VarExp(
-                                forExp.pos, 
-                                new SimpleVar(
-                                    forExp.pos, 
-                                    forExp.var.name
-                                )
-                            ), 
-                            OpExp.LE, 
-                            new VarExp(
-                                forExp.pos, 
-                                new SimpleVar(
-                                    forExp.pos, 
-                                    Symbol.symbol("limit") //is less than or equal to limit
-                                )
-                            )
-                        ), 
-                        new WhileExp( //start while loop with true condition
-                            forExp.pos, 
-                            new IntExp(forExp.pos, 1),
-                            new SeqExp(
-                               forExp.body.pos,
-                               new ExpList(
-                                    forExp.body,
-                                    new ExpList(
-                                        new IfExp(
-                                            forExp.pos,
-                                            new OpExp(
-                                                forExp.pos,
-                                                new VarExp(
-                                                    0, 
-                                                    new SimpleVar(
-                                                       0, 
-                                                        forExp.var.name //break if i
-                                                    )
-                                                ), 
-                                                OpExp.EQ,
-                                                new VarExp(
-                                                    0, 
-                                                    new SimpleVar(
-                                                       0, 
-                                                       Symbol.symbol("limit") //is equal to limit
-                                                    )
-                                                )
-                                            ),
-                                            new BreakExp(0) /* true so break */,
-                                            new AssignExp(/* false so increment */
-                                                0,
-                                                new SimpleVar(
-                                                    0, 
-                                                    forExp.var.name
-                                                ),
-                                                new OpExp(
-                                                    0, 
-                                                    new VarExp(
-                                                        0, 
-                                                        new SimpleVar(
-                                                            0, 
-                                                            forExp.var.name
-                                                        )
-                                                    ),
-                                                    OpExp.PLUS, 
-                                                    new IntExp(
-                                                        0, 
-                                                        1
-                                                    )
-                                                )
-                                           )
-                                        ),
-                                        null
-                                    )
-                               )
-                            )
-                        )
-                    ), 
-                    null
-                )
-            )
-        );
     }
 }

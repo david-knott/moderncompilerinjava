@@ -23,7 +23,7 @@ import Tree.TEMP;
 import Types.ARRAY;
 import Types.RECORD;
 
-public class TranslateTest {
+public class TranslatorTest {
 
     private Translator translator;
     private Frame frame;
@@ -163,4 +163,19 @@ public class TranslateTest {
         var linear = Canon.Canon.linearize(whileLoopExp.unNx());
         assertNotNull(linear);
     }
+
+    @Test
+    public void forLoopExp() {
+        Label loopEnd = Label.create();
+        ExpTy transBody = new ExpTy(translator.Noop(), Semant.VOID);
+        Access access = level.allocLocal(false);
+        Exp exploVar = translator.simpleVar(access, childLevel);
+        ExpTy explo = new ExpTy(exploVar, Semant.INT);
+        ExpTy exphi = new ExpTy(translator.integer(1), Semant.INT);
+        Exp foorExp = translator.forL(level, loopEnd, access, explo, exphi, transBody);
+        var linear = Canon.Canon.linearize(foorExp.unNx());
+        assertNotNull(linear);
+    }
+
+
 }

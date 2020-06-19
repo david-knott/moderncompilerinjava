@@ -1,6 +1,6 @@
 package Translate;
 
-import Intel.IntelFrame;
+import Codegen.Validator;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -9,7 +9,6 @@ import Tree.CALL;
 import Tree.CJUMP;
 import Tree.CONST;
 import Tree.ESEQ;
-import Tree.EXP;
 import Tree.ExpList;
 import Tree.JUMP;
 import Tree.LABEL;
@@ -469,16 +468,10 @@ public class Translator {
     }
 
     public Exp relativeOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        if(transExpLeft == null)
-            throw new Error("transExpLeft is null");
-        if(transExpRight == null)
-            throw new Error("transExpRight is null");
-         if(transExpLeft.exp == null)
-            throw new Error("transExpLeft.exp is null");
-        if(transExpRight.exp == null)
-            throw new Error("transExpRight.exp is null");
-            
+        Validator.assertNotNull(transExpLeft);
+        Validator.assertNotNull(transExpRight);
         return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
+            
     }
 
     /**
@@ -487,6 +480,7 @@ public class Translator {
      * result into the RV register.
      * @param level the static nesting level of the function
      * @param firstFunction the function body expression and return type
+            
      * @return an expression
      */
     public Exp functionBody(Level level, ExpTy firstFunction) {
@@ -502,17 +496,15 @@ public class Translator {
      * @param callerLevel the function calling the callee
      * @param calleeLevel the function being called
      * @param functionLabel the function label for the callee function
-     * @param expTyList the agument list of the callee function
+     * @param argumentExpList the agument list of the callee function
      * @param result the return type of the callee function
      * @return
      */
-    public Exp call(boolean useStaticLink, Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList expTyList, Type result) {
-        if (callerLevel == null)
-            throw new IllegalArgumentException("Caller level cannot be null");
-        if (calleeLevel == null)
-            throw new IllegalArgumentException("Callee level cannot be null");
-        if (functionLabel == null)
-            throw new IllegalArgumentException("FunctionLabel cannot be null");
+    public Exp call(boolean useStaticLink, Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList argumentExpList, Type result) {
+        Validator.assertNotNull(callerLevel);
+        Validator.assertNotNull(calleeLevel);
+        Validator.assertNotNull(functionLabel);
+        Validator.assertNotNull(result);
         //if difference is negative, callee level is less than calller level
         //which means the function being called has statically nested outside
         //the the callee
@@ -546,9 +538,9 @@ public class Translator {
         if(useStaticLink) {
             expList = ExpList.append(expList, staticLink);
         }
-        while(expTyList != null){
-            expList = ExpList.append(expList, expTyList.expTy.exp.unEx());
-            expTyList = expTyList.tail;
+        while(argumentExpList != null){
+            expList = ExpList.append(expList, argumentExpList.expTy.exp.unEx());
+            argumentExpList = argumentExpList.tail;
         }
         //TODO: Why are these the same
         if(result.coerceTo(Semant.VOID)){
@@ -772,5 +764,49 @@ public class Translator {
      */
 	public AccessList stripStaticLink(AccessList formals) {
 		return formals != null ? formals.tail : null;
+	}
+
+    /**
+     * Translates a for loop into Tree language.
+     * @param level
+     * @param loopExit
+     * @param access
+     * @param explo
+     * @param exphi
+     * @param expbody
+     * @return
+     */
+	public Exp forL(Level level, Label loopExit, Access access, ExpTy explo, ExpTy exphi, ExpTy expbody) {
+        Temp limit = Temp.create();
+        Label test = Label.create();
+        Label loopStart = Label.create();
+        var x = simpleVar(access, level);
+		return new Nx(
+            new SEQ(
+                new MOVE(x.unEx(), explo.exp.unEx()),
+                new SEQ(
+                    new MOVE(new TEMP(limit), exphi.exp.unEx()),
+                    new SEQ(
+                        new LABEL(test),
+                        new SEQ(
+                            new CJUMP(CJUMP.LE, x.unEx(), new TEMP(limit), loopStart, loopExit),
+                            new SEQ(
+                                new LABEL(loopStart),
+                                new SEQ(
+                                    expbody.exp.unNx(),
+                                    new SEQ(
+                                        new MOVE(x.unEx(), new BINOP(BINOP.PLUS, x.unEx(), new CONST(1))),
+                                        new SEQ(
+                                            new JUMP(test),
+                                            new LABEL(loopExit)
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ) 
+                )
+            )
+        );
 	}
 }

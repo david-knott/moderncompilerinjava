@@ -1,5 +1,8 @@
 let
 var a:int := 4
+var b:int := 0 
 in
-for j := 0 to a-1  do printi(j)
+for j := 0 to a-1  do 
+(b := j + b; printi(b) ) 
+
 end
