@@ -2,8 +2,6 @@ let
 var a:int := 4
 var b:int := 0 
 in
-for j := 0 to a-1  do 
-(b := j + b ) ;
-
-printi(b)
+for j := 0 to a-1  do a := a + 1;
+printi(a)
 end

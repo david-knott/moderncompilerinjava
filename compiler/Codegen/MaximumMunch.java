@@ -149,8 +149,9 @@
         public void visit(CALL call) {
             var name = (NAME)call.func;
             TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
-            temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
-            emit(new OPER("call " + name.label + " # default call",  L(temp, IntelFrame.callerSaves), l));
+            temp = Temp.create();
+            emit(new OPER("call " + name.label + " # default call",  L(this.frame.RV(), IntelFrame.callerSaves), l));
+            emit(new Assem.MOVE("movq %`s0, %`d0 # move rax into temp", this.temp, this.frame.RV()));
         }
 
         @Override
@@ -166,7 +167,7 @@
                 var name = (NAME) call.func;
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", L(frame.RV(), IntelFrame.callerSaves), l));
-               // emit(new Assem.MOVE("movq %`s0, %`d0 # move rax -> rax", frame.RV(), frame.RV()));
+                emit(new OPER("# ", null, new TempList(frame.RV())));
             } else {
                 exp.exp.accept(this);
                 var expTemp = temp;
