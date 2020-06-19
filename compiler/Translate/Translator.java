@@ -9,6 +9,7 @@ import Tree.CALL;
 import Tree.CJUMP;
 import Tree.CONST;
 import Tree.ESEQ;
+import Tree.EXP;
 import Tree.ExpList;
 import Tree.JUMP;
 import Tree.LABEL;
@@ -407,8 +408,10 @@ public class Translator {
      * @return
      */
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
-        var gotoSegFault = new Label();
-        var gotoSubscript = new Label();
+        Validator.assertNotNull(exp);
+        Validator.assertNotNull(level);
+        var gotoSegFault = Label.create();
+        var gotoSubscript = Label.create();
         if(this.nullRecordCheck) {
             return new Ex(
                 new ESEQ(
@@ -460,10 +463,14 @@ public class Translator {
     }
 
     public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        Validator.assertNotNull(transExpLeft);
+        Validator.assertNotNull(transExpRight);
         return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
+        Validator.assertNotNull(transExpLeft);
+        Validator.assertNotNull(transExpRight);
         return new Ex(new BINOP(i, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
 
@@ -483,7 +490,7 @@ public class Translator {
             
      * @return an expression
      */
-    public Exp functionBody(Level level, ExpTy firstFunction) {
+    public Exp functionDec(Level level, ExpTy firstFunction) {
         if(!firstFunction.ty.coerceTo(Semant.VOID)) {
             return new Nx(new MOVE(new TEMP(level.frame.RV()), firstFunction.exp.unEx()));
         } else {
@@ -505,11 +512,6 @@ public class Translator {
         Validator.assertNotNull(calleeLevel);
         Validator.assertNotNull(functionLabel);
         Validator.assertNotNull(result);
-        //if difference is negative, callee level is less than calller level
-        //which means the function being called has statically nested outside
-        //the the callee
-        //if difference is positive, the callee is statically nesed inside the
-        //caller
         var difference = calleeLevel.depthDifference(callerLevel);
         Tree.Exp staticLink = null;
     //   callerLevel.frame
@@ -542,13 +544,17 @@ public class Translator {
             expList = ExpList.append(expList, argumentExpList.expTy.exp.unEx());
             argumentExpList = argumentExpList.tail;
         }
-        //TODO: Why are these the same
+        Temp out = Temp.create();
         if(result.coerceTo(Semant.VOID)){
-            return new Ex(new CALL(new NAME(functionLabel), expList));
-          //  return new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
+            return new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
         } else {
-            return new Ex(new CALL(new NAME(functionLabel), expList));
-          //  return new Nx(new MOVE(new TEMP(callerLevel.frame.RV()), new CALL(new NAME(functionLabel), expList)));
+            return new Ex((new ESEQ(
+                new SEQ(
+                    new EXP(new CALL(new NAME(functionLabel), expList)),
+                    new MOVE(new TEMP(out), new TEMP(calleeLevel.frame.RV())) 
+                ),
+                new TEMP(out)
+            )));
         }
     }
 
@@ -578,10 +584,8 @@ public class Translator {
      * @return
      */
     private Tree.Stm buildSeq(ExpTyList expTyList) {
-        //shouldn't happen
-        if(expTyList.expTy == null) {
-            return null;
-        }
+        Validator.assertNotNull(expTyList);
+        Validator.assertNotNull(expTyList.expTy);
         if(expTyList.tail != null) {
             return new SEQ(expTyList.expTy.exp.unNx(), buildSeq(expTyList.tail));
         }
@@ -600,9 +604,9 @@ public class Translator {
      */
     private Tree.Exp expSeq(ExpTyList expTyList) {
         //invariant check, shouldn't happen
-        if(expTyList.expTy == null && expTyList.tail == null){
-            return null;
-        }
+        Validator.assertNotNull(expTyList);
+        Validator.assertNotNull(expTyList.expTy);
+        Validator.assertNotNull(expTyList.tail);
         //only one item in list, so just return it as expression
         var firstEx = expTyList.expTy.exp;
         if(expTyList.tail == null){
@@ -631,7 +635,49 @@ public class Translator {
         return new ESEQ(statement, last.exp.unEx());
    }
 
-    
+    /**
+     * Translates a for loop into Tree language.
+     * @param level
+     * @param loopExit
+     * @param access
+     * @param explo
+     * @param exphi
+     * @param expbody
+     * @return
+     */
+	public Exp forL(Level level, Label loopExit, Access access, ExpTy explo, ExpTy exphi, ExpTy expbody) {
+        Temp limit = Temp.create();
+        Label test = Label.create();
+        Label loopStart = Label.create();
+        var x = simpleVar(access, level);
+		return new Nx(
+            new SEQ(
+                new MOVE(x.unEx(), explo.exp.unEx()),
+                new SEQ(
+                    new MOVE(new TEMP(limit), exphi.exp.unEx()),
+                    new SEQ(
+                        new LABEL(test),
+                        new SEQ(
+                            new CJUMP(CJUMP.LE, x.unEx(), new TEMP(limit), loopStart, loopExit),
+                            new SEQ(
+                                new LABEL(loopStart),
+                                new SEQ(
+                                    expbody.exp.unNx(),
+                                    new SEQ(
+                                        new MOVE(x.unEx(), new BINOP(BINOP.PLUS, x.unEx(), new CONST(1))),
+                                        new SEQ(
+                                            new JUMP(test),
+                                            new LABEL(loopExit)
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ) 
+                )
+            )
+        );
+	}   
 
     /**
      * Returns IR for a while loop
@@ -660,10 +706,25 @@ public class Translator {
         return new Nx(new JUMP(loopEnd));
     }
 
+    /**
+     * Generates an Translate.Exp from an if then else statement.
+     * @param level
+     * @param testExp
+     * @param thenExp
+     * @param elseExp
+     * @return
+     */
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp, ExpTy elseExp) {
         return new IfThenElseExp(testExp.exp, thenExp.exp, elseExp.exp);
     }
 
+    /**
+     * Generates an Translate.Exp from an if then else statement.
+     * @param level
+     * @param testExp
+     * @param thenExp
+     * @return
+     */
     public Exp ifE(Level level, ExpTy testExp, ExpTy thenExp) {
         return new IfThenElseExp(testExp.exp, thenExp.exp, null);
     }
@@ -721,7 +782,7 @@ public class Translator {
     public Exp letE(ExpTyList decList, ExpTy body) {
         Stm decStatments = declarations(decList);
         Exp bodyExp = body(body);
-        if(body.ty == Semant.VOID) {
+        if(body.ty.coerceTo(Semant.VOID)) {
             return new Nx(
                 new SEQ(
                     decStatments,
@@ -766,47 +827,4 @@ public class Translator {
 		return formals != null ? formals.tail : null;
 	}
 
-    /**
-     * Translates a for loop into Tree language.
-     * @param level
-     * @param loopExit
-     * @param access
-     * @param explo
-     * @param exphi
-     * @param expbody
-     * @return
-     */
-	public Exp forL(Level level, Label loopExit, Access access, ExpTy explo, ExpTy exphi, ExpTy expbody) {
-        Temp limit = Temp.create();
-        Label test = Label.create();
-        Label loopStart = Label.create();
-        var x = simpleVar(access, level);
-		return new Nx(
-            new SEQ(
-                new MOVE(x.unEx(), explo.exp.unEx()),
-                new SEQ(
-                    new MOVE(new TEMP(limit), exphi.exp.unEx()),
-                    new SEQ(
-                        new LABEL(test),
-                        new SEQ(
-                            new CJUMP(CJUMP.LE, x.unEx(), new TEMP(limit), loopStart, loopExit),
-                            new SEQ(
-                                new LABEL(loopStart),
-                                new SEQ(
-                                    expbody.exp.unNx(),
-                                    new SEQ(
-                                        new MOVE(x.unEx(), new BINOP(BINOP.PLUS, x.unEx(), new CONST(1))),
-                                        new SEQ(
-                                            new JUMP(test),
-                                            new LABEL(loopExit)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    ) 
-                )
-            )
-        );
-	}
 }

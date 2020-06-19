@@ -264,7 +264,7 @@ public class Semant {
             current = current.next;
         } while (current != null);
         // add the fragment to the list
-        var body = translate.functionBody(firstFunctionLevel, firstFunction);
+        var body = translate.functionDec(firstFunctionLevel, firstFunction);
         translate.procEntryExit(firstFunctionLevel, body);
         return translate.Noop();
     }

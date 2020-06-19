@@ -47,7 +47,7 @@
             return null;
             args.head.accept(this);
             var argTemp = temp;
-            TempList tl = new TempList(argTemp);
+            TempList tl = null;// new TempList(argTemp);
             Temp finalPos = null;
             switch (i) {
                 case 0:
@@ -71,7 +71,7 @@
             }
             if (finalPos != null) {
                 emit(new Assem.MOVE("movq %`s0, %`d0 # move arg " + i + " to temp", finalPos, argTemp));
-               tl = TempList.append(tl, finalPos);
+                tl = TempList.append(tl, finalPos);
             } else {
                 emit(new Assem.OPER("pushq %`s1 # move arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
@@ -150,7 +150,7 @@
             var name = (NAME)call.func;
             TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
             temp = Temp.create();
-            emit(new OPER("call " + name.label + " # default call",  L(this.frame.RV(), IntelFrame.callerSaves), l));
+            emit(new OPER("call " + name.label + " # default call", IntelFrame.callerSaves, l));
             emit(new Assem.MOVE("movq %`s0, %`d0 # move rax into temp", this.temp, this.frame.RV()));
         }
 
@@ -166,7 +166,7 @@
                 CALL call = (CALL)tilePatternMatcher.getCapture("call");
                 var name = (NAME) call.func;
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
-                emit(new OPER("call " + name.label + " # exp call ( no return value )", L(frame.RV(), IntelFrame.callerSaves), l));
+                emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callerSaves, l));
                 emit(new OPER("# ", null, new TempList(frame.RV())));
             } else {
                 exp.exp.accept(this);
@@ -264,12 +264,10 @@
                 CALL call = (CALL) tilePatternMatcher.getCapture("call");
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 this.temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
-                emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  L(temp, IntelFrame.callerSaves), l));
+                emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  IntelFrame.callerSaves, l));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
                 return;
             } 
-
-
             // Unmatched tile case.
             op.dst.accept(this);
             var dst = temp;

@@ -82,12 +82,4 @@ public class TempListTest {
         TempList.checkOrder(tl);
     }
 
-
-
-
-
-
-
-
-
 }

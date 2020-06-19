@@ -21,6 +21,7 @@ import Assem.Instr;
 import Assem.InstrList;
 import Assem.OPER;
 import Codegen.Codegen;
+import Codegen.Validator;
 import Frame.*;
 import java.util.Hashtable;
 
@@ -119,7 +120,7 @@ public class IntelFrame extends Frame {
      * These are used in a call and added as definitions.
      */
     public static TempList callerSaves = new TempList(
-      //  rax, new TempList(
+        rax, new TempList(
             rcx, new TempList(
                 rdx, new TempList(
                     rsi, new TempList(
@@ -135,7 +136,7 @@ public class IntelFrame extends Frame {
                     )
                 )
             )
-    //    )
+        )
     );
 
     // offset within the frame
@@ -255,8 +256,7 @@ public class IntelFrame extends Frame {
      * @param frml the formal list, where true indicates the argument escapes
      */
     public IntelFrame(Label nm, BoolList frml) {
-        if(nm == null)
-            throw new Error("Label cannot be null");
+        Validator.assertNotNull(nm);
         this.name = nm;
         this.codegen = new Codegen(this);
         int i = 0;
@@ -497,12 +497,6 @@ public class IntelFrame extends Frame {
      */
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("### Intel Stack Frame ###");
-        stringBuilder.append("-> RBP ");
-        stringBuilder.append("RBP - 8 ");
-        stringBuilder.append("RBP - 16 ");
-        stringBuilder.append("RBP - 24 ");
-        stringBuilder.append("-> RSP");
         return stringBuilder.toString();
     }
 
