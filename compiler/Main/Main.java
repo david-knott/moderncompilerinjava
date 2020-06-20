@@ -156,7 +156,7 @@ public class Main {
         
         findEscape.traverse(this.ast.absyn);
         FragList frags = FragList.reverse(this.semant.getTreeFragments(this.ast.absyn));
-        if(this.semant.getEnv().getErrorMsg().getCompilerErrors().size() != 0) {
+        if(this.semant.hasErrors()) {
             System.out.println("semant check error");
             System.exit(1);
         }

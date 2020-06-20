@@ -38,7 +38,7 @@ public class RegAlloc implements TempMap {
 	private IGBackwardControlEdges baig;
 	private Liveness liveness;
 	private List<RegAllocEventListener> listeners;
-	private static int MAX_ITERATIONS = 2;
+	private static int MAX_ITERATIONS = 4;
 
 	public void add(RegAllocEventListener listener) {
 		Assert.assertNotNull(listener);
@@ -61,7 +61,6 @@ public class RegAlloc implements TempMap {
 		FlowGraph fg = new AssemFlowGraph(instrList);
 		this.liveness = new Liveness(fg);
 		this.baig = new IGBackwardControlEdges(fg, this.liveness);
-		this.baig.show(System.out);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
 	//	this.colour = new NoSpillCooe(baig, this.frame, this.frame.registers());
 		this.buildComplete();
@@ -93,7 +92,7 @@ public class RegAlloc implements TempMap {
 		for(TempList tl = originalTemps; tl != null; tl = tl.tail) {
 			int vsp = this.baig.spillCost(this.baig.tnode(tl.head));
 			System.out.println("Potential Spills: " + tl.head + " cost:" + vsp);
-			if(lowestSpillCost == null || sp < vsp) {
+			if(lowestSpillCost == null || vsp < sp) {
 				lowestSpillCost = tl;
 				sp = vsp;
 			}

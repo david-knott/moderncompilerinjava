@@ -1,5 +1,6 @@
 let
-var a:= 1
+var a:= 0
 in
-for j := 0 to 10  do printi(j)
+for j := 2 to 12  do a := a + 1;
+printi(10)
 end

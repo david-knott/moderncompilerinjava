@@ -46,6 +46,10 @@ public class Semant {
         translate = trans;
     }
 
+    public boolean hasErrors() {
+        return SemantValidator.hasErrors();
+    }
+
     /**
      * Returns the env, this is used for testing.
      * 

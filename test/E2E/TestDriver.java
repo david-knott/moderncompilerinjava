@@ -9,6 +9,6 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void test() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/tests/for.tig"});
+        Main.main(new String[]{"./test/E2E/tests/for_function_in_loop.tig"});
     }
 }

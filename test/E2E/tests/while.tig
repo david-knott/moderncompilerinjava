@@ -1,5 +1,6 @@
 let
-var a:int := 4
+var a:int := 0
 in
-while a > 0 do (printi(a); a := a - 1)
+while a < 11  do (a := a + 1);
+printi(a)
 end

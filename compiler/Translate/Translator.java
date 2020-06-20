@@ -638,22 +638,22 @@ public class Translator {
     /**
      * Translates a for loop into Tree language.
      * @param level
-     * @param loopExit
+     * @param loopEnd
      * @param access
      * @param explo
      * @param exphi
      * @param expbody
      * @return
      */
-	public Exp forL(Level level, Label loopExit, Access access, ExpTy explo, ExpTy exphi, ExpTy expbody) {
+	public Exp forL(Level level, Label loopEnd, Access access, ExpTy explo, ExpTy exphi, ExpTy expbody) {
         Assert.assertNotNull(level);
-        Assert.assertNotNull(loopExit);
+        Assert.assertNotNull(loopEnd);
         Assert.assertNotNull(access);
         Assert.assertNotNull(explo);
         Assert.assertNotNull(exphi);
         Assert.assertNotNull(expbody);
         Temp limit = Temp.create();
-        Label test = Label.create();
+        Label forStart = Label.create();
         Label loopStart = Label.create();
         var x = simpleVar(access, level);
 		return new Nx(
@@ -662,9 +662,9 @@ public class Translator {
                 new SEQ(
                     new MOVE(new TEMP(limit), exphi.exp.unEx()),
                     new SEQ(
-                        new LABEL(test),
+                        new LABEL(forStart),
                         new SEQ(
-                            new CJUMP(CJUMP.LE, x.unEx(), new TEMP(limit), loopStart, loopExit),
+                            new CJUMP(CJUMP.LE, x.unEx(), new TEMP(limit), loopStart, loopEnd),
                             new SEQ(
                                 new LABEL(loopStart),
                                 new SEQ(
@@ -672,8 +672,8 @@ public class Translator {
                                     new SEQ(
                                         new MOVE(x.unEx(), new BINOP(BINOP.PLUS, x.unEx(), new CONST(1))),
                                         new SEQ(
-                                            new JUMP(test),
-                                            new LABEL(loopExit)
+                                            new JUMP(forStart),
+                                            new LABEL(loopEnd)
                                         )
                                     )
                                 )
@@ -696,10 +696,24 @@ public class Translator {
     public Exp whileL(Level level, Label loopEnd, ExpTy testExp, ExpTy transBody) {
         var whileStart = new Label();
         var loopStart = new Label();
-        return new Nx(new SEQ(new Tree.LABEL(whileStart),
-                new SEQ(testExp.exp.unCx(loopStart, loopEnd), new SEQ(new Tree.JUMP(loopStart), new Tree.SEQ(
+        return new Nx(
+            new SEQ(
+                new Tree.LABEL(whileStart),
+                new SEQ(
+                    testExp.exp.unCx(loopStart, loopEnd), 
+                    new SEQ(
                         new Tree.LABEL(loopStart),
-                        new SEQ(transBody.exp.unNx(), new SEQ(new Tree.JUMP(whileStart), new Tree.LABEL(loopEnd))))))));
+                        new SEQ(
+                            transBody.exp.unNx(), 
+                            new SEQ(
+                                new Tree.JUMP(whileStart), 
+                                new Tree.LABEL(loopEnd)
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
 
     /**
