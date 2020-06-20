@@ -1,0 +1,13 @@
+let
+var a:int := 4
+var b:int := 0 
+var c:int := 0 
+in
+a := a + 1;
+printi(a);
+b := b + 1;
+printi(b);
+a := b + b;
+printi(a);
+a := b + b
+end
