@@ -163,6 +163,7 @@
             var name = (NAME)call.func;
             TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
             temp = Temp.create();
+            emit(new OPER("movq $0, %`d0 # zero rax",  new TempList(IntelFrame.rax), null));
             emit(new OPER("call " + name.label + " # default call", IntelFrame.callerSaves, l));
             emit(new Assem.MOVE("movq %`s0, %`d0 # move rax into temp", this.temp, this.frame.RV()));
         }
@@ -174,18 +175,22 @@
 
         @Override
         public void visit(EXP exp) {
-            TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(exp);
-            if(tilePatternMatcher.isMatch(TilePatterns.EXP_CALL)) {
-                CALL call = (CALL)tilePatternMatcher.getCapture("call");
-                var name = (NAME) call.func;
-                TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
-                emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callerSaves, l));
-            } else {
                 exp.exp.accept(this);
                 var expTemp = temp;
                 temp = Temp.create();
                 emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
-            }
+
+                /*
+            TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(exp);
+            if(tilePatternMatcher.isMatch(TilePatterns.EXP_CALL)) {
+                CALL call = (CALL)tilePatternMatcher.getCapture("call");
+                call.accept(this);
+                var name = (NAME) call.func;
+                TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
+                emit(new OPER("movq $0, %`d0 # zero rax",  new TempList(IntelFrame.rax), null));
+                emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callerSaves, l));
+            } else {
+                            }*/
         }
 
         @Override
@@ -268,17 +273,19 @@
                 emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
                 return;
             } 
-            
             if (tilePatternMatcher.isMatch(TilePatterns.MOVE_CALL)) {
+                /*
                 Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
                 dst.accept(this);
                 Temp dstTemp = this.temp;
                 CALL call = (CALL) tilePatternMatcher.getCapture("call");
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 this.temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
-                emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  IntelFrame.callerSaves, l));
+                emit(new OPER("movq $0, %`d0 # move call",  new TempList(IntelFrame.rax), null));
+                emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  IntelFrame.callerSaves, new TempList(IntelFrame.rax, l)));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
-                return;
+                return;*/
+
             } 
             // Unmatched tile case.
             op.dst.accept(this);
@@ -286,7 +293,6 @@
             op.src.accept(this);
             var src = temp;
             emit(new Assem.MOVE("movq %`s0, %`d0 # default move", dst, src));
-
         }
 
         @Override

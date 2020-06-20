@@ -38,7 +38,7 @@ public class RegAlloc implements TempMap {
 	private IGBackwardControlEdges baig;
 	private Liveness liveness;
 	private List<RegAllocEventListener> listeners;
-	private static int MAX_ITERATIONS = 4;
+	private static int MAX_ITERATIONS = 7;
 
 	public void add(RegAllocEventListener listener) {
 		Assert.assertNotNull(listener);
@@ -167,7 +167,7 @@ public class RegAlloc implements TempMap {
 			System.out.println(instrList.head.format(new DefaultMap()) + " => " + this.liveness.liveMap(instrList.head));
 		}
 
-		System.out.print("Assembly");
+		System.out.print("Assembly (Iteration:" + this.iterations + ")");
 		int maxChars = 0;
 		for(InstrList instrList = this.instrList; instrList != null; instrList = instrList.tail) {
 			String assem = instrList.head.format(new DefaultMap());

@@ -413,12 +413,29 @@ public class IntelFrame extends Frame {
     /**
      * The return sink is an empty operation added to the end of a function. It is
      * used by the flow analysis to ensure that certain precoloured temporaries are
-     * marked as live on exit from the function.
+     * marked as live on exit from the function. 
+     * This contains the callee saves and the return registers as uses.
      */
     public Assem.InstrList procEntryExit2(Assem.InstrList body) {
         return InstrList.append(
-            body, new Assem.InstrList(
-                new Assem.OPER("# sink ", null, IntelFrame.calleeSaves)));
+            InstrList.append(
+                new Assem.InstrList(
+                    new Assem.OPER(
+                        "# sink ", 
+                        null,
+                        null
+                    )
+                ),
+                body
+            ),
+            new Assem.InstrList(
+                new Assem.OPER(
+                    "# sink ", 
+                    null, 
+                    IntelFrame.calleeSaves
+                )
+            )
+        );
     }
 
     /**
@@ -436,6 +453,7 @@ public class IntelFrame extends Frame {
                 )
             )
         );
+        //replace with leave 
         InstrList epilog = new InstrList(new OPER("# end main", null, null), new InstrList(
             new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rsp), new TempList(IntelFrame.rbp)),
                 new InstrList(new OPER("popq %`d0", new TempList(IntelFrame.rbp), null),
@@ -496,8 +514,8 @@ public class IntelFrame extends Frame {
         Assert.assertNotNull(spillTemp);
         Assert.assertNotNull(access);
         int offset = ((InFrame) access).offset;
-        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0 # spill s", spillTemp, temp);
-        Instr moveNewTempToFrame = new OPER("movq %`s1, " + offset + "(%`s0) # spill s", 
+        Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0 # spill store", spillTemp, temp);
+        Instr moveNewTempToFrame = new OPER("movq %`s1, " + offset + "(%`s0) # spill store", 
                 null,
                 new TempList(this.FP(), new TempList(spillTemp, null)));
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null));
@@ -509,10 +527,10 @@ public class IntelFrame extends Frame {
         Assert.assertNotNull(spillTemp);
         Assert.assertNotNull(access);
         int offset = ((InFrame) access).offset;
-        Instr moveFrameToNewTemp = new OPER("movq " + offset + "(%`s0), %`d0 # spill l",
+        Instr moveFrameToNewTemp = new OPER("movq " + offset + "(%`s0), %`d0 # spill load",
                 new TempList(spillTemp), 
                 new TempList(this.FP()));
-        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0 # spill l", temp, spillTemp);
+        Instr moveNewTempToTemp = new Assem.MOVE("movq %`s0, %`d0 # spill load", temp, spillTemp);
         return new InstrList(moveFrameToNewTemp, new InstrList(moveNewTempToTemp, null));
     }
 }

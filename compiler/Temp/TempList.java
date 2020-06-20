@@ -294,6 +294,19 @@ me = TempList.sort(me);
       StringBuilder builder = new StringBuilder();
       builder.append("[");
       for (TempList s = this; s != null; s = s.tail) {
+         builder.append(Temp.name(s.head));
+         if (s.tail != null) {
+            builder.append(",");
+         }
+      }
+      builder.append("]");
+      return builder.toString();
+   }
+
+   public String getInfo() {
+      StringBuilder builder = new StringBuilder();
+      builder.append("[");
+      for (TempList s = this; s != null; s = s.tail) {
          builder.append(s.head + "=>" + Temp.name(s.head));
          if (s.tail != null) {
             builder.append(",");
@@ -301,8 +314,8 @@ me = TempList.sort(me);
       }
       builder.append("]");
       return builder.toString();
-
    }
+
 
    public Hashtable<Temp, String> toTempMap() {
       Hashtable<Temp, String> ht = new Hashtable<Temp, String>();

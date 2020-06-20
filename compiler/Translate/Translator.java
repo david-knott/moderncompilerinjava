@@ -664,25 +664,32 @@ public class Translator {
         Temp limit = Temp.create();
         Label forStart = Label.create();
         Label loopStart = Label.create();
-        var x = simpleVar(access, level);
+        Label loopExit1 = Label.create();
+        var lowVar = simpleVar(access, level);
 		return new Nx(
             new SEQ(
-                new MOVE(x.unEx(), explo.exp.unEx()),
+                new MOVE(lowVar.unEx(), explo.exp.unEx()),
                 new SEQ(
                     new MOVE(new TEMP(limit), exphi.exp.unEx()),
                     new SEQ(
                         new LABEL(forStart),
                         new SEQ(
-                            new CJUMP(CJUMP.LE, x.unEx(), new TEMP(limit), loopStart, loopEnd),
+                            new CJUMP(CJUMP.LE, lowVar.unEx(), new TEMP(limit), loopStart, loopEnd),
                             new SEQ(
                                 new LABEL(loopStart),
                                 new SEQ(
                                     expbody.exp.unNx(),
                                     new SEQ(
-                                        new MOVE(x.unEx(), new BINOP(BINOP.PLUS, x.unEx(), new CONST(1))),
+                                        new CJUMP(CJUMP.EQ, lowVar.unEx(), new TEMP(limit), loopEnd, loopExit1), //check if int at max
                                         new SEQ(
-                                            new JUMP(forStart),
-                                            new LABEL(loopEnd)
+                                            new LABEL(loopExit1),
+                                            new SEQ(
+                                                new MOVE(lowVar.unEx(), new BINOP(BINOP.PLUS, lowVar.unEx(), new CONST(1))),
+                                                new SEQ(
+                                                    new JUMP(forStart),
+                                                    new LABEL(loopEnd)
+                                                )
+                                            )
                                         )
                                     )
                                 )
