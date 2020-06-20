@@ -21,7 +21,7 @@ class NoSpillColor implements TempMap {
 	private TempList registers;
 	private Hashtable<Temp, Temp> coloured = new Hashtable<Temp, Temp>();
 
-	public NoSpillColor(InterferenceGraph graph, TempMap precoloured, TempList registers, boolean dumpGraph) {
+	public NoSpillColor(InterferenceGraph graph, TempMap precoloured, TempList registers) {
 		this.precoloured = precoloured;
 		this.registers = registers;
 		//graph.show(System.out);
@@ -45,7 +45,7 @@ class NoSpillColor implements TempMap {
 				}
 				this.simpleStack.push(initialNodes.head);
 			} else {
-				throw new Error("Cannot spill " + degrees.get(node) + " > " + k);
+				throw new Error("Cannot spill " + graph.gtemp(node) + " " + degrees.get(node) + " > " + k);
 			}
 			initialNodes = initialNodes.tail;
 		}

@@ -13,6 +13,7 @@ public class AssemFlowGraph extends FlowGraph {
     private Hashtable<Node, Assem.Instr> nodeMap = new Hashtable<Node, Assem.Instr>();
     private Hashtable<Assem.Instr, Node> invNodeMap = new Hashtable<Assem.Instr, Node>();
     private Hashtable<Label, Instr> labelInstr = new Hashtable<Label, Instr>();
+    private Hashtable<Node, Boolean> visited = new Hashtable<Node, Boolean>();
 
     public Node getOrCreate(Instr instr) {
         if(invNodeMap.containsKey(instr)) {

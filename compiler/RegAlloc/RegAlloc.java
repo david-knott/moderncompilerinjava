@@ -3,20 +3,28 @@ package RegAlloc;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import Assem.InstrList;
+import Codegen.Assert;
 import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Frame.Access;
 import Frame.Frame;
 import Graph.GraphvisRenderer;
+import Graph.Node;
 import Temp.CombineMap;
 import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
 
+interface RegAllocEventListener {
+	public void handle(RegAlloc regAlloc);
+
+}
 /**
  * RegAlloc class manages the spilling.
  */
@@ -24,11 +32,30 @@ public class RegAlloc implements TempMap {
 	public InstrList instrList;
 	public Frame frame;
 	public PotentialSpillColour colour;
-	public NoSpillColor color;
+//	public NoSpillColor color;
 	public int iterations;
 	private TempList spillTemps;
 	private IGBackwardControlEdges baig;
 	private Liveness liveness;
+	private List<RegAllocEventListener> listeners;
+	private static int MAX_ITERATIONS = 2;
+
+	public void add(RegAllocEventListener listener) {
+		Assert.assertNotNull(listener);
+		if(this.listeners == null) {
+			this.listeners = new ArrayList<RegAllocEventListener>();
+		}
+		this.listeners.add(listener);
+	}
+
+	public void buildComplete() {
+		if(this.listeners == null) {
+			return;
+		}
+		for(RegAllocEventListener listener : this.listeners) {
+			listener.handle(this);
+		}
+	}
 
 	private void build() {
 		FlowGraph fg = new AssemFlowGraph(instrList);
@@ -36,6 +63,8 @@ public class RegAlloc implements TempMap {
 		this.baig = new IGBackwardControlEdges(fg, this.liveness);
 		this.baig.show(System.out);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
+	//	this.colour = new NoSpillCooe(baig, this.frame, this.frame.registers());
+		this.buildComplete();
 		/*
 		try {
 			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
@@ -58,28 +87,26 @@ public class RegAlloc implements TempMap {
 	}
 
 	private TempList selectSpill() {
-		TempList originalTemps = TempList.andNot(new TempList(this.colour.spills().head), this.spillTemps);
+		TempList originalTemps = TempList.andNot(this.colour.spills(), this.spillTemps);
 		TempList lowestSpillCost = null;
 		int sp = 0;
 		for(TempList tl = originalTemps; tl != null; tl = tl.tail) {
 			int vsp = this.baig.spillCost(this.baig.tnode(tl.head));
+			System.out.println("Potential Spills: " + tl.head + " cost:" + vsp);
 			if(lowestSpillCost == null || sp < vsp) {
 				lowestSpillCost = tl;
 				sp = vsp;
 			}
 		}
-		return lowestSpillCost;
+		return new TempList(lowestSpillCost.head, null);
 	}
 
 	private void rewrite() {
 		Hashtable<Temp, Access> accessHash = new Hashtable<Temp, Access>(); 
 		TempList spills = this.selectSpill();
-		for(TempList spill = spills; spill != null; spill = spill.tail) {
-			Access access = this.frame.allocLocal(true);
-			accessHash.put(spill.head, access);
-			System.out.println("Spilling " + spill.head);
-			break;
-		}
+		Access access = this.frame.allocLocal(true);
+		accessHash.put(spills.head, access);
+		System.out.println("Spilling " + spills.head);
 		InstrList newList = null;
 		for (; instrList != null; instrList = instrList.tail) {
 			TempList spilledDefs = TempList.and(instrList.head.def(), spills);
@@ -89,7 +116,7 @@ public class RegAlloc implements TempMap {
 				continue;
 			}
 			for (; spilledUses != null; spilledUses = spilledUses.tail) {
-				Access access = accessHash.get(spilledUses.head);
+				access = accessHash.get(spilledUses.head);
 				Temp spillTemp = Temp.create();
 				System.out.println("New Use Temp" + spillTemp);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
@@ -98,7 +125,7 @@ public class RegAlloc implements TempMap {
 			}
 			newList = InstrList.append(newList, instrList.head);
 			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
-				Access access = accessHash.get(spilledDefs.head);
+				access = accessHash.get(spilledDefs.head);
 				Temp spillTemp = Temp.create();
 				System.out.println("New Def Temp" + spillTemp);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
@@ -110,8 +137,8 @@ public class RegAlloc implements TempMap {
 	}
 
 	private void allocate() {
-		if(++this.iterations > 3) 
-			throw new Error("No many iterations");
+		if(++this.iterations > MAX_ITERATIONS) 
+			throw new Error("No many iterations:" + this.iterations);
 		this.build();
 		this.dumpUsesAndDefs();
 		this.dumpLiveness();
@@ -154,8 +181,21 @@ public class RegAlloc implements TempMap {
 		}
 		System.out.print("rc");
 		System.out.print(" ");
+		System.out.print("ic");
+		System.out.print(" ");
 		System.out.print("def");
 		System.out.println();
+		/*
+		System.out.print("ic");
+		for(int i = 0; i < maxChars - 2; i++) System.out.print(" ");
+		for(TempList tl = Temp.all(); tl != null; tl = tl.tail) {
+			Node n  = this.baig.tnode(tl.head);
+				int d = n != null ? n.degree() : 0;
+				//System.out.print(Integer.toString(d));
+				System.out.print(" ");
+		}
+		System.out.println();
+		*/
 		for(InstrList instrList = this.instrList; instrList != null; instrList = instrList.tail) {
 			String assem = instrList.head.format(new DefaultMap());
 			System.out.print(assem);

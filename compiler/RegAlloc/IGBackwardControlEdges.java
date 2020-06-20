@@ -119,7 +119,8 @@ public class IGBackwardControlEdges extends InterferenceGraph {
 
     @Override
     public int spillCost(Node node) {
-        return (this.defCount.getOrDefault(node, 0) + this.useCount.getOrDefault(node, 0))/node.degree();
+        double f = ((float)this.defCount.getOrDefault(node, 0) + this.useCount.getOrDefault(node, 0))/node.degree();
+        return (int)(100 * f);
     }
 
     @Override

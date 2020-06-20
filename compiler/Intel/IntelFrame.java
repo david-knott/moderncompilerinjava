@@ -492,6 +492,9 @@ public class IntelFrame extends Frame {
 
     @Override
     public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
+        Assert.assertNotNull(temp);
+        Assert.assertNotNull(spillTemp);
+        Assert.assertNotNull(access);
         int offset = ((InFrame) access).offset;
         Instr moveTempToNewTemp = new Assem.MOVE("movq %`s0, %`d0 # spill s", spillTemp, temp);
         Instr moveNewTempToFrame = new OPER("movq %`s1, " + offset + "(%`s0) # spill s", 
@@ -502,6 +505,9 @@ public class IntelFrame extends Frame {
 
     @Override
     public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
+        Assert.assertNotNull(temp);
+        Assert.assertNotNull(spillTemp);
+        Assert.assertNotNull(access);
         int offset = ((InFrame) access).offset;
         Instr moveFrameToNewTemp = new OPER("movq " + offset + "(%`s0), %`d0 # spill l",
                 new TempList(spillTemp), 

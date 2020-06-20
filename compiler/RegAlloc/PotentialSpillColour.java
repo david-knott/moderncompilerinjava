@@ -69,7 +69,7 @@ public class PotentialSpillColour implements TempMap {
 				Node node = initialNodes.head;
 				initialNodes = initialNodes.tail;
 				this.reduceDegree(node);
-//				System.out.println(graph.gtemp(node) +" :only significant degree left");
+				System.out.println(graph.gtemp(node) +" :only significant degree left");
 				this.simpleStack.push(node); // mark as potential for spilling.
 			}
 
@@ -102,7 +102,7 @@ public class PotentialSpillColour implements TempMap {
 			}
 			// assign colour to node
 			if (colours.isEmpty()) {
-		//		System.out.println("--->" + tempForNode + ": no colours to assign, need to spill");
+				System.out.println("--->" + tempForNode + ": no colours to assign, need to spill");
 				addSpill(tempForNode);
 			} else {
 				Temp color = colours.iterator().next();
