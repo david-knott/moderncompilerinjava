@@ -1,6 +1,6 @@
 package Translate;
 
-import Codegen.Validator;
+import Codegen.Assert;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -408,8 +408,8 @@ public class Translator {
      * @return
      */
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
-        Validator.assertNotNull(exp);
-        Validator.assertNotNull(level);
+        Assert.assertNotNull(exp);
+        Assert.assertNotNull(level);
         var gotoSegFault = Label.create();
         var gotoSubscript = Label.create();
         if(this.nullRecordCheck) {
@@ -463,20 +463,20 @@ public class Translator {
     }
 
     public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        Validator.assertNotNull(transExpLeft);
-        Validator.assertNotNull(transExpRight);
+        Assert.assertNotNull(transExpLeft);
+        Assert.assertNotNull(transExpRight);
         return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
     }
 
     public Exp binaryOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        Validator.assertNotNull(transExpLeft);
-        Validator.assertNotNull(transExpRight);
+        Assert.assertNotNull(transExpLeft);
+        Assert.assertNotNull(transExpRight);
         return new Ex(new BINOP(i, transExpLeft.exp.unEx(), transExpRight.exp.unEx()));
     }
 
     public Exp relativeOperator(int i, ExpTy transExpLeft, ExpTy transExpRight) {
-        Validator.assertNotNull(transExpLeft);
-        Validator.assertNotNull(transExpRight);
+        Assert.assertNotNull(transExpLeft);
+        Assert.assertNotNull(transExpRight);
         return new RelCx(transExpLeft.exp.unEx(), transExpRight.exp.unEx(), i);
             
     }
@@ -508,10 +508,10 @@ public class Translator {
      * @return
      */
     public Exp call(boolean useStaticLink, Level callerLevel, Level calleeLevel, Label functionLabel, ExpTyList argumentExpList, Type result) {
-        Validator.assertNotNull(callerLevel);
-        Validator.assertNotNull(calleeLevel);
-        Validator.assertNotNull(functionLabel);
-        Validator.assertNotNull(result);
+        Assert.assertNotNull(callerLevel);
+        Assert.assertNotNull(calleeLevel);
+        Assert.assertNotNull(functionLabel);
+        Assert.assertNotNull(result);
         var difference = calleeLevel.depthDifference(callerLevel);
         Tree.Exp staticLink = null;
     //   callerLevel.frame
@@ -584,8 +584,8 @@ public class Translator {
      * @return
      */
     private Tree.Stm buildSeq(ExpTyList expTyList) {
-        Validator.assertNotNull(expTyList);
-        Validator.assertNotNull(expTyList.expTy);
+        Assert.assertNotNull(expTyList);
+        Assert.assertNotNull(expTyList.expTy);
         if(expTyList.tail != null) {
             return new SEQ(expTyList.expTy.exp.unNx(), buildSeq(expTyList.tail));
         }
@@ -604,9 +604,9 @@ public class Translator {
      */
     private Tree.Exp expSeq(ExpTyList expTyList) {
         //invariant check, shouldn't happen
-        Validator.assertNotNull(expTyList);
-        Validator.assertNotNull(expTyList.expTy);
-        Validator.assertNotNull(expTyList.tail);
+        Assert.assertNotNull(expTyList);
+        Assert.assertNotNull(expTyList.expTy);
+        Assert.assertNotNull(expTyList.tail);
         //only one item in list, so just return it as expression
         var firstEx = expTyList.expTy.exp;
         if(expTyList.tail == null){
@@ -646,6 +646,12 @@ public class Translator {
      * @return
      */
 	public Exp forL(Level level, Label loopExit, Access access, ExpTy explo, ExpTy exphi, ExpTy expbody) {
+        Assert.assertNotNull(level);
+        Assert.assertNotNull(loopExit);
+        Assert.assertNotNull(access);
+        Assert.assertNotNull(explo);
+        Assert.assertNotNull(exphi);
+        Assert.assertNotNull(expbody);
         Temp limit = Temp.create();
         Label test = Label.create();
         Label loopStart = Label.create();

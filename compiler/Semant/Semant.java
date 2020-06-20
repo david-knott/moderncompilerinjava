@@ -4,7 +4,7 @@ package Semant;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
-import Codegen.Validator;
+import Codegen.Assert;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
 import ErrorMsg.FieldNotDefinedError;
@@ -317,7 +317,7 @@ public class Semant {
      */
     Exp transDec(final Absyn.VarDec e) {
         ExpTy initExpTy = transExp(e.init);
-        Validator.assertNotNull(e.init);
+        Assert.assertNotNull(e.init);
         Types.Type type = initExpTy.ty.actual();
         Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
         // if the expression type is not null

@@ -58,7 +58,6 @@ public class RegAlloc implements TempMap {
 	}
 
 	private TempList selectSpill() {
-	//	System.out.println("Spill Select");
 		TempList originalTemps = TempList.andNot(new TempList(this.colour.spills().head), this.spillTemps);
 		TempList lowestSpillCost = null;
 		int sp = 0;
@@ -78,6 +77,7 @@ public class RegAlloc implements TempMap {
 		for(TempList spill = spills; spill != null; spill = spill.tail) {
 			Access access = this.frame.allocLocal(true);
 			accessHash.put(spill.head, access);
+			System.out.println("Spilling " + spill.head);
 			break;
 		}
 		InstrList newList = null;
@@ -91,6 +91,7 @@ public class RegAlloc implements TempMap {
 			for (; spilledUses != null; spilledUses = spilledUses.tail) {
 				Access access = accessHash.get(spilledUses.head);
 				Temp spillTemp = Temp.create();
+				System.out.println("New Use Temp" + spillTemp);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
 				InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head, spillTemp, access);
 				newList = InstrList.append(newList, memoryToTemp);
@@ -99,6 +100,7 @@ public class RegAlloc implements TempMap {
 			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
 				Access access = accessHash.get(spilledDefs.head);
 				Temp spillTemp = Temp.create();
+				System.out.println("New Def Temp" + spillTemp);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
 				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head, spillTemp, access);
 				newList = InstrList.append(newList, tempToMemory);
@@ -108,8 +110,8 @@ public class RegAlloc implements TempMap {
 	}
 
 	private void allocate() {
-		if(this.iterations++ > 7) 
-		throw new Error("No many iterations");
+		if(++this.iterations > 3) 
+			throw new Error("No many iterations");
 		this.build();
 		this.dumpUsesAndDefs();
 		this.dumpLiveness();
@@ -124,14 +126,12 @@ public class RegAlloc implements TempMap {
 		this.instrList = instrList;
 		this.frame = frame;
 		this.allocate();
-		
 	}
 
 	public void dumpUsesAndDefs() {
 		System.out.println("### Uses and Defs");
 		for(InstrList instrList = this.instrList; instrList != null; instrList = instrList.tail) {
 			System.out.println(instrList.head.format(new DefaultMap())+ " : def => " + instrList.head.def() + ", use => " + instrList.head.use());
-			//System.out.println(instrList.head.format(new DefaultMap()));
 		}
 	}
 

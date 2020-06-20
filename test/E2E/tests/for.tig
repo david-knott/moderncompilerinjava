@@ -1,6 +1,4 @@
 let
-var a:int := 4
-var b:int := 0 
 in
-for j := 0 to a-1  do (b := b + 1; printi(a))
+for j := 0 to 10  do printi(j)
 end

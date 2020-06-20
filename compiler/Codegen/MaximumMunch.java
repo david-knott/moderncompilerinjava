@@ -92,10 +92,10 @@
         public void visit(BINOP op) {
             op.left.accept(this);
             var leftTemp = temp;
-            Validator.assertNotNull(leftTemp);
+            Assert.assertNotNull(leftTemp);
             op.right.accept(this);
             var rightTemp = temp;
-            Validator.assertNotNull(rightTemp);
+            Assert.assertNotNull(rightTemp);
             switch (op.binop) {
                 case BINOP.AND:
                     this.temp = Temp.create();
@@ -180,7 +180,7 @@
         public void visit(MEM op) {
             op.exp.accept(this);
             var mem = temp;
-            Validator.assertNotNull(mem);
+            Assert.assertNotNull(mem);
             temp = Temp.create();
             emit(new Assem.OPER("movq (%`s0), %`d0 # default load", new TempList(temp), new TempList(mem)));
         }
@@ -287,10 +287,10 @@
         public void visit(CJUMP cjump) {
             cjump.left.accept(this);
             var leftTemp = temp;
-            Validator.assertNotNull(leftTemp);
+            Assert.assertNotNull(leftTemp);
             cjump.right.accept(this);
             var rightTemp = temp;
-            Validator.assertNotNull(rightTemp);
+            Assert.assertNotNull(rightTemp);
             emit(new OPER("cmp %`s0, %`s1", null, L(rightTemp, L(leftTemp, null))));
             String op = "";
             switch(cjump.relop) {

@@ -21,7 +21,7 @@ import Assem.Instr;
 import Assem.InstrList;
 import Assem.OPER;
 import Codegen.Codegen;
-import Codegen.Validator;
+import Codegen.Assert;
 import Frame.*;
 import java.util.Hashtable;
 
@@ -256,7 +256,7 @@ public class IntelFrame extends Frame {
      * @param frml the formal list, where true indicates the argument escapes
      */
     public IntelFrame(Label nm, BoolList frml) {
-        Validator.assertNotNull(nm);
+        Assert.assertNotNull(nm);
         this.name = nm;
         this.codegen = new Codegen(this);
         int i = 0;
@@ -349,17 +349,13 @@ public class IntelFrame extends Frame {
      * 
      * @return a linked list of move statements.
      */
-    Stm calleeSaveList() {
+    Stm calleeSaveToTemp() {
         StmList list = null;
         for (TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = Temp.create();
             calleeTempMap.put(callee.head, calleeTemp);
             MOVE move = new MOVE(new TEMP(calleeTemp), new TEMP(callee.head));
-            if (list == null) {
-                list = new StmList(move);
-            } else {
-                list = list.append(move);
-            }
+            list = StmList.append(list, move);
         }
         return list.toSEQ();
     }
@@ -370,16 +366,12 @@ public class IntelFrame extends Frame {
      * 
      * @return a linked list of move statements.
      */
-    Stm calleeRestoreList() {
+    Stm calleeRestoreFromTemp() {
         StmList list = null;
-        for (TempList callee = TempList.reverse(IntelFrame.calleeSaves); callee != null; callee = callee.tail) {
+        for (TempList callee = IntelFrame.calleeSaves; callee != null; callee = callee.tail) {
             Temp calleeTemp = calleeTempMap.get(callee.head);
             MOVE move = new MOVE(new TEMP(callee.head), new TEMP(calleeTemp));
-            if (list == null) {
-                list = new StmList(move);
-            } else {
-                list = list.append(move);
-            }
+            list = StmList.append(list, move);
         }
         return list.toSEQ();
     }
@@ -409,15 +401,13 @@ public class IntelFrame extends Frame {
         return new SEQ(
             moveArgs(), 
             new SEQ(
-                calleeSaveList(), 
+                calleeSaveToTemp(), 
                 new SEQ(
                     body, 
-                    calleeRestoreList()
+                    calleeRestoreFromTemp()
                 )
             )
         );
-     //   return new SEQ(moveArgs(),  body);
-       // return new SEQ(calleeSaveList(), new SEQ(moveArgs(), new SEQ(body, calleeRestoreList())));
     }
 
     /**
