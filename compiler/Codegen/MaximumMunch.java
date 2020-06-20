@@ -47,7 +47,7 @@
             return null;
             args.head.accept(this);
             var argTemp = temp;
-            TempList tl = null;// new TempList(argTemp);
+            TempList tl = new TempList(argTemp);
             Temp finalPos = null;
             switch (i) {
                 case 0:
@@ -167,7 +167,6 @@
                 var name = (NAME) call.func;
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callerSaves, l));
-                emit(new OPER("# ", null, new TempList(frame.RV())));
             } else {
                 exp.exp.accept(this);
                 var expTemp = temp;

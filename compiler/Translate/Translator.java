@@ -104,7 +104,7 @@ public class Translator {
      * @return
      */
     public Exp string(String literal, Level level) {
-        Label label = new Label();
+        Label label = Label.create();
         var stringFragment = level.frame.string(label, literal);
         addFrag(new DataFrag(stringFragment));
         return new Ex(new NAME(label));
@@ -182,6 +182,7 @@ public class Translator {
      * @return the {@link Translate.Exp translated expression}
      */
     public Exp varExp(ExpTy varEp){
+        Assert.assertNotNull(varEp);
         return varEp.exp;
     }
 
@@ -192,6 +193,9 @@ public class Translator {
      * size
      */
     public Exp array(Level level, ExpTy transSizeExp, ExpTy transInitExp) {
+        Assert.assertNotNull(level);
+        Assert.assertNotNull(transSizeExp);
+        Assert.assertNotNull(transInitExp);
         if(!this.arrayBoundsCheck) {
             Temp arrayPointer = Temp.create();
             ExpList args = new ExpList(
@@ -327,6 +331,8 @@ public class Translator {
      * @return
      */
     public Exp record(Level level, ExpTyList expTyList) {
+        Assert.assertNotNull(level);
+        Assert.assertNotNull(expTyList);
         Temp recordPointer =  Temp.create();
         Stm stm = fieldList(recordPointer, expTyList, level);
         int total = 0;
@@ -351,6 +357,8 @@ public class Translator {
 
 
     private Stm fieldList(Temp recordPointer,ExpTyList expTyList, Level level){
+        Assert.assertNotNull(recordPointer);
+        Assert.assertNotNull(level);
         if(expTyList == null || expTyList.expTy == null){
             return Noop().unNx();
         }
@@ -410,6 +418,7 @@ public class Translator {
     public Exp fieldVar(Exp exp, int fieldIndex, Level level) {
         Assert.assertNotNull(exp);
         Assert.assertNotNull(level);
+        Assert.assertNotNegative(fieldIndex);
         var gotoSegFault = Label.create();
         var gotoSubscript = Label.create();
         if(this.nullRecordCheck) {
