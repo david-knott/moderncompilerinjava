@@ -41,48 +41,6 @@
                 last = iList = new Assem.InstrList(instr, null);
             }
         }
-
-        private TempList munchArgs(int i, ExpList args) {
-            if(args == null)
-            return null;
-            args.head.accept(this);
-            var argTemp = temp;
-            TempList tl = new TempList(argTemp);
-            Temp finalPos = null;
-            switch (i) {
-                case 0:
-                    finalPos = IntelFrame.rdi;
-                    break;
-                case 1:
-                    finalPos = IntelFrame.rsi;
-                    break;
-                case 2:
-                    finalPos = IntelFrame.rdx;
-                    break;
-                case 3:
-                    finalPos = IntelFrame.rcx;
-                    break;
-                case 4:
-                    finalPos = IntelFrame.r8;
-                    break;
-                case 5:
-                    finalPos = IntelFrame.r9;
-                    break;
-            }
-            if (finalPos != null) {
-                emit(new Assem.MOVE("movq %`s0, %`d0 # move arg " + i + " to temp", finalPos, argTemp));
-                tl = TempList.append(tl, finalPos);
-            } else {
-                emit(new Assem.OPER("pushq %`s1 # move arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
-            }
-            if (args.tail == null) {
-              // return L(argTemp, null);
-               return tl;
-            }
-           // return L(argTemp, munchArgs(i + 1, args.tail));
-            return TempList.append(tl,munchArgs(i - 1, args.tail));
-        }
-
         
         public MaximumMunch(Frame frame) {
             this.frame = frame;
@@ -144,6 +102,61 @@
                     throw new Error("Unsupported operation");
             }
         }
+
+        /**
+         * Generates assembly code instructions that move expressions
+         * into the calling convention registers, prior to a call. This
+         * function returns a temp list of all the calling convention registers
+         * that are used in the call. This temp list is applied as a 'use' for the
+         * call instruction.  This ensures that these registers will interfere with
+         * all the other temps leading up to the call. The call also has all
+         * the calleer registers as definitions, this ensures that these registers
+         * will interfere with all temporaries that are live across the call instruction.
+         * @param i
+         * @param args
+         * @return a list of temporaries
+         */
+        private TempList munchArgs(int i, ExpList args) {
+            if(args == null)
+            return null;
+            args.head.accept(this);
+            var argTemp = temp;
+            TempList tl = null;
+            Temp finalPos = null;
+            switch (i) {
+                case 0:
+                    finalPos = IntelFrame.rdi;
+                    break;
+                case 1:
+                    finalPos = IntelFrame.rsi;
+                    break;
+                case 2:
+                    finalPos = IntelFrame.rdx;
+                    break;
+                case 3:
+                    finalPos = IntelFrame.rcx;
+                    break;
+                case 4:
+                    finalPos = IntelFrame.r8;
+                    break;
+                case 5:
+                    finalPos = IntelFrame.r9;
+                    break;
+            }
+            if (finalPos != null) {
+                emit(new Assem.MOVE("movq %`s0, %`d0 # move arg " + i + " to temp", finalPos, argTemp));
+                tl = TempList.append(tl, finalPos);
+            } else {
+                emit(new Assem.OPER("pushq %`s1 # move arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
+            }
+            if (args.tail == null) {
+              // return L(argTemp, null);
+               return tl;
+            }
+           // return L(argTemp, munchArgs(i + 1, args.tail));
+            return TempList.append(tl,munchArgs(i - 1, args.tail));
+        }
+
 
         @Override
         public void visit(CALL call) {
