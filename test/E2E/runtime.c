@@ -10,6 +10,17 @@ long *initArray(int size, int init)
   return a;
 }
 
+long *initArrayBoundsChecked(int size, int init)
+{
+  int i;
+  long *a = (long *)malloc(size * sizeof(long));
+  a[0] = size - 1;
+  for (i = 1; i < size; i++)
+    a[i] = init;
+  return a;
+}
+
+
 long *initRecord(int size)
 {
   int i;

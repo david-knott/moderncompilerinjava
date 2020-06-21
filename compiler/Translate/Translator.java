@@ -218,7 +218,7 @@ public class Translator {
                 new ESEQ(
                     new MOVE(
                         new TEMP(arrayPointer), 
-                        level.frame.externalCall("initArray", args) /* return a call tree */
+                        level.frame.externalCall("initArrayBoundsChecked", args) /* return a call tree */
                     ), 
                     new TEMP(arrayPointer)
                 )
