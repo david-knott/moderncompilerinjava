@@ -38,7 +38,7 @@ public class RegAlloc implements TempMap {
 	private IGBackwardControlEdges baig;
 	private Liveness liveness;
 	private List<RegAllocEventListener> listeners;
-	private static int MAX_ITERATIONS = 7;
+	private static int MAX_ITERATIONS = 3;
 
 	public void add(RegAllocEventListener listener) {
 		Assert.assertNotNull(listener);
@@ -62,7 +62,6 @@ public class RegAlloc implements TempMap {
 		this.liveness = new Liveness(fg);
 		this.baig = new IGBackwardControlEdges(fg, this.liveness);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
-	//	this.colour = new NoSpillCooe(baig, this.frame, this.frame.registers());
 		this.buildComplete();
 		/*
 		try {
@@ -117,18 +116,18 @@ public class RegAlloc implements TempMap {
 			for (; spilledUses != null; spilledUses = spilledUses.tail) {
 				access = accessHash.get(spilledUses.head);
 				Temp spillTemp = Temp.create();
-				System.out.println("New Use Temp" + spillTemp);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
 				InstrList memoryToTemp = frame.memoryToTemp(spilledUses.head, spillTemp, access);
+				System.out.println("spill:" + instrList.head.format(new DefaultMap()) + " insert before:" + spillTemp);
 				newList = InstrList.append(newList, memoryToTemp);
 			}
 			newList = InstrList.append(newList, instrList.head);
 			for (; spilledDefs != null; spilledDefs = spilledDefs.tail) {
 				access = accessHash.get(spilledDefs.head);
 				Temp spillTemp = Temp.create();
-				System.out.println("New Def Temp" + spillTemp);
 				this.spillTemps = TempList.append(this.spillTemps, spillTemp);
 				InstrList tempToMemory = frame.tempToMemory(spilledDefs.head, spillTemp, access);
+				System.out.println("spill:" + instrList.head.format(new DefaultMap()) + " insert after:" + spillTemp);
 				newList = InstrList.append(newList, tempToMemory);
 			}
 		}
@@ -136,15 +135,14 @@ public class RegAlloc implements TempMap {
 	}
 
 	private void allocate() {
-		if(++this.iterations > MAX_ITERATIONS) 
-			throw new Error("No many iterations:" + this.iterations);
 		this.build();
 		this.dumpUsesAndDefs();
 		this.dumpLiveness();
-		if (this.hasSpills()) {
+		if (this.hasSpills() && this.iterations++ < MAX_ITERATIONS) {
 			this.rewrite();
 			this.allocate();
 		}
+		Assert.assertLE(this.iterations, MAX_ITERATIONS);
 	}
 
 	public RegAlloc(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {
@@ -167,7 +165,8 @@ public class RegAlloc implements TempMap {
 			System.out.println(instrList.head.format(new DefaultMap()) + " => " + this.liveness.liveMap(instrList.head));
 		}
 
-		System.out.print("Assembly (Iteration:" + this.iterations + ")");
+		System.out.println("Iteration:" + this.iterations + ")");
+		System.out.print("Assembly");
 		int maxChars = 0;
 		for(InstrList instrList = this.instrList; instrList != null; instrList = instrList.tail) {
 			String assem = instrList.head.format(new DefaultMap());

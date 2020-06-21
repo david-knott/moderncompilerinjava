@@ -30,27 +30,15 @@ public class Translator {
     private FragList fragList;
     private boolean arrayBoundsCheck;
     private boolean nullRecordCheck;
-    private boolean dumpGraphs;
-    private boolean dumpAbsyn;
-    private boolean dumpTree;
-    private boolean dumpCanonicalTree;
 
     public Translator() {
-        this.arrayBoundsCheck = false;
+        this.arrayBoundsCheck = true;
         this.nullRecordCheck = false;
-        this.dumpGraphs = false;
-        this.dumpAbsyn = false;
-        this.dumpTree = false;
-        this.dumpCanonicalTree = false;
     }
 
     public Translator(boolean arrayBoundsCheck, boolean nullRecordCheck) {
         this.arrayBoundsCheck = arrayBoundsCheck;
         this.nullRecordCheck = nullRecordCheck;
-        this.dumpGraphs = false;
-        this.dumpAbsyn = false;
-        this.dumpTree = false;
-        this.dumpCanonicalTree = false;
 
     }
 
@@ -196,8 +184,8 @@ public class Translator {
         Assert.assertNotNull(level);
         Assert.assertNotNull(transSizeExp);
         Assert.assertNotNull(transInitExp);
+        Temp arrayPointer = Temp.create();
         if(!this.arrayBoundsCheck) {
-            Temp arrayPointer = Temp.create();
             ExpList args = new ExpList(
                 transSizeExp.exp.unEx(), 
                 new ExpList(
@@ -226,7 +214,6 @@ public class Translator {
                     null
                 )
             );
-            Temp arrayPointer = Temp.create();
             return new Ex(
                 new ESEQ(
                     new MOVE(

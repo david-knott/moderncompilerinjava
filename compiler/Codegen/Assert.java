@@ -8,4 +8,8 @@ public class Assert {
     public static void assertNotNegative(int i) {
         if(i < 0) throw new Error("Less than zero");
     }
+
+	public static void assertLE(int iterations, int mAX_ITERATIONS) {
+        if(iterations > mAX_ITERATIONS) throw new Error("Exceeded max");
+	}
 }

@@ -154,24 +154,24 @@ public class TempList {
     * @return
     */
    public static TempList and(TempList me, TempList tempList) {
- //     me = TempList.mergeSort(me);
-  //    tempList = TempList.mergeSort(tempList);
-  //    TempList.checkOrder(me);
-  //    TempList.checkOrder(tempList);
-me = TempList.sort(me);
+      if (me == null || tempList == null)
+         return null;
+      me = TempList.sort(me);
       tempList = TempList.sort(tempList);
       TempList.checkOrder(me);
       TempList.checkOrder(tempList);
-      if (me == null || tempList == null)
-         return null;
       TempList and = null;
       do {
-         if (me.head == tempList.head) {
+         if(me.head.compareTo(tempList.head) > 0) {
+            me = me.tail;
+         } else if(me.head.compareTo(tempList.head) < 0) {
+            tempList = tempList.tail;
+         } else {
             and = TempList.append(and, me.head);
+            me = me.tail;
+            tempList = tempList.tail;
          }
-         me = me.tail;
-         tempList = tempList.tail;
-      } while (me != null && tempList != null);
+      } while(me != null && tempList != null);
       return and;
    }
 
@@ -186,25 +186,28 @@ me = TempList.sort(me);
    public static TempList or(TempList me, TempList tempList) {
       if (me == null && tempList == null)
          return null;
+      if (me == null)
+         return tempList;
+      if (tempList == null)
+         return me;
       me = TempList.sort(me);
       tempList = TempList.sort(tempList);
       TempList.checkOrder(me);
       TempList.checkOrder(tempList);
       TempList or = null;
-      while (me != null && tempList != null) {
-         if (me.head.compareTo(tempList.head) > 0) {
+      do{
+         if(me.head.compareTo(tempList.head) > 0) {
             or = TempList.append(or, me.head);
+            me = me.tail;
+         } else if(me.head.compareTo(tempList.head) < 0) {
             or = TempList.append(or, tempList.head);
-         } else if (me.head.compareTo(tempList.head) < 0) {
-            or = TempList.append(or, tempList.head);
-            or = TempList.append(or, me.head);
+            tempList = tempList.tail;
          } else {
-            or = TempList.append(or, tempList.head);
+            or = TempList.append(or, me.head);
+            me = me.tail;
+            tempList = tempList.tail;
          }
-         me = me.tail;
-         tempList = tempList.tail;
-      }
-      ;
+      }while(me != null & tempList != null);
       while (me != null) {
          or = TempList.append(or, me.head);
          me = me.tail;
@@ -216,6 +219,13 @@ me = TempList.sort(me);
       return or;
    }
 
+   /**
+    * Performs a set subtraction. Returns a new list that contains
+    * everything in first set this is present in the second set.
+    * @param me
+    * @param tempList
+    * @return
+    */
    public static TempList andNot(TempList me, TempList tempList) {
       if (me == null)
          return null;
