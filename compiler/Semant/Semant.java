@@ -34,6 +34,7 @@ public class Semant {
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
     public static final Types.Type NIL = new Types.NIL();
+    public SemantValidator semantValidator;
     
     public Semant(final ErrorMsg.ErrorMsg err, final Level lvl, Translator trans) {
         this(new Env(err, lvl), null, lvl, trans);
@@ -44,10 +45,11 @@ public class Semant {
         breakScopeLabel = bsl;
         level = lev;
         translate = trans;
+        this.semantValidator = new SemantValidator();
     }
 
     public boolean hasErrors() {
-        return SemantValidator.hasErrors();
+        return this.semantValidator.hasErrors();
     }
 
     /**
@@ -155,8 +157,7 @@ public class Semant {
     ExpTy transVar(final Absyn.FieldVar e) {
         var varExp = transVar(e.var);
         var varType = varExp.ty.actual();
-        SemantValidator.isRecord(varExp);
-        // iterate through each record field till we find a match
+        this.semantValidator.isRecord(varExp, e.var.pos);
         int i = 0;
         // TODO: Refactor node add
         for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
@@ -166,8 +167,8 @@ public class Semant {
             }
             i++;
         }
-        env.errorMsg.add(new FieldNotDefinedError(e.pos, e.field));
-        return new ExpTy(null, INT);
+        this.semantValidator.undefinedField(e.field, e.pos);
+        return ExpTy.ERROR;
     }
 
     /**
@@ -182,11 +183,11 @@ public class Semant {
         var indexExp = e.index;
         var transIndexExp = transExp(indexExp);
         // translate the index expression and check its an INT
-        SemantValidator.isInt(transIndexExp);
+        this.semantValidator.isInt(transIndexExp, indexExp.pos);
         // translate the variable and check its an instance of an ARRAY
         var translatedArrayVar = transVar(e.var);
         Types.Type elementType = translatedArrayVar.ty.actual();
-        SemantValidator.isArray(translatedArrayVar);
+        this.semantValidator.isArray(translatedArrayVar);
         var translateExp = translate.subscriptVar(transIndexExp, translatedArrayVar, level);
         return new ExpTy(translateExp, ((ARRAY) elementType).element);
     }
@@ -409,92 +410,56 @@ public class Semant {
         var transExpRight = transExp(e.right);
         switch (e.oper) {
         case Absyn.OpExp.PLUS:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.binaryOperator(PLUS, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MINUS:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.binaryOperator(MINUS, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MUL:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.binaryOperator(MUL, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.DIV:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.binaryOperator(DIV, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LE:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.relativeOperator(LE, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GE:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.relativeOperator(GE, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LT:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.relativeOperator(LT, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GT:
-            if (!transExpLeft.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpLeft.ty));
-            }
-            if (!transExpRight.ty.coerceTo(Semant.INT)) {
-                env.errorMsg.add(new TypeNotIntError(e.left.pos, transExpRight.ty));
-            }
+            this.semantValidator.isInt(transExpLeft, e.left.pos);
+            this.semantValidator.isInt(transExpRight, e.right.pos);
             return new ExpTy(translate.relativeOperator(GT, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.EQ:
             // the order here is important,
             // expRigth.coerceTo(expLeft) is not the same as
             // the reverse
-            if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
-                env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
-            }
+            this.semantValidator.sameType(transExpRight, transExpLeft, e.left.pos);
             return new ExpTy(translate.equalsOperator(EQ, transExpLeft, transExpRight), INT);
         case Absyn.OpExp.NE:
             // the order here is important,
             // expRigth.coerceTo(expLeft) is not the same as
             // the reverse
-            if (!transExpRight.ty.coerceTo(transExpLeft.ty)) {
-                env.errorMsg.add(new TypeMismatchError(e.left.pos, transExpLeft.ty, transExpRight.ty));
-            }
+            this.semantValidator.sameType(transExpRight, transExpLeft, e.left.pos);
             return new ExpTy(translate.equalsOperator(NE, transExpLeft, transExpRight), INT);
         }
 
@@ -687,7 +652,7 @@ public class Semant {
     ExpTy transExp(final Absyn.AssignExp assignExp) {
         var transVar = transVar(assignExp.var); // lvalue
         var transExp = transExp(assignExp.exp); // rvalue
-        SemantValidator.sameType(transVar, transExp);
+        this.semantValidator.sameType(transVar, transExp, assignExp.pos);
         return new ExpTy(translate.assign(level, transVar, transExp), Semant.VOID);
     }
 
@@ -710,12 +675,12 @@ public class Semant {
         var varEntry = new VarEntry(Semant.INT, access);
         env.venv.put(forExp.var.name, varEntry);
         ExpTy explo = transExp(forExp.var.init);
-        SemantValidator.isInt(explo);
+        this.semantValidator.isInt(explo, forExp.var.init.pos);
         ExpTy exphi = transExp(forExp.hi);
-        SemantValidator.isInt(exphi);
+        this.semantValidator.isInt(exphi, forExp.hi.pos);
         var loopExit = new Label();
         ExpTy expbody = new Semant(this.env, this.breakScopeLabel, this.level, this.translate).transExp(forExp.body);
-        SemantValidator.isVoid(expbody);
+        this.semantValidator.isVoid(expbody);
         env.venv.endScope();
         env.tenv.endScope();
         return new ExpTy(this.translate.forL(level,  loopExit,access, explo, exphi, expbody), Semant.VOID);
@@ -733,10 +698,10 @@ public class Semant {
         env.tenv.beginScope();
         env.venv.beginScope();
         var testExp = transExp(whileExp.test);
-        SemantValidator.isInt(testExp);
+        this.semantValidator.isInt(testExp, whileExp.test.pos);
         var loopExit = new Label();
         var expboody = new Semant(this.env, loopExit, this.level, this.translate).transExp(whileExp.body);
-        SemantValidator.isVoid(expboody);
+        this.semantValidator.isVoid(expboody);
         env.venv.endScope();
         env.tenv.endScope();
         return new ExpTy(translate.whileL(this.level, loopExit, testExp, expboody), Semant.VOID);
@@ -765,7 +730,7 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.IfExp ifExp) {
         var testExp = transExp(ifExp.test);
-        SemantValidator.isInt(testExp);
+        this.semantValidator.isInt(testExp, ifExp.pos);
         var thenExp = transExp(ifExp.thenclause);
         var elseExp = ifExp.elseclause != null ? transExp(ifExp.elseclause) : null;
         if (elseExp != null && !elseExp.ty.coerceTo(thenExp.ty)) {

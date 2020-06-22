@@ -1,5 +1,8 @@
 package Semant;
 
+import Absyn.Absyn;
+import Codegen.Assert;
+import Symbol.Symbol;
 import Translate.ExpTy;
 import Types.ARRAY;
 import Types.INT;
@@ -12,45 +15,61 @@ import Types.VOID;
  * Validation methods for semantic type checking.
  */
 class SemantValidator {
-    private static boolean errors = false;
+    private boolean errors = false;
 
-    public static boolean hasErrors() {
+    public boolean hasErrors() {
         return errors;
     }
 
-    private static boolean capture(boolean ok) {
-        if(!ok) {
+    private boolean capture(boolean ok) {
+        if (!ok) {
             errors = true;
         }
 
         return ok;
     }
-    
-    public static boolean isInt(ExpTy expTy) {
+
+    public String format() {
+        // ../../compiler/Translate/Translator.java:188: error: incompatible types: int
+        // cannot be converted to String
+        // String s = 2
+        String path = "";
+        int lineNumber = 0;
+        String level = "error";
+        String category = "incompatible types";
+        String message = "int cannot be converted to a string";
+        String line = "\t\tString s = 2";
+        return String.format("%1$s:%2$d: $3$s: $4$s: $5$s\n$6$s", path, lineNumber, level, category, message, line);
+    }
+
+    public boolean isInt(ExpTy expTy, int pos) {
         return capture(expTy.ty.actual() instanceof INT);
     }
-    
-    public static boolean isString(ExpTy expTy) {
+
+    public boolean isString(ExpTy expTy) {
         return capture(expTy.ty.actual() instanceof STRING);
     }
-    
-    public static boolean isArray(ExpTy expTy) {
-        return capture(expTy.ty.actual() instanceof ARRAY);   
+
+    public boolean isArray(ExpTy expTy) {
+        return capture(expTy.ty.actual() instanceof ARRAY);
     }
-    
-    public static boolean isRecord(ExpTy expTy) {
+
+    public boolean isRecord(ExpTy expTy, int pos) {
         return capture(expTy.ty.actual() instanceof RECORD);
     }
-    
-    public static boolean isNil(ExpTy expTy) {
+
+    public boolean isNil(ExpTy expTy) {
         return capture(expTy.ty.actual() instanceof NIL);
     }
-    
-    public static boolean sameType(ExpTy expTy1, ExpTy expTy2) {
+
+    public boolean sameType(ExpTy expTy1, ExpTy expTy2, int pos) {
         return capture(expTy1.ty.coerceTo(expTy2.ty));
     }
-    
-    public static boolean isVoid(ExpTy expTy) {
+
+    public boolean isVoid(ExpTy expTy) {
         return capture(expTy.ty.actual() instanceof VOID);
-    }    
+    }
+
+    public void undefinedField(Symbol field, int pos) {
+    }
 }
