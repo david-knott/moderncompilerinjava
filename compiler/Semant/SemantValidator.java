@@ -103,12 +103,15 @@ class SemantValidator {
         }
     }
 
-	public void checkVariable(Symbol sym, int pos) {
-        if( null == (Types.Type) env.tenv.get(sym)) {
-            this.errorMsg.error(pos, String.format("Undefined variable %1$s.", sym));
-        }
+    public void checkVariable(Symbol sym, int pos) {
         if( null == (VarEntry) env.venv.get(sym)) {
             this.errorMsg.error(pos, String.format("Undefined variable %1$s.", sym));
+        }
+    }
+
+	public void checkType(Symbol sym, int pos) {
+        if( null == (Types.Type) env.tenv.get(sym)) {
+            this.errorMsg.error(pos, String.format("Undefined type %1$s.", sym));
         }
 	}
 }

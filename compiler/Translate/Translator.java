@@ -1,6 +1,8 @@
 package Translate;
 
 import Codegen.Assert;
+import Core.CompilerEventType;
+import Core.Component;
 import Semant.Semant;
 import Temp.Label;
 import Temp.Temp;
@@ -25,7 +27,10 @@ import Types.Type;
  * Translates Abstract Syntax to IR and stores fragments for use 
  * in next phase of compileation.
  */
-public class Translator {
+public class Translator extends Component {
+
+    public static CompilerEventType TRANSLATOR_PROC_ENTRY_EXIT_START = new CompilerEventType("Start");
+    public static CompilerEventType TRANSLATOR_PROC_ENTRY_EXIT_END = new CompilerEventType("End");
 
     private FragList fragList;
     private boolean arrayBoundsCheck;
@@ -71,7 +76,10 @@ public class Translator {
     public void procEntryExit(Level level, Exp body) {
         if (body == null)
             return;
-        addFrag(new ProcFrag(level.frame.procEntryExit1(body.unNx()), level.frame));
+        this.trigger(TRANSLATOR_PROC_ENTRY_EXIT_START, body.unNx());
+        Stm procStat =  level.frame.procEntryExit1(body.unNx());
+        addFrag(new ProcFrag(procStat, level.frame));
+        this.trigger(TRANSLATOR_PROC_ENTRY_EXIT_END, procStat);
     }
 
     /**

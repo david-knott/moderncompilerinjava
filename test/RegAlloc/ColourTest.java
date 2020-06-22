@@ -53,6 +53,6 @@ public class ColourTest {
                 )
             )
         );
-        RegAlloc alloc = new RegAlloc(testFrame, instrList, dumpGraphs);
+        RegAlloc alloc = new RegAlloc(testFrame, instrList);
     }
 }

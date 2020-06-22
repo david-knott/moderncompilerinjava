@@ -218,6 +218,11 @@ public class Print {
     say(")");
   }
 
+
+  public void prExp(Exp e) {
+    this.prExp(e, 0);
+  }
+  
   /* Print Exp class types. Indent d spaces. */
   public void prExp(Exp e, int d) {
     indent(d);

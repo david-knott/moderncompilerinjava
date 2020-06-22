@@ -1,7 +1,5 @@
 package Translate;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 
 import Assem.InstrList;
@@ -12,16 +10,9 @@ import Frame.Frame;
 import Frame.Proc;
 import RegAlloc.RegAlloc;
 import Temp.CombineMap;
-import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempMap;
-import Tree.Print;
 import Tree.StmList;
-
-interface CodeGenerator {
-
-    public InstrList codegen(Frame f, StmList stms);
-}
 
 /**
  * Function assembly fragment which also contains the frame for the procedure.
@@ -71,11 +62,6 @@ public class ProcFrag extends Frag {
         return first;
     }
 
-    private static void prStmList(Tree.Print print, Tree.StmList stms) {
-        for (Tree.StmList l = stms; l != null; l = l.tail) {
-            print.prStm(l.head);
-        }
-    }
 
     /**
      * Applies canonicalization, blocks and traces algorithms to the contained IR
@@ -85,29 +71,9 @@ public class ProcFrag extends Frag {
     @Override
     public void process(PrintStream out) {
         StmList stmList = canonicalization.canon(this.body);
-        TempMap tempmap = new CombineMap(this.frame, new DefaultMap());
-        try {
-            PrintStream ps = new PrintStream(new FileOutputStream("./tree_" + this.frame.name + ".txt"));
-            var print = new Print(ps, tempmap);
-            ps.println("# Before canonicalization: ");
-            print.prStm(this.body);
-            ps.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            PrintStream ps = new PrintStream(new FileOutputStream("./canon_" + this.frame.name + ".txt"));
-            var print = new Print(ps, tempmap);
-            ps.println("# After canonicalization: ");
-            prStmList(print, stmList);
-            ps.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
-        RegAlloc regAlloc = new RegAlloc(this.frame, instrs, false);
+        RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
         TempMap tempMap = new CombineMap(this.frame, regAlloc);
         instrs = regAlloc.instrList;
         Proc proc = this.frame.procEntryExit3(instrs);

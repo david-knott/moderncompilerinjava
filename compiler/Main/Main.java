@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import Absyn.Absyn;
+import Absyn.Exp;
+import Absyn.Print;
+import Core.Listener;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
 import Frame.Frame;
@@ -15,9 +19,11 @@ import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
 import Temp.Label;
+import Translate.ExpTy;
 import Translate.FragList;
 import Translate.Level;
 import Translate.Translator;
+import Tree.Stm;
 
 /**
  * Main class that executes the compiler.
@@ -33,6 +39,31 @@ public class Main {
      * are stored in temporaries if they do not escape.
      */
     private boolean allVarsEscape = false;
+
+    private static void prStmList(Tree.Print print, Tree.StmList stms) {
+        for (Tree.StmList l = stms; l != null; l = l.tail) {
+            print.prStm(l.head);
+        }
+    }
+
+    private void registerListeners(Translator translator) {
+        translator.on(Translator.TRANSLATOR_PROC_ENTRY_EXIT_END, new Listener<Stm>() {
+            @Override
+            public void handle(Stm message) {
+                // TODO Auto-generated method stub
+                new Tree.Print(System.out).prStm(message);
+            }
+        });
+    }
+
+    private void registerListeners(Semant semant) {
+        semant.on(Semant.SEMANT_START, new Listener<Exp>() {
+            @Override
+            public void handle(Exp message) {
+                new Print(System.out).prExp(message);
+            }
+        });
+    }
 
     /**
      * Compiles the program. Using the parser we parse the source code and create an
@@ -72,7 +103,9 @@ public class Main {
         Frame frame = new IntelFrame(Label.create("tigermain"), null);
         Level topLevel = new Level(frame);
         Translator translate = new Translator();
+        this.registerListeners(translate);
         Semant semant = new Semant(errorMsg, topLevel, translate);
+        this.registerListeners(semant);
         FragList frags = FragList.reverse(semant.getTreeFragments(ast.absyn));
         if (semant.hasErrors()) {
             System.out.println("semant check error");

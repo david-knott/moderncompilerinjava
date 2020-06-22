@@ -4,6 +4,8 @@ import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
 import Codegen.Assert;
+import Core.CompilerEventType;
+import Core.Component;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
 import ErrorMsg.ErrorMsg;
@@ -25,7 +27,9 @@ import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
 import Util.BoolList;
-public class Semant {
+public class Semant extends Component{
+
+    public static CompilerEventType SEMANT_START = new CompilerEventType("Start");
     private final Env env;
     private final Label breakScopeLabel;
     private final Translator translator;
@@ -63,6 +67,7 @@ public class Semant {
      */
     public FragList getTreeFragments(Absyn.Exp absyn) {
         var trans = this.transExp(absyn);
+        this.trigger(SEMANT_START, absyn);
         translator.procEntryExit(level, trans.exp);
         return translator.getResult();
     }
@@ -95,7 +100,7 @@ public class Semant {
      * @return the type of symbol or null.
      */
     private Types.Type getType(final Symbol sym, final int pos) {
-        this.semantValidator.checkVariable(sym, pos);
+        this.semantValidator.checkType(sym, pos);
         final Types.Type cached = (Types.Type) env.tenv.get(sym);
         return cached;
     }

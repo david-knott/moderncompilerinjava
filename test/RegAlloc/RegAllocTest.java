@@ -50,7 +50,7 @@ public class RegAllocTest {
                                 new InstrList(new TEST(new TempList(t4), new TempList(t1)),
                                         new InstrList(new TEST(new TempList(t2), new TempList(t3)),
                                                 new InstrList(new TEST(new TempList(t4), new TempList(t2)), null))))));
-        RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
+        RegAlloc alloc = new RegAlloc(testFrame, instrList);
         assertEquals(1, alloc.iterations, "No spills means only one iteration");
     }
 
@@ -75,7 +75,7 @@ public class RegAllocTest {
                                 new InstrList(new TEST(new TempList(t4), new TempList(t1)),
                                         new InstrList(new TEST(new TempList(t2), new TempList(t3)),
                                                 new InstrList(new TEST(new TempList(t4), new TempList(t2)), null))))));
-        RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
+        RegAlloc alloc = new RegAlloc(testFrame, instrList);
         alloc.instrList.dump();
         assertTrue(alloc.iterations > 1);
     }
@@ -100,7 +100,7 @@ public class RegAllocTest {
         TempList precoloured = TempList.create(new Temp[] { a, b, c });
         TempList registers = TempList.create(new Temp[] {a, b, c });
         TestFrame testFrame = new TestFrame(precoloured, registers);
-        RegAlloc alloc = new RegAlloc(testFrame, instrList, true);
+        RegAlloc alloc = new RegAlloc(testFrame, instrList);
         TempMapHelper helper = new TempMapHelper(alloc, registers);
         alloc.instrList.dump();
 

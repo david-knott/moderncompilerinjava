@@ -1,34 +1,29 @@
 package RegAlloc;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
 import Assem.InstrList;
 import Codegen.Assert;
+import Core.CompilerEventType;
+import Core.Component;
 import FlowGraph.AssemFlowGraph;
 import FlowGraph.FlowGraph;
 import Frame.Access;
 import Frame.Frame;
-import Graph.GraphvisRenderer;
-import Graph.Node;
-import Temp.CombineMap;
 import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
 
-interface RegAllocEventListener {
-	public void handle(RegAlloc regAlloc);
-
-}
 /**
  * RegAlloc class manages the spilling.
  */
-public class RegAlloc implements TempMap {
+public class RegAlloc extends Component implements TempMap {
+
+	private static CompilerEventType FLOW_GRAPH_COMPLETE = new CompilerEventType("ONE");
+	private static CompilerEventType LIVENESS_COMPLETE = new CompilerEventType("ONE");
+	private static CompilerEventType INTERFERENCE_COMPLETE = new CompilerEventType("ONE");
+	private static CompilerEventType COLOURING_COMPLETE = new CompilerEventType("ONE");
 	public InstrList instrList;
 	public Frame frame;
 	public PotentialSpillColour colour;
@@ -37,47 +32,17 @@ public class RegAlloc implements TempMap {
 	private TempList spillTemps;
 	private IGBackwardControlEdges baig;
 	private Liveness liveness;
-	private List<RegAllocEventListener> listeners;
 	private static int MAX_ITERATIONS = 3;
 
-	public void add(RegAllocEventListener listener) {
-		Assert.assertNotNull(listener);
-		if(this.listeners == null) {
-			this.listeners = new ArrayList<RegAllocEventListener>();
-		}
-		this.listeners.add(listener);
-	}
-
-	public void buildComplete() {
-		if(this.listeners == null) {
-			return;
-		}
-		for(RegAllocEventListener listener : this.listeners) {
-			listener.handle(this);
-		}
-	}
-
 	private void build() {
-		FlowGraph fg = new AssemFlowGraph(instrList);
-		this.liveness = new Liveness(fg);
-		this.baig = new IGBackwardControlEdges(fg, this.liveness);
+		FlowGraph flowGraph = new AssemFlowGraph(instrList);
+		this.trigger(FLOW_GRAPH_COMPLETE, flowGraph);
+		this.liveness = new Liveness(flowGraph);
+		this.trigger(LIVENESS_COMPLETE, this.liveness);
+		this.baig = new IGBackwardControlEdges(flowGraph, this.liveness);
+		this.trigger(INTERFERENCE_COMPLETE, this.baig);
 		this.colour = new PotentialSpillColour(baig, this.frame, this.frame.registers());
-		this.buildComplete();
-		/*
-		try {
-			PrintStream ps = new PrintStream(new FileOutputStream("./colour-graph" + this.iterations + ".txt"));
-			new GraphvisRenderer().render(ps, baig, new CombineMap(this, this.frame));
-			ps.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		try {
-			PrintStream ps = new PrintStream(new FileOutputStream("./flow-graph" + this.iterations + ".txt"));
-			new GraphvisRenderer().render(ps, fg, new CombineMap(this, this.frame));
-			ps.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
+		this.trigger(COLOURING_COMPLETE, this.colour);
 	}
 
 	private boolean hasSpills() {
@@ -136,8 +101,6 @@ public class RegAlloc implements TempMap {
 
 	private void allocate() {
 		this.build();
-		this.dumpUsesAndDefs();
-		this.dumpLiveness();
 		if (this.hasSpills() && this.iterations++ < MAX_ITERATIONS) {
 			this.rewrite();
 			this.allocate();
@@ -145,7 +108,7 @@ public class RegAlloc implements TempMap {
 		Assert.assertLE(this.iterations, MAX_ITERATIONS);
 	}
 
-	public RegAlloc(Frame frame, InstrList instrList, boolean dumpGraphs /* dump graphs */) {
+	public RegAlloc(Frame frame, InstrList instrList) {
 		this.iterations = 0;
 		this.instrList = instrList;
 		this.frame = frame;
@@ -211,21 +174,12 @@ public class RegAlloc implements TempMap {
 			System.out.print(Integer.toString(regCount));
 			System.out.print(" ");
 			System.out.print(instrList.head.def());
-
-
 			System.out.println();
         }
     }
 
 	@Override
 	public String tempMap(Temp t) {
-		String maps = this.colour.tempMap(t);
-		//if (maps == null) {
-//			maps = this.frame.tempMap(t);
-		//}
-	//	if(maps == null) {
-			//throw new Error("No map for " + t);
-	//	}
-		return maps;
+		return this.colour.tempMap(t);
 	}
 }
