@@ -1,19 +1,17 @@
 package ErrorMsg;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.io.PrintStream;
 
 public class ErrorMsg {
     private LineList linePos = new LineList(-1, null);
     private int lineNum = 1;
     private String filename;
     public boolean anyErrors;
-    public List<String> errors;
-    public List<CompilerError> compilerErrors;
+    public PrintStream out;
 
     public ErrorMsg(String f) {
         filename = f;
-        errors = new ArrayList<String>();
-        compilerErrors = new ArrayList<CompilerError>();
+        this.out = System.out;
     }
 
     public void newline(int pos) {
@@ -23,11 +21,6 @@ public class ErrorMsg {
 
     public void add(CompilerError compilerError){
         anyErrors = true;
-        compilerErrors.add(compilerError);
-    }
-
-    public List<CompilerError> getCompilerErrors(){
-        return compilerErrors;
     }
 
     public void error(int pos, String msg) {
@@ -43,8 +36,7 @@ public class ErrorMsg {
             p = p.tail;
             n--;
         }
-        errors.add(filename + ":" + sayPos + ": " + msg);
-        System.out.println(filename + ":" + sayPos + ": " + msg);
+        this.out.println(filename + ":" + sayPos + ": " + msg);
     }
 }
 

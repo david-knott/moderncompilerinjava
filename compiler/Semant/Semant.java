@@ -1,12 +1,12 @@
 package Semant;
 
-
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
 import Codegen.Assert;
 import ErrorMsg.ArgumentMismatchError;
 import ErrorMsg.BreakNestingError;
+import ErrorMsg.ErrorMsg;
 import ErrorMsg.FieldNotDefinedError;
 import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
@@ -28,15 +28,17 @@ import Util.BoolList;
 public class Semant {
     private final Env env;
     private final Label breakScopeLabel;
-    private final Translator translate;
+    private final Translator translator;
     private Level level;
+    public final static int PLUS = 0, MINUS = 1, MUL = 2, DIV = 3, AND = 4, OR = 5, LSHIFT = 6, RSHIFT = 7, ARSHIFT = 8;
+    public final static int EQ = 0, NE = 1, LT = 2, GT = 3, LE = 4, GE = 5, ULT = 6, ULE = 7, UGT = 8, UGE = 9;
     public static final Types.Type INT = new Types.INT();
     public static final Types.Type STRING = new Types.STRING();
     public static final Types.Type VOID = new Types.VOID();
     public static final Types.Type NIL = new Types.NIL();
     public SemantValidator semantValidator;
     
-    public Semant(final ErrorMsg.ErrorMsg err, final Level lvl, Translator trans) {
+    public Semant(ErrorMsg err, final Level lvl, Translator trans) {
         this(new Env(err, lvl), null, lvl, trans);
     }
 
@@ -44,21 +46,12 @@ public class Semant {
         env = e;
         breakScopeLabel = bsl;
         level = lev;
-        translate = trans;
-        this.semantValidator = new SemantValidator();
+        translator = trans;
+        this.semantValidator = new SemantValidator(e);
     }
 
     public boolean hasErrors() {
         return this.semantValidator.hasErrors();
-    }
-
-    /**
-     * Returns the env, this is used for testing.
-     * 
-     * @return
-     */
-    public Env getEnv() {
-        return this.env;
     }
 
     /**
@@ -70,9 +63,43 @@ public class Semant {
      */
     public FragList getTreeFragments(Absyn.Exp absyn) {
         var trans = this.transExp(absyn);
-        translate.procEntryExit(level, trans.exp);
-        return translate.getResult();
+        translator.procEntryExit(level, trans.exp);
+        return translator.getResult();
     }
+
+    /**
+     * Returns a record type.
+     * @param fields
+     * @return
+     */
+    private RECORD getRecordType(final FieldList fields) {
+        RECORD recordType = null;
+        if (fields != null) {
+            var fieldType = getType(fields.typ, fields.pos);
+            recordType = new RECORD(fields.name, fieldType, null);
+            var fieldTail = fields.tail;
+            while (fieldTail != null) {
+                fieldType = getType(fieldTail.typ, fieldTail.pos);
+                recordType.append(fieldTail.name, fieldType);
+                fieldTail = fieldTail.tail;
+            }
+        }
+        return recordType;
+    }
+
+    /**
+     * Returns the type of symbol or null if that symbols is
+     * not present in environment.
+     * @param sym
+     * @param pos
+     * @return the type of symbol or null.
+     */
+    private Types.Type getType(final Symbol sym, final int pos) {
+        this.semantValidator.checkVariable(sym, pos);
+        final Types.Type cached = (Types.Type) env.tenv.get(sym);
+        return cached;
+    }
+
 
     /**
      * Translates an abstract syntax record type into a tiger record type this
@@ -96,7 +123,8 @@ public class Semant {
     }
 
     /**
-     * Translates an abstract syntax array type into a native type eg array of int
+     * Translates an abstract syntax array type into a native type eg array of int.
+     * This retreives the element type from a cache.
      * 
      * @param t
      * @return
@@ -107,12 +135,14 @@ public class Semant {
     }
 
     /**
-     * Translates a type t into a native type
+     * Translates a type t into a native type. This retrieves
+     * the name type from a cache.
      * 
      * @param t
      * @return return the looked up nametype
      */
     Types.Type transTy(final Absyn.NameTy t) {
+        Assert.assertNotNull(t);
         final var cached = getType(t.name, t.pos);
         return cached;
     }
@@ -134,14 +164,14 @@ public class Semant {
      * Translate a variable into a IR
      */
     ExpTy transVar(final Absyn.SimpleVar e) {
-        final var x = env.venv.get(e.name);
-        if (x instanceof VarEntry) {
-            final VarEntry ent = (VarEntry) x;
-            var translateExp = translate.simpleVar(ent.access, level);
+        final var entry = env.venv.get(e.name);
+        this.semantValidator.checkVariable(e.name, e.pos);
+        if (entry instanceof VarEntry) {
+            final VarEntry ent = (VarEntry) entry;
+            var translateExp = translator.simpleVar(ent.access, level);
             return new ExpTy(translateExp, ent.ty);
         } else {
-            env.errorMsg.add(new UndefinedVariableError(e.pos, e.name));
-            return new ExpTy(null, INT);
+            return ExpTy.ERROR;
         }
     }
 
@@ -162,7 +192,7 @@ public class Semant {
         // TODO: Refactor node add
         for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
             if (r.fieldName == e.field) {
-                var translateExp = translate.fieldVar(varExp.exp, i, level);
+                var translateExp = translator.fieldVar(varExp.exp, i, level);
                 return new ExpTy(translateExp, r.fieldType.actual());
             }
             i++;
@@ -188,7 +218,7 @@ public class Semant {
         var translatedArrayVar = transVar(e.var);
         Types.Type elementType = translatedArrayVar.ty.actual();
         this.semantValidator.isArray(translatedArrayVar);
-        var translateExp = translate.subscriptVar(transIndexExp, translatedArrayVar, level);
+        var translateExp = translator.subscriptVar(transIndexExp, translatedArrayVar, level);
         return new ExpTy(translateExp, ((ARRAY) elementType).element);
     }
 
@@ -209,6 +239,27 @@ public class Semant {
             return transVar((Absyn.SubscriptVar) e);
         }
         throw new Error("Not Implemented " + e.getClass().getName());
+    }
+
+    /**
+     * COnverts a field list into a BoolList. Each
+     * boolean in this list represents a variable, where
+     * a true indicates the variable should escape and false
+     * where it should not.
+     * @param fields
+     * @return
+     */
+    private BoolList getBoolList(final FieldList fields) {
+        BoolList boolList = null; //
+        if (fields != null) {
+            boolList = new BoolList(fields != null ? fields.escape : null, null);
+            var fieldTail = fields.tail;
+            while (fieldTail != null) {
+                boolList.append(fieldTail.escape);
+                fieldTail = fieldTail.tail;
+            }
+        }
+        return boolList;
     }
 
     /**
@@ -251,13 +302,13 @@ public class Semant {
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             var vent = (FunEntry) env.venv.get(current.name);
             // iterate formals adding access to the created var entries
-            var translateAccess = translate.stripStaticLink(newLevel.formals);
+            var translateAccess = translator.stripStaticLink(newLevel.formals);
             for (var p = current.params; p != null; p = p.tail) {
                 var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
                 env.venv.put(p.name, varEntry);
                 translateAccess = translateAccess.tail;
             }
-            var transBody = new Semant(env, breakScopeLabel, newLevel, translate).transExp(current.body);
+            var transBody = new Semant(env, breakScopeLabel, newLevel, translator).transExp(current.body);
             if (firstFunction == null) {
                 firstFunction = transBody;
                 firstFunctionLevel = newLevel;
@@ -269,9 +320,9 @@ public class Semant {
             current = current.next;
         } while (current != null);
         // add the fragment to the list
-        var body = translate.functionDec(firstFunctionLevel, firstFunction);
-        translate.procEntryExit(firstFunctionLevel, body);
-        return translate.Noop();
+        var body = translator.functionDec(firstFunctionLevel, firstFunction);
+        translator.procEntryExit(firstFunctionLevel, body);
+        return translator.Noop();
     }
 
     /**
@@ -311,7 +362,7 @@ public class Semant {
                 throw new Error("Loop");
             }
         }
-        return translate.Noop();
+        return translator.Noop();
     }
 
     /**
@@ -322,24 +373,18 @@ public class Semant {
      */
     Exp transDec(final Absyn.VarDec e) {
         ExpTy initExpTy = transExp(e.init);
-        Assert.assertNotNull(e.init);
         Types.Type type = initExpTy.ty.actual();
-        Types.Type otherType = e.typ != null ? transTy(e.typ).actual() : initExpTy.ty.actual();
-        // if the expression type is not null
-        if (e.typ != null) {
-            if(!type.coerceTo(otherType)){
-                env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
-            }
+        // if the type is defined, lets check it
+        // if not, its infered from the init expression. 
+        if(e.typ != null) {
+            Types.Type other = transTy(e.typ);
+            this.semantValidator.sameType(initExpTy, other, e.pos);
+            this.semantValidator.nilAssignedToRecord(initExpTy, other, e.pos);
         }
-        // check that any variable that is assigned to nil is a record type
-        if (initExpTy.ty.actual() == NIL && !(otherType.actual() instanceof RECORD)) {
-            env.errorMsg.add(new TypeMismatchError(e.pos, otherType.actual(), initExpTy.ty.actual()));
-        }
-        // allocate space for this variable
         var translateAccess = level.allocLocal(e.escape);
         var varEntry = new VarEntry(type, translateAccess);
         env.venv.put(e.name, varEntry);
-        return translate.transDec(level, translateAccess, initExpTy.exp);
+        return translator.transDec(level, translateAccess, initExpTy.exp);
     }
 
     /**
@@ -365,13 +410,11 @@ public class Semant {
      */
     ExpTy transExp(final Absyn.VarExp e) {
         final var transVar = transVar(e.var);
-        return new ExpTy(translate.varExp(transVar), transVar.ty);
+        return new ExpTy(translator.varExp(transVar), transVar.ty);
     }
 
     /**
      * Returns a let expression
-     * 
-     * IR ?
      * 
      * @param e
      * @return
@@ -388,7 +431,7 @@ public class Semant {
             decList = decList.tail;
         }
         ExpTy irBody = transExp(e.body);
-        var irLet = translate.letE(irDecList, irBody);
+        var irLet = translator.letE(irDecList, irBody);
         env.tenv.endScope();
         env.venv.endScope();
         return new ExpTy(irLet, irBody.ty);
@@ -396,9 +439,7 @@ public class Semant {
 
 
 
-    public final static int PLUS = 0, MINUS = 1, MUL = 2, DIV = 3, AND = 4, OR = 5, LSHIFT = 6, RSHIFT = 7, ARSHIFT = 8;
-    public final static int EQ = 0, NE = 1, LT = 2, GT = 3, LE = 4, GE = 5, ULT = 6, ULE = 7, UGT = 8, UGE = 9;
-    /**
+        /**
      * Returns an operator expression
      * 
      * @param e
@@ -412,55 +453,55 @@ public class Semant {
         case Absyn.OpExp.PLUS:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.binaryOperator(PLUS, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.binaryOperator(PLUS, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MINUS:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.binaryOperator(MINUS, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.binaryOperator(MINUS, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.MUL:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.binaryOperator(MUL, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.binaryOperator(MUL, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.DIV:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.binaryOperator(DIV, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.binaryOperator(DIV, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LE:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.relativeOperator(LE, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.relativeOperator(LE, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GE:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.relativeOperator(GE, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.relativeOperator(GE, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.LT:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.relativeOperator(LT, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.relativeOperator(LT, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.GT:
             this.semantValidator.isInt(transExpLeft, e.left.pos);
             this.semantValidator.isInt(transExpRight, e.right.pos);
-            return new ExpTy(translate.relativeOperator(GT, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.relativeOperator(GT, transExpLeft, transExpRight), INT);
 
         case Absyn.OpExp.EQ:
             // the order here is important,
             // expRigth.coerceTo(expLeft) is not the same as
             // the reverse
             this.semantValidator.sameType(transExpRight, transExpLeft, e.left.pos);
-            return new ExpTy(translate.equalsOperator(EQ, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.equalsOperator(EQ, transExpLeft, transExpRight), INT);
         case Absyn.OpExp.NE:
             // the order here is important,
             // expRigth.coerceTo(expLeft) is not the same as
             // the reverse
             this.semantValidator.sameType(transExpRight, transExpLeft, e.left.pos);
-            return new ExpTy(translate.equalsOperator(NE, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.equalsOperator(NE, transExpLeft, transExpRight), INT);
         }
 
 
@@ -474,7 +515,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.NilExp nilExp) {
-        return new ExpTy(translate.nil(), NIL);
+        return new ExpTy(translator.nil(), NIL);
     }
 
     /**
@@ -484,7 +525,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.StringExp stringExp) {
-        return new ExpTy(translate.string(stringExp.value, level), STRING);
+        return new ExpTy(translator.string(stringExp.value, level), STRING);
     }
 
     /**
@@ -494,7 +535,7 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.IntExp intExp) {
-        return new ExpTy(translate.integer(intExp.value), INT);
+        return new ExpTy(translator.integer(intExp.value), INT);
     }
 
     /**
@@ -528,10 +569,10 @@ public class Semant {
             if (argExpList != null) {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
             }
-            return new ExpTy(translate.call(!funEntry.level.isTopLevel(), level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
+            return new ExpTy(translator.call(!funEntry.level.isTopLevel(), level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
-            return new ExpTy(translate.Noop(), INT);
+            return new ExpTy(translator.Noop(), INT);
         }
     }
 
@@ -543,10 +584,10 @@ public class Semant {
      */
     ExpTy transExp(Absyn.ExpList expList) {
         if (expList == null) {
-            return new ExpTy(translate.Noop(), VOID);
+            return new ExpTy(translator.Noop(), VOID);
         }
         if (expList.head == null) {
-            return new ExpTy(translate.Noop(), VOID);
+            return new ExpTy(translator.Noop(), VOID);
         } 
         ExpTyList etList = new ExpTyList(transExp(expList.head), null);
         expList = expList.tail;
@@ -555,7 +596,7 @@ public class Semant {
             expList = expList.tail;
         }
         
-        return new ExpTy(translate.seq(level, etList), etList.last().expTy.ty);
+        return new ExpTy(translator.seq(level, etList), etList.last().expTy.ty);
     }
 
     /**
@@ -598,7 +639,7 @@ public class Semant {
             if (transInitExp.ty != ((Types.ARRAY) tt.actual()).element) {
                 env.errorMsg.add(new TypeMismatchError(arrayExp.pos, tt));
             }
-            return new ExpTy(translate.array(level, transSizeExp, transInitExp), tt.actual());
+            return new ExpTy(translator.array(level, transSizeExp, transInitExp), tt.actual());
         }
     }
 
@@ -635,7 +676,7 @@ public class Semant {
             }
         }
         // a list of all the fieldExpTys here
-        return new ExpTy(translate.record(level, expTyList), tigerType);
+        return new ExpTy(translator.record(level, expTyList), tigerType);
     }
 
     /**
@@ -653,7 +694,7 @@ public class Semant {
         var transVar = transVar(assignExp.var); // lvalue
         var transExp = transExp(assignExp.exp); // rvalue
         this.semantValidator.sameType(transVar, transExp, assignExp.pos);
-        return new ExpTy(translate.assign(level, transVar, transExp), Semant.VOID);
+        return new ExpTy(translator.assign(level, transVar, transExp), Semant.VOID);
     }
 
     /**
@@ -679,11 +720,11 @@ public class Semant {
         ExpTy exphi = transExp(forExp.hi);
         this.semantValidator.isInt(exphi, forExp.hi.pos);
         var loopExit = new Label();
-        ExpTy expbody = new Semant(this.env, this.breakScopeLabel, this.level, this.translate).transExp(forExp.body);
+        ExpTy expbody = new Semant(this.env, this.breakScopeLabel, this.level, this.translator).transExp(forExp.body);
         this.semantValidator.isVoid(expbody);
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(this.translate.forL(level,  loopExit,access, explo, exphi, expbody), Semant.VOID);
+        return new ExpTy(this.translator.forL(level,  loopExit,access, explo, exphi, expbody), Semant.VOID);
     }
 
     /**
@@ -700,11 +741,11 @@ public class Semant {
         var testExp = transExp(whileExp.test);
         this.semantValidator.isInt(testExp, whileExp.test.pos);
         var loopExit = new Label();
-        var expboody = new Semant(this.env, loopExit, this.level, this.translate).transExp(whileExp.body);
+        var expboody = new Semant(this.env, loopExit, this.level, this.translator).transExp(whileExp.body);
         this.semantValidator.isVoid(expboody);
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(translate.whileL(this.level, loopExit, testExp, expboody), Semant.VOID);
+        return new ExpTy(translator.whileL(this.level, loopExit, testExp, expboody), Semant.VOID);
 
     }
 
@@ -716,10 +757,8 @@ public class Semant {
      * @return
      */
     ExpTy transExp(final Absyn.BreakExp breakExp) {
-        if (breakScopeLabel == null) {
-            env.errorMsg.add(new BreakNestingError(breakExp.pos));
-        }
-        return new ExpTy(translate.breakE(level, breakScopeLabel), Semant.VOID);
+        this.semantValidator.illegalBreak(this.breakScopeLabel, breakExp.pos);
+        return new ExpTy(translator.breakE(level, this.breakScopeLabel), Semant.VOID);
     }
 
     /**
@@ -737,9 +776,9 @@ public class Semant {
             env.errorMsg.add(new TypeMismatchError(ifExp.thenclause.pos, thenExp.ty.actual(), elseExp.ty.actual()));
             return new ExpTy(null, Semant.VOID);
         } else if (elseExp != null && elseExp.ty.coerceTo(thenExp.ty)) {
-            return new ExpTy(translate.ifE(level, testExp, thenExp, elseExp), elseExp.ty.actual());
+            return new ExpTy(translator.ifE(level, testExp, thenExp, elseExp), elseExp.ty.actual());
         } else {
-            return new ExpTy(translate.ifE(level, testExp, thenExp), Semant.VOID);
+            return new ExpTy(translator.ifE(level, testExp, thenExp), Semant.VOID);
         }
     }
 
@@ -813,40 +852,5 @@ public class Semant {
         return transExp;
     }
 
-    private BoolList getBoolList(final FieldList fields) {
-        BoolList boolList = null; //
-        if (fields != null) {
-            boolList = new BoolList(fields != null ? fields.escape : null, null);
-            var fieldTail = fields.tail;
-            while (fieldTail != null) {
-                boolList.append(fieldTail.escape);
-                fieldTail = fieldTail.tail;
-            }
-        }
-        return boolList;
-    }
-
-    private RECORD getRecordType(final FieldList fields) {
-        RECORD recordType = null;
-        if (fields != null) {
-            var fieldType = getType(fields.typ, fields.pos);
-            recordType = new RECORD(fields.name, fieldType, null);
-            var fieldTail = fields.tail;
-            while (fieldTail != null) {
-                fieldType = getType(fieldTail.typ, fieldTail.pos);
-                recordType.append(fieldTail.name, fieldType);
-                fieldTail = fieldTail.tail;
-            }
-        }
-        return recordType;
-    }
-
-    private Types.Type getType(final Symbol sym, final int pos) {
-        final Types.Type cached = (Types.Type) env.tenv.get(sym);
-        if (cached == null) {
-            env.errorMsg.add(new UndefinedVariableError(pos, sym));
-            return null;
-        }
-        return cached;
-    }
+    
 }

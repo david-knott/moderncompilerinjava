@@ -1,4 +1,12 @@
 ## Diary
+*22nd June 2020*
+
+Fixed the for loop bug. It was due to an error in the 'AND' set operation. Jeez.
+Started refactoring semantic analysis and adding new type checking tests.
+
+TODO: Semant -> Visitor, 
+TODO: Readonly Assignment to For Indexer
+
 *19th June 2020*
 Fixed sorting bug in Temps which was breaking register allocation.
 

@@ -15,9 +15,9 @@ public class Env {
     ErrorMsg errorMsg;
     Level outerMost;
 
-    Env(ErrorMsg err, Level om) {
-        errorMsg = err;
-        outerMost = om;
+    Env(ErrorMsg err, Level outerMost) {
+        this.errorMsg = err;
+        this.outerMost = outerMost;
         // initialize function values
         venv = new GenericTable<Entry>();
         venv.put(Symbol.symbol("print"),

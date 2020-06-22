@@ -1,14 +1,18 @@
 package Semant;
 
 import Absyn.Absyn;
+import Absyn.Exp;
 import Codegen.Assert;
+import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
+import Temp.Label;
 import Translate.ExpTy;
 import Types.ARRAY;
 import Types.INT;
 import Types.NIL;
 import Types.RECORD;
 import Types.STRING;
+import Types.Type;
 import Types.VOID;
 
 /**
@@ -16,6 +20,14 @@ import Types.VOID;
  */
 class SemantValidator {
     private boolean errors = false;
+    private ErrorMsg errorMsg;
+    private Env env;
+
+    public SemantValidator(Env e) {
+        Assert.assertNotNull(e);
+        this.errorMsg = e.errorMsg;
+        this.env = e;
+    }
 
     public boolean hasErrors() {
         return errors;
@@ -72,4 +84,31 @@ class SemantValidator {
 
     public void undefinedField(Symbol field, int pos) {
     }
+
+    public void sameType(ExpTy initExpTy, Type transTy, int pos) {
+        if (!initExpTy.ty.coerceTo(transTy)) {
+            this.errorMsg.error(pos, String.format("%1$s cannot be converted to a %2$s.", initExpTy.ty, transTy));
+        }
+    }
+
+    public void nilAssignedToRecord(ExpTy initExpTy, Type other, int pos) {
+        if (initExpTy.ty.actual() == Semant.NIL && !(other.actual() instanceof RECORD)) {
+            this.errorMsg.error(pos, String.format("%1$s is not a record type.", other));
+        }
+    }
+
+    public void illegalBreak(Label breakScopeLabel, int pos) {
+        if(breakScopeLabel == null) {
+            this.errorMsg.error(pos, "illegal break position.");
+        }
+    }
+
+	public void checkVariable(Symbol sym, int pos) {
+        if( null == (Types.Type) env.tenv.get(sym)) {
+            this.errorMsg.error(pos, String.format("Undefined variable %1$s.", sym));
+        }
+        if( null == (VarEntry) env.venv.get(sym)) {
+            this.errorMsg.error(pos, String.format("Undefined variable %1$s.", sym));
+        }
+	}
 }

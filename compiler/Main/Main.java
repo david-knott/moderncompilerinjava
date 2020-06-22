@@ -19,81 +19,6 @@ import Translate.FragList;
 import Translate.Level;
 import Translate.Translator;
 
-interface CompilerSource {
-
-}
-
-interface CompilerDestination {
-
-}
-
-interface FileSourceReader {
-    public void read(FileInputStream fileInputStream);
-}
-class FileSource implements CompilerSource {
-
-    private FileInputStream fileInputStream = null;
-
-    public FileSource(String fileName) {
-        try {
-            this.fileInputStream = new FileInputStream(fileName);
-
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    void read(FileSourceReader reader) {
-
-    }
-
-    void closeFile() {
-
-        try {
-            this.fileInputStream.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
-    void read() {
-        
-    }
-}
-
-class FileDestination implements CompilerDestination {
-    
-    private FileInputStream fileInputStream = null;
-
-    public FileDestination(String fileName) {
-        try {
-            this.fileInputStream = new FileInputStream(fileName);
-
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    
-    void openFile() {
-        
-    }
-    
-    public void println(String str) {
-        
-    }
-    
-    public void print(String str) {
-        
-    }
-    
-    void closeFile() {
-        
-    }
-}
-
 /**
  * Main class that executes the compiler.
  */
@@ -103,18 +28,11 @@ public class Main {
         new Main(args[0]);
     }
 
-    private InputStream inputStream;
-    private String name;
-    private Program ast;
-    private Semant semant;
-    private ErrorMsg errorMsg;
-    private Grm parser;
-    // frame implementation
-    private Frame frame = new IntelFrame(Label.create("tigermain"), null);
-    private Level topLevel = new Level(frame);
-    private Translator translate = new Translator();
+    /**
+     * If true, all variables should be stored on the stack, otherwise variables
+     * are stored in temporaries if they do not escape.
+     */
     private boolean allVarsEscape = false;
-    private FindEscape findEscape = new FindEscape(allVarsEscape);
 
     /**
      * Compiles the program. Using the parser we parse the source code and create an
@@ -129,41 +47,42 @@ public class Main {
      * @return
      */
     public Main(final String name) throws FileNotFoundException {
-        this.name = name;
-        /*
-        FileSource compilerSource = new FileSource(name);
-        compilerSource.read(x -> {
-            this.parser = new Grm(new Yylex(x, this.errorMsg), this.errorMsg);
-        });*/
-        
-        this.inputStream = new java.io.FileInputStream(this.name);
-        this.errorMsg = new ErrorMsg(this.name);
-        this.parser = new Grm(new Yylex(this.inputStream, this.errorMsg), this.errorMsg);
-        this.semant = new Semant(errorMsg, topLevel, this.translate);
-
+        InputStream inputStream = new java.io.FileInputStream(name);
+        ErrorMsg errorMsg = new ErrorMsg(name);
+        // lexing and parsing
+        Grm parser = new Grm(new Yylex(inputStream, errorMsg), errorMsg);
+        Program ast = null;
         try {
             java_cup.runtime.Symbol rootSymbol = parser.parse();
-            this.ast = (Program) rootSymbol.value;
+            ast = (Program) rootSymbol.value;
         } catch (Throwable e) {
             throw new Error("Unable to parse, syntax error", e);
         } finally {
             try {
-                this.inputStream.close();
+                inputStream.close();
             } catch (final java.io.IOException e) {
                 throw new Error(e.toString());
             }
         }
-        
-        findEscape.traverse(this.ast.absyn);
-        FragList frags = FragList.reverse(this.semant.getTreeFragments(this.ast.absyn));
-        if(this.semant.hasErrors()) {
+
+        // find escape
+        FindEscape findEscape = new FindEscape(allVarsEscape);
+        findEscape.traverse(ast.absyn);
+        // semantic analysis & translation to IR
+        Frame frame = new IntelFrame(Label.create("tigermain"), null);
+        Level topLevel = new Level(frame);
+        Translator translate = new Translator();
+        Semant semant = new Semant(errorMsg, topLevel, translate);
+        FragList frags = FragList.reverse(semant.getTreeFragments(ast.absyn));
+        if (semant.hasErrors()) {
             System.out.println("semant check error");
             System.exit(1);
         }
+        // codegen, liveness, register allocation
         PrintStream out = null;
         try {
-            out = new PrintStream(new java.io.FileOutputStream(this.name + ".s"));
-            //out = System.out;
+            out = new PrintStream(new java.io.FileOutputStream(name + ".s"));
+            // out = System.out;
             out.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
                 frags.head.process(out);
@@ -177,15 +96,5 @@ public class Main {
                 out.close();
             }
         }
-
     }
-
-    /*
-     * public Main(final String name, final InputStream inputStream) { this.name =
-     * name; this.inputStream = inputStream; this.errorMsg = new
-     * ErrorMsg(this.name); this.parser = new Grm(new Yylex(this.inputStream,
-     * this.errorMsg), this.errorMsg); this.semant = new Semant(errorMsg, topLevel,
-     * this.translate); }
-     */
-
 }
