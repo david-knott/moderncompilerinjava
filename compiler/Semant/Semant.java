@@ -25,6 +25,8 @@ import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
 import Util.BoolList;
+
+
 public class Semant {
     private final Env env;
     private final Label breakScopeLabel;
@@ -62,8 +64,11 @@ public class Semant {
      * @return
      */
     public FragList getTreeFragments(Absyn.Exp absyn) {
+    //    this.trigger<Absyn.Exp>(SEMANT_BEGIN, absyn);
         var trans = this.transExp(absyn);
+      //  this.trigger<ExpTy>(TRANS_COMPLETE, absyn);
         translator.procEntryExit(level, trans.exp);
+      //  this.trigger<Absyn.Exp>(SEMANT_COMPLETE, trans.exp);
         return translator.getResult();
     }
 
