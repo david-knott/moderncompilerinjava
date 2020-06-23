@@ -765,7 +765,6 @@ if(d instanceof Absyn.FunctionDec && dl != null && dl.head != null && dl.head in
   ((Absyn.FunctionDec)d).next = ((Absyn.FunctionDec)dl.head);
 }
 if(d instanceof Absyn.TypeDec && dl != null && dl.head != null && dl.head instanceof Absyn.TypeDec ){
-  System.out.println("Chaining type dec");
   ((Absyn.TypeDec)d).next = ((Absyn.TypeDec)dl.head);
 }
 RESULT = new Absyn.DecList(d, dl); 
