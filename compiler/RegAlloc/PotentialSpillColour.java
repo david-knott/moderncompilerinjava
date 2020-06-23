@@ -4,13 +4,21 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Stack;
 
+import Core.CompilerEventType;
+import Core.Component;
 import Graph.Node;
 import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
 
-public class PotentialSpillColour implements TempMap {
+public class PotentialSpillColour extends Component implements TempMap {
+
+	public static CompilerEventType NON_SIG_PUSH_STACK = new CompilerEventType("Start");
+    public static CompilerEventType SIG_PUSH_STACK = new CompilerEventType("Start");
+    public static CompilerEventType REMOVE_AVAILABLE_COLOUR = new CompilerEventType("Start");
+    public static CompilerEventType REMOVE_AVAILABLE_COLOUR_PRECOLOURED = new CompilerEventType("Start");
+    public static CompilerEventType ASSIGN_COLOUR = new CompilerEventType("Start");
 
 	private Hashtable<Node, Integer> degrees = new Hashtable<Node, Integer>();
 	private Stack<Node> simpleStack = new Stack<Node>();
@@ -30,6 +38,7 @@ public class PotentialSpillColour implements TempMap {
 		}
 	}
 
+    
 	public PotentialSpillColour(InterferenceGraph graph, TempMap precoloured, TempList registers) {
 		this.precoloured = precoloured;
 		this.registers = registers;
@@ -46,7 +55,6 @@ public class PotentialSpillColour implements TempMap {
 		}
 		// k colours for our graph
 		int k = registers.size();
-	//	System.out.println("registers:" + k);
 		// phase 'select'
 		// phase 'select < k'
 		// add nodes with degree less than k to stack
@@ -58,7 +66,7 @@ public class PotentialSpillColour implements TempMap {
 				Node node = nodeList.head;
 				int nodeDegree =  degrees.get(node);
 				if (nodeDegree < k) {
-		//			System.out.println(graph.gtemp(node) + " :less than significant degree left (" + nodeDegree + ")");
+					this.trigger(NON_SIG_PUSH_STACK, node); //TODO
 					this.reduceDegree(node);
 					this.simpleStack.push(node);
 					initialNodes = initialNodes.remove(node);
@@ -67,9 +75,9 @@ public class PotentialSpillColour implements TempMap {
 			}
 			if (!ilk && initialNodes != null) { /* only significant degree nodes left */
 				Node node = initialNodes.head;
+				this.trigger(SIG_PUSH_STACK, node); //TODO
 				initialNodes = initialNodes.tail;
 				this.reduceDegree(node);
-				System.out.println(graph.gtemp(node) +" :only significant degree left");
 				this.simpleStack.push(node); // mark as potential for spilling.
 			}
 
@@ -79,35 +87,30 @@ public class PotentialSpillColour implements TempMap {
 		while (!this.simpleStack.isEmpty()) {
 			Node node = this.simpleStack.pop();
 			Temp tempForNode = graph.gtemp(node);
-			// is this node a potential spill ?
-//			System.out.print("Adding colours:");
 			HashSet<Temp> colours = new HashSet<Temp>();
 			for (var c = this.registers; c != null; c = c.tail) {
-		//		System.out.print(c.head + " ");
 				colours.add(c.head);
 			}
-	//		System.out.println();;
 			for (var adj = node.adj(); adj != null; adj = adj.tail) {
 				if (null != this.precoloured.tempMap(graph.gtemp(adj.head))) { // is the node precoloured ?
 					colours.remove(graph.gtemp(adj.head));
-		//			System.out.println(tempForNode + " :removing colour " + graph.gtemp(adj.head) + " as this is a precoloured node.");
+					this.trigger(REMOVE_AVAILABLE_COLOUR_PRECOLOURED, graph.gtemp(adj.head));
 					continue;
 				}
 				if (coloured.containsKey(graph.gtemp(adj.head))) { // an adjacent node is already coloured
 					var c = coloured.get(graph.gtemp(adj.head));
 					colours.remove(c);
-				//	System.out.println(tempForNode + " :removing colour " + c + " as already assigned.");
+					this.trigger(REMOVE_AVAILABLE_COLOUR, graph.gtemp(adj.head));
 					continue;
 				}
 			}
 			// assign colour to node
 			if (colours.isEmpty()) {
-				System.out.println("--->" + tempForNode + ": no colours to assign, need to spill");
 				addSpill(tempForNode);
 			} else {
-				Temp color = colours.iterator().next();
-			//	System.out.println(tempForNode + ":Assigning color " + color);
-				coloured.put(tempForNode, color);
+				Temp colour = colours.iterator().next();
+				this.trigger(ASSIGN_COLOUR, colour);
+				coloured.put(tempForNode, colour);
 			}
 		}
 	}

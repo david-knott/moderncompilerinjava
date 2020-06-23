@@ -1,4 +1,10 @@
 ## Diary
+*23nd June 2020*
+Continueing to add unit tests for semantic type checking. Fixed read only for loop bug.
+
+TODO: Test string functions
+
+
 *22nd June 2020*
 
 Fixed the for loop bug. It was due to an error in the 'AND' set operation. Jeez.
