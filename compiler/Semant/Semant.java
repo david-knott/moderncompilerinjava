@@ -27,6 +27,7 @@ import Types.ARRAY;
 import Types.NAME;
 import Types.RECORD;
 import Util.BoolList;
+
 public class Semant extends Component{
 
     public static CompilerEventType SEMANT_START = new CompilerEventType("Start");
@@ -54,8 +55,12 @@ public class Semant extends Component{
         this.semantValidator = new SemantValidator(e);
     }
 
+    /**
+     * Returns true if there are semantic validation errors.
+     * @return true or false
+     */
     public boolean hasErrors() {
-        return this.semantValidator.hasErrors();
+        return this.env.errorMsg.anyErrors;
     }
 
     /**
@@ -66,11 +71,9 @@ public class Semant extends Component{
      * @return
      */
     public FragList getTreeFragments(Absyn.Exp absyn) {
-    //    this.trigger<Absyn.Exp>(SEMANT_BEGIN, absyn);
-        var trans = this.transExp(absyn);
         this.trigger(SEMANT_START, absyn);
+        var trans = this.transExp(absyn);
         translator.procEntryExit(level, trans.exp);
-      //  this.trigger<Absyn.Exp>(SEMANT_COMPLETE, trans.exp);
         return translator.getResult();
     }
 
@@ -171,15 +174,11 @@ public class Semant extends Component{
      * Translate a variable into a IR
      */
     ExpTy transVar(final Absyn.SimpleVar e) {
-        final var entry = env.venv.get(e.name);
-        this.semantValidator.checkVariable(e.name, e.pos);
-        if (entry instanceof VarEntry) {
-            final VarEntry ent = (VarEntry) entry;
-            var translateExp = translator.simpleVar(ent.access, level);
-            return new ExpTy(translateExp, ent.ty);
-        } else {
+        if(!this.semantValidator.checkVariableDefined(e.name, e.pos))
             return ExpTy.ERROR;
-        }
+        VarEntry ent = (VarEntry)env.venv.get(e.name);
+        var translateExp = translator.simpleVar(ent.access, level);
+        return new ExpTy(translateExp, ent.ty);
     }
 
     /**
@@ -193,14 +192,15 @@ public class Semant extends Component{
      */
     ExpTy transVar(final Absyn.FieldVar e) {
         var varExp = transVar(e.var);
+        if(!this.semantValidator.isRecord(varExp, e.var.pos))
+            return ExpTy.ERROR;
         var varType = varExp.ty.actual();
-        this.semantValidator.isRecord(varExp, e.var.pos);
         int i = 0;
         // TODO: Refactor node add
-        for (var r = (RECORD) varType.actual(); r != null; r = r.tail) {
-            if (r.fieldName == e.field) {
-                var translateExp = translator.fieldVar(varExp.exp, i, level);
-                return new ExpTy(translateExp, r.fieldType.actual());
+        for (RECORD record = (RECORD) varType; record != null; record = record.tail) {
+            if (record.fieldName == e.field) {
+                Exp translateExp = translator.fieldVar(varExp.exp, i, level);
+                return new ExpTy(translateExp, record.fieldType.actual());
             }
             i++;
         }

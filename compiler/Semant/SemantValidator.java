@@ -43,29 +43,20 @@ class SemantValidator {
         return ok;
     }
 
-    public String format() {
-        // ../../compiler/Translate/Translator.java:188: error: incompatible types: int
-        // cannot be converted to String
-        // String s = 2
-        String path = "";
-        int lineNumber = 0;
-        String level = "error";
-        String category = "incompatible types";
-        String message = "int cannot be converted to a string";
-        String line = "\t\tString s = 2";
-        return String.format("%1$s:%2$d: $3$s: $4$s: $5$s\n$6$s", path, lineNumber, level, category, message, line);
-    }
-
-    public void isInt(ExpTy expTy, int pos) {
+    public boolean isInt(ExpTy expTy, int pos) {
         if (!(expTy.ty.actual() instanceof INT)) {
             this.errorMsg.error(pos, String.format("%1$s cannot be converted to an int.", expTy.ty));
+            return false;
         }
+        return true;
     }
 
-    public void isString(ExpTy expTy, int pos) {
+    public boolean isString(ExpTy expTy, int pos) {
         if (!(expTy.ty.actual() instanceof STRING)) {
             this.errorMsg.error(pos, String.format("%1$s cannot be converted to an string.", expTy.ty));
+            return false;
         }
+        return true;
     }
 
     public boolean isArray(ExpTy expTy) {
@@ -73,7 +64,7 @@ class SemantValidator {
     }
 
     public boolean isRecord(ExpTy expTy, int pos) {
-        return capture(expTy.ty.actual() instanceof RECORD);
+        return expTy.ty != null && expTy.ty.actual() instanceof RECORD;
     }
 
     public void isRecord(Type tigerType, int pos) {
@@ -95,28 +86,36 @@ class SemantValidator {
     public void undefinedField(Symbol field, int pos) {
     }
 
-    public void sameType(ExpTy initExpTy, Type transTy, int pos) {
+    public boolean sameType(ExpTy initExpTy, Type transTy, int pos) {
         if (!initExpTy.ty.coerceTo(transTy)) {
             this.errorMsg.error(pos, String.format("%1$s cannot be converted to a %2$s.", initExpTy.ty, transTy));
+            return false;
         }
+        return true;
     }
 
-    public void nilAssignedToRecord(ExpTy initExpTy, Type other, int pos) {
+    public boolean nilAssignedToRecord(ExpTy initExpTy, Type other, int pos) {
         if (initExpTy.ty.actual() == Semant.NIL && !(other.actual() instanceof RECORD)) {
             this.errorMsg.error(pos, String.format("%1$s is not a record type.", other));
+            return false;
         }
+        return true;
     }
 
-    public void illegalBreak(Label breakScopeLabel, int pos) {
+    public boolean illegalBreak(Label breakScopeLabel, int pos) {
         if (breakScopeLabel == null) {
             this.errorMsg.error(pos, "illegal break position.");
+            return false;
         }
+        return true;
     }
 
-    public void checkVariable(Symbol sym, int pos) {
+    public boolean checkVariableDefined(Symbol sym, int pos) {
         if (null == (VarEntry) env.venv.get(sym)) {
             this.errorMsg.error(pos, String.format("Undefined variable %1$s.", sym));
+            return false;
         }
+        return true;
     }
 
     public void checkType(Symbol sym, int pos) {

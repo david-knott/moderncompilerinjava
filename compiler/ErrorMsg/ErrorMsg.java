@@ -9,9 +9,9 @@ public class ErrorMsg {
     public boolean anyErrors;
     public PrintStream out;
 
-    public ErrorMsg(String f) {
+    public ErrorMsg(String f, PrintStream out) {
         filename = f;
-        this.out = System.out;
+        this.out = out;
     }
 
     public void newline(int pos) {

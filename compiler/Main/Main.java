@@ -79,7 +79,7 @@ public class Main {
      */
     public Main(final String name) throws FileNotFoundException {
         InputStream inputStream = new java.io.FileInputStream(name);
-        ErrorMsg errorMsg = new ErrorMsg(name);
+        ErrorMsg errorMsg = new ErrorMsg(name, System.err);
         // lexing and parsing
         Grm parser = new Grm(new Yylex(inputStream, errorMsg), errorMsg);
         Program ast = null;

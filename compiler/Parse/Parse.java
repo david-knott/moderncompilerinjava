@@ -55,7 +55,7 @@ public class Parse {
 	}
 
 	public static void Lex(String filename) {
-		ErrorMsg.ErrorMsg errorMsg = new ErrorMsg.ErrorMsg(filename);
+		ErrorMsg.ErrorMsg errorMsg = new ErrorMsg.ErrorMsg(filename, System.err);
 		java.io.InputStream inp = null;
 		try {
 			inp = new java.io.FileInputStream(filename);
