@@ -9,22 +9,17 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void test() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/tests/for_function_in_loop.tig"});
+        Main.main(new String[]{"./test/E2E/good/for_function_in_loop.tig"});
     }
 
     @Test
     public void forAssign() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/tests/for_assign_indexer.tig"});
+        Main.main(new String[]{"./test/E2E/good/for_assign_indexer.tig"});
     }
 
 
     @Test
     public void test2() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/tests/while_function_in_loop.tig"});
-    }
-
-    @Test
-    public void test3() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/tests/function_two_arg_cc.tig"});
+        Main.main(new String[]{"./test/E2E/good/while_function_in_loop.tig"});
     }
 }
