@@ -13,6 +13,12 @@ public class TestDriver {
     }
 
     @Test
+    public void forAssign() throws FileNotFoundException {
+        Main.main(new String[]{"./test/E2E/tests/for_assign_indexer.tig"});
+    }
+
+
+    @Test
     public void test2() throws FileNotFoundException {
         Main.main(new String[]{"./test/E2E/tests/while_function_in_loop.tig"});
     }

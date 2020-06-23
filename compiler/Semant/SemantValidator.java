@@ -2,6 +2,8 @@ package Semant;
 
 import Absyn.Absyn;
 import Absyn.Exp;
+import Absyn.SimpleVar;
+import Absyn.Var;
 import Codegen.Assert;
 import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
@@ -54,12 +56,16 @@ class SemantValidator {
         return String.format("%1$s:%2$d: $3$s: $4$s: $5$s\n$6$s", path, lineNumber, level, category, message, line);
     }
 
-    public boolean isInt(ExpTy expTy, int pos) {
-        return capture(expTy.ty.actual() instanceof INT);
+    public void isInt(ExpTy expTy, int pos) {
+        if (!(expTy.ty.actual() instanceof INT)) {
+            this.errorMsg.error(pos, String.format("%1$s cannot be converted to an int.", expTy.ty));
+        }
     }
 
-    public boolean isString(ExpTy expTy) {
-        return capture(expTy.ty.actual() instanceof STRING);
+    public void isString(ExpTy expTy, int pos) {
+        if (!(expTy.ty.actual() instanceof STRING)) {
+            this.errorMsg.error(pos, String.format("%1$s cannot be converted to an string.", expTy.ty));
+        }
     }
 
     public boolean isArray(ExpTy expTy) {
@@ -68,6 +74,10 @@ class SemantValidator {
 
     public boolean isRecord(ExpTy expTy, int pos) {
         return capture(expTy.ty.actual() instanceof RECORD);
+    }
+
+    public void isRecord(Type tigerType, int pos) {
+        capture(tigerType.actual() instanceof RECORD);
     }
 
     public boolean isNil(ExpTy expTy) {
@@ -98,20 +108,31 @@ class SemantValidator {
     }
 
     public void illegalBreak(Label breakScopeLabel, int pos) {
-        if(breakScopeLabel == null) {
+        if (breakScopeLabel == null) {
             this.errorMsg.error(pos, "illegal break position.");
         }
     }
 
     public void checkVariable(Symbol sym, int pos) {
-        if( null == (VarEntry) env.venv.get(sym)) {
+        if (null == (VarEntry) env.venv.get(sym)) {
             this.errorMsg.error(pos, String.format("Undefined variable %1$s.", sym));
         }
     }
 
-	public void checkType(Symbol sym, int pos) {
-        if( null == (Types.Type) env.tenv.get(sym)) {
+    public void checkType(Symbol sym, int pos) {
+        if (null == (Types.Type) env.tenv.get(sym)) {
             this.errorMsg.error(pos, String.format("Undefined type %1$s.", sym));
         }
-	}
+    }
+
+    public void isReadonly(Var var, int pos) {
+        if (var instanceof SimpleVar) {
+            SimpleVar simpleVar = (SimpleVar) var;
+            VarEntry varEntry = null;
+            if ((varEntry = (VarEntry) env.venv.get(simpleVar.name)) != null && varEntry.readonly) {
+                this.errorMsg.error(pos, String.format("Assign to readonly variable %1$s.", simpleVar.name));
+            }
+        }
+    }
+
 }

@@ -33,7 +33,6 @@ public class ColourTest {
         TempList precoloured = TempList.create(new Temp[]{r1, r2, r3});
         TempList registers = TempList.create(new Temp[]{r1, r2, r3});
         TestFrame testFrame = new TestFrame(precoloured, registers);
-        boolean dumpGraphs = false;
         InstrList instrList = new InstrList(
             new TEST(new TempList(t1,new TempList(r3)), new TempList(t2)),
             new InstrList(

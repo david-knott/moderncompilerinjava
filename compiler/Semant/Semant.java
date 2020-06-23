@@ -379,8 +379,6 @@ public class Semant extends Component{
     Exp transDec(final Absyn.VarDec e) {
         ExpTy initExpTy = transExp(e.init);
         Types.Type type = initExpTy.ty.actual();
-        // if the type is defined, lets check it
-        // if not, its infered from the init expression. 
         if(e.typ != null) {
             Types.Type other = transTy(e.typ);
             this.semantValidator.sameType(initExpTy, other, e.pos);
@@ -662,6 +660,7 @@ public class Semant extends Component{
     ExpTy transExp(final Absyn.RecordExp recordExp) {
         var expressionTypeSymbol = recordExp.typ;
         var tigerType = (Types.Type) env.tenv.get(expressionTypeSymbol);
+        this.semantValidator.isRecord(tigerType, recordExp.pos);
         if (tigerType == null) {
             env.errorMsg.add(new UndefinedTypeError(recordExp.pos, tigerType));
         }
@@ -699,6 +698,7 @@ public class Semant extends Component{
         var transVar = transVar(assignExp.var); // lvalue
         var transExp = transExp(assignExp.exp); // rvalue
         this.semantValidator.sameType(transVar, transExp, assignExp.pos);
+        this.semantValidator.isReadonly(assignExp.var, assignExp.pos);
         return new ExpTy(translator.assign(level, transVar, transExp), Semant.VOID);
     }
 
@@ -708,6 +708,9 @@ public class Semant extends Component{
      * indicates that break statements are legal inside this expression
      * 
      * We assume the index variable does not escape
+     * 
+     * Note that the Loop Indexer is not initialised via the VarDec abstact syntax.
+     * We explicity create it here and set it to read only inside the loop body.
      * 
      * IR Code The for loop can be translated into the following sequence
      * 
@@ -724,12 +727,14 @@ public class Semant extends Component{
         this.semantValidator.isInt(explo, forExp.var.init.pos);
         ExpTy exphi = transExp(forExp.hi);
         this.semantValidator.isInt(exphi, forExp.hi.pos);
-        var loopExit = new Label();
+        var loopExit = Label.create();
+        varEntry.readonly = true;
         ExpTy expbody = new Semant(this.env, this.breakScopeLabel, this.level, this.translator).transExp(forExp.body);
+        varEntry.readonly = false;
         this.semantValidator.isVoid(expbody);
         env.venv.endScope();
         env.tenv.endScope();
-        return new ExpTy(this.translator.forL(level,  loopExit,access, explo, exphi, expbody), Semant.VOID);
+        return new ExpTy(this.translator.forL(level, loopExit,access, explo, exphi, expbody), Semant.VOID);
     }
 
     /**
@@ -835,11 +840,7 @@ public class Semant extends Component{
      * @return
      */
     private ExpTy transFieldListExp(final Absyn.FieldExpList fel, final Types.RECORD recordType) {
-        if (recordType == null) {
-            // error(fel.pos, "Unknown symbol: " + fel.name);
-            env.errorMsg.add(new UndefinedVariableError(fel.pos, fel.name));
-            return new ExpTy(null, null);
-        }
+        Assert.assertNotNull(recordType);
         // get type of field for this record type
         final var fieldType = recordType.fieldType;
         final var fieldName = recordType.fieldName;
