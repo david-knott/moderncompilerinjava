@@ -32,7 +32,6 @@ public class AssemFlowGraph extends FlowGraph {
             if(p.head instanceof LABEL){
                 var l = ((LABEL)p.head).label;
                 labelInstr.put(l, p.head);
-                System.out.println(l);
                 //this.getOrCreate(p.head);
             }
         }
