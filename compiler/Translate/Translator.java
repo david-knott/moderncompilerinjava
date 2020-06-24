@@ -466,16 +466,10 @@ public class Translator extends Component {
         }
     }
 
-    /*
-new SEQ(
-                    new EXP(new CALL(new NAME(functionLabel), expList)),
-                    new MOVE(new TEMP(out), new TEMP(calleeLevel.frame.RV())) 
-                ),*/
     public Exp equalsOperator(int i, ExpTy transExpLeft, ExpTy transExpRight, Level level) {
         Assert.assertNotNull(transExpLeft);
         Assert.assertNotNull(transExpRight);
         if(transExpLeft.ty == Semant.STRING && transExpRight.ty == Semant.STRING) {
-            //call stringEquals and move result into a temp, return the temp
             Temp result = Temp.create();
             return new Ex(
                 new ESEQ(
