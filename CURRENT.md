@@ -1,5 +1,7 @@
 ## Diary
 *24th June 2020*
+Fixed binops, strings and ifthenelse. Still bug in queens and merge.
+
 String E2E tests.
 
 TODO: Binary operator and relative operator tests.
