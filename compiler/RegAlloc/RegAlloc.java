@@ -100,7 +100,7 @@ public class RegAlloc extends Component implements TempMap {
 	private TempList spillTemps;
 	private IGBackwardControlEdges baig;
 	private Liveness liveness;
-	private static int MAX_ITERATIONS = 3;
+	private static int MAX_ITERATIONS = 7;
 
 	private void build() {
 		FlowGraph flowGraph = new AssemFlowGraph(instrList);

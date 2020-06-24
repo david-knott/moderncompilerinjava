@@ -20,6 +20,6 @@ public class TestDriver {
 
     @Test
     public void test2() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/int_not.tig"});
+        Main.main(new String[]{"./test/E2E/good/if_and.tig"});
     }
 }

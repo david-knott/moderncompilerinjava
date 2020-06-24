@@ -22,7 +22,7 @@ public class InstrList {
 
     /**
      * @param me
-     * @param t
+     * @param trueLabel
      * @return
      */
     public static InstrList append(InstrList me, InstrList end) {

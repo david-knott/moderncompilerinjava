@@ -18,6 +18,6 @@ else
 echo -e "\e[92mTest Result: $f passed.\e[0m"
 fi
 done
-rm -rf ./good/*.out
-rm -rf ./good/*.s
+#rm -rf ./good/*.out
+#rm -rf ./good/*.s
 

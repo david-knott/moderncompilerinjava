@@ -3,6 +3,52 @@
 String E2E tests.
 
 TODO: Binary operator and relative operator tests.
+TODO: & and | operators have a bug. These translate into 'if cond1  then cond2 else 0' and
+'if cond1 then 1 else cond2'. The code that creates the IR is not right. The IfThenElseExp.unCx
+method is for instances where and IfThenElse is used as a conditional expression, specifically in
+an IF statement. I suspect when it is used like this we jump to the parent IF's true label if
+these expressions return 1 and we jump to the false label if they return 0.
+
+A basic if is as follows
+
+compare op, e1, e2, jump-true, jump-false
+label jump-true
+do something
+jump join
+label jump-false
+do something
+label join
+
+for an if like this 'if a op b then c op d else 0'
+
+compare op a b jt, jf
+label jt
+compare op c d jtt, jff
+label jtt
+1
+jump join
+label jff
+0
+jump join
+label jf
+0
+jump join
+label join
+
+Question do we return 1 or 0 to the calling if ? I dont think so.
+
+The outer IF evaluates an expresion and either executes the true branch or false branch and returns a value or no value, 
+depending on the then and else expression types.
+
+THe outer IF will pass in its true and false labels ( locations of the true and false expressions ) to the inner IF
+and expect it will add the necessary jumps to these labels. The outer IF will write the neccessary Tree code with
+these labels. 
+
+Inner IF needs to JUMP to supplied unCx labels.
+
+
+
+
 
 *23nd June 2020*
 Continueing to add unit tests for semantic type checking. Fixed read only for loop bug.

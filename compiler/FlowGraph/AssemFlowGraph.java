@@ -15,7 +15,7 @@ public class AssemFlowGraph extends FlowGraph {
     private Hashtable<Label, Instr> labelInstr = new Hashtable<Label, Instr>();
     private Hashtable<Node, Boolean> visited = new Hashtable<Node, Boolean>();
 
-    public Node getOrCreate(Instr instr) {
+    private Node getOrCreate(Instr instr) {
         if(invNodeMap.containsKey(instr)) {
             return invNodeMap.get(instr);
         }
@@ -32,6 +32,7 @@ public class AssemFlowGraph extends FlowGraph {
             if(p.head instanceof LABEL){
                 var l = ((LABEL)p.head).label;
                 labelInstr.put(l, p.head);
+                System.out.println(l);
                 //this.getOrCreate(p.head);
             }
         }
@@ -45,6 +46,9 @@ public class AssemFlowGraph extends FlowGraph {
             if(targets != null) {
                 for (var t = targets.labels; t != null; t = t.tail) {
                     var jinstr = labelInstr.get(t.head);
+                    if(jinstr == null) {
+                        throw new Error("No instruction for " + t.head);
+                    }
                     Node jNode = this.getOrCreate(jinstr);
                     this.addEdge(prevNode, jNode);
                 }
