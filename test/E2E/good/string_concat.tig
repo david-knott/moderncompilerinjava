@@ -1,6 +1,6 @@
 let
 var a:string := "david"
-var b:string := "david"
+var b:string := "april"
 in
-printi(a = b)
+print(concat(a, b))
 end
