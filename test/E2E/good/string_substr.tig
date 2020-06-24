@@ -1,6 +1,5 @@
 let
-var a:string := "david"
-var b:string := "david"
+var a:string := "brillig"
 in
-printi(a = b)
+print(substring(a, 2, 5 ))
 end
