@@ -25,6 +25,9 @@ import Translate.Level;
 import Translate.Translator;
 import Tree.Stm;
 
+class Options {
+    
+}
 /**
  * Main class that executes the compiler.
  */
@@ -78,8 +81,10 @@ public class Main {
      * @return
      */
     public Main(final String name) throws FileNotFoundException {
+     //   PrintStream out = System.out;
+        PrintStream err = System.err;
         InputStream inputStream = new java.io.FileInputStream(name);
-        ErrorMsg errorMsg = new ErrorMsg(name, System.err);
+        ErrorMsg errorMsg = new ErrorMsg(name, err);
         // lexing and parsing
         Grm parser = new Grm(new Yylex(inputStream, errorMsg), errorMsg);
         Program ast = null;
@@ -96,37 +101,36 @@ public class Main {
             }
         }
 
-        // find escape
+        // find variables that must be stored in frame
         FindEscape findEscape = new FindEscape(allVarsEscape);
         findEscape.traverse(ast.absyn);
         // semantic analysis & translation to IR
         Frame frame = new IntelFrame(Label.create("tigermain"), null);
         Level topLevel = new Level(frame);
         Translator translate = new Translator();
-        this.registerListeners(translate);
+     //   this.registerListeners(translate);
         Semant semant = new Semant(errorMsg, topLevel, translate);
-        this.registerListeners(semant);
+     //   this.registerListeners(semant);
         FragList frags = FragList.reverse(semant.getTreeFragments(ast.absyn));
         if (semant.hasErrors()) {
             System.out.println("semant check error");
             System.exit(1);
         }
         // codegen, liveness, register allocation
-        PrintStream out = null;
+        PrintStream fileOut = null;
         try {
-            out = new PrintStream(new java.io.FileOutputStream(name + ".s"));
-            // out = System.out;
-            out.println(".global tigermain");
+            fileOut = new PrintStream(new java.io.FileOutputStream(name + ".s"));
+            fileOut.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
-                frags.head.process(out);
+                frags.head.process(fileOut);
             }
-            out.close();
+            fileOut.close();
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
             throw new Error(e1.toString());
         } finally {
-            if (out != null) {
-                out.close();
+            if (fileOut != null) {
+                fileOut.close();
             }
         }
     }
