@@ -98,7 +98,7 @@ int ord(struct string *s)
     return s->chars[0];
 }
 
-struct string *chr(int i)
+struct string *chr(long i)
 {
   if (i < 0 || i >= 256)
   {
