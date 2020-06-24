@@ -1,4 +1,9 @@
 ## Diary
+*24th June 2020*
+String E2E tests.
+
+TODO: Binary operator and relative operator tests.
+
 *23nd June 2020*
 Continueing to add unit tests for semantic type checking. Fixed read only for loop bug.
 
