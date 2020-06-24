@@ -1,4 +1,4 @@
 let
 in
-printi(!1)
+printi(not(1))
 end
