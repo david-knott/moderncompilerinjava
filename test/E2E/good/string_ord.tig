@@ -1,6 +1,5 @@
 let
-var a:string := "david"
-var b:string := "david"
+var a:string := "april"
 in
-printi(a = b)
+printi(ord(a))
 end
