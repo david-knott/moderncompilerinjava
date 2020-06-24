@@ -500,13 +500,13 @@ public class Semant extends Component{
             // expRigth.coerceTo(expLeft) is not the same as
             // the reverse
             this.semantValidator.sameType(transExpRight, transExpLeft, e.left.pos);
-            return new ExpTy(translator.equalsOperator(EQ, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.equalsOperator(EQ, transExpLeft, transExpRight, this.level), INT);
         case Absyn.OpExp.NE:
             // the order here is important,
             // expRigth.coerceTo(expLeft) is not the same as
             // the reverse
             this.semantValidator.sameType(transExpRight, transExpLeft, e.left.pos);
-            return new ExpTy(translator.equalsOperator(NE, transExpLeft, transExpRight), INT);
+            return new ExpTy(translator.equalsOperator(NE, transExpLeft, transExpRight, this.level), INT);
         }
 
 
