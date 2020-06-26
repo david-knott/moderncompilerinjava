@@ -23,8 +23,5 @@ public class FieldList extends Absyn {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      if (tail != null)
-         tail.accept(visitor);
-
    }
 }

@@ -20,7 +20,5 @@ public class ArrayExp extends Exp {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      size.accept(visitor);
-      init.accept(visitor);
    }
 }

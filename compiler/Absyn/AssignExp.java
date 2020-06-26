@@ -14,7 +14,5 @@ public class AssignExp extends Exp {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      var.accept(visitor);
-      exp.accept(visitor);
    }
 }

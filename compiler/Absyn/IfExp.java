@@ -22,10 +22,5 @@ public class IfExp extends Exp {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      test.accept(visitor);
-      thenclause.accept(visitor);
-      if (elseclause != null)
-         elseclause.accept(visitor);
-
    }
 }

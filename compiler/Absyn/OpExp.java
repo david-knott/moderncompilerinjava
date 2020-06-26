@@ -16,7 +16,5 @@ public class OpExp extends Exp {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      left.accept(visitor);
-      right.accept(visitor);
    }
 }

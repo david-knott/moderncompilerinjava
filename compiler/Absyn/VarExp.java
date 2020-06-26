@@ -11,6 +11,5 @@ public class VarExp extends Exp {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      var.accept(visitor);
    }
 }

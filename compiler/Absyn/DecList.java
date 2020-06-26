@@ -11,8 +11,5 @@ public class DecList {
 
    public void accept(AbsynVisitor visitor) {
       head.accept(visitor);
-      if (tail != null)
-         tail.accept(visitor);
    }
-
 }

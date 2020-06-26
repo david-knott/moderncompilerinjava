@@ -12,7 +12,5 @@ public class WhileExp extends Exp {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      test.accept(visitor);
-      body.accept(visitor);
    }
 }

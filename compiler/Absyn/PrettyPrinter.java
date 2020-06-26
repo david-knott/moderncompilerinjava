@@ -5,10 +5,9 @@ import java.io.PrintStream;
 import Codegen.Assert;
 
 enum IndentationType {
-    Tabs,
-    Spaces,
-    Fib
+    Tabs, Spaces, Fib
 }
+
 /**
  * Returns a formatted version of the AST. This formatted version can be feed
  * back into the compiler. See
@@ -29,9 +28,6 @@ class PrettyPrinter implements AbsynVisitor {
         line("/* == Abstract Syntax Tree. == */");
         lineBreak();
         exp.accept(this);
-    }
-
-    private void indent(int d) {
     }
 
     private void indent() {
@@ -59,128 +55,151 @@ class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(ArrayExp exp) {
-        // TODO Auto-generated method stub
-
+        say("array");
+        exp.init.accept(this);
+        exp.size.accept(this);
     }
 
     @Override
     public void visit(ArrayTy exp) {
-        // TODO Auto-generated method stub
-
+        say("arrayTy");
     }
 
     @Override
     public void visit(AssignExp exp) {
         // TODO Auto-generated method stub
+        say("assignExp");
 
     }
 
     @Override
     public void visit(BreakExp exp) {
-        // TODO Auto-generated method stub
-
+        say("break");
     }
 
     @Override
     public void visit(CallExp exp) {
         // TODO Auto-generated method stub
+        say(exp.func.toString());
+        say("(");
+        for (ExpList expList = exp.args; expList != null; expList = expList.tail) {
+            expList.head.accept(this);
+            if (expList.tail != null)
+                say(",");
+        }
+        say(")");
 
     }
 
     @Override
     public void visit(Dec exp) {
         // TODO Auto-generated method stub
+        say("dec");
 
     }
 
     @Override
     public void visit(DecList exp) {
         // TODO Auto-generated method stub
+        say("exp");
 
     }
 
     @Override
     public void visit(ExpList exp) {
         // TODO Auto-generated method stub
+        say("expList");
 
     }
 
     @Override
     public void visit(FieldExpList exp) {
         // TODO Auto-generated method stub
+        say("fieldExpList");
 
     }
 
     @Override
     public void visit(FieldList exp) {
         // TODO Auto-generated method stub
+        say("fieldLost");
 
     }
 
     @Override
     public void visit(FieldVar exp) {
         // TODO Auto-generated method stub
+        say("fieldVar");
 
     }
 
     @Override
     public void visit(ForExp exp) {
         // TODO Auto-generated method stub
+        say("forExp");
 
     }
 
     @Override
     public void visit(FunctionDec functionDec) {
-        // TODO Auto-generated method stub
         say("function ");
         say(functionDec.name.toString());
-        indent();
-        line("(");
+        say("(");
         if (functionDec.params != null)
             functionDec.params.accept(this);
         if (functionDec.result != null)
             functionDec.result.accept(this);
         functionDec.body.accept(this);
-        outdent();
-        line(")");
+        say(")");
 
     }
 
     @Override
     public void visit(IfExp exp) {
-        // TODO Auto-generated method stub
-
+        say("if ");
+        say("(");
+        exp.test.accept(this);
+        say(")");
+        say(" then ");
+        say("(");
+        exp.thenclause.accept(this);
+        say(")");
+        if (exp.elseclause != null) {
+            say(" else ");
+            say("(");
+            exp.elseclause.accept(this);
+            say(")");
+        }
     }
 
     @Override
     public void visit(IntExp exp) {
-        // TODO Auto-generated method stub
-
+        say(Integer.toString(exp.value));
     }
 
     @Override
     public void visit(LetExp letExp) {
-        // TODO Auto-generated method stub
-        line("let");
+        say("let");
         if (letExp.decs != null)
             letExp.decs.accept(this);
-        line("in");
+        say("in");
         if (letExp.body != null)
             letExp.body.accept(this);
-        line("end");
-
+        say("end");
     }
 
     @Override
     public void visit(NameTy exp) {
         // TODO Auto-generated method stub
 
+        say("NameTyp");
     }
 
     @Override
     public void visit(NilExp exp) {
         // TODO Auto-generated method stub
 
+        say("nil");
     }
 
     @Override
@@ -203,26 +222,27 @@ class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(SeqExp exp) {
-        // TODO Auto-generated method stub
-
+        line("(");
+        exp.list.accept(this);
+        line("(");
     }
 
     @Override
     public void visit(SimpleVar exp) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void visit(StringExp exp) {
-        // TODO Auto-generated method stub
-
+        say("\"" + exp.value + "\"");
     }
 
     @Override
     public void visit(SubscriptVar exp) {
-        // TODO Auto-generated method stub
-
+        exp.var.accept(this);
+        say("[");
+        exp.index.accept(this);
+        say("]");
     }
 
     @Override
@@ -233,7 +253,6 @@ class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(Var exp) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -245,13 +264,19 @@ class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(VarExp exp) {
-        // TODO Auto-generated method stub
+
+        say("varExp");
+        exp.var.accept(this);
 
     }
 
     @Override
     public void visit(WhileExp exp) {
-        // TODO Auto-generated method stub
-
+        say("while ");
+        exp.test.accept(this);
+        say("do");
+        say("(");
+        exp.body.accept(this);
+        say(")");
     }
 }

@@ -17,9 +17,5 @@ public class FieldExpList extends Absyn {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      init.accept(visitor);
-      if (tail != null)
-         tail.accept(visitor);
-
    }
 }
