@@ -43,20 +43,20 @@ Fixed the for loop bug. It was due to an error in the 'AND' set operation. Jeez.
 Started refactoring semantic analysis and adding new type checking tests.
 
 TODO: Semant -> Visitor, 
-~~TODO: Readonly Assignment to For Indexer
+~~TODO: Readonly Assignment to For Indexer~~
 
 *19th June 2020*
 Fixed sorting bug in Temps which was breaking register allocation.
 
 ~~Still a bug in for loops if we at a printi() statement inside the loop.
-This causes the loop to repeated spill. I have no idea why.
+This causes the loop to repeated spill. I have no idea why.~~
 
 ~~In the code generation, where there are combinations of instructions that use a move followed by an OPERATION
 We need to be careful when spilling.~~
 
 *18th June 2020*
 
-~~Register Allocation. Is it working ? 
+~~Register Allocation. Is it working ?~~
 
 I added some code the dumps the live ranges is a visual format.
 
@@ -72,15 +72,15 @@ this is breaking lots of other tests due to spill errors. This does fix record a
 I think there is a bug in the spilling. Focus on the while loop. It seems strange that a simple
 while loop with 1 variable would require spilling.
 
-~~MaximumMunch expression for store array is commented out as it doesn't work.
+~~MaximumMunch expression for store array is commented out as it doesn't work.~~
 
-~~Record assign is generating a seg fault.
+~~Record assign is generating a seg fault.~~
 
 Modified runtime.c to use longs instead of ints. Longs are 64 bit
 
 ~~Multiplying the word size * 2 ( 16 ) when indexing the array makes test pass. I have no idea why. See translator.subScriptVar.~~
 
-~~Test for 2 breaks in a while works, although I am not sure if it is working just by accident.
+~~Test for 2 breaks in a while works, although I am not sure if it is working just by accident.~~
 
 ~~TODO: Test 2 breaks in while~~
 TODO: Rewrite for loop without translation to while, ensure it can use a break statement
@@ -99,14 +99,14 @@ the FindEscape module throws an error for the same reason.~~
 
 I have changed the grammar back to the original version were use use the unaltered symbol.
 
-~~TODO: Make for loop indexer readonly
+~~TODO: Make for loop indexer readonly~~
 
 ~~TODO: Modify Translator.call to create tree instructions that move to RV for a function that doesn't return VOID.
-See lines 557 and 560
+See lines 557 and 560~~
 
-~~TODO: Investigate parameter passing & register allocation when I remove the register arguments from the caller register set.
+~~TODO: Investigate parameter passing & register allocation when I remove the register arguments from the caller register set.~~
 
-~~TODO: Add tests for arrays and records with bounds checking enabled
+~~TODO: Add tests for arrays and records with bounds checking enabled~~
 
 TODO: Implement semant type checking with details writen to system out similar to javac.
 
@@ -130,7 +130,7 @@ Handy link for gdb debugging.
 https://web.stanford.edu/class/archive/cs/cs107/cs107.1196/lab7/
 
 
-~~TODO: If semant contains an error, translate is still executed. The compiler should halt in this case.
+~~TODO: If semant contains an error, translate is still executed. The compiler should halt in this case.~~
 
 *14th June 2020*
 Started six argument function call ( actually 7 arguments as the first item is a static link). 
@@ -148,12 +148,12 @@ Added green and red colours to test script that generates programs and tests the
 
 Changed code to use the x64 registers. Fixed intel stack frame bug. Function test now passes.
 
-~~Bug in function calls with more than 0 arguments. Static link doesn't appear to be added.
+~~Bug in function calls with more than 0 arguments. Static link doesn't appear to be added.~~
 
 
 *11th June 2020*
 
-~~Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link
+~~Problem with stack management for function calls. Seems to adding a rbp move before the call. Probably the static link~~
 
 Figured out how to test output of compiler, see tests/E2E. This will run all compile all files in a specified directory
 and check the output against a test.result file.
@@ -167,9 +167,9 @@ Realized that store operations only use temporaries, they do not define them.
 
 The old code gen tiling implementation classes where removed.
 
-~~TODO: Figure out how to unit test all the code snippets.
+~~TODO: Figure out how to unit test all the code snippets.~~
 
-~~TODO: Check load array code gen tile.
+~~TODO: Check load array code gen tile.~~
 
 *8th June 2020*
 Introduced new patterns for array type patterns. Unfortunately there is a bug where both the index expression and value expression are both being assigned to eax. This is either due to incorrect use / defs on instructions or a problem with pattern matcher.
@@ -213,23 +213,23 @@ Fixed bug in cmp register allocation.
 Fixed bug where functional label was not being written to asm.
 For loop looks correct
 
-~~TODO: Ensure that functions that do not return a value are handled correctly.
+~~TODO: Ensure that functions that do not return a value are handled correctly.~~
 
 TODO: FIgure out how to calculate out going parameter space.
 
 *29th May 2020*
 
-~~TODO: Need to ensure that the memory accesses created for spills are used for defs and uses.
+~~TODO: Need to ensure that the memory accesses created for spills are used for defs and uses.~~
 
 
 Modified test assem instruction to output a string representation of itself.
 
-~~TODO: Add invalid escape sequence to the for each loop symbol to prevent it from being overwritten
+~~TODO: Add invalid escape sequence to the for each loop symbol to prevent it from being overwritten~~
 
-~~TODO: Implement spill cost, in particular give temps that are for spilling infinite cost.
+~~TODO: Implement spill cost, in particular give temps that are for spilling infinite cost.~~
 
 ~~TODO: Enforce invariant that registers must be a subset of precoloured. There cannot be items in
-the registers templist that are not also present in the precoloured.
+the registers templist that are not also present in the precoloured.~~
 
 *28th May 2020*
 
@@ -245,7 +245,7 @@ to the stack frame.
 Test rewrite functionality. Bug in rewrite functionality. Adding 2 offset = 0
 Can a use be used before a def ?
 
-~~TODO: All append, prepend operations are OO. Set operations are functional.
+~~TODO: All append, prepend operations are OO. Set operations are functional.~~
 
 
 *27th May 2020*
@@ -263,7 +263,7 @@ a node the has both use / def and is also a target for a jump. The assem languag
 doesn't support this and this introduce an extra node into the equations.
 
 ~~TODO: Implement BitSet class with functional interface, so that or / and / andNot return a
-new BitSet rather than modifying the calling instance.
+new BitSet rather than modifying the calling instance.~~
 
 TODO: Unit testing methodology for liveout equation should be better
 
@@ -272,9 +272,9 @@ TODO: Unit testing methodology for liveout equation should be better
 Added additional translate tests as well as some basic tiger programms
 Started unit tests for graph colouring.
 
-~~TODO: Reverse the flow calculation to speed up liveness analysis.
+~~TODO: Reverse the flow calculation to speed up liveness analysis.~~
 
-~~TODO: Find a better way to test the translate functions.
+~~TODO: Find a better way to test the translate functions.~~
 
 *25th May 2020*
 
@@ -286,20 +286,20 @@ TODO: Refactor code so that Graphvis renderer is a hook plugin.
 
 ## Reorganising the DataFrag > Process > Canon , Blocks, Trace > CodeGen code
 
-~~Implement liveout class using reverse control flow edges.
+~~Implement liveout class using reverse control flow edges.~~
 
-~~Possible bug in LiveOut class, where the BitSet capacity is not correct.
+~~Possible bug in LiveOut class, where the BitSet capacity is not correct.~~
 
 ~~Added new RegisterSpiller classes and a test class. Appending and prepending the
-new instuctions isn't working yet.
+new instuctions isn't working yet.~~
 
-~~Need to figure out how to either use the TempMap or create my own version of it.
+~~Need to figure out how to either use the TempMap or create my own version of it.~~
 
-~~Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same way the Frame is
+~~Note the CodeGen package is specifically for an intel x64 instruction set. This should be abstracted in the same way the Frame is~~
 
-~~CodeFrag - how to get the spilled temps from the spilled nodes ?
+~~CodeFrag - how to get the spilled temps from the spilled nodes ?~~
 
-~~String literals are not implemented in DataFrag.
+~~String literals are not implemented in DataFrag.~~
 
 FInd out how appels linearise function works. The last sequence will have a null entry is his implementation, which I would
 rather avoid.
