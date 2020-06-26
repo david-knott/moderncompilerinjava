@@ -6,7 +6,7 @@ movq %rsp, %rbp
 subq $40, %rsp
 # start main
 # sink 
-L166:
+L77:
 movq $-8, %rax # const
 movq %rbp, %rcx # add lexp -> r
 add %rax, %rcx
@@ -20,7 +20,7 @@ movq -32(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
 movq %rbp, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L33 # default call
+call L24 # default call
 movq %rax, %rcx # default exp
 movq %rax, -16(%rbp) # spill store
 movq $-8, %rax # const
@@ -36,7 +36,7 @@ movq -40(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
 movq %rbp, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L33 # default call
+call L24 # default call
 movq %rax, %rcx # default exp
 movq %rbp, %rcx # default move
 movq %rcx, -24(%rbp) # spill store
@@ -45,37 +45,37 @@ movq -16(%rbp), %rax # spill load
 movq %rax, %rsi # move arg 1 to temp
 movq %rbp, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L85 # default call
+call L25 # default call
 movq %rax, %rcx # default exp
 movq %rax, %rsi # move arg 1 to temp
 movq -24(%rbp), %rax # spill load
 movq %rax, %rcx # spill load
 movq %rcx, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L155 # default call
-jmp L165
-L165:
+call L27 # default call
+jmp L76
+L76:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
 .text
-L155:
+L27:
 pushq %rbp
 movq %rsp, %rbp
 subq $16, %rsp
 # start main
 # sink 
-L168:
+L79:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
 movq %rax, -16(%rbp) # spill store
 movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 cmp %rcx, %rax
-je L162
-L163:
+je L73
+L74:
 movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 add %rcx, %rax
@@ -87,8 +87,8 @@ sub %rax, %rcx
 movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L131 # default call
-movq $L159, %rax # default name
+call L26 # default call
+movq $L70, %rax # default name
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call print # default call
@@ -103,59 +103,59 @@ sub %rax, %rcx
 movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L155 # default call
-L164:
-jmp L167
-L162:
-movq $L156, %rax # default name
+call L27 # default call
+L75:
+jmp L78
+L73:
+movq $L67, %rax # default name
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call print # default call
-jmp L164
-L167:
+jmp L75
+L78:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
 .data
-L159:
+L70:
 	.long  0x1
 	.ascii " "
 .data
-L156:
+L67:
 	.long  0x2
 	.ascii "\n"
 .text
-L131:
+L26:
 pushq %rbp
 movq %rsp, %rbp
 subq $16, %rsp
 # start main
 # sink 
-L170:
+L81:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
 movq %rax, -16(%rbp) # spill store
 movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 cmp %rcx, %rax
-jl L143
-L144:
+jl L64
+L65:
 movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 cmp %rcx, %rax
-jg L140
-L141:
-movq $L139, %rax # default name
+jg L61
+L62:
+movq $L60, %rax # default name
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call print # default call
-L142:
-L145:
-jmp L169
-L143:
-movq $L138, %rax # default name
+L63:
+L66:
+jmp L80
+L64:
+movq $L59, %rax # default name
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call print # default call
@@ -166,56 +166,48 @@ sub %rax, %rcx
 movq %rcx, %rsi # move arg 1 to temp
 movq %rbp, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L133 # default call
-jmp L145
-L140:
+call L54 # default call
+jmp L66
+L61:
 movq -16(%rbp), %rax # spill load
 movq %rax, %rsi # move arg 1 to temp
 movq %rbp, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L133 # default call
-jmp L142
-L169:
+call L54 # default call
+jmp L63
+L80:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
 .data
-L149:
-	.long  0x1
-	.ascii " "
-.data
-L146:
-	.long  0x2
-	.ascii "\n"
-.data
-L139:
+L60:
 	.long  0x1
 	.ascii "0"
 .data
-L138:
+L59:
 	.long  0x1
 	.ascii "-"
 .text
-L133:
+L54:
 pushq %rbp
 movq %rsp, %rbp
 subq $24, %rsp
 # start main
 # sink 
-L172:
+L83:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
 movq %rax, -16(%rbp) # spill store
 movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 cmp %rcx, %rax
-jg L135
-L136:
-L137:
-jmp L171
-L135:
+jg L56
+L57:
+L58:
+jmp L82
+L56:
 movq $10, %rcx # const
 movq -16(%rbp), %rax # spill load
 xor %rdx, %rdx # div clear bits rdx 
@@ -227,7 +219,7 @@ sub %rax, %rcx
 movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L133 # default call
+call L54 # default call
 movq $10, %rcx # const
 movq -16(%rbp), %rax # spill load
 xor %rdx, %rdx # div clear bits rdx 
@@ -240,7 +232,7 @@ movq %rax, %rdx # mul rax -> r
 movq -16(%rbp), %rax # spill load
 sub %rdx, %rax
 movq %rax, -24(%rbp) # spill store
-movq $L134, %rax # default name
+movq $L55, %rax # default name
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call ord # default call
@@ -255,25 +247,25 @@ movq %rax, %rcx # default exp
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call print # default call
-jmp L137
-L171:
+jmp L58
+L82:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
 .data
-L134:
+L55:
 	.long  0x1
 	.ascii "0"
 .text
-L85:
+L25:
 pushq %rbp
 movq %rsp, %rbp
 subq $56, %rsp
 # start main
 # sink 
-L174:
+L85:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
 movq %rax, -16(%rbp) # spill store
@@ -282,13 +274,13 @@ movq %rax, -24(%rbp) # spill store
 movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 cmp %rcx, %rax
-je L106
-L107:
+je L51
+L52:
 movq $0, %rcx # const
 movq -24(%rbp), %rax # spill load
 cmp %rcx, %rax
-je L103
-L104:
+je L48
+L49:
 movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 add %rcx, %rax
@@ -298,8 +290,8 @@ movq -24(%rbp), %rax # spill load
 add %rdx, %rax
 movq (%rax), %rax # default load
 cmp %rax, %rcx
-jl L100
-L101:
+jl L45
+L46:
 movq $16, %rax # const
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
@@ -331,23 +323,23 @@ sub %rax, %rcx
 movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L85 # default call
+call L25 # default call
 movq %rax, %rcx # default exp
 movq %rax, %rcx # default move
 movq -56(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
 movq -40(%rbp), %rax # spill load
-L102:
-L105:
-L108:
-jmp L173
-L106:
+L47:
+L50:
+L53:
+jmp L84
+L51:
 movq -24(%rbp), %rax # spill load
-jmp L108
-L103:
+jmp L53
+L48:
 movq -16(%rbp), %rax # spill load
-jmp L105
-L100:
+jmp L50
+L45:
 movq $16, %rax # const
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
@@ -379,112 +371,27 @@ sub %rax, %rcx
 movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L85 # default call
+call L25 # default call
 movq %rax, %rcx # default exp
 movq %rax, %rcx # default move
 movq -48(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
 movq -32(%rbp), %rax # spill load
-jmp L102
-L173:
+jmp L47
+L84:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
-.data
-L125:
-	.long  0x1
-	.ascii " "
-.data
-L122:
-	.long  0x2
-	.ascii "\n"
-.data
-L115:
-	.long  0x1
-	.ascii "0"
-.data
-L114:
-	.long  0x1
-	.ascii "-"
 .text
-L109:
-pushq %rbp
-movq %rsp, %rbp
-subq $24, %rsp
-# start main
-# sink 
-L176:
-movq %rdi, -8(%rbp) # store to offset
-movq %rsi, %rax # default move
-movq %rax, -16(%rbp) # spill store
-movq $0, %rcx # const
-movq -16(%rbp), %rax # spill load
-cmp %rcx, %rax
-jg L111
-L112:
-L113:
-jmp L175
-L111:
-movq $10, %rcx # const
-movq -16(%rbp), %rax # spill load
-xor %rdx, %rdx # div clear bits rdx 
-idiv %rcx # div rax * rexp 
-movq %rax, %rsi # move arg 1 to temp
-movq $8, %rax # const
-movq %rbp, %rcx # minus lexp -> r
-sub %rax, %rcx
-movq (%rcx), %rax # default load
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call L109 # default call
-movq $10, %rcx # const
-movq -16(%rbp), %rax # spill load
-xor %rdx, %rdx # div clear bits rdx 
-idiv %rcx # div rax * rexp 
-movq $10, %rcx # const
-movq %rax, %rdx # mul lexp -> r
-movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
-movq %rax, %rdx # mul rax -> r
-movq -16(%rbp), %rax # spill load
-sub %rdx, %rax
-movq %rax, -24(%rbp) # spill store
-movq $L110, %rax # default name
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call ord # default call
-movq %rax, %rcx # default exp
-movq %rax, %rcx # default move
-movq -24(%rbp), %rax # spill load
-add %rcx, %rax
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call chr # default call
-movq %rax, %rcx # default exp
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call print # default call
-jmp L113
-L175:
-# sink 
-# end main
-movq %rbp, %rsp
-popq %rbp
-retq
-.data
-L110:
-	.long  0x1
-	.ascii "0"
-.text
-L33:
+L24:
 pushq %rbp
 movq %rsp, %rbp
 subq $40, %rsp
 # start main
 # sink 
-L178:
+L87:
 movq %rdi, -8(%rbp) # store to offset
 movq $8, %rax # const
 movq %rax, %rdi # move arg 0 to temp
@@ -513,12 +420,12 @@ add %rcx, %rax
 movq (%rax), %rax # default load
 movq $1, %rcx # const
 cmp %rcx, %rax
-je L39
-L40:
+je L30
+L31:
 movq $0, %rax # const
-L41:
-jmp L177
-L39:
+L32:
+jmp L86
+L30:
 movq $16, %rax # const
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
@@ -540,104 +447,19 @@ sub %rax, %rcx
 movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L33 # default call
+call L24 # default call
 movq %rax, %rcx # default exp
 movq %rax, %rcx # default move
 movq -40(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
 movq -24(%rbp), %rax # spill load
-jmp L41
-L177:
+jmp L32
+L86:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
-.data
-L79:
-	.long  0x1
-	.ascii " "
-.data
-L76:
-	.long  0x2
-	.ascii "\n"
-.data
-L69:
-	.long  0x1
-	.ascii "0"
-.data
-L68:
-	.long  0x1
-	.ascii "-"
-.text
-L63:
-pushq %rbp
-movq %rsp, %rbp
-subq $24, %rsp
-# start main
-# sink 
-L180:
-movq %rdi, -8(%rbp) # store to offset
-movq %rsi, %rax # default move
-movq %rax, -16(%rbp) # spill store
-movq $0, %rcx # const
-movq -16(%rbp), %rax # spill load
-cmp %rcx, %rax
-jg L65
-L66:
-L67:
-jmp L179
-L65:
-movq $10, %rcx # const
-movq -16(%rbp), %rax # spill load
-xor %rdx, %rdx # div clear bits rdx 
-idiv %rcx # div rax * rexp 
-movq %rax, %rsi # move arg 1 to temp
-movq $8, %rax # const
-movq %rbp, %rcx # minus lexp -> r
-sub %rax, %rcx
-movq (%rcx), %rax # default load
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call L63 # default call
-movq $10, %rcx # const
-movq -16(%rbp), %rax # spill load
-xor %rdx, %rdx # div clear bits rdx 
-idiv %rcx # div rax * rexp 
-movq $10, %rcx # const
-movq %rax, %rdx # mul lexp -> r
-movq %rdx, %rax # mul r -> rax
-imul %rcx # mul rax * rexp 
-movq %rax, %rdx # mul rax -> r
-movq -16(%rbp), %rax # spill load
-sub %rdx, %rax
-movq %rax, -24(%rbp) # spill store
-movq $L64, %rax # default name
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call ord # default call
-movq %rax, %rcx # default exp
-movq %rax, %rcx # default move
-movq -24(%rbp), %rax # spill load
-add %rcx, %rax
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call chr # default call
-movq %rax, %rcx # default exp
-movq %rax, %rdi # move arg 0 to temp
-movq $0, %rax # zero rax
-call print # default call
-jmp L67
-L179:
-# sink 
-# end main
-movq %rbp, %rsp
-popq %rbp
-retq
-.data
-L64:
-	.long  0x1
-	.ascii "0"
 .text
 L0:
 pushq %rbp
@@ -645,7 +467,7 @@ movq %rsp, %rbp
 subq $56, %rsp
 # start main
 # sink 
-L182:
+L89:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
 movq %rax, -24(%rbp) # spill store
@@ -653,7 +475,7 @@ movq $0, %rax # const
 movq %rax, -16(%rbp) # spill store
 movq %rbp, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
-call L18 # default call
+call L2 # default call
 movq $0, %rcx # const
 movq -24(%rbp), %rax # spill load
 add %rcx, %rax
@@ -672,7 +494,7 @@ movq %rax, %rcx # default exp
 movq %rax, %rcx # default move
 movq -32(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
-L31:
+L22:
 movq $-8, %rax # const
 add %rbp, %rax
 movq (%rax), %rax # default load
@@ -686,11 +508,11 @@ call L1 # default call
 movq %rax, %rcx # default exp
 movq $1, %rcx # const
 cmp %rcx, %rax
-je L32
-L29:
+je L23
+L20:
 movq -16(%rbp), %rax # spill load
-jmp L181
-L32:
+jmp L88
+L23:
 movq $10, %rcx # const
 movq -16(%rbp), %rax # spill load
 imul %rcx # mul rax * rexp 
@@ -709,7 +531,7 @@ movq %rax, %rcx # default move
 movq -40(%rbp), %rax # spill load
 add %rcx, %rax
 movq %rax, -48(%rbp) # spill store
-movq $L30, %rax # default name
+movq $L21, %rax # default name
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call ord # default call
@@ -730,28 +552,28 @@ movq %rax, %rcx # default exp
 movq %rax, %rcx # default move
 movq -56(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
-jmp L31
-L181:
+jmp L22
+L88:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
 .data
-L30:
+L21:
 	.long  0x1
 	.ascii "0"
 .text
-L18:
+L2:
 pushq %rbp
 movq %rsp, %rbp
 subq $16, %rsp
 # start main
 # sink 
-L184:
+L91:
 movq %rdi, -8(%rbp) # store to offset
-L25:
-movq $L19, %rax # default name
+L16:
+movq $L10, %rax # default name
 movq %rax, %rsi # move arg 1 to temp
 movq $-8, %rax # const
 movq $-8, %rcx # const
@@ -767,9 +589,9 @@ movq $0, %rax # zero rax
 call stringEqual # default call
 movq $1, %rcx # const
 cmp %rcx, %rax
-je L21
-L22:
-movq $L20, %rax # default name
+je L12
+L13:
+movq $L11, %rax # default name
 movq %rax, %rsi # move arg 1 to temp
 movq $-8, %rax # const
 movq $-8, %rcx # const
@@ -785,11 +607,11 @@ movq $0, %rax # zero rax
 call stringEqual # default call
 movq $1, %rcx # const
 cmp %rcx, %rax
-je L26
-L24:
-jmp L183
-L21:
-L26:
+je L17
+L15:
+jmp L90
+L12:
+L17:
 movq $-8, %rax # const
 movq $-8, %rcx # const
 add %rbp, %rcx
@@ -805,19 +627,19 @@ movq %rax, %rcx # default exp
 movq %rax, %rcx # default move
 movq -16(%rbp), %rax # spill load
 movq %rcx, (%rax) # store
-jmp L25
-L183:
+jmp L16
+L90:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
 .data
-L20:
+L11:
 	.long  0x2
 	.ascii "\n"
 .data
-L19:
+L10:
 	.long  0x1
 	.ascii " "
 .text
@@ -827,7 +649,7 @@ movq %rsp, %rbp
 subq $32, %rsp
 # start main
 # sink 
-L186:
+L93:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, %rax # default move
 movq $-8, %rax # const
@@ -856,7 +678,7 @@ jge L5
 L6:
 movq $0, %rax # const
 L7:
-jmp L185
+jmp L92
 L5:
 movq $1, %rax # const
 movq %rax, -16(%rbp) # spill store
@@ -882,27 +704,19 @@ movq %rax, %rcx # default exp
 movq %rax, %rcx # default move
 movq -32(%rbp), %rax # spill load
 cmp %rcx, %rax
-jle L16
-L17:
+jle L8
+L9:
 movq $0, %rax # const
 movq %rax, -16(%rbp) # spill store
-L16:
+L8:
 movq -16(%rbp), %rax # spill load
 jmp L7
-L185:
+L92:
 # sink 
 # end main
 movq %rbp, %rsp
 popq %rbp
 retq
-.data
-L9:
-	.long  0x2
-	.ascii "\n"
-.data
-L8:
-	.long  0x1
-	.ascii " "
 .data
 L4:
 	.long  0x1

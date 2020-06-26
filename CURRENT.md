@@ -1,5 +1,6 @@
 ## Diary
 *26th June 2020*
+Bug in recursive declarion of functions. if a is declared before b  and a calls b, we get a label error.
 Fixed static link bug. Queens and merge are now passing.
 
 Bugs: Ordering of functions matters. If a function is called before it is defined the programme

@@ -281,10 +281,12 @@ public class Semant extends Component{
         // add function entry to environment tables so it
         // is available for lookup inside the function body
         // this is to facilitate recursive function calls
-        FunctionDec current = e;
-        do {
+        if(env.venv.get(e.name) != null) {
+            return this.translator.Noop(); 
+        }
+        for(FunctionDec current = e; current != null; current = current.next) {
             // get the functions return type
-            var functionReturnType = current.result != null ? transTy(current.result).actual() : Semant.VOID;
+            var functionReturnType = current.result != null ? transTy(current.result) : Semant.VOID;
             // add a new nesting level into the function entry
             // add allocations for the parameters to be passed
             // to this function
@@ -292,16 +294,24 @@ public class Semant extends Component{
             // space for the formal parameters
             // for each formal parameter, we need to get its frame access
             Label functionLabel = Label.create();
-            var functionEntry = new FunEntry(new Level(level, functionLabel, getBoolList(current.params)), functionLabel,
-                    getRecordType(current.params), functionReturnType);
+            var functionEntry = new FunEntry(
+                new Level(
+                    level, 
+                    functionLabel, 
+                    getBoolList(
+                        current.params
+                    )
+                ),
+                functionLabel,
+                getRecordType(
+                    current.params
+                ), 
+                functionReturnType
+            );
             // add function entry into the value environment
             env.venv.put(current.name, functionEntry);
-            current = current.next;
-        } while (current != null);
-        current = e;
-        ExpTy firstFunction = null;
-        Level firstFunctionLevel = null;
-        do {
+        } 
+        for(FunctionDec current = e; current != null; current = current.next) {
             // I think we begin scope here because we
             // are processing the function body in this loop
             env.venv.beginScope();
@@ -311,24 +321,19 @@ public class Semant extends Component{
             // iterate formals adding access to the created var entries
             var translateAccess = translator.stripStaticLink(newLevel.formals);
             for (var p = current.params; p != null; p = p.tail) {
-                var varEntry = new VarEntry(env.tenv.get(p.typ).actual(), translateAccess.head);
+                var varEntry = new VarEntry(
+                    env.tenv.get(p.typ).actual(), 
+                    translateAccess.head
+                );
                 env.venv.put(p.name, varEntry);
                 translateAccess = translateAccess.tail;
             }
             var transBody = new Semant(env, breakScopeLabel, newLevel, translator).transExp(current.body);
-            if (firstFunction == null) {
-                firstFunction = transBody;
-                firstFunctionLevel = newLevel;
-            }
-            if (!transBody.ty.coerceTo(vent.result)) {
-                env.errorMsg.add(new TypeMismatchError(e.pos, transBody.ty.actual(), vent.result));
-            }
+            this.semantValidator.sameType(transBody, vent.result, current.pos);
             env.venv.endScope();
-            current = current.next;
-        } while (current != null);
-        // add the fragment to the list
-        var body = translator.functionDec(firstFunctionLevel, firstFunction);
-        translator.procEntryExit(firstFunctionLevel, body);
+            Exp translatedBody = this.translator.functionDec(newLevel, transBody);
+            this.translator.procEntryExit(newLevel, translatedBody);
+        }
         return translator.Noop();
     }
 
