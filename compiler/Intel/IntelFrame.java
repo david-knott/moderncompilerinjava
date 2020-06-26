@@ -447,7 +447,7 @@ public class IntelFrame extends Frame {
                 new OPER(this.name.toString() + ":", null, null),
                 new InstrList(new OPER("pushq %`s0", null, new TempList(IntelFrame.rbp)), 
                     new InstrList(new OPER("movq %`s0, %`d0", new TempList(IntelFrame.rbp), new TempList(IntelFrame.rsp)),
-                       new InstrList(new OPER("addq $" + this.localOffset + ", %`d0", new TempList(IntelFrame.rsp), null), 
+                       new InstrList(new OPER("subq $" + (-this.localOffset) + ", %`d0", new TempList(IntelFrame.rsp), null), 
                          new InstrList(new OPER("# start main", null , null), null)
                     )
                 )

@@ -20,6 +20,18 @@ public class TestDriver {
 
     @Test
     public void test2() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/if_and.tig"});
+        Main.main(new String[]{"./test/E2E/bad/sl_same_level.tig"});
+    }
+
+
+    @Test
+    public void test3() throws FileNotFoundException {
+        Main.main(new String[]{"./test/E2E/bad/sl_rec.tig"});
+    }
+
+
+    @Test
+    public void test4() throws FileNotFoundException {
+        Main.main(new String[]{"./test/E2E/bad/sl_fun_call_parent.tig"});
     }
 }

@@ -3,7 +3,7 @@
 tigermain:
 pushq %rbp
 movq %rsp, %rbp
-addq $-40, %rsp
+subq $40, %rsp
 # start main
 # sink 
 L166:
@@ -64,7 +64,7 @@ retq
 L155:
 pushq %rbp
 movq %rsp, %rbp
-addq $-16, %rsp
+subq $16, %rsp
 # start main
 # sink 
 L168:
@@ -81,9 +81,10 @@ movq -16(%rbp), %rax # spill load
 add %rcx, %rax
 movq (%rax), %rax # default load
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L131 # default call
@@ -96,9 +97,10 @@ movq -16(%rbp), %rax # spill load
 add %rcx, %rax
 movq (%rax), %rax # default load
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L155 # default call
@@ -128,7 +130,7 @@ L156:
 L131:
 pushq %rbp
 movq %rsp, %rbp
-addq $-16, %rsp
+subq $16, %rsp
 # start main
 # sink 
 L170:
@@ -199,7 +201,7 @@ L138:
 L133:
 pushq %rbp
 movq %rsp, %rbp
-addq $-24, %rsp
+subq $24, %rsp
 # start main
 # sink 
 L172:
@@ -219,9 +221,10 @@ movq -16(%rbp), %rax # spill load
 xor %rdx, %rdx # div clear bits rdx 
 idiv %rcx # div rax * rexp 
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L133 # default call
@@ -267,7 +270,7 @@ L134:
 L85:
 pushq %rbp
 movq %rsp, %rbp
-addq $-56, %rsp
+subq $56, %rsp
 # start main
 # sink 
 L174:
@@ -322,9 +325,10 @@ movq (%rax), %rax # default load
 movq %rax, %rdx # move arg 2 to temp
 movq -16(%rbp), %rax # spill load
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L85 # default call
@@ -369,9 +373,10 @@ movq -16(%rbp), %rax # spill load
 add %rcx, %rax
 movq (%rax), %rax # default load
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L85 # default call
@@ -407,7 +412,7 @@ L114:
 L109:
 pushq %rbp
 movq %rsp, %rbp
-addq $-24, %rsp
+subq $24, %rsp
 # start main
 # sink 
 L176:
@@ -427,9 +432,10 @@ movq -16(%rbp), %rax # spill load
 xor %rdx, %rdx # div clear bits rdx 
 idiv %rcx # div rax * rexp 
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L109 # default call
@@ -475,7 +481,7 @@ L110:
 L33:
 pushq %rbp
 movq %rsp, %rbp
-addq $-40, %rsp
+subq $40, %rsp
 # start main
 # sink 
 L178:
@@ -492,9 +498,10 @@ movq %rcx, (%rdx) # store
 movq %rax, -32(%rbp) # spill store
 movq -32(%rbp), %rax # spill load
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L0 # default call
@@ -527,9 +534,10 @@ movq $8, %rcx # const
 movq -24(%rbp), %rax # spill load
 add %rcx, %rax
 movq %rax, -40(%rbp) # spill store
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L33 # default call
@@ -565,7 +573,7 @@ L68:
 L63:
 pushq %rbp
 movq %rsp, %rbp
-addq $-24, %rsp
+subq $24, %rsp
 # start main
 # sink 
 L180:
@@ -585,9 +593,10 @@ movq -16(%rbp), %rax # spill load
 xor %rdx, %rdx # div clear bits rdx 
 idiv %rcx # div rax * rexp 
 movq %rax, %rsi # move arg 1 to temp
-movq $0, %rax # const
-add %rbp, %rax
-movq (%rax), %rax # default load
+movq $8, %rax # const
+movq %rbp, %rcx # minus lexp -> r
+sub %rax, %rcx
+movq (%rcx), %rax # default load
 movq %rax, %rdi # move arg 0 to temp
 movq $0, %rax # zero rax
 call L63 # default call
@@ -633,7 +642,7 @@ L64:
 L0:
 pushq %rbp
 movq %rsp, %rbp
-addq $-56, %rsp
+subq $56, %rsp
 # start main
 # sink 
 L182:
@@ -736,7 +745,7 @@ L30:
 L18:
 pushq %rbp
 movq %rsp, %rbp
-addq $-16, %rsp
+subq $16, %rsp
 # start main
 # sink 
 L184:
@@ -815,7 +824,7 @@ L19:
 L1:
 pushq %rbp
 movq %rsp, %rbp
-addq $-32, %rsp
+subq $32, %rsp
 # start main
 # sink 
 L186:

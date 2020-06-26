@@ -537,27 +537,58 @@ public class Translator extends Component {
         Assert.assertNotNull(calleeLevel);
         Assert.assertNotNull(functionLabel);
         Assert.assertNotNull(result);
-        var difference = calleeLevel.depthDifference(callerLevel);
+        // The following code builds the static link formal argument.
+        // This argument is used in the callee to locate variables that
+        // escape and are not stored in its stack frame.
+        // functions can call other functions both at higher levels and lower
+        // levels.
+        // if we are calling a function at a higher level, we need to pass
+        // the callers frame pointer to the callee as its static link. We
+        // can only call functions that are a direct child of the caller.
+        //
+        // if we are calling a function at the same level, we pass our static link
+        // to that function
+        //
+        // if we are calling a function at a lower level, we need to ensure that 
+        // the lower level function has a static link that references its parent.
+        // except for system function, which don't use a static link
         Tree.Exp staticLink = null;
-    //   callerLevel.frame
-        int staticLinkOffset = 0;
-        if(difference < 0){
-            staticLink = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), new TEMP(callerLevel.frame.FP())));
-            while(difference < 0){
-                staticLink = new MEM(new BINOP(BINOP.PLUS, new CONST(staticLinkOffset), staticLink));
-                difference++;
-            }
-        } else if (difference > 0){
-            staticLink = new TEMP(callerLevel.frame.FP());
-        } else {
-            //recursive call, use current frames static link
+        if(calleeLevel == callerLevel) { //recusive or same level, pass calleers static link ( not frame pointer )
             staticLink = new MEM(
                 new BINOP(
-                    BINOP.PLUS, 
-                    new CONST(staticLinkOffset), 
-                    new TEMP(callerLevel.frame.FP())
+                    BINOP.MINUS,
+                    new TEMP(calleeLevel.frame.FP()),
+                    new CONST(calleeLevel.frame.wordSize())
                 )
             );
+        } else {
+            //if calling a function in a higher level, we pass the callers frame pointer
+            //if calling a function in a lower level, we pass the callers static link
+            if(calleeLevel.parent == callerLevel) {
+                staticLink = new TEMP(callerLevel.frame.FP());
+            } else {
+                Level l = callerLevel;
+                //get callers static link ( frame pointer address of parent frame)
+                staticLink = new MEM(
+                    new BINOP(
+                            BINOP.MINUS,
+                            new TEMP(l.frame.FP()),
+                            new CONST(l.frame.wordSize())
+                        )
+                );
+                // if callee and caller have a common parent
+                //if callee is not parent of caller,
+                while(l.parent != calleeLevel.parent) {
+                    staticLink = new MEM( 
+                        new BINOP(
+                            BINOP.MINUS,
+                            staticLink,
+                            new CONST(l.frame.wordSize())
+                        )
+                    );
+                    l = l.parent;
+                }
+            }
         }
         //add current frames frame pointer as parameter to call
         //ExpList expList = new ExpList(staticLink, null);

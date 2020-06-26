@@ -1,5 +1,0 @@
-let
-var a:int := 4
-in
-for j := 0 to a-1  do ( j := j + 1; printi(j))
-end
