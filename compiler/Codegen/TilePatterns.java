@@ -38,6 +38,17 @@ public class TilePatterns {
         )
     );
 
+    public static TilePattern LOAD_3 = new MOVET(
+        new ExpT("dst"),
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS, 
+                new ExpT("src"),
+                new CONSTT("offset")
+            )
+        )
+    );
+
     public static TilePattern STORE = new MOVET(
         new MEMT(
             new ExpT("dst")
@@ -55,6 +66,18 @@ public class TilePatterns {
         ),
         new ExpT("src")
     );
+
+    public static TilePattern STORE_3 = new MOVET(
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS, 
+                new ExpT("dst"),
+                new CONSTT("offset")
+            )
+        ),
+        new ExpT("src")
+    );
+
 
     public static TilePattern STORE_ARRAY = new MOVET(
         new MEMT(

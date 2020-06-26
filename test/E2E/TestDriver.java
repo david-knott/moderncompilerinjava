@@ -32,6 +32,6 @@ public class TestDriver {
 
     @Test
     public void test4() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/bad/func_order.tig"});
+        Main.main(new String[]{"./test/E2E/good/sl_fun_call_parent.tig"});
     }
 }
