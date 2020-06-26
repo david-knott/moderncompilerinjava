@@ -2,20 +2,21 @@
 *26th June 2020*
 Fixed static link bug. Queens and merge are now passing.
 
-Bugs: Ordering of functions matters. If a function is called before it is defined the programme
-will compile but will not assembly. This is due to missing labels.
+~Bugs: Ordering of functions matters. If a function is called before it is defined the programme
+will compile but will not assembly. This is due to missing labels.~
 
 Bugs: If a variable is defined with the same name as a function we get java compilation errors
 
 
 *25th June 2020*
 
-Static link is incorrect in a recursive function call.
+~Static link is incorrect in a recursive function call.~
 
-Test static link function when calling a function at the same level that is not recursive
+~Test static link function when calling a function at the same level that is not recursive~
 
 TODO: Reintroduce Sugared For Loop.
 
+~
 Defined N at top level
 
 Call function f, which references N, this correctly references N on stack frame
@@ -25,11 +26,11 @@ N is incorrect in second recursion
 main -> f ; N correct
 f -> f ; N correct
 f -> f ; N incorrect
-
+~
 
 *24th June 2020*
 Fixed binops, strings and ifthenelse. Still bug in queens and merge.
-
+~
 String E2E tests.
 
 TODO: Binary operator and relative operator tests.
@@ -75,7 +76,7 @@ and expect it will add the necessary jumps to these labels. The outer IF will wr
 these labels. 
 
 Inner IF needs to JUMP to supplied unCx labels.
-
+~
 
 
 
