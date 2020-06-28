@@ -79,10 +79,9 @@
                     break;
                 case BINOP.MUL:
                     this.temp = Temp.create();
-                    emit(new Assem.MOVE("movq %`s0, %`d0 # mul lexp -> r", this.temp, leftTemp));
-                    emit(new Assem.MOVE("movq %`s0, %`d0 # mul r -> rax", IntelFrame.rax, this.temp));
-                    emit(new OPER("imul %`s0 # mul rax * rexp ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
-                    emit(new Assem.MOVE("movq %`s0, %`d0 # mul rax -> r", this.temp, IntelFrame.rax));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # imul l -> rax", IntelFrame.rax, leftTemp));
+                    emit(new OPER("imul %`s0 # imul rax * r ", L(IntelFrame.rax, L(IntelFrame.rdx, null)), L(rightTemp, L(IntelFrame.rax, null))));
+                    emit(new Assem.MOVE("movq %`s0, %`d0 # imul rax -> t", this.temp, IntelFrame.rax));
                     break;
                 case BINOP.OR:
                     this.temp = Temp.create();
