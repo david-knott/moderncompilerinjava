@@ -238,7 +238,7 @@ public class TempList {
       TempList.checkOrder(tempList);
       TempList andNot = null;
       for (; me != null; me = me.tail) {
-         if (!tempList.contains(me)) {
+         if (!tempList.contains(me.head)) {
             andNot = TempList.append(andNot, me.head);
          }
       }
