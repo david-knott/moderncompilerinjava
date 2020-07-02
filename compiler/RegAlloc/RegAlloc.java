@@ -168,6 +168,7 @@ public class RegAlloc extends Component implements TempMap {
 
 	private void allocate() {
 		this.build();
+		this.instrList.dump();
 		if (this.hasSpills() && this.iterations++ < MAX_ITERATIONS) {
 			this.rewrite();
 			this.allocate();
