@@ -55,6 +55,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
 
 
     private void buildGraph(FlowGraph flowGraph) {
+        int edges = 0;
         for(NodeList nodeList = this.flowGraph.nodes(); nodeList != null; nodeList = nodeList.tail) {
             Node n = nodeList.head;
             var defs = flowGraph.def(n);
@@ -71,6 +72,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                             Node to = this.getOrCreate(tempList.head);
                             this.addEdge(from, to);
                             interferes = true;
+                            edges++;
                         }
                     }
                     if(!interferes) {
@@ -84,11 +86,12 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                         Node to = this.getOrCreate(tempList.head);
                         Node from = this.getOrCreate(defs.head);
                         this.addEdge(from, to);
+                            edges++;
                     }
                 }
             }
         }
-        System.out.println("IG built nodes:" + this.nodes().size());
+        System.out.println("IG built nodes:" + edges);
     }
 
     /**
