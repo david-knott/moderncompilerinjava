@@ -135,6 +135,7 @@ public class RegAlloc extends Component implements TempMap {
 	private void rewrite() {
 		Hashtable<Temp, Access> accessHash = new Hashtable<Temp, Access>();
 		TempList spills = this.selectSpill();
+		System.out.println("Spilling " + spills);
 		Access access = this.frame.allocLocal(true);
 		accessHash.put(spills.head, access);
 		InstrList newList = null;

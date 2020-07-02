@@ -106,6 +106,7 @@ public class PotentialSpillColour extends Component implements TempMap {
 			}
 			// assign colour to node
 			if (colours.isEmpty()) {
+				System.out.println("No colour for " + tempForNode);
 				addSpill(tempForNode);
 			} else {
 				Temp colour = colours.iterator().next();

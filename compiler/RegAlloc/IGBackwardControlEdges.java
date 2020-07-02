@@ -88,6 +88,7 @@ public class IGBackwardControlEdges extends InterferenceGraph {
                 }
             }
         }
+        System.out.println("IG built nodes:" + this.nodes().size());
     }
 
     /**
