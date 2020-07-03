@@ -161,7 +161,6 @@
             var name = (NAME)call.func;
             TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
             temp = Temp.create();
-            emit(new OPER("movq $0, %`d0 # zero rax",  new TempList(IntelFrame.rax), null));
             emit(new OPER("call " + name.label + " # default call", IntelFrame.callerSaves, l));
             emit(new Assem.MOVE("movq %`s0, %`d0 # move rax into temp", this.temp, this.frame.RV()));
         }

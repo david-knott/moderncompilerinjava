@@ -600,10 +600,10 @@ public class Translator extends Component {
             expList = ExpList.append(expList, argumentExpList.expTy.exp.unEx());
             argumentExpList = argumentExpList.tail;
         }
-        Temp out = Temp.create();
         if(result.coerceTo(Semant.VOID)){
             return new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
         } else {
+        /*
             return new Ex((new ESEQ(
                 new SEQ(
                     new EXP(new CALL(new NAME(functionLabel), expList)),
@@ -611,6 +611,8 @@ public class Translator extends Component {
                 ),
                 new TEMP(out)
             )));
+            */
+            return new Ex(new CALL(new NAME(functionLabel), expList));
         }
     }
 
