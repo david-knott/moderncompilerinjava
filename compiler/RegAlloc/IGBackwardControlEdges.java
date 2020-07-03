@@ -92,6 +92,8 @@ public class IGBackwardControlEdges extends InterferenceGraph {
             }
         }
         System.out.println("IG built nodes:" + edges);
+        this.flowGraph.show(System.out);
+        this.show(System.out);
     }
 
     /**
