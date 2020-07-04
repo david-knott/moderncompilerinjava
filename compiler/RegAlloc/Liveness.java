@@ -5,6 +5,8 @@ import java.util.Hashtable;
 
 import Assem.Instr;
 import Assem.InstrList;
+import Codegen.Assert;
+import Core.LL;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Graph.NodeList;
@@ -165,9 +167,7 @@ class Liveness {
 
     public TempList liveMap(Instr instr) {
         Node node = flowGraph.node(instr);
-        if(node == null) {
-            throw new Error("Node not found for instruction " + instr);
-        }
+        Assert.assertNotNull(node);
         return this.liveMapHash.get(node);
     }
 
@@ -180,17 +180,20 @@ class Liveness {
     }
 
 	public void dumpLiveness(InstrList instrList) {
-		System.out.println("### Liveness");
+		System.out.println("### Liveness ###");
 		for(; instrList != null; instrList = instrList.tail) {
             System.out.println(instrList.head.format(new DefaultMap()) + " => " + this.liveMap(instrList.head));
         }
     }
 
-    public TempWorkList liveOut(Node node) {
-        TempWorkList nodeWorkList = null;
+    public LL<Temp> liveOut(Node node) {
+        Assert.assertNotNull(node);
+        LL<Temp> nodeWorkList = null;
         for (TempList tempList = this.liveMapHash.get(node); tempList != null; tempList = tempList.tail) {
-            nodeWorkList = TempWorkList.append(nodeWorkList, tempList.head);
+            nodeWorkList = LL.<Temp>insertOrdered(nodeWorkList, tempList.head);
         }
         return nodeWorkList;
     }
+
+
 }

@@ -148,21 +148,22 @@
                 emit(new Assem.OPER("pushq %`s1 # move arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
             if (args.tail == null) {
-              // return L(argTemp, null);
                return tl;
             }
-           // return L(argTemp, munchArgs(i + 1, args.tail));
             return TempList.append(tl,munchArgs(i - 1, args.tail));
         }
 
 
         @Override
         public void visit(CALL call) {
+            throw new Error("Not implemented.");
+            /*
             var name = (NAME)call.func;
             TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
             temp = Temp.create();
             emit(new OPER("call " + name.label + " # default call", IntelFrame.callerSaves, l));
             emit(new Assem.MOVE("movq %`s0, %`d0 # move rax into temp", this.temp, this.frame.RV()));
+            */
         }
 
         @Override
@@ -172,22 +173,22 @@
 
         @Override
         public void visit(EXP exp) {
-                exp.exp.accept(this);
-                var expTemp = temp;
-                temp = Temp.create();
-                emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
-
-                /*
             TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(exp);
             if(tilePatternMatcher.isMatch(TilePatterns.EXP_CALL)) {
                 CALL call = (CALL)tilePatternMatcher.getCapture("call");
-                call.accept(this);
                 var name = (NAME) call.func;
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 emit(new OPER("movq $0, %`d0 # zero rax",  new TempList(IntelFrame.rax), null));
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callerSaves, l));
             } else {
-                            }*/
+                exp.exp.accept(this);
+                var expTemp = temp;
+                temp = Temp.create();
+                emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
+
+
+
+                            }
         }
 
         @Override
@@ -276,7 +277,6 @@
                 return;
             } 
             if (tilePatternMatcher.isMatch(TilePatterns.MOVE_CALL)) {
-                /*
                 Exp dst = (Exp) tilePatternMatcher.getCapture("dst");
                 dst.accept(this);
                 Temp dstTemp = this.temp;
@@ -286,7 +286,7 @@
                 emit(new OPER("movq $0, %`d0 # move call",  new TempList(IntelFrame.rax), null));
                 emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  IntelFrame.callerSaves, new TempList(IntelFrame.rax, l)));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
-                return;*/
+                return;
 
             } 
             // Unmatched tile case.

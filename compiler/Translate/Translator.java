@@ -603,15 +603,6 @@ public class Translator extends Component {
         if(result.coerceTo(Semant.VOID)){
             return new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
         } else {
-        /*
-            return new Ex((new ESEQ(
-                new SEQ(
-                    new EXP(new CALL(new NAME(functionLabel), expList)),
-                    new MOVE(new TEMP(out), new TEMP(calleeLevel.frame.RV())) 
-                ),
-                new TEMP(out)
-            )));
-            */
             return new Ex(new CALL(new NAME(functionLabel), expList));
         }
     }

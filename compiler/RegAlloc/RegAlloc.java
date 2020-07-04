@@ -135,7 +135,7 @@ public class RegAlloc extends Component implements TempMap {
 	private void rewrite() {
 		Hashtable<Temp, Access> accessHash = new Hashtable<Temp, Access>();
 		TempList spills = this.selectSpill();
-		System.out.println("Spilling " + spills);
+		System.out.println("Spilling temps " + spills);
 		Access access = this.frame.allocLocal(true);
 		accessHash.put(spills.head, access);
 		InstrList newList = null;
@@ -162,13 +162,14 @@ public class RegAlloc extends Component implements TempMap {
 				newList = InstrList.append(newList, tempToMemory);
 			}
 		}
+		System.out.println("New spilled temps " + this.spillTemps);
 		this.trigger(REWRITE_EVENT, newList);
 		this.instrList = newList;
 	}
 
 	private void allocate() {
 		this.build();
-		this.instrList.dump();
+        this.liveness.dumpLiveness(this.instrList);
 		if (this.hasSpills() && this.iterations++ < MAX_ITERATIONS) {
 			this.rewrite();
 			this.allocate();

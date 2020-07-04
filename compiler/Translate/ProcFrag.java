@@ -9,6 +9,7 @@ import Canon.Canonicalization;
 import Frame.Frame;
 import Frame.Proc;
 import RegAlloc.RegAlloc;
+import RegAlloc.RegAllocCoalesce;
 import Temp.CombineMap;
 import Temp.Temp;
 import Temp.TempMap;
@@ -73,7 +74,8 @@ public class ProcFrag extends Frag {
         StmList stmList = canonicalization.canon(this.body);
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
-        RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
+      RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
+    //    RegAllocCoalesce regAlloc = new RegAllocCoalesce(this.frame, instrs);
         TempMap tempMap = new CombineMap(this.frame, regAlloc);
         instrs = regAlloc.instrList;
         Proc proc = this.frame.procEntryExit3(instrs);
@@ -86,9 +88,9 @@ public class ProcFrag extends Frag {
                 Temp def = body.head.def().head;
                 Temp use = body.head.use().head;
                 //remove moves with same src and dest
-                if(tempMap.tempMap(def) != tempMap.tempMap(use)) {
+             //   if(tempMap.tempMap(def) != tempMap.tempMap(use)) {
                     out.println(body.head.format(tempMap));
-                }
+             //   }
             }
             else {
                 out.println(body.head.format(tempMap));

@@ -69,7 +69,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
 
     private void liveness() {
         flowGraph = new AssemFlowGraph(this.instrList);
-        flowGraph.show(System.out);
         liveness = new Liveness(flowGraph);
     }
 
@@ -111,10 +110,10 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 }
             }
         }
-        System.out.println("done");
-        for(var keys : this.adjList.keySet()) {
-            System.out.println(keys + " interferes with " + this.adjList.get(keys));
-        }
+      //  System.out.println("done");
+      //  for(var keys : this.adjList.keySet()) {
+        //    System.out.println(keys + " interferes with " + this.adjList.get(keys));
+      //  }
 
     }
 
@@ -227,9 +226,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * @param v the second temp
      */
     private void addEdge(Temp u, Temp v) {
-        if (!this.inAdjacentSet(u, v) && u != v) {
-            this.addAdjacentSet(u, v);
-            this.addAdjacentSet(v, u);
+        if (u != v) {
             if (!LL.<Temp>contains(this.precoloured, u)) {
                 this.adjList.put(u, LL.<Temp>or(this.adjList.get(u), new LL<Temp>(v)));
                 this.degree.put(u, this.degree.getOrDefault(u, 0) + 1);
@@ -339,7 +336,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
     int maxTries = 0;
     private void main() {
         Assert.assertLE(maxTries++, 6);
-        this.instrList.dump();
         this.initial = null;
         for (InstrList ins = this.instrList; ins != null; ins = ins.tail) {
             this.initial = LL.<Temp>or(this.initial, LL.<Temp>or(use(ins.head), def(ins.head)));
@@ -358,6 +354,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
         } while (this.simplifyWorkList != null 
         || this.spillWorkList != null);
         this.assignColours();
+        this.liveness.dumpLiveness(this.instrList);
         if (this.spilledNodes != null) {
             this.rewrite();
             this.main();
