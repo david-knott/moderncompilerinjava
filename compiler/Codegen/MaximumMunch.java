@@ -282,8 +282,6 @@
                 Temp dstTemp = this.temp;
                 CALL call = (CALL) tilePatternMatcher.getCapture("call");
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
-                this.temp = IntelFrame.rax; //ensures rax is used by the parent instuction.
-                emit(new OPER("movq $0, %`d0 # move call",  new TempList(IntelFrame.rax), null));
                 emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  IntelFrame.callerSaves, new TempList(IntelFrame.rax, l)));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
                 return;

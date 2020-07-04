@@ -182,7 +182,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * @return
      */
     private double weight(Temp temp) {
-        return (((float)this.defCount.getOrDefault(temp, 0) + this.useCount.getOrDefault(temp, 0))) / this.degree.get(temp);
+        int originalDegree = LL.<Temp>size(this.adjList.get(temp));
+        return (((float)this.defCount.getOrDefault(temp, 0) + this.useCount.getOrDefault(temp, 0))) / originalDegree;
     }
     /**
      * Selects the node to spill from the spill worklist.
