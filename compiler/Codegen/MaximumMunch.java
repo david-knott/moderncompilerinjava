@@ -185,10 +185,7 @@
                 var expTemp = temp;
                 temp = Temp.create();
                 emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
-
-
-
-                            }
+            }
         }
 
         @Override
@@ -221,7 +218,6 @@
                 return;
             }
             // notice that store to memory operations only use and dont define variables.
-            
             if (tilePatternMatcher.isMatch(TilePatterns.STORE_ARRAY)) {
                 Exp dst = (Exp) tilePatternMatcher.getCapture("base");
                 dst.accept(this);

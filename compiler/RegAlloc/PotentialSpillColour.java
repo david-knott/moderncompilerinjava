@@ -60,15 +60,18 @@ public class PotentialSpillColour extends Component implements TempMap {
 		// add nodes with degree less than k to stack
 		// if we only have nodes of signigicant degree left
 		// select one, mark as potential spill and continue with 'select < k'
+		TempList sk = null;
 		do {
 			boolean ilk = false;
 			for (NodeList nodeList = initialNodes; nodeList != null; nodeList = nodeList.tail) {
 				Node node = nodeList.head;
 				int nodeDegree =  degrees.get(node);
+				Temp tfn = graph.gtemp(node);
 				if (nodeDegree < k) {
 					this.trigger(NON_SIG_PUSH_STACK, node); //TODO
 					this.reduceDegree(node);
 					this.simpleStack.push(node);
+					sk = TempList.append(sk, new TempList(tfn));
 					initialNodes = initialNodes.remove(node);
 					ilk = true;
 				}
@@ -78,11 +81,14 @@ public class PotentialSpillColour extends Component implements TempMap {
 				this.trigger(SIG_PUSH_STACK, node); //TODO
 				initialNodes = initialNodes.tail;
 				this.reduceDegree(node);
+				Temp tfn = graph.gtemp(node);
+				sk = TempList.append(sk, new TempList(tfn));
 				this.simpleStack.push(node); // mark as potential for spilling.
 			}
 
 		} while (initialNodes != null);
 
+		System.out.println(sk);
 		// select phase
 		while (!this.simpleStack.isEmpty()) {
 			Node node = this.simpleStack.pop();

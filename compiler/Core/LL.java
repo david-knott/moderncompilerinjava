@@ -179,6 +179,6 @@ public class LL<T> {
     }
 
     public String toString() {
-        return head + ", " + (tail != null ? tail.toString() : "");
+        return head + "," + (tail != null ? tail.toString() : "");
     }
 }

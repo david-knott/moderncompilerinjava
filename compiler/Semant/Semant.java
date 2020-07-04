@@ -736,7 +736,7 @@ public class Semant extends Component{
         this.semantValidator.isInt(exphi, forExp.hi.pos);
         var loopExit = Label.create();
         varEntry.readonly = true;
-        ExpTy expbody = new Semant(this.env, this.breakScopeLabel, this.level, this.translator).transExp(forExp.body);
+        ExpTy expbody = new Semant(this.env, loopExit, this.level, this.translator).transExp(forExp.body);
         varEntry.readonly = false;
         this.semantValidator.isVoid(expbody);
         env.venv.endScope();

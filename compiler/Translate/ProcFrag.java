@@ -74,7 +74,7 @@ public class ProcFrag extends Frag {
         StmList stmList = canonicalization.canon(this.body);
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
-    //  RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
+        //RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
         RegAllocCoalesce regAlloc = new RegAllocCoalesce(this.frame, instrs);
         TempMap tempMap = new CombineMap(this.frame, regAlloc);
         instrs = regAlloc.instrList;

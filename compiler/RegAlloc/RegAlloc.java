@@ -129,7 +129,7 @@ public class RegAlloc extends Component implements TempMap {
 			}
 		}
 		this.trigger(SPILL_SELECT, lowestSpillCost);
-		return new TempList(lowestSpillCost.head, null);
+		return new TempList(lowestSpillCost.head);
 	}
 
 	private void rewrite() {

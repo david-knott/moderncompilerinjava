@@ -50,15 +50,11 @@ public class RegAllocCoalesce extends Component implements TempMap {
             Node node = nodes.head;
             for (TempList defs = flowGraph.def(node); defs != null; defs = defs.tail) {
                 Temp defNode = defs.head;
-                if (defNode != null) {
-                    useCount.put(defNode, defCount.getOrDefault(node, 1) + 1);
-                }
+                useCount.put(defNode, defCount.getOrDefault(node, 1) + 1);
             }
             for (TempList uses = flowGraph.use(node); uses != null; uses = uses.tail) {
                 Temp useNode = uses.head;
-                if (useNode != null) {
-                    useCount.put(useNode, defCount.getOrDefault(node, 1) + 1);
-                }
+                useCount.put(useNode, defCount.getOrDefault(node, 1) + 1);
             }
         }
     }
@@ -124,8 +120,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * work list
      */
     private void makeWorklist() {
-        for (LL<Temp> tempList = initial; tempList != null; tempList = tempList.tail) {
-            Temp temp = tempList.head;
+        while(initial != null) {
+            Temp temp = initial.head;
+            initial = LL.<Temp>andNot(initial, new LL<Temp>(temp));
             if (this.degree.get(temp) >= K) {
                 this.addSpilledWorkList(temp);
             } else {
@@ -140,6 +137,12 @@ public class RegAllocCoalesce extends Component implements TempMap {
 
     private void addSpilledWorkList(Temp temp) {
         this.spillWorkList = LL.<Temp>or(this.spillWorkList, new LL<Temp>(temp));
+    }
+
+    private LL<Temp> adjacent(Temp head) {
+        var one = this.adjList.get(head);
+        var sortedStack = LL.<Temp>sort(this.stack);
+        return LL.<Temp>andNot(one, sortedStack);
     }
 
     /**
@@ -250,13 +253,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
         addSet.put(v, LL.<Temp>insertOrdered(value2, u));
     }
 
-    private LL<Temp> adjacent(Temp head) {
-        var one = this.adjList.get(head);
-        var sortedStack = LL.<Temp>sort(this.stack);
-        return LL.<Temp>andNot(one, sortedStack);
-    }
-
     private void assignColours() {
+        System.out.println(this.stack);
         while (this.stack != null) {
             Temp n = LL.<Temp>last(this.stack);
             this.stack = LL.<Temp>removeLast(this.stack);
