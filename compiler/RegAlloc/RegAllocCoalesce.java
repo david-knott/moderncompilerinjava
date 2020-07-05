@@ -344,6 +344,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.updateUseAndDefCounts();
         this.build();
         this.makeWorklist();
+     //   this.checkWorkListInvariants();
         do {
             if (this.simplifyWorkList != null) {
                 this.simplify();
@@ -357,6 +358,46 @@ public class RegAllocCoalesce extends Component implements TempMap {
         if (this.spilledNodes != null) {
             this.rewrite();
             this.main();
+        }
+        this.checkGraphColours();
+    }
+
+
+    private void checkWorkListInvariants() {
+        for(LL<Temp> degreeInvariant = LL.<Temp>or(this.simplifyWorkList, this.spillWorkList); degreeInvariant != null; degreeInvariant = degreeInvariant.tail) {
+            int size = LL.<Temp>size(
+                LL.<Temp>and(
+                    this.adjList.get(degreeInvariant.head), 
+                    LL.<Temp>or(
+                        LL.<Temp>or(
+                            this.precoloured, 
+                            this.simplifyWorkList
+                        ), 
+                        this.spillWorkList
+                    )
+                )
+            );
+            int si = this.degree.get(degreeInvariant.head);
+            if(size != si) {
+                throw new Error("degree invariant:" + degreeInvariant.head + ":" + size + "!=" + si);
+            }
+        }
+        for(LL<Temp> simplifyInvariant = this.simplifyWorkList; simplifyInvariant != null; simplifyInvariant = simplifyInvariant.tail) {
+            var si = this.degree.get(simplifyInvariant.head);
+            if(si >= this.K) {
+                throw new Error("Simplify Invariant: " + simplifyInvariant.head + ":" + si + ">=" + this.K);
+            }
+
+        }
+    }
+
+    private void checkGraphColours() {
+        for(Temp temp : this.adjList.keySet()) {
+            for(LL<Temp> adj = this.adjList.get(temp); adj != null; adj = adj.tail) {
+                if(this.tempMap(temp) == this.tempMap(adj.head)) {
+                    throw new Error("Graph not correctly coloured");
+                }
+            }
         }
     }
 

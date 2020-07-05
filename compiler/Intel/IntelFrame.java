@@ -57,20 +57,24 @@ public class IntelFrame extends Frame {
     public static Temp r15 = Temp.create("r15");// callee
 
     private static TempList registers = new TempList(
-        rax, new TempList( 
-            rbx, new TempList(
-                rcx, new TempList(
-                    rdx, new TempList(
-                        rsi, new TempList(
-                            rdi, new TempList(
-                                r8, new TempList(
-                                    r9, new TempList(
-                                        r10, new TempList(
-                                            r11, new TempList(
-                                                r12, new TempList(
-                                                    r13, new TempList(
-                                                        r14, new TempList(
-                                                            r15
+        rbp, new TempList(
+            rsp, new TempList(
+                rax, new TempList( 
+                    rbx, new TempList(
+                        rcx, new TempList(
+                            rdx, new TempList(
+                                rsi, new TempList(
+                                    rdi, new TempList(
+                                        r8, new TempList(
+                                            r9, new TempList(
+                                                r10, new TempList(
+                                                    r11, new TempList(
+                                                        r12, new TempList(
+                                                            r13, new TempList(
+                                                                r14, new TempList(
+                                                                    r15
+                                                                )
+                                                            )
                                                         )
                                                     )
                                                 )
@@ -81,9 +85,9 @@ public class IntelFrame extends Frame {
                             )
                         )
                     )
-                )
+                ) 
             )
-        ) 
+        )
     );
 
     /**
@@ -138,6 +142,9 @@ public class IntelFrame extends Frame {
             )
         )
     );
+
+    public static TempList callDefs = callerSaves;
+    public static TempList returnSink = new TempList(rbp, new TempList(rsp, new TempList(rax,  calleeSaves)));
 
     // offset within the frame
     private int localOffset = 0;
@@ -432,7 +439,7 @@ public class IntelFrame extends Frame {
                 new Assem.OPER(
                     "# sink ", 
                     null, 
-                    IntelFrame.calleeSaves
+                    IntelFrame.returnSink
                 )
             )
         );
