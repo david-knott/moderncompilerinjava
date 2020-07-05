@@ -32,6 +32,6 @@ public class TestDriver {
 
     @Test
     public void test4() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/factorial.tig"});
+        Main.main(new String[]{"./test/E2E/good/escape_subscript.tig"});
     }
 }

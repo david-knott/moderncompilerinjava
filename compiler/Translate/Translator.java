@@ -37,7 +37,7 @@ public class Translator extends Component {
     private boolean nullRecordCheck;
 
     public Translator() {
-        this.arrayBoundsCheck = true;
+        this.arrayBoundsCheck = false;
         this.nullRecordCheck = false;
     }
 

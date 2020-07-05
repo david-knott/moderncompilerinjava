@@ -1,4 +1,16 @@
 ## Diary
+*5th July 2020*
+Fixed bug in register allocation. I had rax as in the calldefs. This was preventing the
+register allocation from generating correct assignments. 
+
+I have found another bug in escapes, where an array is defined at a lower level
+and an variable is declared using the array subscript;
+
+Subscription call...
+
+init variable => get current frames static link, this points to parent frames frame pointer.
+Use this to reference the varible access.
+
 *26th June 2020*
 Bug in recursive declarion of functions. if a is declared before b  and a calls b, we get a label error.
 Fixed static link bug. Queens and merge are now passing.
