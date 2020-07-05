@@ -20,10 +20,13 @@ import Parse.Yylex;
 import Semant.Semant;
 import Temp.Label;
 import Translate.ExpTy;
+import Translate.Frag;
 import Translate.FragList;
 import Translate.Level;
+import Translate.ProcFrag;
 import Translate.Translator;
 import Tree.Stm;
+import Tree.StmList;
 
 class Options {
     
@@ -47,6 +50,18 @@ public class Main {
         for (Tree.StmList l = stms; l != null; l = l.tail) {
             print.prStm(l.head);
         }
+    }
+
+    private void registerFragListners(Frag frag) {
+        frag.on(ProcFrag.CANONICAL_COMPLETE, new Listener<StmList>() {
+            @Override
+            public void handle(StmList message) {
+                System.out.println("### Cannonical Tree ###");
+                for(; message != null; message = message.tail) {
+                    new Tree.Print(System.out).prStm(message.head);
+                }
+            }
+        });
     }
 
     private void registerListeners(Translator translator) {
@@ -108,7 +123,7 @@ public class Main {
         Frame frame = new IntelFrame(Label.create("tigermain"), null);
         Level topLevel = new Level(frame);
         Translator translate = new Translator();
-       // this.registerListeners(translate);
+    //    this.registerListeners(translate);
         Semant semant = new Semant(errorMsg, topLevel, translate);
      //   this.registerListeners(semant);
         FragList frags = FragList.reverse(semant.getTreeFragments(ast.absyn));
@@ -122,6 +137,7 @@ public class Main {
             fileOut = new PrintStream(new java.io.FileOutputStream(name + ".s"));
             fileOut.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
+                this.registerFragListners(frags.head);
                 frags.head.process(fileOut);
             }
             fileOut.close();

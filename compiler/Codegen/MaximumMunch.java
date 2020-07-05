@@ -142,6 +142,7 @@
                     break;
             }
             if (finalPos != null) {
+              //  this.visit(new MOVE(new TEMP(finalPos), new TEMP(argTemp)));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # move arg " + i + " to temp", finalPos, argTemp));
                 tl = TempList.append(tl, finalPos);
             } else {
@@ -281,7 +282,6 @@
                 emit(new OPER("call " + ((NAME)call.func).label +  " # move call",  IntelFrame.callerSaves, new TempList(IntelFrame.rax, l)));
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
                 return;
-
             } 
             // Unmatched tile case.
             op.dst.accept(this);

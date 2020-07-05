@@ -6,9 +6,9 @@ import Assem.InstrList;
 import Assem.MOVE;
 import Canon.CanonFacadeImpl;
 import Canon.Canonicalization;
+import Core.CompilerEventType;
 import Frame.Frame;
 import Frame.Proc;
-import RegAlloc.RegAlloc;
 import RegAlloc.RegAllocCoalesce;
 import Temp.CombineMap;
 import Temp.Temp;
@@ -21,6 +21,8 @@ import Tree.StmList;
  * contains the IL code, which is returned from the procEntryExit1
  */
 public class ProcFrag extends Frag {
+
+    public static CompilerEventType CANONICAL_COMPLETE = new CompilerEventType("Canon");
 
     /**
      * Intermediate representation function body
@@ -72,6 +74,7 @@ public class ProcFrag extends Frag {
     @Override
     public void process(PrintStream out) {
         StmList stmList = canonicalization.canon(this.body);
+        this.trigger(CANONICAL_COMPLETE, stmList);
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
         //RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
