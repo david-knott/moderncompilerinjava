@@ -16,7 +16,7 @@ movq %rbp, %rbx # add lexp -> r
 add %rcx, %rbx
 call getchar # move call
 movq %rax, (%rbx) # store
-movq %rbp, %rdi # move arg 0 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L24 # move call
 movq %rax, %r12 # rax to temp 
 movq $-8, %rcx # const
@@ -24,21 +24,21 @@ movq %rbp, %rbx # add lexp -> r
 add %rcx, %rbx
 call getchar # move call
 movq %rax, (%rbx) # store
-movq %rbp, %rdi # move arg 0 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L24 # move call
 movq %rax, %rbx # rax to temp 
-movq %r12, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %r12, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L27 # exp call ( no return value )
-movq %rbx, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %rbx, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L27 # exp call ( no return value )
-movq %rbx, %rdx # move arg 2 to temp
-movq %r12, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %rbx, %rdx # move reg arg 2 to temp
+movq %r12, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L25 # move call
-movq %rax, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %rax, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L27 # exp call ( no return value )
 movq -24(%rbp), %rbx # spill load
 movq -16(%rbp), %rcx # spill load
@@ -70,32 +70,32 @@ movq $0, %rcx # const
 movq -16(%rbp), %rax # spill load
 add %rcx, %rax
 movq (%rax), %rax # default load
-movq %rax, %rsi # move arg 1 to temp
+movq %rax, %rsi # move reg arg 1 to temp
 movq $8, %rcx # const
 movq %rbp, %rax # minus lexp -> r
 sub %rcx, %rax
 movq (%rax), %rax # default load
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call L26 # exp call ( no return value )
 movq $L70, %rax # default name
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call print # exp call ( no return value )
 movq $8, %rcx # const
 movq -16(%rbp), %rax # spill load
 add %rcx, %rax
 movq (%rax), %rax # default load
-movq %rax, %rsi # move arg 1 to temp
+movq %rax, %rsi # move reg arg 1 to temp
 movq $8, %rcx # const
 movq %rbp, %rax # minus lexp -> r
 sub %rcx, %rax
 movq (%rax), %rax # default load
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call L27 # exp call ( no return value )
 L75:
 jmp L78
 L73:
 movq $L67, %rax # default name
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call print # exp call ( no return value )
 jmp L75
 L78:
@@ -135,27 +135,27 @@ cmp %rax, %rcx
 jg L61
 L62:
 movq $L60, %rax # default name
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call print # exp call ( no return value )
 L63:
 L66:
 jmp L80
 L64:
 movq $L59, %rax # default name
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call print # exp call ( no return value )
 movq $0, %rax # const
 movq -16(%rbp), %rcx # spill load
 sub %rcx, %rax
-movq %rax, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %rax, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L54 # exp call ( no return value )
 jmp L66
 L61:
 movq -16(%rbp), %rax # spill load
 movq %rax, %rcx # spill load
-movq %rcx, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %rcx, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L54 # exp call ( no return value )
 jmp L63
 L80:
@@ -210,12 +210,12 @@ movq %rax, %rsi # spill load
 movq %rsi, %rax # div r -> rax
 xor %rdx, %rdx # div clear bits rdx 
 idiv %rbx # div rax * rexp 
-movq %rax, %rsi # move arg 1 to temp
+movq %rax, %rsi # move reg arg 1 to temp
 movq $8, %rax # const
 movq %rbp, %rbx # minus lexp -> r
 sub %rax, %rbx
 movq (%rbx), %rax # default load
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call L54 # exp call ( no return value )
 movq $10, %rbx # const
 movq -24(%rbp), %rax # spill load
@@ -231,13 +231,13 @@ movq %rsi, %rbx # minus lexp -> r
 sub %rax, %rbx
 movq %rbx, %r12 # default move
 movq $L55, %rbx # default name
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call ord # move call
 movq %r12, %rbx # add lexp -> r
 add %rax, %rbx
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call chr # move call
-movq %rax, %rdi # move arg 0 to temp
+movq %rax, %rdi # move reg arg 0 to temp
 call print # exp call ( no return value )
 jmp L58
 L82:
@@ -299,7 +299,7 @@ cmp %rbx, %rdx
 jl L45
 L46:
 movq $16, %rbx # const
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call initRecord # move call
 movq %rax, %r13 # rax to temp 
 movq $0, %rbx # const
@@ -319,14 +319,14 @@ movq %rbx, %rsi # spill load
 movq %rsi, %rbx # add lexp -> r
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rdx # move arg 2 to temp
+movq %rbx, %rdx # move reg arg 2 to temp
 movq -48(%rbp), %rbx # spill load
 movq %rbx, %rsi # spill load
 movq $8, %rbx # const
 movq %rbp, %rcx # minus lexp -> r
 sub %rbx, %rcx
 movq (%rcx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call L25 # move call
 movq %rax, (%r12) # store
 movq %r13, %rax # default move
@@ -351,7 +351,7 @@ movq %rsi, %rax # default move
 jmp L50
 L45:
 movq $16, %rbx # const
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call initRecord # move call
 movq %rax, %r13 # rax to temp 
 movq $0, %rbx # const
@@ -367,19 +367,19 @@ add %rbx, %rcx
 movq %rcx, %r12 # default move
 movq -40(%rbp), %rbx # spill load
 movq %rbx, %rsi # spill load
-movq %rsi, %rdx # move arg 2 to temp
+movq %rsi, %rdx # move reg arg 2 to temp
 movq $8, %rcx # const
 movq -48(%rbp), %rbx # spill load
 movq %rbx, %rsi # spill load
 movq %rsi, %rbx # add lexp -> r
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rsi # move arg 1 to temp
+movq %rbx, %rsi # move reg arg 1 to temp
 movq $8, %rbx # const
 movq %rbp, %rcx # minus lexp -> r
 sub %rbx, %rcx
 movq (%rcx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call L25 # move call
 movq %rax, (%r12) # store
 movq %r13, %rax # default move
@@ -410,17 +410,17 @@ movq %r14, %rcx # default move
 movq %rcx, %rbx # spill store
 movq %rbx, -32(%rbp) # spill store
 movq $8, %rbx # const
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call initRecord # move call
 movq $0, %rbx # const
 movq %rbx, 0(%rax) # store to offset
 movq %rax, %r12 # default move
-movq %r12, %rsi # move arg 1 to temp
+movq %r12, %rsi # move reg arg 1 to temp
 movq $8, %rbx # const
 movq %rbp, %rcx # minus lexp -> r
 sub %rbx, %rcx
 movq (%rcx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call L0 # move call
 movq %rax, %r13 # rax to temp 
 movq $0, %rcx # const
@@ -443,7 +443,7 @@ movq %rcx, %r14 # default move
 jmp L86
 L30:
 movq $16, %rbx # const
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call initRecord # move call
 movq %rax, %r14 # rax to temp 
 movq %r13, 0(%r14) # store to offset
@@ -455,7 +455,7 @@ movq $8, %rbx # const
 movq %rbp, %rcx # minus lexp -> r
 sub %rbx, %rcx
 movq (%rcx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call L24 # move call
 movq %rax, (%r12) # store
 movq %r14, %rax # default move
@@ -488,7 +488,7 @@ movq %rcx, %rax # spill store
 movq %rax, -40(%rbp) # spill store
 movq $0, %rax # const
 movq %rax, %r13 # default move
-movq %rbp, %rdi # move arg 0 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L2 # exp call ( no return value )
 movq $0, %rcx # const
 movq -32(%rbp), %rbx # spill load
@@ -502,8 +502,8 @@ movq (%rbx), %rbx # default load
 movq $-8, %rcx # const
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %rbx, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L1 # move call
 movq %rax, (%r12) # store
 L22:
@@ -513,8 +513,8 @@ movq (%rbx), %rbx # default load
 movq $-8, %rcx # const
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rsi # move arg 1 to temp
-movq %rbp, %rdi # move arg 0 to temp
+movq %rbx, %rsi # move reg arg 1 to temp
+movq %rbp, %rdi # move reg arg 0 to temp
 call L1 # move call
 movq $1, %rbx # const
 cmp %rbx, %rax
@@ -538,13 +538,13 @@ movq (%rbx), %rbx # default load
 movq $-8, %rcx # const
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call ord # move call
 movq %r12, %rbx # add lexp -> r
 add %rax, %rbx
 movq %rbx, %r12 # default move
 movq $L21, %rbx # default name
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call ord # move call
 movq %r12, %rbx # minus lexp -> r
 sub %rax, %rbx
@@ -582,7 +582,7 @@ movq %rcx, %rbx # spill store
 movq %rbx, -16(%rbp) # spill store
 L16:
 movq $L10, %rbx # default name
-movq %rbx, %rsi # move arg 1 to temp
+movq %rbx, %rsi # move reg arg 1 to temp
 movq $-8, %rdx # const
 movq $-8, %rbx # const
 add %rbp, %rbx
@@ -593,14 +593,14 @@ movq (%rbx), %rbx # default load
 movq $-8, %rcx # const
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call stringEqual # move call
 movq $1, %rbx # const
 cmp %rbx, %rax
 je L12
 L13:
 movq $L11, %rbx # default name
-movq %rbx, %rsi # move arg 1 to temp
+movq %rbx, %rsi # move reg arg 1 to temp
 movq $-8, %rdx # const
 movq $-8, %rbx # const
 add %rbp, %rbx
@@ -611,7 +611,7 @@ movq (%rbx), %rbx # default load
 movq $-8, %rcx # const
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call stringEqual # move call
 movq $1, %rbx # const
 cmp %rbx, %rax
@@ -673,11 +673,11 @@ movq (%rbx), %rbx # default load
 movq $-8, %rcx # const
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call ord # move call
 movq %rax, %rbx # default move
 movq $L3, %rcx # default name
-movq %rcx, %rdi # move arg 0 to temp
+movq %rcx, %rdi # move reg arg 0 to temp
 call ord # move call
 cmp %rax, %rbx
 jge L5
@@ -701,11 +701,11 @@ movq (%rbx), %rbx # default load
 movq $-8, %rcx # const
 add %rcx, %rbx
 movq (%rbx), %rbx # default load
-movq %rbx, %rdi # move arg 0 to temp
+movq %rbx, %rdi # move reg arg 0 to temp
 call ord # move call
 movq %rax, %rbx # default move
 movq $L4, %rcx # default name
-movq %rcx, %rdi # move arg 0 to temp
+movq %rcx, %rdi # move reg arg 0 to temp
 call ord # move call
 cmp %rax, %rbx
 jle L8

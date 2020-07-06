@@ -2,6 +2,11 @@
 *6th July 2020*
 Fixed bug in store array assembly, index and base registers were reversed.
 
+Bug in register allocation / code generation for stores and loads. Possible due
+to 2 mems in a move.
+
+Bug in writing \n to standard out, rendering as ^B
+
 *5th July 2020*
 Fixed bug in register allocation. I had rax as in the calldefs. This was preventing the
 register allocation from generating correct assignments. 

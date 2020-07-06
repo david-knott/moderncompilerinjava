@@ -142,11 +142,10 @@
                     break;
             }
             if (finalPos != null) {
-              //  this.visit(new MOVE(new TEMP(finalPos), new TEMP(argTemp)));
-                emit(new Assem.MOVE("movq %`s0, %`d0 # move arg " + i + " to temp", finalPos, argTemp));
+                emit(new Assem.MOVE("movq %`s0, %`d0 # move reg arg " + i + " to temp", finalPos, argTemp));
                 tl = TempList.append(tl, finalPos);
             } else {
-                emit(new Assem.OPER("pushq %`s1 # move arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
+                emit(new Assem.OPER("pushq %`s1 # move reg arg " + i + " to stack", null, L(IntelFrame.rsp, L(argTemp, null))));
             }
             if (args.tail == null) {
                return tl;
@@ -154,17 +153,9 @@
             return TempList.append(tl,munchArgs(i - 1, args.tail));
         }
 
-
         @Override
         public void visit(CALL call) {
             throw new Error("Not implemented.");
-            /*
-            var name = (NAME)call.func;
-            TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
-            temp = Temp.create();
-            emit(new OPER("call " + name.label + " # default call", IntelFrame.callerSaves, l));
-            emit(new Assem.MOVE("movq %`s0, %`d0 # move rax into temp", this.temp, this.frame.RV()));
-            */
         }
 
         @Override
@@ -181,10 +172,13 @@
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callDefs, l));
             } else {
+                throw new Error("Not implemented.");
+                /*
                 exp.exp.accept(this);
                 var expTemp = temp;
                 temp = Temp.create();
                 emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
+                */
             }
         }
 
@@ -217,7 +211,6 @@
                         ));
                 return;
             }
-            // notice that store to memory operations only use and dont define variables.
             if (tilePatternMatcher.isMatch(TilePatterns.STORE_ARRAY)) {
                 Exp dst = (Exp) tilePatternMatcher.getCapture("base");
                 dst.accept(this);
