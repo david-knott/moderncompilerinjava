@@ -32,6 +32,6 @@ public class TestDriver {
 
     @Test
     public void test4() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/record_assign_nested.tig"});
+        Main.main(new String[]{"./test/E2E/good/merge_simple.tig"});
     }
 }

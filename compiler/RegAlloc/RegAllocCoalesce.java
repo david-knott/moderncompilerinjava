@@ -106,11 +106,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 }
             }
         }
-      //  System.out.println("done");
-      //  for(var keys : this.adjList.keySet()) {
-        //    System.out.println(keys + " interferes with " + this.adjList.get(keys));
-      //  }
-
     }
 
     /**
@@ -254,7 +249,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     private void assignColours() {
-        System.out.println(this.stack);
         while (this.stack != null) {
             Temp n = LL.<Temp>last(this.stack);
             this.stack = LL.<Temp>removeLast(this.stack);
@@ -267,7 +261,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 }
             }
             if (okColours == null) {
-                System.out.println("No colours left for " + n);
                 this.addSpilledNodes(n);
             } else {
                 this.addColouredNodes(n);
@@ -288,7 +281,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void rewrite() {
         LL<Temp> spills = null;
         Hashtable<Temp, Access> accessHash = new Hashtable<Temp, Access>();
-        System.out.println("Spilling temps " + this.spilledNodes);
         for (LL<Temp> sn = this.spilledNodes; sn != null; sn = sn.tail) {
             Access access = this.frame.allocLocal(true);
             accessHash.put(sn.head, access);
@@ -329,7 +321,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
         //this.initial = LL.<Temp>or(colouredNodes, newTemps);
         this.spilledNodes = null;
         this.colouredNodes = null;
-        System.out.println("New spilled temps " + newTemps);
     }
 
     int maxTries = 0;
