@@ -194,6 +194,20 @@
         @Override
         public void visit(MOVE op) {
             TilePatternMatcher tilePatternMatcher = new TilePatternMatcher(op);
+            if (tilePatternMatcher.isMatch(TilePatterns.MOVE_MEM_TO_MEM)) {
+                Exp dstExp = (Exp) tilePatternMatcher.getCapture("dst");
+                dstExp.accept(this);
+                Temp dst = this.temp;
+                Exp srcExp = (Exp) tilePatternMatcher.getCapture("src");
+                srcExp.accept(this);
+                Temp src = this.temp;
+                throw new Error("Not implemented");
+                /*
+                emit(new Assem.OPER("movq " + srcOffset + "(%`s1), " + dstOffset + "(%`s0) # mem to mem", 
+                        null, 
+                        new TempList(dst, new TempList(src))
+                        ));*/
+            }
             if (tilePatternMatcher.isMatch(TilePatterns.LOAD_ARRAY)) {
                 Exp src = (Exp) tilePatternMatcher.getCapture("base");
                 src.accept(this);

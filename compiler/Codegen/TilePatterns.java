@@ -21,6 +21,15 @@ public class TilePatterns {
         new TEMPT("src")
     );
 
+    public static TilePattern MOVE_MEM_TO_MEM = new MOVET(
+        new MEMT(
+            new ExpT("dst")
+        ),
+        new MEMT(
+            new ExpT("src")
+        )
+    );
+
     public static TilePattern LOAD = new MOVET(
         new ExpT("dst"),
         new MEMT(
