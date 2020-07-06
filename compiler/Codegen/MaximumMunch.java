@@ -179,7 +179,6 @@
                 CALL call = (CALL)tilePatternMatcher.getCapture("call");
                 var name = (NAME) call.func;
                 TempList l = munchArgs(ExpList.size(call.args) - 1, ExpList.reverse(call.args));
-                emit(new OPER("movq $0, %`d0 # zero rax",  new TempList(IntelFrame.rax), null));
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callDefs, l));
             } else {
                 exp.exp.accept(this);
