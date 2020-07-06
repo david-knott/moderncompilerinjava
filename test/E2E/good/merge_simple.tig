@@ -3,19 +3,18 @@ let
  type list = {first: int, rest: list}
 
  function merge(a: list, b: list) : list =
+    (
    if a=nil then b
    else if b=nil then a
    else if a.first < b.first 
-      then list{first=a.first,rest=merge(a.rest,b)}
-      else list{first=b.first,rest=merge(a,b.rest)}
+      then (print("then:"); printi(a.first);printi(b.first);list{first=a.first,rest=merge(a.rest,b)})
+      else (print("else:"); printi(b.first);printi(a.first);list{first=b.first,rest=merge(a,b.rest)})
+    )
 
- function printlist(l: list) =
-   if l=nil then print("\n")
-   else (printi(l.first); print(" "); printlist(l.rest))
+   var list1 := list{first=1,rest=nil}
+   var list2 := list{first=2, rest=nil}
+   var list3 := nil
 
-   var list1 := list{first=1, rest=list{first=2, rest=nil}}
-   var list2 := list{first=3, rest=list{first=4, rest=nil}}
-
- in printlist(list1);printlist(list2);printlist(merge(list1, list2))
+ in ( list3 := merge(list1, list2) )
 end
 
