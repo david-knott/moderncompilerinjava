@@ -4,6 +4,10 @@ import Graph.Node;
 import Temp.Temp;
 import Graph.Graph;
 
+/**
+ * Graphiz renderer uses this, however we dont actually use
+ * this class in the compiler.
+ */
 abstract public class InterferenceGraph extends Graph {
 
    abstract public Node tnode(Temp temp);
