@@ -1,4 +1,7 @@
 ## Diary
+*6th July 2020*
+Fixed bug in store array assembly, index and base registers were reversed.
+
 *5th July 2020*
 Fixed bug in register allocation. I had rax as in the calldefs. This was preventing the
 register allocation from generating correct assignments. 
