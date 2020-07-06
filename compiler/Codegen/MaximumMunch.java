@@ -213,7 +213,7 @@
                 int wordSize = (Integer) tilePatternMatcher.getCapture("wordSize");
                 emit(new Assem.OPER("movq (%`s0, %`s1, " + wordSize +"), %`d0 # load array", 
                         new TempList(dstTemp), 
-                        new TempList(indexTemp, new TempList(srcTemp))
+                        new TempList(srcTemp, new TempList(indexTemp))
                         ));
                 return;
             }
