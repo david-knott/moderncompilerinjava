@@ -134,27 +134,23 @@ public class Translator extends Component {
     private Tree.Exp staticLinkOffset(Access access, Level level) {
         //variable is defined at same level as use,
         //just return the fp as framePointer
+        //get current frames static link ( in rbp - 8),
+        //lookup value, which is a pointer to the previous
+        //frames static link, etc
         Tree.Exp exp = new TEMP(level.frame.FP());
-        if(level == access.home){
-            return exp;
-        } else {
-            //get current frames static link ( in rbp - 8),
-            //lookup value, which is a pointer to the previous
-            //frames static link, etc
-            var slinkLevel = level;
-            int staticLinkOffset = -8;
-            while (slinkLevel != access.home) {
-                exp = new MEM(
-                    new BINOP(
-                        BINOP.PLUS, 
-                        new CONST(staticLinkOffset), 
-                        exp
-                    )
-                );
-                slinkLevel = slinkLevel.parent;
-            }
-            return exp;
+        var slinkLevel = level;
+        int staticLinkOffset = -8;
+        while (slinkLevel != access.home) {
+            exp = new MEM(
+                new BINOP(
+                    BINOP.PLUS, 
+                    new CONST(staticLinkOffset), 
+                    exp
+                )
+            );
+            slinkLevel = slinkLevel.parent;
         }
+        return exp;
     }
 
     /**
