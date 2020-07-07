@@ -201,12 +201,16 @@
                 Exp srcExp = (Exp) tilePatternMatcher.getCapture("src");
                 srcExp.accept(this);
                 Temp src = this.temp;
-                throw new Error("Not implemented");
-                /*
-                emit(new Assem.OPER("movq " + srcOffset + "(%`s1), " + dstOffset + "(%`s0) # mem to mem", 
+                Temp reg = Temp.create();
+                emit(new Assem.MOVE("movq (%`s0), %`d0 # mem to temp", 
+                        reg, 
+                        src
+                        ));
+                 emit(new Assem.OPER("movq %`s0, (%`s1) # temp to mem", 
                         null, 
-                        new TempList(dst, new TempList(src))
-                        ));*/
+                        new TempList(reg, new TempList(dst)) 
+                        ));
+                return;
             }
             if (tilePatternMatcher.isMatch(TilePatterns.LOAD_ARRAY)) {
                 Exp src = (Exp) tilePatternMatcher.getCapture("base");

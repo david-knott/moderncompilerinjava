@@ -371,9 +371,16 @@ movq $16, %rbx # const
 movq %rbx, %rdi # move reg arg 0 to temp
 call initRecord # move call
 movq %rax, %r13 # rax to temp 
+movq $0, %rbx # const
+movq %r13, %rdx # add lexp -> r
+add %rbx, %rdx
+movq $0, %rcx # const
 movq -40(%rbp), %rbx # spill load
 movq %rbx, %rsi # spill load
-movq 0(%rsi), 0(%r13) # mem to mem
+movq %rsi, %rbx # add lexp -> r
+add %rcx, %rbx
+movq (%rbx), %rbx # mem to temp
+movq %rbx, (%rdx) # temp to mem
 movq $8, %rbx # const
 movq %r13, %rcx # add lexp -> r
 add %rbx, %rcx
@@ -430,9 +437,16 @@ movq $16, %rbx # const
 movq %rbx, %rdi # move reg arg 0 to temp
 call initRecord # move call
 movq %rax, %r13 # rax to temp 
+movq $0, %rbx # const
+movq %r13, %rdx # add lexp -> r
+add %rbx, %rdx
+movq $0, %rcx # const
 movq -48(%rbp), %rbx # spill load
 movq %rbx, %rsi # spill load
-movq 0(%rsi), 0(%r13) # mem to mem
+movq %rsi, %rbx # add lexp -> r
+add %rcx, %rbx
+movq (%rbx), %rbx # mem to temp
+movq %rbx, (%rdx) # temp to mem
 movq $8, %rbx # const
 movq %r13, %rcx # add lexp -> r
 add %rbx, %rcx
