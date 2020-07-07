@@ -136,7 +136,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
             if (this.degree.get(temp) >= K) {
                 this.addSpilledWorkList(temp);
             } else if(this.moveRelated(temp)) {
-                this.freezeWorkList = LL.<Temp>insertOrdered(this.freezeWorkList, temp);
+                this.freezeWorkList = LL.<Temp>or(this.freezeWorkList, new LL<Temp>(temp));
             } else {
                 this.addSimplifyWorkList(temp);
             }
@@ -196,7 +196,11 @@ public class RegAllocCoalesce extends Component implements TempMap {
         if (d == this.K) {
             this.enableMoves(LL.<Temp>or(new LL<Temp>(head), this.adjacent(head)));
             this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(head));
-            this.addSimplifyWorkList(head);
+            if(this.moveRelated(head)) {
+                this.freezeWorkList = LL.<Temp>or(this.freezeWorkList, new LL<Temp>(head));
+            } else {
+                this.addSimplifyWorkList(head);
+            }
         }
     }
 
@@ -214,8 +218,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void coalesce() {
         Instr m = this.workListMoves.head;
         Temp u, v;
-        Temp y = m.def().head;
-        Temp x = m.use().head;
+        Temp x = m.def().head;
+        Temp y = m.use().head;
         x = this.getAlias(x);
         y = this.getAlias(y);
         if(LL.<Temp>contains(this.precoloured, y)) {
@@ -254,6 +258,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.coalescedNodes = LL.<Temp>or(this.coalescedNodes, new LL<Temp>(v));
         this.alias.put(v, u);
         this.moveList.put(u, LL.<Instr>or(this.moveList.get(u), this.moveList.get(v)));
+        this.enableMoves(new LL<Temp>(v));
         for(LL<Temp> t = this.adjacent(v); t != null; t = t.tail) {
             this.addEdge(t.head, u);
             this.decrementDegree(t.head);
@@ -318,8 +323,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void freezeMoves(Temp u) {
         for(var m = this.nodeMoves(u); m != null; m = m.tail) {
             Temp v = null;
-            Temp y = m.head.def().head;
-            Temp x = m.head.use().head;
+            Temp x = m.head.def().head;
+            Temp y = m.head.use().head;
             if(this.getAlias(x) == this.getAlias(y)) {
                 v = this.getAlias(x);
             } else {
@@ -486,8 +491,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.useCount.clear();;
         this.moveList.clear();
         this.instrList = newList;
-        //this.initial = LL.<Temp>or(LL.<Temp>or(colouredNodes, spilledNodes), newTemps);
-        //this.initial = LL.<Temp>or(colouredNodes, newTemps);
         this.spilledNodes = null;
         this.coalescedMoves = null;
         this.constrainedMoves = null;
@@ -499,6 +502,12 @@ public class RegAllocCoalesce extends Component implements TempMap {
     int maxTries = 0;
     private void main() {
         Assert.assertLE(maxTries++, 6);
+        var pctl = new TempList(IntelFrame.rbp, new TempList(IntelFrame.rsp, this.frame.registers()));
+        for(TempList pc = pctl; pc != null; pc = pc.tail) {
+            this.precoloured = LL.<Temp>insertOrdered(this.precoloured, pc.head);
+            this.colour.put(pc.head, pc.head);
+            this.degree.put(pc.head, Integer.MAX_VALUE/2);
+        }
         this.initial = null;
         for (InstrList ins = this.instrList; ins != null; ins = ins.tail) {
             this.initial = LL.<Temp>or(this.initial, LL.<Temp>or(use(ins.head), def(ins.head)));
@@ -526,12 +535,11 @@ public class RegAllocCoalesce extends Component implements TempMap {
             || this.freezeWorkList != null
         );
         this.assignColours();
-        //this.liveness.dumpLiveness(this.instrList);
         if (this.spilledNodes != null) {
             this.rewrite();
             this.main();
         }
-        this.checkGraphColours();
+        this.liveness.dumpLiveness(this.instrList);
     }
 
 
@@ -563,26 +571,10 @@ public class RegAllocCoalesce extends Component implements TempMap {
         }
     }
 
-    private void checkGraphColours() {
-        for(Temp temp : this.adjList.keySet()) {
-            for(LL<Temp> adj = this.adjList.get(temp); adj != null; adj = adj.tail) {
-                if(this.tempMap(temp) == this.tempMap(adj.head)) {
-                    throw new Error("Graph not correctly coloured ");
-                }
-            }
-        }
-    }
-
     public RegAllocCoalesce(Frame frame, InstrList instrList) {
         this.instrList = instrList;
         this.frame = frame;
         this.K = this.frame.registers().size(); //14
-        var pctl = new TempList(IntelFrame.rbp, new TempList(IntelFrame.rsp, this.frame.registers()));
-        for(TempList pc = pctl; pc != null; pc = pc.tail) {
-            this.precoloured = LL.<Temp>insertOrdered(this.precoloured, pc.head);
-            this.colour.put(pc.head, pc.head);
-            this.degree.put(pc.head, Integer.MAX_VALUE);
-        }
         this.main();
     }
 
@@ -590,7 +582,11 @@ public class RegAllocCoalesce extends Component implements TempMap {
     public String tempMap(Temp t) {
 		var colour = this.colour.get(t);
 		if (colour == null)
-			throw new Error("No colour found for " + t);
-		return this.frame.tempMap(colour);
+			throw new Error("No colour found for: " + t);
+        String cr = this.frame.tempMap(colour);
+        if(cr == null) {
+            throw new Error("No colour found for: " + t);
+        }
+        return cr;
 	}
 }
