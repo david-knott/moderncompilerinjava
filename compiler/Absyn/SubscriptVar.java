@@ -13,7 +13,5 @@ public class SubscriptVar extends Var {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      var.accept(visitor);
-      index.accept(visitor);
    }
 }

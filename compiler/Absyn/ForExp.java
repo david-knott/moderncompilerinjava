@@ -13,10 +13,6 @@ public class ForExp extends Exp {
 
    @Override
    public void accept(AbsynVisitor visitor) {
-      // TODO Auto-generated method stub
       visitor.visit(this);
-      var.accept(visitor);
-      hi.accept(visitor);
-      body.accept(visitor);
    }
 }

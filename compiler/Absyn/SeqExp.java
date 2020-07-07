@@ -11,7 +11,5 @@ public class SeqExp extends Exp {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      if(list != null)
-         list.accept(visitor);
    }
 }

@@ -21,11 +21,5 @@ public class FunctionDec extends Dec {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      params.accept(visitor);
-      result.accept(visitor);
-      body.accept(visitor);
-      if (next != null)
-         next.accept(visitor);
-
    }
 }

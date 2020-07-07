@@ -22,6 +22,5 @@ public class VarDec extends Dec {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      init.accept(visitor);
    }
 }

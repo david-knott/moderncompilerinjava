@@ -11,6 +11,5 @@ public class RecordTy extends Ty {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-      fields.accept(visitor);
    }
 }
