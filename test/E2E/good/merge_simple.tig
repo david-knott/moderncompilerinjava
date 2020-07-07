@@ -1,17 +1,7 @@
 let 
 
  type any = {any : int}
- var buffer := getchar()
-
  type list = {first: int, rest: list}
-
- function readlist() : list =
-    let var any := any{any=0}
-        var i := readint(any)
-     in if any.any
-         then list{first=i,rest=readlist()}
-         else nil
-    end
 
  function merge(a: list, b: list) : list =
    if a=nil then b
