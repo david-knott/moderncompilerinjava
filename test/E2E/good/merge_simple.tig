@@ -1,20 +1,41 @@
 let 
 
+ type any = {any : int}
+ var buffer := getchar()
+
  type list = {first: int, rest: list}
 
+ function readlist() : list =
+    let var any := any{any=0}
+        var i := readint(any)
+     in if any.any
+         then list{first=i,rest=readlist()}
+         else nil
+    end
+
  function merge(a: list, b: list) : list =
-    (
-     if a=nil then b
-     else if b=nil then a
-     else if a.first < b.first 
+   if a=nil then b
+   else if b=nil then a
+   else if a.first < b.first 
       then list{first=a.first,rest=merge(a.rest,b)}
       else list{first=b.first,rest=merge(a,b.rest)}
-    )
 
-   var list1 := list{first=55,rest=nil}
-   var list2 := list{first=77,rest=nil}
-   var list3 := nil
+ function printint(i: int) =
+  let function f(i:int) = if i>0 
+	     then (f(i/10); print(chr(i-i/10*10+ord("0"))))
+   in if i<0 then (print("-"); f(-i))
+      else if i>0 then f(i)
+      else print("0")
+  end
 
- in ( list3 := merge(list1, list2) )
+ function printlist(l: list) =
+   if l=nil then print("\n")
+   else (printint(l.first); print(" "); printlist(l.rest))
+
+   var list1 := list{first=2,rest=list{first=4,rest=list{first=6,rest=nil}}}
+   var list2 := list{first=3,rest=list{first=5,rest=list{first=7,rest=nil}}}
+
+  /* BODY OF MAIN PROGRAM */
+ in printlist(merge(list1, list2))
 end
 
