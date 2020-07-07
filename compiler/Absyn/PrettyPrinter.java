@@ -3,6 +3,7 @@ package Absyn;
 import java.io.PrintStream;
 
 import Codegen.Assert;
+import Symbol.Symbol;
 
 enum IndentationType {
     Tabs, Spaces, Fib
@@ -13,7 +14,7 @@ enum IndentationType {
  * back into the compiler. See
  * https://www.lrde.epita.fr/~tiger/assignments.split/TC_002d2-Pretty_002dPrinting-Samples.html#TC_002d2-Pretty_002dPrinting-Samples
  */
-class PrettyPrinter implements AbsynVisitor {
+public class PrettyPrinter implements AbsynVisitor {
     private PrintStream out;
     private boolean spaces = true;
     private int indentation = 2;
@@ -45,6 +46,10 @@ class PrettyPrinter implements AbsynVisitor {
     private void line(String line) {
         say(line);
         lineBreak();
+    }
+
+    private void say(Symbol symbol) {
+        say(symbol.toString());
     }
 
     private void say(String str) {
@@ -100,9 +105,9 @@ class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(DecList exp) {
-        // TODO Auto-generated method stub
-        say("exp");
-
+        for(;exp != null; exp = exp.tail) {
+            exp.head.accept(this);
+        }
     }
 
     @Override
@@ -121,9 +126,21 @@ class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(FieldList exp) {
-        // TODO Auto-generated method stub
-        say("fieldLost");
-
+        if(exp != null) {
+            do
+            {
+                say(exp.name);
+                say(": ");
+                say(exp.typ);
+                if(exp.escape) {
+                    say("/* escapes */");
+                }
+                if(exp.tail != null) {
+                    say(",");
+                }
+                exp = exp.tail;
+            }while(exp != null);
+        }
     }
 
     @Override
@@ -197,8 +214,6 @@ class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(NilExp exp) {
-        // TODO Auto-generated method stub
-
         say("nil");
     }
 
@@ -211,7 +226,6 @@ class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(RecordExp exp) {
         // TODO Auto-generated method stub
-
     }
 
     @Override

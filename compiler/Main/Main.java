@@ -8,6 +8,7 @@ import java.io.PrintStream;
 
 import Absyn.Absyn;
 import Absyn.Exp;
+import Absyn.PrettyPrinter;
 import Absyn.Print;
 import Core.Listener;
 import ErrorMsg.ErrorMsg;
@@ -78,7 +79,7 @@ public class Main {
         semant.on(Semant.SEMANT_START, new Listener<Exp>() {
             @Override
             public void handle(Exp message) {
-                new Print(System.out).prExp(message);
+                message.accept(new PrettyPrinter(System.out));
             }
         });
     }
@@ -125,7 +126,7 @@ public class Main {
         Translator translate = new Translator();
       //  this.registerListeners(translate);
         Semant semant = new Semant(errorMsg, topLevel, translate);
-      //  this.registerListeners(semant);
+        this.registerListeners(semant);
         FragList frags = FragList.reverse(semant.getTreeFragments(ast.absyn));
         if (semant.hasErrors()) {
             System.out.println("semant check error");
@@ -137,7 +138,7 @@ public class Main {
             fileOut = new PrintStream(new java.io.FileOutputStream(name + ".s"));
             fileOut.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
-                this.registerFragListners(frags.head);
+             //   this.registerFragListners(frags.head);
                 frags.head.process(fileOut);
             }
             fileOut.close();
