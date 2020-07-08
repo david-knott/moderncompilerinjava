@@ -14,7 +14,7 @@ public class TestDriver {
 
     @Test
     public void forAssign() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/for_assign_indexer.tig"});
+        Main.main(new String[]{"./test/E2E/good/dec2bin.tig"});
     }
 
 
@@ -29,10 +29,9 @@ public class TestDriver {
         Main.main(new String[]{"./test/E2E/bad/sl_rec.tig"});
     }
 
-
     @Test
     public void test4() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/merge_simple.tig"});
+        Main.main(new String[]{"./test/E2E/good/array_dec.tig"});
     }
 
          static boolean testing(boolean[] bools) {
