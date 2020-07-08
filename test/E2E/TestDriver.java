@@ -9,7 +9,7 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void test() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/for_function_in_loop.tig"});
+        Main.main(new String[]{"./test/E2E/good/escape_simplevar.tig"});
     }
 
     @Test
@@ -28,7 +28,6 @@ public class TestDriver {
     public void test3() throws FileNotFoundException {
         Main.main(new String[]{"./test/E2E/bad/sl_rec.tig"});
     }
-
 
     @Test
     public void test4() throws FileNotFoundException {

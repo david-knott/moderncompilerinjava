@@ -138,7 +138,7 @@ public class Main {
             fileOut = new PrintStream(new java.io.FileOutputStream(name + ".s"));
             fileOut.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
-                this.registerFragListners(frags.head);
+           //     this.registerFragListners(frags.head);
                 frags.head.process(fileOut);
             }
             fileOut.close();

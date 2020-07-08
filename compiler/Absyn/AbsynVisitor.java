@@ -7,7 +7,6 @@ public interface AbsynVisitor {
     void visit(AssignExp exp);
     void visit(BreakExp exp);
     void visit(CallExp exp);
-    void visit(Dec exp);
     void visit(DecList exp);
     void visit(ExpList exp);
     void visit(FieldExpList exp);

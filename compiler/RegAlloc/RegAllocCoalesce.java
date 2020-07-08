@@ -345,7 +345,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
         } while (this.simplifyWorkList != null 
         || this.spillWorkList != null);
         this.assignColours();
-        this.liveness.dumpLiveness(this.instrList);
+       // this.liveness.dumpLiveness(this.instrList);
         if (this.spilledNodes != null) {
             this.rewrite();
             this.main();
