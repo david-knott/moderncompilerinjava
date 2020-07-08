@@ -169,6 +169,7 @@ public class LL<T> {
     public LL<T> tail;
 
     public LL(T h) {
+        Assert.assertNotNull(h);
         this.head = h;
         this.tail = null;
     }

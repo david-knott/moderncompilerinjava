@@ -218,8 +218,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void coalesce() {
         Instr m = this.workListMoves.head;
         Temp u, v;
-        Temp x = m.def().head;
-        Temp y = m.use().head;
+        Temp y = m.def().head;
+        Temp x = m.use().head;
         x = this.getAlias(x);
         y = this.getAlias(y);
         if(LL.<Temp>contains(this.precoloured, y)) {
@@ -230,21 +230,21 @@ public class RegAllocCoalesce extends Component implements TempMap {
             v = y;
         }
         this.workListMoves = LL.<Instr>andNot(this.workListMoves, new LL<Instr>(m));
-        if(u == v) {
+        if(u == v) { /* alias(u) = alias(v) => add to coalesced moves */
             this.coalescedMoves = LL.<Instr>or(this.coalescedMoves, new LL<Instr>(m));
             this.addWorkList(u);
-        } else if(LL.<Temp>contains(this.precoloured, v) || this.inAdjSet(u, v)) {
+        } else if(LL.<Temp>contains(this.precoloured, v) || this.inAdjSet(u, v)) { /* v is precoloured or u & v are in adjSet => constrained */
             this.constrainedMoves = LL.<Instr>or(this.constrainedMoves, new LL<Instr>(m));
             this.addWorkList(u);
             this.addWorkList(v);
         } else if(
             (LL.<Temp>contains(this.precoloured, u) && isOkay(u, v)) ||
             (!LL.<Temp>contains(this.precoloured, u) && conservative(u, v))
-        ) {
+        ) { /* u is precoloured and its okay to coalesce u & v OR u is not precoloured and u & v can be conservatively coalesced => combine & coalesce*/
             this.coalescedMoves = LL.<Instr>or(this.coalescedMoves, new LL<Instr>(m));
             this.combine(u, v);
             this.addWorkList(u);
-        } else {
+        } else { /* otherwise its an active move ? */
             this.activeMoves = LL.<Instr>or(this.activeMoves, new LL<Instr>(m));
         }
     }
@@ -323,8 +323,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void freezeMoves(Temp u) {
         for(var m = this.nodeMoves(u); m != null; m = m.tail) {
             Temp v = null;
-            Temp x = m.head.def().head;
-            Temp y = m.head.use().head;
+            Temp y = m.head.def().head;
+            Temp x = m.head.use().head;
             if(this.getAlias(x) == this.getAlias(y)) {
                 v = this.getAlias(x);
             } else {
@@ -539,7 +539,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
             this.rewrite();
             this.main();
         }
-        this.liveness.dumpLiveness(this.instrList);
+       // this.liveness.dumpLiveness(this.instrList);
     }
 
 
@@ -580,13 +580,10 @@ public class RegAllocCoalesce extends Component implements TempMap {
 
     @Override
     public String tempMap(Temp t) {
-		var colour = this.colour.get(t);
-		if (colour == null)
-			throw new Error("No colour found for: " + t);
+        var colour = this.colour.get(t);
+        Assert.assertNotNull(colour);
         String cr = this.frame.tempMap(colour);
-        if(cr == null) {
-            throw new Error("No colour found for: " + t);
-        }
+        Assert.assertNotNull(cr);
         return cr;
 	}
 }
