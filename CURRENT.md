@@ -1,4 +1,11 @@
 ## Diary
+*8th July 2020*
+Coalesce in progress. Registers allocation is not correct.
+
+Fix bugs in Semant Validation checking as per Epita spec.
+
+Finish Coalesce
+
 *6th July 2020*
 Fixed bug in store array assembly, index and base registers were reversed.
 
