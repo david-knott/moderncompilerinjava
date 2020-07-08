@@ -1,5 +1,7 @@
 ## Diary
 *8th July 2020*
+Pretty Print is prettier.
+
 Coalesce in progress. Registers allocation is not correct.
 
 Fix bugs in Semant Validation checking as per Epita spec.
