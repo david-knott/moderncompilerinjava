@@ -17,7 +17,7 @@ enum IndentationType {
 public class PrettyPrinter implements AbsynVisitor {
     private PrintStream out;
     private boolean spaces = true;
-    private int indentation = 2;
+    private final int indentation = 2;
     private int currentIndentation = 0;
 
     public PrettyPrinter(PrintStream o) {
@@ -31,16 +31,14 @@ public class PrettyPrinter implements AbsynVisitor {
         exp.accept(this);
     }
 
-    private void indent() {
+    private void lineBreakIndent() {
+        say(System.lineSeparator());
         currentIndentation++;
     }
 
-    private void outdent() {
-        currentIndentation--;
-    }
-
-    private void lineBreak() {
+    private void lineBreakOutdent() {
         say(System.lineSeparator());
+        currentIndentation--;
     }
 
     private void line(String line) {
@@ -48,43 +46,63 @@ public class PrettyPrinter implements AbsynVisitor {
         lineBreak();
     }
 
+    private void lineBreak() {
+        say(System.lineSeparator());
+        for (int i = 0; i < this.currentIndentation * this.indentation; i++)
+            out.print(this.spaces ? " " : "\t");
+
+    }
+
     private void say(Symbol symbol) {
         say(symbol.toString());
     }
 
+    private void space() {
+        say(" ");
+    }
+
     private void say(String str) {
-        for (int i = 0; i < this.currentIndentation * this.indentation; i++)
-            out.print(this.spaces ? " " : "\t");
         out.print(str);
     }
 
     @Override
     public void visit(ArrayExp exp) {
-        say("array");
-        exp.init.accept(this);
+        say(exp.typ);
+        say("[");
         exp.size.accept(this);
+        say("]");
+        space();
+        say("of");
+        space();
+        exp.init.accept(this);
     }
 
     @Override
     public void visit(ArrayTy exp) {
-        say("arrayTy");
+        say("array");
+        space();
+        say("of");
+        space();
+        say(exp.typ);
     }
 
     @Override
     public void visit(AssignExp exp) {
-        // TODO Auto-generated method stub
-        say("assignExp");
-
+        exp.var.accept(this);
+        space();
+        say(":=");
+        space();
+        exp.exp.accept(this);
     }
 
     @Override
     public void visit(BreakExp exp) {
+        space();
         say("break");
     }
 
     @Override
     public void visit(CallExp exp) {
-        // TODO Auto-generated method stub
         say(exp.func.toString());
         say("(");
         for (ExpList expList = exp.args; expList != null; expList = expList.tail) {
@@ -97,31 +115,32 @@ public class PrettyPrinter implements AbsynVisitor {
     }
 
     @Override
-    public void visit(Dec exp) {
-        // TODO Auto-generated method stub
-        say("dec");
-
-    }
-
-    @Override
     public void visit(DecList exp) {
         for(;exp != null; exp = exp.tail) {
             exp.head.accept(this);
+            lineBreak();
         }
     }
 
     @Override
     public void visit(ExpList exp) {
-        // TODO Auto-generated method stub
-        say("expList");
-
+        for(;exp != null; exp = exp.tail) {
+            exp.head.accept(this);
+            if(exp.tail != null) {
+                say(";");
+            }
+        }
     }
 
     @Override
     public void visit(FieldExpList exp) {
-        // TODO Auto-generated method stub
-        say("fieldExpList");
-
+        for(;exp != null; exp = exp.tail) {
+            say(exp.name);
+            say("=");
+            exp.init.accept(this);
+            if(exp.tail != null)
+                say(",");
+        }
     }
 
     @Override
@@ -130,9 +149,12 @@ public class PrettyPrinter implements AbsynVisitor {
             do
             {
                 say(exp.name);
-                say(": ");
+                space();
+                say(":");
+                space();
                 say(exp.typ);
                 if(exp.escape) {
+                    space();
                     say("/* escapes */");
                 }
                 if(exp.tail != null) {
@@ -145,44 +167,62 @@ public class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(FieldVar exp) {
-        // TODO Auto-generated method stub
-        say("fieldVar");
-
+        exp.var.accept(this);
+        say(".");
+        say(exp.field);
     }
 
     @Override
     public void visit(ForExp exp) {
-        // TODO Auto-generated method stub
-        say("forExp");
-
+        say("for");  
+        space();
+        exp.var.accept(this);
+        space();
+        say("to");
+        space();
+        exp.hi.accept(this);
+        space();
+        say("do");
+        space();
+        exp.body.accept(this);
     }
 
     @Override
     public void visit(FunctionDec functionDec) {
-        say("function ");
+        say("function");
+        space();
         say(functionDec.name.toString());
         say("(");
         if (functionDec.params != null)
             functionDec.params.accept(this);
-        if (functionDec.result != null)
-            functionDec.result.accept(this);
-        functionDec.body.accept(this);
         say(")");
-
+        if (functionDec.result != null) {
+            space();
+            say(":");
+            space();
+            functionDec.result.accept(this);
+        }
+        say("=");
+        currentIndentation++;
+        lineBreak();
+        functionDec.body.accept(this);
+        currentIndentation--;
     }
 
     @Override
     public void visit(IfExp exp) {
-        say("if ");
+        say("if");
+        space();
         say("(");
         exp.test.accept(this);
         say(")");
-        say(" then ");
+        say("then");
         say("(");
         exp.thenclause.accept(this);
         say(")");
         if (exp.elseclause != null) {
-            say(" else ");
+            lineBreak();
+            say("else");
             say("(");
             exp.elseclause.accept(this);
             say(")");
@@ -197,53 +237,62 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(LetExp letExp) {
         say("let");
+        currentIndentation++;
+        lineBreak();
         if (letExp.decs != null)
             letExp.decs.accept(this);
+        currentIndentation--;
         say("in");
+        currentIndentation++;
+        lineBreak();
         if (letExp.body != null)
             letExp.body.accept(this);
+        currentIndentation--;
+        lineBreak();
         say("end");
     }
 
     @Override
     public void visit(NameTy exp) {
-        // TODO Auto-generated method stub
-
-        say("NameTyp");
+        say(exp.name);
     }
 
     @Override
     public void visit(NilExp exp) {
+        space();
         say("nil");
     }
 
     @Override
     public void visit(OpExp exp) {
-        // TODO Auto-generated method stub
-
+        exp.left.accept(this);
+        say("x");
+        exp.right.accept(this);
     }
 
     @Override
     public void visit(RecordExp exp) {
-        // TODO Auto-generated method stub
+        say(exp.typ);
+        say("{");
+        exp.fields.accept(this);
+        say("}");
     }
 
     @Override
     public void visit(RecordTy exp) {
-        // TODO Auto-generated method stub
-
+        exp.fields.accept(this);
     }
 
     @Override
     public void visit(SeqExp exp) {
-        line("(");
+        say("(");
         exp.list.accept(this);
-        line("(");
+        say(")");
     }
 
     @Override
     public void visit(SimpleVar exp) {
-
+        say(exp.name);
     }
 
     @Override
@@ -261,8 +310,13 @@ public class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(TypeDec exp) {
-        // TODO Auto-generated method stub
-
+        say("type");
+        space();
+        say(exp.name);
+        space();
+        say("=");
+        space();
+        exp.ty.accept(this);
     }
 
     @Override
@@ -272,21 +326,32 @@ public class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(VarDec exp) {
-        // TODO Auto-generated method stub
-
+        say("var");
+        space();
+        say(exp.name);
+        space();
+        if(exp.typ != null) {
+            say(":");
+            space();
+            say(exp.typ.name);
+            space();
+        }
+        say(":=");
+        space();
+        exp.init.accept(this);
+        if(exp.escape) {
+            say("/* escapes */");
+        }
     }
 
     @Override
     public void visit(VarExp exp) {
-
-        say("varExp");
         exp.var.accept(this);
-
     }
 
     @Override
     public void visit(WhileExp exp) {
-        say("while ");
+        say("while");
         exp.test.accept(this);
         say("do");
         say("(");
