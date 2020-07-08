@@ -10,6 +10,6 @@ public class DecList {
    }
 
    public void accept(AbsynVisitor visitor) {
-      head.accept(visitor);
+      visitor.visit(this);
    }
 }
