@@ -396,7 +396,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.instrList = instrList;
         this.frame = frame;
         this.K = this.frame.registers().size(); //14
-        var pctl = new TempList(IntelFrame.rbp, new TempList(IntelFrame.rsp, this.frame.registers()));
+        //var pctl = new TempList(IntelFrame.rbp, new TempList(IntelFrame.rsp, this.frame.registers()));
+        var pctl = this.frame.registers();
         for(TempList pc = pctl; pc != null; pc = pc.tail) {
             this.precoloured = LL.<Temp>insertOrdered(this.precoloured, pc.head);
             this.colour.put(pc.head, pc.head);
