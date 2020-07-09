@@ -1,4 +1,19 @@
 ## Diary
+*9th July 2020*
+Currently failing
+
+Test Result: ./good/array_assign.tig failed.
+./run_good.sh: line 12: warning: command substitution: ignored null byte in input
+./run_good.sh: line 13: warning: command substitution: ignored null byte in input
+Test Result: ./good/binsearch.tig failed.
+./run_good.sh: line 12: warning: command substitution: ignored null byte in input
+./run_good.sh: line 13: warning: command substitution: ignored null byte in input
+Test Result: ./good/merge_simple.tig failed.
+./run_good.sh: line 12: warning: command substitution: ignored null byte in input
+./run_good.sh: line 13: warning: command substitution: ignored null byte in input
+Test Result: ./good/queens.tig failed.
+
+
 *8th July 2020*
 Pretty Print is prettier.
 
