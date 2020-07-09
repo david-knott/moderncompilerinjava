@@ -16,6 +16,9 @@ Test Result: ./good/queens.tig failed.
 I will focus on array_asign first as that is the simplist. Its also the only one
 that seg faults.
 
+It appears that certain temporaries that interfere are being coalesced to the same
+register. This should not happen.
+
 *8th July 2020*
 Pretty Print is prettier.
 

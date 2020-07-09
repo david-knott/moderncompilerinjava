@@ -82,7 +82,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private LL<Temp> use(Instr instr) {
         LL<Temp> nodeWorkList = null;
         for (TempList tempList = instr.use(); tempList != null; tempList = tempList.tail) {
-            nodeWorkList = LL.<Temp>insertOrdered(nodeWorkList, tempList.head);
+            nodeWorkList = LL.<Temp>or(nodeWorkList, new LL<Temp>(tempList.head));
         }
         return nodeWorkList;
     }
@@ -90,7 +90,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private LL<Temp> def(Instr instr) {
         LL<Temp> nodeWorkList = null;
         for (TempList tempList = instr.def(); tempList != null; tempList = tempList.tail) {
-            nodeWorkList = LL.<Temp>insertOrdered(nodeWorkList, tempList.head);
+            nodeWorkList = LL.<Temp>or(nodeWorkList, new LL<Temp>(tempList.head));
         }
         return nodeWorkList;
     }
@@ -134,29 +134,32 @@ public class RegAllocCoalesce extends Component implements TempMap {
             Temp temp = initial.head;
             initial = LL.<Temp>andNot(initial, new LL<Temp>(temp));
             if (this.degree.get(temp) >= K) {
-                this.addSpilledWorkList(temp);
+                this.spillWorkList = LL.<Temp>or(this.spillWorkList, new LL<Temp>(temp));
             } else if(this.moveRelated(temp)) {
                 this.freezeWorkList = LL.<Temp>or(this.freezeWorkList, new LL<Temp>(temp));
             } else {
-                this.addSimplifyWorkList(temp);
+                this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(temp));
             }
         }
     }
 
+    /**
+     * Checks if temporary is used by any moves that are active or
+     * moves enabled for possible coalescing.
+     * @param temp
+     * @return true if temp is a move instruction.
+     */
     private boolean moveRelated(Temp temp) {
         return this.nodeMoves(temp) != null;
     }
 
+    /**
+     * Returns a list of all move instructions that this temp is used in.
+     * @param temp
+     * @return
+     */
     private LL<Instr> nodeMoves(Temp temp) {
         return LL.and(this.moveList.getOrDefault(temp, null), LL.or(this.activeMoves, this.workListMoves));
-    }
-
-    private void addSimplifyWorkList(Temp temp) {
-        this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(temp));
-    }
-
-    private void addSpilledWorkList(Temp temp) {
-        this.spillWorkList = LL.<Temp>or(this.spillWorkList, new LL<Temp>(temp));
     }
 
     private LL<Temp> adjacent(Temp head) {
@@ -171,7 +174,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * Removes item from simplifyWorkList and pushes it onto the stack
      */
     private void simplify() {
-        Assert.assertNotNull(this.simplifyWorkList);
         LL<Temp> n = new LL<Temp>(this.simplifyWorkList.head);
         this.simplifyWorkList = LL.<Temp>andNot(this.simplifyWorkList, n);
         this.stack = LL.<Temp>insertRear(this.stack, n.head);
@@ -187,19 +189,19 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * freeze worklist, if not, move it to the simplify worklist. This method can be
      * called from either the simplify method or the combine method.
      * 
-     * @param head
+     * @param m
      */
-    private void decrementDegree(Temp head) {
-        Integer d = this.degree.get(head);
+    private void decrementDegree(Temp m) {
+        Integer d = this.degree.get(m);
         Assert.assertNotNull(d);
-        this.degree.put(head, d - 1);
+        this.degree.put(m, d - 1);
         if (d == this.K) {
-            this.enableMoves(LL.<Temp>or(new LL<Temp>(head), this.adjacent(head)));
-            this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(head));
-            if(this.moveRelated(head)) {
-                this.freezeWorkList = LL.<Temp>or(this.freezeWorkList, new LL<Temp>(head));
+            this.enableMoves(LL.<Temp>or(new LL<Temp>(m), this.adjacent(m)));
+            this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(m));
+            if(this.moveRelated(m)) {
+                this.freezeWorkList = LL.<Temp>or(this.freezeWorkList, new LL<Temp>(m));
             } else {
-                this.addSimplifyWorkList(head);
+                this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(m));
             }
         }
     }
@@ -218,8 +220,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void coalesce() {
         Instr m = this.workListMoves.head;
         Temp u, v;
-        Temp y = m.def().head;
-        Temp x = m.use().head;
+        //defuse
+        Temp x = m.def().head;
+        Temp y = m.use().head;
         x = this.getAlias(x);
         y = this.getAlias(y);
         if(LL.<Temp>contains(this.precoloured, y)) {
@@ -247,7 +250,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
             System.out.println("Combining: u:"+ u + " v:"+ v);
             this.combine(u, v);
             this.addWorkList(u);
-        } else { /* otherwise its an active move ? */
+        } else { /* otherwise move not yet ready for coalescing */
             this.activeMoves = LL.<Instr>or(this.activeMoves, new LL<Instr>(m));
         }
     }
@@ -290,6 +293,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 LL.<Temp>contains(this.precoloured, t.head) ||
                 this.inAdjSet(t.head, u)
             ) ;
+            if(!result) break;
         }
         return result;
     }
@@ -328,8 +332,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void freezeMoves(Temp u) {
         for(var m = this.nodeMoves(u); m != null; m = m.tail) {
             Temp v = null;
-            Temp y = m.head.def().head;
-            Temp x = m.head.use().head;
+            //defuse
+            Temp y = m.head.use().head;
+            Temp x = m.head.def().head;
             if(this.getAlias(y) == this.getAlias(u)) {
                 v = this.getAlias(x);
             } else {
@@ -338,8 +343,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
             this.activeMoves = LL.<Instr>andNot(this.activeMoves, new LL<Instr>(m.head));
             this.frozenMoves = LL.<Instr>or(this.frozenMoves, new LL<Instr>(m.head));
             if(this.nodeMoves(v) == null && this.degree.get(v) < this.K) {
-                this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(u));
-                this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(u));
+                this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(v));
+                this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(v));
             }
         }
     }
@@ -380,14 +385,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
      */
     private void selectSpill() {
         Temp m = this.nodeToSpill();
-        this.removeSpillWorkList(m);
-        this.addSimplifyWorkList(m);
-        this.freezeMoves(m);
-    }
-
-
-    private void removeSpillWorkList(Temp m) {
         this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(m));
+        this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(m));
+        this.freezeMoves(m);
     }
 
     /**
@@ -399,7 +399,6 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void addEdge(Temp u, Temp v) {
         if (!this.inAdjSet(u, v) && u != v) {
             this.addAdjacentSet(u, v);
-            this.addAdjacentSet(v, u);
             if (!LL.<Temp>contains(this.precoloured, u)) {
                 this.adjList.put(u, LL.<Temp>or(this.adjList.get(u), new LL<Temp>(v)));
                 this.degree.put(u, this.degree.getOrDefault(u, 0) + 1);
@@ -585,6 +584,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
     @Override
     public String tempMap(Temp t) {
         var clr = this.colour.get(this.getAlias(t));
+     //   var clr = this.colour.get(t);
         Assert.assertNotNull(clr, "No colour for " + t);
         return this.frame.tempMap(clr);
 	}
