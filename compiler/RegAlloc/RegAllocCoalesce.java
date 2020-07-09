@@ -232,18 +232,19 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.workListMoves = LL.<Instr>andNot(this.workListMoves, new LL<Instr>(m));
         if(u == v) { /* alias(u) = alias(v) => add to coalesced moves */
             this.coalescedMoves = LL.<Instr>or(this.coalescedMoves, new LL<Instr>(m));
+            System.out.println("u == v u:" + u + " v:" + v);
             this.addWorkList(u);
         } else if(LL.<Temp>contains(this.precoloured, v) || this.inAdjSet(u, v)) { /* v is precoloured or u & v are in adjSet => constrained */
             this.constrainedMoves = LL.<Instr>or(this.constrainedMoves, new LL<Instr>(m));
             this.addWorkList(u);
             this.addWorkList(v);
+            System.out.println("Constrained td:" + m.def() + " tu:" + m.use());
         } else if(
             (LL.<Temp>contains(this.precoloured, u) && isOkay(u, v)) ||
             (!LL.<Temp>contains(this.precoloured, u) && conservative(u, v))
         ) { /* u is precoloured and its okay to coalesce u & v OR u is not precoloured and u & v can be conservatively coalesced => combine & coalesce*/
             this.coalescedMoves = LL.<Instr>or(this.coalescedMoves, new LL<Instr>(m));
-            System.out.println("Combining iv="+ u + " v="+ v);
-            
+            System.out.println("Combining: u:"+ u + " v:"+ v);
             this.combine(u, v);
             this.addWorkList(u);
         } else { /* otherwise its an active move ? */
@@ -284,22 +285,19 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private boolean isOkay(Temp u, Temp v) {
         boolean result = true; 
         for(var t = this.adjacent(v); t != null; t = t.tail) {
-             if(
+             result &= (
                 this.degree.get(t.head) < this.K ||
                 LL.<Temp>contains(this.precoloured, t.head) ||
                 this.inAdjSet(t.head, u)
-                ) {
-                    result = false;
-                    break;
-                }
-            }
-        
+            ) ;
+        }
         return result;
     }
 
 
     private boolean inAdjSet(Temp u, Temp v) {
-        return this.adjList.get(u) != null && LL.<Temp>contains(this.adjList.get(u), v);
+        return this.addSet.get(u) != null && LL.<Temp>contains(this.addSet.get(u), v)
+        || this.addSet.get(v) != null && LL.<Temp>contains(this.addSet.get(v), u);
     }
 
     private void addWorkList(Temp u) {

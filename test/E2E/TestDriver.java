@@ -14,7 +14,7 @@ public class TestDriver {
 
     @Test
     public void forAssign() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/dec2bin.tig"});
+        Main.main(new String[]{"./test/E2E/good/record_assign_nested.tig"});
     }
 
 
@@ -33,7 +33,6 @@ public class TestDriver {
     public void test4() throws FileNotFoundException {
         Main.main(new String[]{"./test/E2E/good/array_dec.tig"});
     }
-
          static boolean testing(boolean[] bools) {
          boolean result = true;
          for(int i = 0; i < bools.length; i++) {
