@@ -13,6 +13,8 @@ Test Result: ./good/merge_simple.tig failed.
 ./run_good.sh: line 13: warning: command substitution: ignored null byte in input
 Test Result: ./good/queens.tig failed.
 
+I will focus on array_asign first as that is the simplist. Its also the only one
+that seg faults.
 
 *8th July 2020*
 Pretty Print is prettier.
