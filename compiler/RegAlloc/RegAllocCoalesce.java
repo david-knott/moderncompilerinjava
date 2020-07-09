@@ -13,7 +13,6 @@ import FlowGraph.FlowGraph;
 import Frame.Access;
 import Frame.Frame;
 import Graph.Node;
-import Intel.IntelFrame;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
@@ -221,8 +220,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
         Instr m = this.workListMoves.head;
         Temp u, v;
         //defuse
-        Temp x = m.def().head;
-        Temp y = m.use().head;
+        Temp y = m.def().head;
+        Temp x = m.use().head;
         x = this.getAlias(x);
         y = this.getAlias(y);
         if(LL.<Temp>contains(this.precoloured, y)) {
@@ -266,7 +265,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.moveList.put(u, LL.<Instr>or(this.moveList.get(u), this.moveList.get(v)));
         this.enableMoves(new LL<Temp>(v));
         for(LL<Temp> t = this.adjacent(v); t != null; t = t.tail) {
-            this.addEdge(t.head, u);
+            this.addEdge(t.head,u);
             this.decrementDegree(t.head);
         }
         if(this.degree.get(u) >= this.K && LL.<Temp>contains(this.freezeWorkList, u)) {
@@ -333,8 +332,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
         for(var m = this.nodeMoves(u); m != null; m = m.tail) {
             Temp v = null;
             //defuse
-            Temp y = m.head.use().head;
-            Temp x = m.head.def().head;
+            Temp y = m.head.def().head;
+            Temp x = m.head.use().head;
             if(this.getAlias(y) == this.getAlias(u)) {
                 v = this.getAlias(x);
             } else {
@@ -520,16 +519,19 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.updateUseAndDefCounts();
         this.build();
         this.makeWorklist();
-     //   this.checkWorkListInvariants();
         do {
             if (this.simplifyWorkList != null) {
                 this.simplify();
+                this.checkWorkListInvariants();
             } else if (this.workListMoves != null) {
                 this.coalesce();
+                this.checkWorkListInvariants();
             } else if (this.freezeWorkList != null) {
                 this.freeze();
+                this.checkWorkListInvariants();
             } else if (this.spillWorkList != null) {
                 this.selectSpill();
+                this.checkWorkListInvariants();
             }
         } while (
             this.simplifyWorkList != null 
@@ -547,30 +549,47 @@ public class RegAllocCoalesce extends Component implements TempMap {
 
 
     private void checkWorkListInvariants() {
-        for(LL<Temp> degreeInvariant = LL.<Temp>or(this.simplifyWorkList, this.spillWorkList); degreeInvariant != null; degreeInvariant = degreeInvariant.tail) {
-            int size = LL.<Temp>size(
+        for(LL<Temp> u = LL.<Temp>or(LL.<Temp>or(this.simplifyWorkList, this.freezeWorkList), this.spillWorkList); u != null; u = u.tail) {
+            LL<Temp> check = 
                 LL.<Temp>and(
-                    this.adjList.get(degreeInvariant.head), 
+                    this.adjList.get(u.head),
                     LL.<Temp>or(
                         LL.<Temp>or(
-                            this.precoloured, 
-                            this.simplifyWorkList
-                        ), 
+                            LL.<Temp>or(
+                                this.precoloured, 
+                                this.simplifyWorkList
+                            ), 
+                            this.freezeWorkList
+                        ),
                         this.spillWorkList
                     )
-                )
-            );
-            int si = this.degree.get(degreeInvariant.head);
-            if(size != si) {
-                throw new Error("degree invariant:" + degreeInvariant.head + ":" + size + "!=" + si);
+                );
+            int deg = this.degree.get(u.head);
+            int setCount = LL.<Temp>size(check);
+            if(deg != setCount) {
+                throw new Error("degree invariant violation for temp:" + u.head + " : degree:" + deg + " != count:" + setCount);
             }
         }
-        for(LL<Temp> simplifyInvariant = this.simplifyWorkList; simplifyInvariant != null; simplifyInvariant = simplifyInvariant.tail) {
-            var si = this.degree.get(simplifyInvariant.head);
-            if(si >= this.K) {
-                throw new Error("Simplify Invariant: " + simplifyInvariant.head + ":" + si + ">=" + this.K);
+        for(LL<Temp> u = this.simplifyWorkList; u != null; u = u.tail) {
+            if(this.degree.get(u.head) >= K) {
+                throw new Error("Simplify WorkList");
             }
-
+            if(LL.<Instr>and(this.moveList.get(u.head), LL.<Instr>or(this.activeMoves, this.workListMoves)) != null) {
+                throw new Error();
+            }
+        }
+        for(LL<Temp> u = this.freezeWorkList; u != null; u = u.tail) {
+            if(this.degree.get(u.head) >= K) {
+                throw new Error();
+            }
+            if(LL.<Instr>and(this.moveList.get(u.head), LL.<Instr>or(this.activeMoves, this.workListMoves)) != null) {
+                throw new Error();
+            }
+        }
+        for(LL<Temp> u = this.spillWorkList; u != null; u = u.tail) {
+            if(this.degree.get(u.head) < K) {
+                throw new Error();
+            }
         }
     }
 
