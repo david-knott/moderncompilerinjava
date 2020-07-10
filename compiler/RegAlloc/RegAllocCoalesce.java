@@ -218,7 +218,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void decrementDegree(Temp m) {
         Integer d = this.degree.get(m);
         this.degree.put(m, d - 1);
-        System.out.println("decrement degree " + m + " " + d);
+      //  System.out.println("decrement degree " + m + " " + d);
         if (d == this.K) {
             this.enableMoves(LL.<Temp>or(new LL<Temp>(m), this.adjacent(m)));
             this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(m));
@@ -246,8 +246,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
         Instr m = this.workListMoves.head;
         Temp u, v;
         //defuse
-        Temp x = m.def().head;
-        Temp y = m.use().head;
+        Temp y = m.def().head;
+        Temp x = m.use().head;
         x = this.getAlias(x);
         y = this.getAlias(y);
         if(LL.<Temp>contains(this.precoloured, y)) {
@@ -376,8 +376,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
         for(var m = this.nodeMoves(u); m != null; m = m.tail) {
             Temp v = null;
             //defuse
-            Temp x = m.head.def().head;
-            Temp y = m.head.use().head;
+            Temp y = m.head.def().head;
+            Temp x = m.head.use().head;
             if(this.getAlias(y) == this.getAlias(u)) {
                 v = this.getAlias(x);
             } else {
@@ -448,13 +448,13 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 this.adjList.put(u, LL.<Temp>or(this.adjList.get(u), new LL<Temp>(v)));
                 int d = this.degree.getOrDefault(u, 0);
                 this.degree.put(u, d + 1);
-                System.out.println("increment degree " + u + " " + d);
+            //    System.out.println("increment degree " + u + " " + d);
             }
             if (!LL.<Temp>contains(this.precoloured, v)) {
                 this.adjList.put(v, LL.<Temp>or(this.adjList.get(v), new LL<Temp>(u)));
                 int d = this.degree.getOrDefault(v, 0);
                 this.degree.put(v, d + 1);
-                System.out.println("increment degree " + v + " " + d);
+           //     System.out.println("increment degree " + v + " " + d);
             }
         }
     }
@@ -546,7 +546,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
 
     int maxTries = 0;
     private void main() {
-        Assert.assertLE(maxTries++, 6);
+        Assert.assertLE(maxTries++, 3);
         for(TempList pc = this.frame.registers(); pc != null; pc = pc.tail) {
             this.precoloured = LL.<Temp>insertOrdered(this.precoloured, pc.head);
             this.colour.put(pc.head, pc.head);
