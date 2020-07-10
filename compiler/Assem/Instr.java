@@ -77,7 +77,7 @@ public abstract class Instr implements Comparable<Instr> {
 
     @Override
     public String toString() {
-        return this.hashCode() +  ":" + this.assem;
+        return hashCode() +  ":" + this.assem;
     }
 
 }

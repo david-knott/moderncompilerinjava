@@ -1,4 +1,9 @@
 ## Diary
+*10 July 2020*
+Fixed simple bug in Instr comparator.
+
+All items pass, except for merge_simple.
+
 *9th July 2020*
 Currently failing
 
@@ -56,7 +61,6 @@ Fixed static link bug. Queens and merge are now passing.
 will compile but will not assembly. This is due to missing labels
 
 Bugs: If a variable is defined with the same name as a function we get java compilation errors
-
 
 *25th June 2020*
 
