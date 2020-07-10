@@ -72,7 +72,12 @@ public abstract class Instr implements Comparable<Instr> {
 
     @Override
     public int compareTo(Instr o) {
-        return this.hashCode() == o.hashCode() ? 1 : ( this.hashCode() < o.hashCode() ? -1 : 1);
+        return this.hashCode() == o.hashCode() ? 0 : ( this.hashCode() < o.hashCode() ? -1 : 1);
+    }
+
+    @Override
+    public String toString() {
+        return this.hashCode() +  ":" + this.assem;
     }
 
 }
