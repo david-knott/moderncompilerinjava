@@ -24,6 +24,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
     public InstrList instrList;
     public Frame frame;
     private int K;
+    private boolean coalesce = true;
     // move related worklists
     private Hashtable<Temp, LL<Temp>> adjList = new Hashtable<Temp, LL<Temp>>();
     private Hashtable<Temp, LL<Temp>> addSet = new Hashtable<Temp, LL<Temp>>();
@@ -116,9 +117,12 @@ public class RegAllocCoalesce extends Component implements TempMap {
             var uses = use(il.head);
             var defs = def(il.head);
             if (il.head instanceof MOVE) {
-                this.workListMoves = LL.<Instr>or(this.workListMoves, new LL<Instr>(il.head));
-                for(LL<Temp> n = LL.<Temp>or(uses, defs); n != null; n = n.tail) {
-                    this.moveList.put(n.head, LL.<Instr>or(this.moveList.getOrDefault(n.head, null), new LL<Instr>(il.head))); 
+                if (this.coalesce) {
+                    this.workListMoves = LL.<Instr>or(this.workListMoves, new LL<Instr>(il.head));
+                    for (LL<Temp> n = LL.<Temp>or(uses, defs); n != null; n = n.tail) {
+                        this.moveList.put(n.head,
+                                LL.<Instr>or(this.moveList.getOrDefault(n.head, null), new LL<Instr>(il.head)));
+                    }
                 }
                 for (var l = live; l != null; l = l.tail) { //foreach live var
                     if (uses.head != l.head) { //if live var is not a use
