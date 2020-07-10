@@ -124,7 +124,7 @@ public class Main {
         Frame frame = new IntelFrame(Label.create("tigermain"), null);
         Level topLevel = new Level(frame);
         Translator translate = new Translator();
-      //  this.registerListeners(translate);
+        this.registerListeners(translate);
         Semant semant = new Semant(errorMsg, topLevel, translate);
         this.registerListeners(semant);
         FragList frags = FragList.reverse(semant.getTreeFragments(ast.absyn));

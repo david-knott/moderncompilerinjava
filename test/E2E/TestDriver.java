@@ -9,28 +9,24 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void test() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/escape_simplevar.tig"});
-    }
-
-    @Test
-    public void forAssign() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/for_assign_indexer.tig"});
-    }
-
-
-    @Test
-    public void test2() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/bad/sl_same_level.tig"});
-    }
-
-
-    @Test
-    public void test3() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/bad/sl_rec.tig"});
+        Main.main(new String[]{"./test/E2E/good/linked_list_size.tig"});
     }
 
     @Test
     public void test4() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/merge_simple.tig"});
+        Main.main(new String[]{"./test/E2E/good/array_dec.tig"});
+    }
+         static boolean testing(boolean[] bools) {
+         boolean result = true;
+         for(int i = 0; i < bools.length; i++) {
+             result &= bools[i];
+         }
+         return result;
+     }
+
+     @Test
+    public void testingd() {
+        System.out.println("" + testing(new boolean[]{false, false, true}));
+    
     }
 }

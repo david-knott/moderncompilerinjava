@@ -2,6 +2,10 @@ package Absyn;
 
 import Symbol.Symbol;
 
+/**
+ * Represents a list of fields in a record. A field
+ * list always escapes as it is stored on the stack.
+ */
 public class FieldList extends Absyn {
    public Symbol name;
    public Symbol typ;

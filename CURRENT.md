@@ -1,4 +1,38 @@
 ## Diary
+*10 July 2020*
+Fixed simple bug in Instr comparator.
+
+All items pass, except for merge_simple.
+
+*9th July 2020*
+Currently failing
+
+Test Result: ./good/array_assign.tig failed.
+./run_good.sh: line 12: warning: command substitution: ignored null byte in input
+./run_good.sh: line 13: warning: command substitution: ignored null byte in input
+Test Result: ./good/binsearch.tig failed.
+./run_good.sh: line 12: warning: command substitution: ignored null byte in input
+./run_good.sh: line 13: warning: command substitution: ignored null byte in input
+Test Result: ./good/merge_simple.tig failed.
+./run_good.sh: line 12: warning: command substitution: ignored null byte in input
+./run_good.sh: line 13: warning: command substitution: ignored null byte in input
+Test Result: ./good/queens.tig failed.
+
+I will focus on array_asign first as that is the simplist. Its also the only one
+that seg faults.
+
+It appears that certain temporaries that interfere are being coalesced to the same
+register. This should not happen.
+
+*8th July 2020*
+Pretty Print is prettier.
+
+Coalesce in progress. Registers allocation is not correct.
+
+Fix bugs in Semant Validation checking as per Epita spec.
+
+Finish Coalesce
+
 *6th July 2020*
 Fixed bug in store array assembly, index and base registers were reversed.
 
@@ -27,7 +61,6 @@ Fixed static link bug. Queens and merge are now passing.
 will compile but will not assembly. This is due to missing labels
 
 Bugs: If a variable is defined with the same name as a function we get java compilation errors
-
 
 *25th June 2020*
 

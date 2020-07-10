@@ -89,6 +89,7 @@
                     break;
                 case BINOP.PLUS:
                     this.temp = Temp.create();
+                    //emit(new Assem.MOVE("movq %`s0, %`d0 # add lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # add lexp -> r", this.temp, leftTemp));
                     emit(new OPER("add %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
@@ -173,12 +174,6 @@
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callDefs, l));
             } else {
                 throw new Error("Not implemented.");
-                /*
-                exp.exp.accept(this);
-                var expTemp = temp;
-                temp = Temp.create();
-                emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
-                */
             }
         }
 
@@ -202,9 +197,9 @@
                 srcExp.accept(this);
                 Temp src = this.temp;
                 Temp reg = Temp.create();
-                emit(new Assem.MOVE("movq (%`s0), %`d0 # mem to temp", 
-                        reg, 
-                        src
+                emit(new Assem.OPER("movq (%`s0), %`d0 # mem to temp", 
+                        new TempList(reg), 
+                        new TempList(src)
                         ));
                  emit(new Assem.OPER("movq %`s0, (%`s1) # temp to mem", 
                         null, 

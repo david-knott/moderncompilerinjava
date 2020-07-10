@@ -90,8 +90,8 @@ public class ProcFrag extends Frag {
             if(body.head instanceof MOVE) {
                 Temp def = body.head.def().head;
                 Temp use = body.head.use().head;
-                // remove moves with same src and dest
-                if (tempMap.tempMap(def) != tempMap.tempMap(use)) {
+                //remove moves with same src and dest
+                if(tempMap.tempMap(def) != tempMap.tempMap(use)) {
                     out.println(body.head.format(tempMap));
                 }
             }

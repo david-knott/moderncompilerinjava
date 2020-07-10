@@ -129,6 +129,7 @@ public class PrettyPrinter implements AbsynVisitor {
             if(exp.tail != null) {
                 say(";");
             }
+            lineBreak();
         }
     }
 

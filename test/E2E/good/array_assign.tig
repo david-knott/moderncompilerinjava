@@ -4,8 +4,8 @@ let
 in
     row[0] := 10;
     row[9] := 9;
-    row[5] := 5;
-    printi(row[5]);
+    row[5] := 5; 
+    printi(row[5]); 
     printi(row[0]);
     printi(row[9])
 end
