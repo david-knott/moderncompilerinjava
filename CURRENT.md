@@ -1,5 +1,9 @@
 ## Diary
 *10 July 2020*
+Fixed another bug, in maximum munch MEM_TO_MEM, we were using a MEM assembly 
+function instead of a OPER. This was causing the coalesce function to not work
+correctly.
+
 Fixed simple bug in Instr comparator.
 
 All items pass, except for merge_simple.
