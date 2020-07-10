@@ -9,7 +9,7 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void test() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/merge_simple.tig"});
+        Main.main(new String[]{"./test/E2E/good/linked_list_size.tig"});
     }
 
     @Test

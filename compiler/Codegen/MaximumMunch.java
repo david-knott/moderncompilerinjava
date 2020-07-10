@@ -197,9 +197,9 @@
                 srcExp.accept(this);
                 Temp src = this.temp;
                 Temp reg = Temp.create();
-                emit(new Assem.MOVE("movq (%`s0), %`d0 # mem to temp", 
-                        reg, 
-                        src
+                emit(new Assem.OPER("movq (%`s0), %`d0 # mem to temp", 
+                        new TempList(reg), 
+                        new TempList(src)
                         ));
                  emit(new Assem.OPER("movq %`s0, (%`s1) # temp to mem", 
                         null, 
