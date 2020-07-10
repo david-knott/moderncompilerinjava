@@ -174,12 +174,6 @@
                 emit(new OPER("call " + name.label + " # exp call ( no return value )", IntelFrame.callDefs, l));
             } else {
                 throw new Error("Not implemented.");
-                /*
-                exp.exp.accept(this);
-                var expTemp = temp;
-                temp = Temp.create();
-                emit(new Assem.MOVE("movq %`s0, %`d0 # default exp", temp, expTemp));
-                */
             }
         }
 
