@@ -1,15 +1,11 @@
 package Main;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import Absyn.Absyn;
 import Absyn.Exp;
 import Absyn.PrettyPrinter;
-import Absyn.Print;
 import Core.Listener;
 import ErrorMsg.ErrorMsg;
 import FindEscape.FindEscape;
@@ -20,7 +16,6 @@ import Parse.Program;
 import Parse.Yylex;
 import Semant.Semant;
 import Temp.Label;
-import Translate.ExpTy;
 import Translate.Frag;
 import Translate.FragList;
 import Translate.Level;

@@ -5,10 +5,6 @@ import java.io.PrintStream;
 import Codegen.Assert;
 import Symbol.Symbol;
 
-enum IndentationType {
-    Tabs, Spaces, Fib
-}
-
 /**
  * Returns a formatted version of the AST. This formatted version can be feed
  * back into the compiler. See
@@ -29,16 +25,6 @@ public class PrettyPrinter implements AbsynVisitor {
         line("/* == Abstract Syntax Tree. == */");
         lineBreak();
         exp.accept(this);
-    }
-
-    private void lineBreakIndent() {
-        say(System.lineSeparator());
-        currentIndentation++;
-    }
-
-    private void lineBreakOutdent() {
-        say(System.lineSeparator());
-        currentIndentation--;
     }
 
     private void line(String line) {
@@ -203,7 +189,9 @@ public class PrettyPrinter implements AbsynVisitor {
             space();
             functionDec.result.accept(this);
         }
+        space();
         say("=");
+        space();
         currentIndentation++;
         lineBreak();
         functionDec.body.accept(this);
@@ -243,9 +231,9 @@ public class PrettyPrinter implements AbsynVisitor {
         if (letExp.decs != null)
             letExp.decs.accept(this);
         currentIndentation--;
+        lineBreak();
         say("in");
         currentIndentation++;
-        lineBreak();
         if (letExp.body != null)
             letExp.body.accept(this);
         currentIndentation--;
@@ -267,7 +255,20 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(OpExp exp) {
         exp.left.accept(this);
-        say("x");
+        space();
+        switch(exp.oper) {
+            case OpExp.PLUS: say("+"); break;
+            case OpExp.MINUS: say("-"); break;
+            case OpExp.MUL: say("*"); break;
+            case OpExp.DIV: say("/"); break;
+            case OpExp.EQ: say("="); break;
+            case OpExp.NE: say("!="); break;
+            case OpExp.LT: say("<"); break;
+            case OpExp.LE: say("<="); break;
+            case OpExp.GT: say(">"); break;
+            case OpExp.GE: say(">="); break;
+        }
+        space();
         exp.right.accept(this);
     }
 
@@ -317,7 +318,11 @@ public class PrettyPrinter implements AbsynVisitor {
         space();
         say("=");
         space();
+        say("{");
+        space();
         exp.ty.accept(this);
+        space();
+        say("}");
     }
 
     @Override
@@ -342,6 +347,7 @@ public class PrettyPrinter implements AbsynVisitor {
         exp.init.accept(this);
         if(exp.escape) {
             say("/* escapes */");
+            space();
         }
     }
 
