@@ -1,4 +1,23 @@
 ## Diary
+*16 July 2020*
+Compiler works ( at least all the tests work ). It implements the full iterated
+coalescing graph colouring algorithm as outlined in A Appels book. 
+
+I need to refactor the Semant / Translate classes into a TypeChecker and
+Translator visitor.
+
+The error reporting needs to be implemented correctly.
+
+The parser will fail on the first error it encounters. The grammar should
+be modified to include an error production that allows to parser to recover
+after an error and continue its parse. All errors would then be reported to
+the client.
+
+I would like to be able to generate graphs for the register allocation & coalescing
+
+I would like to be able to display the programs liveness analysis
+
+
 *10 July 2020*
 Fixed another bug, in maximum munch MEM_TO_MEM, we were using a MEM assembly 
 function instead of a OPER. This was causing the coalesce function to not work

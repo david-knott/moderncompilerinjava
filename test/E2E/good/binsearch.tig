@@ -1,4 +1,5 @@
 /* Binary Search */
+/* Note this operates on a sorted array */
 
 let
     var N := 16
