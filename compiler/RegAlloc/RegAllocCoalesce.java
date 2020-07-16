@@ -43,8 +43,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
      */
     private LL<Temp> simplifyWorkList;
     private LL<Temp> stack;
-	private LL<Temp> spillTemps;
-	private LL<Temp> coalescedNodes;
+    private LL<Temp> spillTemps;
+    private LL<Temp> coalescedNodes;
     private FlowGraph flowGraph;
     private Liveness liveness;
     private Hashtable<Temp, Integer> useCount = new Hashtable<Temp, Integer>();
@@ -111,7 +111,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * Builds the interference graph and move list.
      */
     private void build() {
-        //System.out.println("# build");
+        // System.out.println("# build");
         for (InstrList il = this.instrList; il != null; il = il.tail) {
             LL<Temp> live = liveOut(il.head);
             var uses = use(il.head);
@@ -124,9 +124,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
                                 LL.<Instr>or(this.moveList.getOrDefault(n.head, null), new LL<Instr>(il.head)));
                     }
                 }
-                for (var l = live; l != null; l = l.tail) { //foreach live var
-                    if (uses.head != l.head) { //if live var is not a use
-                        this.addEdge(defs.head, l.head); //add an edge with the def
+                for (var l = live; l != null; l = l.tail) { // foreach live var
+                    if (uses.head != l.head) { // if live var is not a use
+                        this.addEdge(defs.head, l.head); // add an edge with the def
                     }
                 }
             } else {
@@ -146,13 +146,13 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * work list
      */
     private void makeWorklist() {
-        //System.out.println("# makeworklist");
-        while(initial != null) {
+        // System.out.println("# makeworklist");
+        while (initial != null) {
             Temp temp = initial.head;
             initial = LL.<Temp>andNot(initial, new LL<Temp>(temp));
             if (this.degree.get(temp) >= K) {
                 this.spillWorkList = LL.<Temp>or(this.spillWorkList, new LL<Temp>(temp));
-            } else if(this.moveRelated(temp)) {
+            } else if (this.moveRelated(temp)) {
                 this.freezeWorkList = LL.<Temp>or(this.freezeWorkList, new LL<Temp>(temp));
             } else {
                 this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(temp));
@@ -161,8 +161,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     /**
-     * Checks if temporary is used by any moves that are active or
-     * moves enabled for possible coalescing.
+     * Checks if temporary is used by any moves that are active or moves enabled for
+     * possible coalescing.
+     * 
      * @param temp
      * @return true if temp is a move instruction.
      */
@@ -173,6 +174,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
 
     /**
      * Returns a list of all move instructions that this temp is used in.
+     * 
      * @param temp
      * @return
      */
@@ -184,8 +186,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     /**
-     * Returns a list of all temporaries that are adjacent to head and
-     * not in either the stack or the coalesced nodes list.
+     * Returns a list of all temporaries that are adjacent to head and not in either
+     * the stack or the coalesced nodes list.
+     * 
      * @param head
      * @return
      */
@@ -201,7 +204,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
      * Removes item from simplifyWorkList and pushes it onto the stack
      */
     private void simplify() {
-        //System.out.println("# simplify");
+        // System.out.println("# simplify");
         LL<Temp> n = new LL<Temp>(this.simplifyWorkList.head);
         this.simplifyWorkList = LL.<Temp>andNot(this.simplifyWorkList, n);
         this.stack = LL.<Temp>insertRear(this.stack, n.head);
@@ -222,11 +225,11 @@ public class RegAllocCoalesce extends Component implements TempMap {
     private void decrementDegree(Temp m) {
         Integer d = this.degree.get(m);
         this.degree.put(m, d - 1);
-      //  System.out.println("decrement degree " + m + " " + d);
+        // System.out.println("decrement degree " + m + " " + d);
         if (d == this.K) {
             this.enableMoves(LL.<Temp>or(new LL<Temp>(m), this.adjacent(m)));
             this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(m));
-            if(this.moveRelated(m)) {
+            if (this.moveRelated(m)) {
                 this.freezeWorkList = LL.<Temp>or(this.freezeWorkList, new LL<Temp>(m));
             } else {
                 this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(m));
@@ -235,9 +238,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     private void enableMoves(LL<Temp> nodes) {
-        for(;nodes != null; nodes = nodes.tail) {
-            for(var m = this.nodeMoves(nodes.head); m != null; m = m.tail) {
-                if(LL.<Instr>contains(this.activeMoves, m.head)) {
+        for (; nodes != null; nodes = nodes.tail) {
+            for (var m = this.nodeMoves(nodes.head); m != null; m = m.tail) {
+                if (LL.<Instr>contains(this.activeMoves, m.head)) {
                     this.activeMoves = LL.<Instr>andNot(this.activeMoves, new LL<Instr>(m.head));
                     this.workListMoves = LL.<Instr>or(this.workListMoves, new LL<Instr>(m.head));
                 }
@@ -246,15 +249,15 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     private void coalesce() {
-        //System.out.println("# coalesce");
+        // System.out.println("# coalesce");
         Instr m = this.workListMoves.head;
         Temp u, v;
-        //defuse
+        // defuse
         Temp y = m.def().head;
         Temp x = m.use().head;
         x = this.getAlias(x);
         y = this.getAlias(y);
-        if(LL.<Temp>contains(this.precoloured, y)) {
+        if (LL.<Temp>contains(this.precoloured, y)) {
             u = y;
             v = x;
         } else {
@@ -262,21 +265,23 @@ public class RegAllocCoalesce extends Component implements TempMap {
             v = y;
         }
         this.workListMoves = LL.<Instr>andNot(this.workListMoves, new LL<Instr>(m));
-        if(u == v) { /* alias(u) = alias(v) => add to coalesced moves */
+        if (u == v) { /* alias(u) = alias(v) => add to coalesced moves */
             this.coalescedMoves = LL.<Instr>or(this.coalescedMoves, new LL<Instr>(m));
-            //System.out.println("u == v u:" + u + " v:" + v);
+            // System.out.println("u == v u:" + u + " v:" + v);
             this.addSimplifyWorkList(u);
-        } else if(LL.<Temp>contains(this.precoloured, v) || this.inAdjSet(u, v)) { /* v is precoloured or u & v are in adjSet => constrained */
+        } else if (LL.<Temp>contains(this.precoloured, v)
+                || this.inAdjSet(u, v)) { /* v is precoloured or u & v are in adjSet => constrained */
             this.constrainedMoves = LL.<Instr>or(this.constrainedMoves, new LL<Instr>(m));
             this.addSimplifyWorkList(u);
             this.addSimplifyWorkList(v);
-            //System.out.println("Constrained td:" + m.def() + " tu:" + m.use());
-        } else if(
-            (LL.<Temp>contains(this.precoloured, u) && isOkay(u, v)) ||
-            (!LL.<Temp>contains(this.precoloured, u) && conservative(u, v))
-        ) { /* u is precoloured and its okay to coalesce u & v OR u is not precoloured and u & v can be conservatively coalesced => combine & coalesce*/
+            // System.out.println("Constrained td:" + m.def() + " tu:" + m.use());
+        } else if ((LL.<Temp>contains(this.precoloured, u) && isOkay(u, v)) || (!LL.<Temp>contains(this.precoloured, u)
+                && conservative(u, v))) { /*
+                                           * u is precoloured and its okay to coalesce u & v OR u is not precoloured and
+                                           * u & v can be conservatively coalesced => combine & coalesce
+                                           */
             this.coalescedMoves = LL.<Instr>or(this.coalescedMoves, new LL<Instr>(m));
-            //System.out.println("Combining: u:"+ u + " v:"+ v);
+            // System.out.println("Combining: u:"+ u + " v:"+ v);
             this.combine(u, v);
             this.addSimplifyWorkList(u);
         } else { /* otherwise move not yet ready for coalescing */
@@ -285,38 +290,37 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     /**
-     * Replace temporary v with temporary u. 
-     * All of temporary v moves are added to temporary v's.
-     * All of temporary v's edges are added to u and their degrees incremented.
-     * We also decremenet the degree of each ajacent node of v as we have merged it.
-     * If the degree of u is greater or equal to K and u is on the freeze list,
-     * we removed it from the freeze list and add it to the spill list.
+     * Replace temporary v with temporary u. All of temporary v moves are added to
+     * temporary v's. All of temporary v's edges are added to u and their degrees
+     * incremented. We also decremenet the degree of each ajacent node of v as we
+     * have merged it. If the degree of u is greater or equal to K and u is on the
+     * freeze list, we removed it from the freeze list and add it to the spill list.
      * 
      * @param u
      * @param v
      */
     private void combine(Temp u, Temp v) {
-        //remove temp from invariant work lists
-        if(LL.<Temp>contains(this.freezeWorkList, v)) {
+        // remove temp from invariant work lists
+        if (LL.<Temp>contains(this.freezeWorkList, v)) {
             this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(v));
         } else {
             this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(v));
         }
-        //add to coalesce worklist
+        // add to coalesce worklist
         this.coalescedNodes = LL.<Temp>or(this.coalescedNodes, new LL<Temp>(v));
-        //System.out.println("Moving " + v + " to coalesce nodes.");
+        // System.out.println("Moving " + v + " to coalesce nodes.");
         this.alias.put(v, u);
         this.moveList.put(u, LL.<Instr>or(this.moveList.get(u), this.moveList.get(v)));
         this.enableMoves(new LL<Temp>(v));
-        //get all nodes adjacent to v not on stach or coalesced
-        for(LL<Temp> t = this.adjacent(v); t != null; t = t.tail) {
-            //create new edge between v adj and u ( increments degree of v adj & u).
-            this.addEdge(t.head,u);
-            //degrement degree of t as its degree doesn't change after merge.
+        // get all nodes adjacent to v not on stach or coalesced
+        for (LL<Temp> t = this.adjacent(v); t != null; t = t.tail) {
+            // create new edge between v adj and u ( increments degree of v adj & u).
+            this.addEdge(t.head, u);
+            // degrement degree of t as its degree doesn't change after merge.
             this.decrementDegree(t.head);
-            //System.out.println("merge " + t.head + " into "  + u);
+            // System.out.println("merge " + t.head + " into " + u);
         }
-        if(this.degree.get(u) >= this.K && LL.<Temp>contains(this.freezeWorkList, u)) {
+        if (this.degree.get(u) >= this.K && LL.<Temp>contains(this.freezeWorkList, u)) {
             this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(u));
             this.spillWorkList = LL.<Temp>or(this.spillWorkList, new LL<Temp>(u));
         }
@@ -324,8 +328,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
 
     private boolean conservative(Temp u, Temp v) {
         int k = 0;
-        for(var nodes = LL.<Temp>or(this.adjacent(u), this.adjacent(v)); nodes != null; nodes = nodes.tail) {
-            if(this.degree.get(nodes.head) >= this.K){
+        for (var nodes = LL.<Temp>or(this.adjacent(u), this.adjacent(v)); nodes != null; nodes = nodes.tail) {
+            if (this.degree.get(nodes.head) >= this.K) {
                 k++;
             }
         }
@@ -333,43 +337,37 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     private boolean isOkay(Temp u, Temp v) {
-        boolean result = true; 
-        for(var t = this.adjacent(v); t != null; t = t.tail) {
-             result &= (
-                this.degree.get(t.head) < this.K ||
-                LL.<Temp>contains(this.precoloured, t.head) ||
-                this.inAdjSet(t.head, u)
-            ) ;
-            if(!result) break;
+        boolean result = true;
+        for (var t = this.adjacent(v); t != null; t = t.tail) {
+            result &= (this.degree.get(t.head) < this.K || LL.<Temp>contains(this.precoloured, t.head)
+                    || this.inAdjSet(t.head, u));
+            if (!result)
+                break;
         }
         return result;
     }
 
     private boolean inAdjSet(Temp u, Temp v) {
         return (this.addSet.get(u) != null && LL.<Temp>contains(this.addSet.get(u), v))
-        || (this.addSet.get(v) != null && LL.<Temp>contains(this.addSet.get(v), u));
+                || (this.addSet.get(v) != null && LL.<Temp>contains(this.addSet.get(v), u));
     }
 
     private void addSimplifyWorkList(Temp u) {
-        if(
-            !LL.<Temp>contains(this.precoloured, u) &&
-            !this.moveRelated(u) && 
-            this.degree.get(u) < this.K
-            ) {
-                this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(u));
-                this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(u));
-            }
+        if (!LL.<Temp>contains(this.precoloured, u) && !this.moveRelated(u) && this.degree.get(u) < this.K) {
+            this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(u));
+            this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(u));
+        }
     }
 
     private Temp getAlias(Temp x) {
-        if(LL.<Temp>contains(this.coalescedNodes, x)) {
+        if (LL.<Temp>contains(this.coalescedNodes, x)) {
             return this.getAlias(this.alias.get(x));
         }
         return x;
     }
 
     private void freeze() {
-        //System.out.println("# freeze");
+        // System.out.println("# freeze");
         Temp u = this.freezeWorkList.head;
         this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(u));
         this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(u));
@@ -377,19 +375,19 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     private void freezeMoves(Temp u) {
-        for(var m = this.nodeMoves(u); m != null; m = m.tail) {
+        for (var m = this.nodeMoves(u); m != null; m = m.tail) {
             Temp v = null;
-            //defuse
+            // defuse
             Temp y = m.head.def().head;
             Temp x = m.head.use().head;
-            if(this.getAlias(y) == this.getAlias(u)) {
+            if (this.getAlias(y) == this.getAlias(u)) {
                 v = this.getAlias(x);
             } else {
                 v = this.getAlias(y);
             }
             this.activeMoves = LL.<Instr>andNot(this.activeMoves, new LL<Instr>(m.head));
             this.frozenMoves = LL.<Instr>or(this.frozenMoves, new LL<Instr>(m.head));
-            if(this.nodeMoves(v) == null && this.degree.get(v) < this.K) {
+            if (this.nodeMoves(v) == null && this.degree.get(v) < this.K) {
                 this.freezeWorkList = LL.<Temp>andNot(this.freezeWorkList, new LL<Temp>(v));
                 this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(v));
             }
@@ -404,7 +402,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
      */
     private double weight(Temp temp) {
         int originalDegree = LL.<Temp>size(this.adjList.get(temp));
-        return (((float)this.defCount.getOrDefault(temp, 0) + this.useCount.getOrDefault(temp, 0))) / originalDegree;
+        return (((float) this.defCount.getOrDefault(temp, 0) + this.useCount.getOrDefault(temp, 0))) / originalDegree;
     }
 
     /**
@@ -416,9 +414,9 @@ public class RegAllocCoalesce extends Component implements TempMap {
         LL<Temp> potentialSpills = this.spillWorkList;
         Temp maxSpill = null;
         double sp = 0;
-        for(LL<Temp> ps = potentialSpills; ps != null; ps = ps.tail) {
-            double vsp = weight(ps.head) ;
-            if(sp == 0 || vsp < sp) {
+        for (LL<Temp> ps = potentialSpills; ps != null; ps = ps.tail) {
+            double vsp = weight(ps.head);
+            if (sp == 0 || vsp < sp) {
                 maxSpill = ps.head;
                 sp = vsp;
             }
@@ -427,12 +425,11 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     /**
-     * Selects a node to spill. 
-     * Removes node from spillWorkList
-     * Adds node to simplifyWorkList.
+     * Selects a node to spill. Removes node from spillWorkList Adds node to
+     * simplifyWorkList.
      */
     private void selectSpill() {
-        //System.out.println("# selectSpill");
+        // System.out.println("# selectSpill");
         Temp m = this.nodeToSpill();
         this.spillWorkList = LL.<Temp>andNot(this.spillWorkList, new LL<Temp>(m));
         this.simplifyWorkList = LL.<Temp>or(this.simplifyWorkList, new LL<Temp>(m));
@@ -452,13 +449,13 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 this.adjList.put(u, LL.<Temp>or(this.adjList.get(u), new LL<Temp>(v)));
                 int d = this.degree.getOrDefault(u, 0);
                 this.degree.put(u, d + 1);
-            //    System.out.println("increment degree " + u + " " + d);
+                // System.out.println("increment degree " + u + " " + d);
             }
             if (!LL.<Temp>contains(this.precoloured, v)) {
                 this.adjList.put(v, LL.<Temp>or(this.adjList.get(v), new LL<Temp>(u)));
                 int d = this.degree.getOrDefault(v, 0);
                 this.degree.put(v, d + 1);
-           //     System.out.println("increment degree " + v + " " + d);
+                // System.out.println("increment degree " + v + " " + d);
             }
         }
     }
@@ -490,7 +487,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 this.colour.put(n, c);
             }
         }
-        for(var n = this.coalescedNodes; n != null; n = n.tail) {
+        for (var n = this.coalescedNodes; n != null; n = n.tail) {
             this.colour.put(n.head, this.getAlias(n.head));
         }
     }
@@ -537,7 +534,8 @@ public class RegAllocCoalesce extends Component implements TempMap {
         this.alias.clear();
         this.colour.clear();
         this.defCount.clear();
-        this.useCount.clear();;
+        this.useCount.clear();
+        ;
         this.moveList.clear();
         this.instrList = newList;
         this.coalescedMoves = null;
@@ -549,12 +547,13 @@ public class RegAllocCoalesce extends Component implements TempMap {
     }
 
     int maxTries = 0;
+
     private void main() {
         Assert.assertLE(maxTries++, 3);
-        for(TempList pc = this.frame.registers(); pc != null; pc = pc.tail) {
+        for (TempList pc = this.frame.registers(); pc != null; pc = pc.tail) {
             this.precoloured = LL.<Temp>insertOrdered(this.precoloured, pc.head);
             this.colour.put(pc.head, pc.head);
-            this.degree.put(pc.head, Integer.MAX_VALUE/2);
+            this.degree.put(pc.head, Integer.MAX_VALUE / 2);
         }
         this.initial = null;
         for (InstrList ins = this.instrList; ins != null; ins = ins.tail) {
@@ -577,65 +576,57 @@ public class RegAllocCoalesce extends Component implements TempMap {
                 this.selectSpill();
             }
             this.checkWorkListInvariants();
-        } while (
-            this.simplifyWorkList != null 
-            ||  this.spillWorkList != null
-            || this.workListMoves != null
-            || this.freezeWorkList != null
-        );
+        } while (this.simplifyWorkList != null || this.spillWorkList != null || this.workListMoves != null
+                || this.freezeWorkList != null);
         this.checkWorkListInvariants();
         this.assignColours();
         if (this.spilledNodes != null) {
             this.rewrite();
             this.main();
         }
-       this.liveness.dumpLiveness(this.instrList);
+        this.liveness.dumpLiveness(this.instrList);
     }
 
     private void checkWorkListInvariants() {
-        for(LL<Temp> u = this.simplifyWorkList; u != null; u = u.tail) {
-            //If a temp is to be spilled, it is high degree and will be
-            //placed on the spillWorkList in the selectSpill phase.
-            //this will violate this invariant.
-            if(this.degree.get(u.head) >= K) {
-        //        throw new Error("SimplifyWorkList invariant violation: degree < K : " + u.head + ":" + this.degree.get(u.head));
+        for (LL<Temp> u = this.simplifyWorkList; u != null; u = u.tail) {
+            // If a temp is to be spilled, it is high degree and will be
+            // placed on the spillWorkList in the selectSpill phase.
+            // this will violate this invariant.
+            if (this.degree.get(u.head) >= K) {
+                // throw new Error("SimplifyWorkList invariant violation: degree < K : " +
+                // u.head + ":" + this.degree.get(u.head));
             }
-            if(LL.<Instr>and(this.moveList.get(u.head), LL.<Instr>or(this.activeMoves, this.workListMoves)) != null) {
-                throw new Error("SimplifyWorkList invariant violation: moveList[n] ⋂ activeMoves ⋃ workListMoves = {} : " + u.head);
-            }
-        }
-        for(LL<Temp> u = this.freezeWorkList; u != null; u = u.tail) {
-            if(this.degree.get(u.head) >= K) {
-                throw new Error("FreezeWorkList invariant violation: degree < K :" + u.head + ":" + this.degree.get(u.head));
-            }
-            if(LL.<Instr>and(this.moveList.get(u.head), LL.<Instr>or(this.activeMoves, this.workListMoves)) == null) {
-                throw new Error("FreezeWorkList invariant violation: moveList[n] ⋂ activeMoves ⋃ workListMoves != {} : " + u.head);
+            if (LL.<Instr>and(this.moveList.get(u.head), LL.<Instr>or(this.activeMoves, this.workListMoves)) != null) {
+                throw new Error(
+                        "SimplifyWorkList invariant violation: moveList[n] ⋂ activeMoves ⋃ workListMoves = {} : "
+                                + u.head);
             }
         }
-        for(LL<Temp> u = this.spillWorkList; u != null; u = u.tail) {
-            if(this.degree.get(u.head) < K) {
+        for (LL<Temp> u = this.freezeWorkList; u != null; u = u.tail) {
+            if (this.degree.get(u.head) >= K) {
+                throw new Error(
+                        "FreezeWorkList invariant violation: degree < K :" + u.head + ":" + this.degree.get(u.head));
+            }
+            if (LL.<Instr>and(this.moveList.get(u.head), LL.<Instr>or(this.activeMoves, this.workListMoves)) == null) {
+                throw new Error("FreezeWorkList invariant violation: moveList[n] ⋂ activeMoves ⋃ workListMoves != {} : "
+                        + u.head);
+            }
+        }
+        for (LL<Temp> u = this.spillWorkList; u != null; u = u.tail) {
+            if (this.degree.get(u.head) < K) {
                 throw new Error("SpillWorkList invariant violation: degree >= K");
             }
         }
-        for(LL<Temp> u = LL.<Temp>or(LL.<Temp>or(this.simplifyWorkList, this.freezeWorkList), this.spillWorkList); u != null; u = u.tail) {
-            LL<Temp> check = 
-                LL.<Temp>and(
-                    this.adjList.get(u.head),
-                    LL.<Temp>or(
-                        LL.<Temp>or(
-                            LL.<Temp>or(
-                                this.precoloured, 
-                                this.simplifyWorkList
-                            ), 
-                            this.freezeWorkList
-                        ),
-                        this.spillWorkList
-                    )
-                );
+        for (LL<Temp> u = LL.<Temp>or(LL.<Temp>or(this.simplifyWorkList, this.freezeWorkList),
+                this.spillWorkList); u != null; u = u.tail) {
+            LL<Temp> check = LL.<Temp>and(this.adjList.get(u.head),
+                    LL.<Temp>or(LL.<Temp>or(LL.<Temp>or(this.precoloured, this.simplifyWorkList), this.freezeWorkList),
+                            this.spillWorkList));
             int deg = this.degree.get(u.head);
             int setCount = LL.<Temp>size(check);
-            if(deg != setCount) {
-                throw new Error("Degree invariant violation for temp:" + u.head + " : degree:" + deg + " != count:" + setCount);
+            if (deg != setCount) {
+                throw new Error(
+                        "Degree invariant violation for temp:" + u.head + " : degree:" + deg + " != count:" + setCount);
             }
         }
     }
@@ -643,7 +634,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
     public RegAllocCoalesce(Frame frame, InstrList instrList) {
         this.instrList = instrList;
         this.frame = frame;
-        this.K = this.frame.registers().size(); //14
+        this.K = this.frame.registers().size(); // 14
         this.main();
     }
 
@@ -652,5 +643,5 @@ public class RegAllocCoalesce extends Component implements TempMap {
         var clr = this.colour.get(this.getAlias(t));
         Assert.assertNotNull(clr, "No colour for " + t);
         return this.frame.tempMap(clr);
-	}
+    }
 }
