@@ -1,9 +1,10 @@
 package Parse;
 
-action code {: static Symbol.Symbol sym(String s) {
-	         return Symbol.Symbol.symbol(s);
-	        }
-	    :};
+action code {: 
+  static Symbol.Symbol sym(String s) {
+	  return Symbol.Symbol.symbol(s);
+	}
+:};
 
 parser code  {: 
   public Absyn.Exp parseResult;
@@ -26,7 +27,7 @@ parser code  {:
   }
 :};
 
-scan with {: return lexer.nextToken(); :};
+scan with {: if(this.errorMsg.anyErrors) { this.done_parsing(); return null; } else { return lexer.nextToken();} :};
 
 terminal String ID, STRING;
 terminal Integer INT;

@@ -15,18 +15,15 @@ class DebugLexer implements Lexer {
 
     final Yylex yylex;
     final PrintStream printStream;
-    final ErrorMsg errorMsg;
 
-    public DebugLexer(Yylex yylex, PrintStream printStream, ErrorMsg errorMsg) {
+    public DebugLexer(Yylex yylex, PrintStream printStream) {
         this.yylex = yylex;
         this.printStream = printStream;
-        this.errorMsg = errorMsg;
     }
 
     @Override
     public Symbol nextToken() throws IOException {
-        Symbol nextToken = yylex.nextToken();
-        return nextToken;
+        return yylex.nextToken();
     }
 }
 
@@ -52,7 +49,7 @@ public class ParseTask extends Task {
 
     @Override
     public void execute() {
-        Grm parser = new Grm(new DebugLexer(this.yylex, System.out, this.errorMsg), this.errorMsg);
+        Grm parser = new Grm(new DebugLexer(this.yylex, System.out), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
         // lexical error happens when nextToken is called
         try {
