@@ -19,7 +19,8 @@ public class ParseTests {
 
     @Test
     public void unterminatedComment() {
-        // fails lexical analysis
+        // fails lexical analysis but parse, because extra chars are
+        // treated as comments and therefore ignored by parser.
         ErrorMsg errorMsg = new ErrorMsg("test", System.out);
         String program = "1\n/* This comments starts at /* 2.2 */";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
@@ -29,13 +30,26 @@ public class ParseTests {
 
     @Test
     public void unterminatedString() {
-        // fails lexical analysis
+        // fails lexical analysis and also fails parse because parser
+        // attempts to parse the chars. Ideally, we should not parse 
+        // if there are lexical errors.
         ErrorMsg errorMsg = new ErrorMsg("test", System.out);
         String program = "let\nvar s:string := \"characters\nin end";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
         new ParseTask(targetStream, errorMsg).execute();
         assertTrue(errorMsg.anyErrors);
     }
+
+    @Test
+    public void invalidChar() {
+        // ideally a lexical error should prevent parsing.
+        ErrorMsg errorMsg = new ErrorMsg("nvalidChar", System.out);
+        String program = "$";
+        InputStream targetStream = new ByteArrayInputStream(program.getBytes());
+        new ParseTask(targetStream, errorMsg).execute();
+        assertTrue(errorMsg.anyErrors);
+    }
+
 
     @Test
     public void syntaxError() {

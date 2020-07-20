@@ -7,27 +7,25 @@ import java.io.PrintStream;
 import Absyn.Print;
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
+import Util.Task;
 import java_cup.runtime.Symbol;
 
-
-class LexicalError extends Exception {
-
-}
 
 class DebugLexer implements Lexer {
 
     final Yylex yylex;
     final PrintStream printStream;
+    final ErrorMsg errorMsg;
 
-    public DebugLexer(Yylex yylex, PrintStream printStream) {
+    public DebugLexer(Yylex yylex, PrintStream printStream, ErrorMsg errorMsg) {
         this.yylex = yylex;
         this.printStream = printStream;
+        this.errorMsg = errorMsg;
     }
 
     @Override
     public Symbol nextToken() throws IOException {
         Symbol nextToken = yylex.nextToken();
-     //   this.printStream.println("Token:" + nextToken.sym);
         return nextToken;
     }
 }
@@ -35,8 +33,10 @@ class DebugLexer implements Lexer {
 /**
  * Parses an input stream and reports any lexical or parse errors
  */
-public class ParseTask {
+public class ParseTask extends Task {
 
+    private static String TASK_NAME = "parse";
+    private static String MODULE_NAME = "parse";
     final boolean debug = false;
     final InputStream inputStream;
     final ErrorMsg errorMsg;
@@ -44,14 +44,17 @@ public class ParseTask {
     Program ast;
 
     public ParseTask(InputStream inputStream, ErrorMsg errorMsg) {
+        super(TASK_NAME, MODULE_NAME, null);
         this.inputStream = inputStream;
         this.errorMsg = errorMsg;
         this.yylex = new Yylex(inputStream, errorMsg);
     }
 
+    @Override
     public void execute() {
-        Grm parser = new Grm(new DebugLexer(this.yylex, System.out), this.errorMsg);
+        Grm parser = new Grm(new DebugLexer(this.yylex, System.out, this.errorMsg), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
+        // lexical error happens when nextToken is called
         try {
             rootSymbol = !this.debug ? parser.parse() : parser.debug_parse();
             this.ast = (Program) rootSymbol.value;
