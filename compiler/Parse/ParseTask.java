@@ -8,6 +8,7 @@ import Absyn.Print;
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
 import Util.Task;
+import Util.TaskRegister;
 import java_cup.runtime.Symbol;
 
 
