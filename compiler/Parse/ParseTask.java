@@ -54,8 +54,6 @@ public class ParseTask extends Task {
         // lexical error happens when nextToken is called
         try {
             rootSymbol = !this.debug ? parser.parse() : parser.debug_parse();
-            this.ast = (Program) rootSymbol.value;
-
         } catch (Throwable e) {
             throw new Error(e);
         } finally {
@@ -64,6 +62,11 @@ public class ParseTask extends Task {
             } catch (final java.io.IOException e) {
                 throw new Error(e.toString());
             }
+        }
+        if(!this.errorMsg.anyErrors) {
+            this.ast = (Program) rootSymbol.value;
+        } else {
+            System.exit(3);
         }
     }
 }

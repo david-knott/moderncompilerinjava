@@ -8,15 +8,22 @@ action code {:
 
 parser code  {: 
   public Absyn.Exp parseResult;
+  ErrorMsg.ErrorMsg errorMsg;
   Lexer lexer;
 
   public void syntax_error(java_cup.runtime.Symbol current) {
-   report_error("Syntax error (" + current.sym + ")", current);
+      errorMsg.error(current.left, "CUP: Syntax error, unexpected '"  + Const.symnames[current.sym] + "'");
   }
 
-  ErrorMsg.ErrorMsg errorMsg;
+  public void unrecovered_syntax_error(java_cup.runtime.Symbol current) {
+      errorMsg.error(current != null ? current.left : 0, "CUP: Unrecovered syntax error, unexpected '"  + Const.symnames[current.sym] + "'");
+  }
 
   public void report_error(String message, java_cup.runtime.Symbol info) {
+      errorMsg.error(info.left, message);
+  }
+
+  public void report_fatal_error(String message, java_cup.runtime.Symbol info) {
       errorMsg.error(info.left, message);
   }
 
@@ -27,7 +34,7 @@ parser code  {:
   }
 :};
 
-scan with {: if(this.errorMsg.anyErrors) { this.done_parsing(); return null; } else { return lexer.nextToken();} :};
+scan with {: return lexer.nextToken(); :};
 
 terminal String ID, STRING;
 terminal Integer INT;

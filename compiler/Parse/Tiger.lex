@@ -118,4 +118,4 @@ digits=[0-9]+
 <YYINITIAL>\r\n	{newline(); /* notice that the new line for windows */}
 <YYINITIAL>"," {return tok(sym.COMMA, null);}
 
-<YYINITIAL>.	{errorMsg.error(yychar, "Lex: Illegal character");}
+<YYINITIAL>.	{errorMsg.error(yychar, "Lex: Illegal character '" + yytext() + "'");}

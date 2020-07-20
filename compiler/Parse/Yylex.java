@@ -520,7 +520,7 @@ public Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
 					case -26:
 						break;
 					case 26:
-						{errorMsg.error(yychar, "Lex: Illegal character");}
+						{errorMsg.error(yychar, "Lex: Illegal character '" + yytext() + "'");}
 					case -27:
 						break;
 					case 27:

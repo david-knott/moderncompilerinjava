@@ -43,7 +43,7 @@ public class ParseTests {
     @Test
     public void invalidChar() {
         // ideally a lexical error should prevent parsing.
-        ErrorMsg errorMsg = new ErrorMsg("nvalidChar", System.out);
+        ErrorMsg errorMsg = new ErrorMsg("invalidChar", System.out);
         String program = "$\n$\n$";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
         new ParseTask(targetStream, errorMsg).execute();
