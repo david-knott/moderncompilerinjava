@@ -15,8 +15,7 @@ parser code  {:
 
   ErrorMsg.ErrorMsg errorMsg;
 
-  public void report_error(String message, 
-			   java_cup.runtime.Symbol info) {
+  public void report_error(String message, java_cup.runtime.Symbol info) {
       errorMsg.error(info.left, message);
   }
 
@@ -131,7 +130,7 @@ exp ::= lValue:lv {: RESULT = new Absyn.VarExp(lvleft, lv); :}
 | forExp:fe {: RESULT = fe; :} 
 | BREAK:b {: RESULT = new Absyn.BreakExp(bleft); :}
 | letExp:le {: RESULT = le; :}
-//| error:e {: parser.report_error("Syntax error, skip rest",e); :} 
+| error exp
 ;
 
 negation ::= MINUS exp:e1 {: RESULT = new Absyn.OpExp(e1left, new Absyn.IntExp(e1left,0), Absyn.OpExp.MINUS, e1); :};

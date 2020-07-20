@@ -1,7 +1,7 @@
 package Parse;
 
 %% 
-
+%public
 %implements Lexer
 %function nextToken
 %type java_cup.runtime.Symbol
@@ -28,17 +28,26 @@ private ErrorMsg.ErrorMsg errorMsg;
 private int commentDepth = 0;
 private String buffer = "";
 
-Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
+public Yylex(java.io.InputStream s, ErrorMsg.ErrorMsg e) {
   this(s);
   errorMsg=e;
 }
 
 %}
 
+%eof{
+  if(this.commentDepth != 0) {
+    errorMsg.error(yychar, "unexpected end of file in a comment.");
+  }
+  if(this.buffer.length() != 0) {
+    errorMsg.error(yychar, "unexpected end of file in a string literal.");
+  }
+%eof}
+
 %eofval{
-	{
-	 return tok(sym.EOF, null);
-        }
+{
+  return tok(sym.EOF, null);
+}
 %eofval}       
 
 digits=[0-9]+
@@ -93,11 +102,13 @@ digits=[0-9]+
 
 <YYINITIAL>\"	{buffer = ""; yybegin(STRING); }
 <STRING>\"	{yybegin(YYINITIAL);String ret = buffer; buffer = ""; return tok(sym.STRING, ret);}
+<STRING>\n  { buffer+= "\n"; /* handle carriage return in string */ }
+<STRING>\t  { buffer+= "\t"; /* handle tab in string */ }
 <STRING>. { buffer+= yytext(); }
 
-<YYINITIAL>"/*"	{ yybegin(COMMENT); } 
-<COMMENT>"/*"	{ commentDepth++;}
-<COMMENT>"*/"   { if(commentDepth == 0){ yybegin(YYINITIAL); } else {commentDepth--;};}
+<YYINITIAL>"/*"	{ yybegin(COMMENT); commentDepth++; } 
+<COMMENT>"/*"	{ commentDepth++; /* nested comment depth + 1 */ }
+<COMMENT>"*/"   { commentDepth--; if(commentDepth == 0){ yybegin(YYINITIAL); };}
 <COMMENT>\n { /* notice the new line for linux */}
 <COMMENT>\r\n { /* notice the new line for linux */}
 <COMMENT>. {}
@@ -105,5 +116,6 @@ digits=[0-9]+
 <YYINITIAL>\t	{}
 <YYINITIAL>\n	{newline(); /* notice that the new line for linux */}
 <YYINITIAL>\r\n	{newline(); /* notice that the new line for windows */}
-<YYINITIAL>","	{return tok(sym.COMMA, null);}
-<YYINITIAL>.	{errorMsg.error(yychar, "illegal character");}
+<YYINITIAL>"," {return tok(sym.COMMA, null);}
+
+<YYINITIAL>.	{errorMsg.error(yychar, "Lex: Illegal character");}
