@@ -65,8 +65,6 @@ public class ParseTask extends Task {
         }
         if(!this.errorMsg.anyErrors) {
             this.ast = (Program) rootSymbol.value;
-        } else {
-            System.exit(3);
         }
     }
 }
