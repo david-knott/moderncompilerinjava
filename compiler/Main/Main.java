@@ -23,22 +23,33 @@ import Translate.ProcFrag;
 import Translate.Translator;
 import Tree.Stm;
 import Tree.StmList;
+import Util.TaskRegister;
 
 class Options {
-    
+
 }
+
 /**
  * Main class that executes the compiler.
  */
 public class Main {
 
     public static void main(final String[] args) throws FileNotFoundException {
-        new Main(args[0]);
+     //   new Main(args[0]);
+        PrintStream out = System.out;
+        InputStream in = new java.io.FileInputStream(args[0]);
+        PrintStream err = System.err;
+        ErrorMsg errorMsg = new ErrorMsg(args[0], err);
+        TaskRegister.instance.setErrorHandler(errorMsg).setIn(in).setOut(out).register(new Parse.Tasks()).register(new Absyn.Tasks()).parseArgs(args).execute();
+    }
+
+    public static void main2(final String[] args) throws FileNotFoundException {
+
     }
 
     /**
-     * If true, all variables should be stored on the stack, otherwise variables
-     * are stored in temporaries if they do not escape.
+     * If true, all variables should be stored on the stack, otherwise variables are
+     * stored in temporaries if they do not escape.
      */
     private boolean allVarsEscape = false;
 
@@ -53,7 +64,7 @@ public class Main {
             @Override
             public void handle(StmList message) {
                 System.out.println("### Cannonical Tree ###");
-                for(; message != null; message = message.tail) {
+                for (; message != null; message = message.tail) {
                     new Tree.Print(System.out).prStm(message.head);
                 }
             }
@@ -92,7 +103,7 @@ public class Main {
      * @return
      */
     public Main(final String name) throws FileNotFoundException {
-     //   PrintStream out = System.out;
+        // PrintStream out = System.out;
         PrintStream err = System.err;
         InputStream inputStream = new java.io.FileInputStream(name);
         ErrorMsg errorMsg = new ErrorMsg(name, err);
@@ -133,7 +144,7 @@ public class Main {
             fileOut = new PrintStream(new java.io.FileOutputStream(name + ".s"));
             fileOut.println(".global tigermain");
             for (; frags != null; frags = frags.tail) {
-           //     this.registerFragListners(frags.head);
+                // this.registerFragListners(frags.head);
                 frags.head.process(fileOut);
             }
             fileOut.close();

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import org.junit.Test;
 
 import ErrorMsg.ErrorMsg;
+import Util.TaskContext;
 
 /**
  * Testing to ensure parser is working correctly.
@@ -23,7 +24,7 @@ public class ParseTests {
         ErrorMsg errorMsg = new ErrorMsg("test", System.out);
         String program = "1\n/* This comments starts at /* 2.2 */";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
-        new ParseTask(targetStream, errorMsg).execute();
+        new ParseTask(targetStream, errorMsg).execute(new TaskContext());
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -35,7 +36,7 @@ public class ParseTests {
         ErrorMsg errorMsg = new ErrorMsg("test", System.out);
         String program = "let\nvar s:string := \"characters\nin end";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
-        new ParseTask(targetStream, errorMsg).execute();
+        new ParseTask(targetStream, errorMsg).execute(new TaskContext());
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -45,7 +46,7 @@ public class ParseTests {
         ErrorMsg errorMsg = new ErrorMsg("invalidChar", System.out);
         String program = "$\n$\n$";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
-        new ParseTask(targetStream, errorMsg).execute();
+        new ParseTask(targetStream, errorMsg).execute(new TaskContext());
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -56,7 +57,7 @@ public class ParseTests {
         ErrorMsg errorMsg = new ErrorMsg("typeNil", System.out);
         String program = "let var a : nil := () in 1 end";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
-        new ParseTask(targetStream, errorMsg).execute();
+        new ParseTask(targetStream, errorMsg).execute(new TaskContext());
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -65,7 +66,7 @@ public class ParseTests {
         ErrorMsg errorMsg = new ErrorMsg("carriageReturn", System.out);
         String program = "let\nvar s:string := \"characters\n more test\" in end";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
-        new ParseTask(targetStream, errorMsg).execute();
+        new ParseTask(targetStream, errorMsg).execute(new TaskContext());
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -74,7 +75,7 @@ public class ParseTests {
         ErrorMsg errorMsg = new ErrorMsg("success", System.out);
         String program = "/* An array type and an array variable. */ let type arrtype = array of int var arr1 : arrtype := arrtype [10] of 0 in arr1[2] end";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
-        new ParseTask(targetStream, errorMsg).execute();
+        new ParseTask(targetStream, errorMsg).execute(new TaskContext());
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -83,7 +84,7 @@ public class ParseTests {
         ErrorMsg errorMsg = new ErrorMsg("errorRecovery", System.out);
         String program = "(\n1;\n(2, 3);\n(4, 5);\n6\n)";
         InputStream targetStream = new ByteArrayInputStream(program.getBytes());
-        new ParseTask(targetStream, errorMsg).execute();
+        new ParseTask(targetStream, errorMsg).execute(new TaskContext());
         assertTrue(errorMsg.anyErrors);
     }
 }

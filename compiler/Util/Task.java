@@ -1,15 +1,12 @@
 package Util;
 
-public abstract class Task {
-    final String name;
-    final String module;
-    final String[] deps;
+public abstract class Task implements Comparable<Task> {
+    public abstract void execute(TaskContext taskContext);
 
-    public Task(String name, String module, String[] deps) {
-        this.name = name;
-        this.module = module;
-        this.deps = deps;
+    public Task next;
+
+    @Override
+    public int compareTo(Task o) {
+        return this.hashCode();
     }
-
-    public abstract void execute();
 }

@@ -1,60 +1,37 @@
 package Parse;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 
-import Absyn.Print;
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
 import Util.Task;
-import Util.TaskRegister;
-import java_cup.runtime.Symbol;
-
-
-class DebugLexer implements Lexer {
-
-    final Yylex yylex;
-    final PrintStream printStream;
-
-    public DebugLexer(Yylex yylex, PrintStream printStream) {
-        this.yylex = yylex;
-        this.printStream = printStream;
-    }
-
-    @Override
-    public Symbol nextToken() throws IOException {
-        return yylex.nextToken();
-    }
-}
+import Util.TaskContext;
 
 /**
  * Parses an input stream and reports any lexical or parse errors
  */
 public class ParseTask extends Task {
 
-    private static String TASK_NAME = "parse";
-    private static String MODULE_NAME = "parse";
-    final boolean debug = false;
+    boolean parserTrace = false;
     final InputStream inputStream;
     final ErrorMsg errorMsg;
     final Yylex yylex;
     Program ast;
 
     public ParseTask(InputStream inputStream, ErrorMsg errorMsg) {
-        super(TASK_NAME, MODULE_NAME, null);
+        Assert.assertNotNull(inputStream);
         this.inputStream = inputStream;
         this.errorMsg = errorMsg;
         this.yylex = new Yylex(inputStream, errorMsg);
     }
 
     @Override
-    public void execute() {
+    public void execute(TaskContext context) {
         Grm parser = new Grm(new DebugLexer(this.yylex, System.out), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
         // lexical error happens when nextToken is called
         try {
-            rootSymbol = !this.debug ? parser.parse() : parser.debug_parse();
+            rootSymbol = !this.parserTrace ? parser.parse() : parser.debug_parse();
         } catch (Throwable e) {
             throw new Error(e);
         } finally {
@@ -64,8 +41,8 @@ public class ParseTask extends Task {
                 throw new Error(e.toString());
             }
         }
-        if(!this.errorMsg.anyErrors) {
-            this.ast = (Program) rootSymbol.value;
+        if (!this.errorMsg.anyErrors) {
+            context.setAst((Program)rootSymbol.value);
         }
     }
 }

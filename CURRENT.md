@@ -1,4 +1,8 @@
 ## Diary
+*5th August 2020*
+Refactoring code to use a command / chain of responsibility pattern for arguments
+
+
 *16 July 2020*
 Compiler works ( at least all the tests work ). It implements the full iterated
 coalescing graph colouring algorithm as outlined in A Appels book. 
