@@ -21,7 +21,7 @@ public class TaskRegister {
 
     public TaskRegister execute() {
         TaskContext taskContext = new TaskContext();
-        for(LL<Task> t = this.tasks; t != null; t = t.tail) {
+        for (LL<Task> t = this.tasks; t != null; t = t.tail) {
             t.head.execute(taskContext);
         }
         return this;
@@ -52,8 +52,8 @@ public class TaskRegister {
         this.tasks = LL.<Task>insertRear(this.tasks, booleanTask);
     }
 
-	public TaskRegister setErrorHandler(ErrorMsg errorMsg) {
+    public TaskRegister setErrorHandler(ErrorMsg errorMsg) {
         this.errorMsg = errorMsg;
-		return this;
-	}
+        return this;
+    }
 }
