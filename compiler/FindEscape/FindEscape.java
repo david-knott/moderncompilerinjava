@@ -19,40 +19,6 @@ import Absyn.SubscriptVar;
 import Absyn.VarExp;
 import Absyn.WhileExp;
 
-abstract class Escape {
-    int depth;
-
-    abstract void setEscape();
-}
-
-class FormalEscape extends Escape {
-    Absyn.FieldList fl;
-
-    FormalEscape(int d, Absyn.FieldList f) {
-        depth = d;
-        fl = f;
-        fl.escape = false;
-    }
-
-    void setEscape() {
-        fl.escape = true;
-    }
-}
-
-class VarEscape extends Escape {
-    Absyn.VarDec vd;
-
-    VarEscape(int d, Absyn.VarDec v) {
-        depth = d;
-        vd = v;
-        vd.escape = false;
-    }
-
-    void setEscape() {
-        vd.escape = true;
-    }
-}
-
 public class FindEscape {
 
     public final Symbol.GenericTable<Escape> escEnv = new Symbol.GenericTable<Escape>();

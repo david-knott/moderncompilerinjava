@@ -584,7 +584,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
             this.rewrite();
             this.main();
         }
-        this.liveness.dumpLiveness(this.instrList);
+       // this.liveness.dumpLiveness(this.instrList);
     }
 
     private void checkWorkListInvariants() {

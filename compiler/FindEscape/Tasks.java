@@ -1,4 +1,4 @@
-package Absyn;
+package FindEscape;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -21,10 +21,18 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-         //       PrintStream printStream = new PrintStream(out);
-         //       printStream.println("/* == Abstract Syntax Tree. == */");
-         //       taskContext.program.absyn.accept(new PrettyPrinter(printStream, taskContext.escapesDisplay, taskContext.bindingsDisplay));
+                FindEscape findEscape = new FindEscape(false);
+                findEscape.traverse(taskContext.program.absyn);
             }
-        }, "ast-display", "absyn", new String[]{"parse"});
+        }, "escapes-compute", "escape", new String[]{"bound"});
+
+        new SimpleTask(new SimpleTaskProvider() {
+            @Override
+            public void only(TaskContext taskContext) {
+                taskContext.setEscapesDisplay(true);
+
+            }
+        }, "escapes-display", "escape", new String[]{"parse"});
+
     }
 }

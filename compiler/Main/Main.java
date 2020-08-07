@@ -8,13 +8,10 @@ import Absyn.Exp;
 import Absyn.PrettyPrinter;
 import Core.Listener;
 import ErrorMsg.ErrorMsg;
-import FindEscape.FindEscape;
-import Frame.Frame;
 import Intel.IntelFrame;
 import Parse.Grm;
 import Parse.Program;
 import Parse.Yylex;
-import Semant.Semant;
 import Temp.Label;
 import Translate.Frag;
 import Translate.FragList;
@@ -35,12 +32,24 @@ class Options {
 public class Main {
 
     public static void main(final String[] args) throws FileNotFoundException {
-     //   new Main(args[0]);
-        PrintStream out = System.out;
+        // new Main(args[0]);
+        PrintStream out = new PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
         InputStream in = new java.io.FileInputStream(args[0]);
         PrintStream err = System.err;
         ErrorMsg errorMsg = new ErrorMsg(args[0], err);
-        TaskRegister.instance.setErrorHandler(errorMsg).setIn(in).setOut(out).register(new Parse.Tasks()).register(new Absyn.Tasks()).parseArgs(args).execute();
+        TaskRegister.instance
+                .setErrorHandler(errorMsg)
+                .setIn(in)
+                .setOut(out)
+                .register(new Parse.Tasks())
+                .register(new FindEscape.Tasks())
+                .register(new Absyn.Tasks())
+          //      .register(new Frame.Tasks())
+          //      .register(new Semant.Tasks())
+                .register(new Translate.Tasks())
+                .register(new Intel.Tasks())
+                .parseArgs(args)
+                .execute();
     }
 
     public static void main2(final String[] args) throws FileNotFoundException {
@@ -52,43 +61,6 @@ public class Main {
      * stored in temporaries if they do not escape.
      */
     private boolean allVarsEscape = false;
-
-    private static void prStmList(Tree.Print print, Tree.StmList stms) {
-        for (Tree.StmList l = stms; l != null; l = l.tail) {
-            print.prStm(l.head);
-        }
-    }
-
-    private void registerFragListners(Frag frag) {
-        frag.on(ProcFrag.CANONICAL_COMPLETE, new Listener<StmList>() {
-            @Override
-            public void handle(StmList message) {
-                System.out.println("### Cannonical Tree ###");
-                for (; message != null; message = message.tail) {
-                    new Tree.Print(System.out).prStm(message.head);
-                }
-            }
-        });
-    }
-
-    private void registerListeners(Translator translator) {
-        translator.on(Translator.TRANSLATOR_PROC_ENTRY_EXIT_END, new Listener<Stm>() {
-            @Override
-            public void handle(Stm message) {
-                // TODO Auto-generated method stub
-                new Tree.Print(System.out).prStm(message);
-            }
-        });
-    }
-
-    private void registerListeners(Semant semant) {
-        semant.on(Semant.SEMANT_START, new Listener<Exp>() {
-            @Override
-            public void handle(Exp message) {
-                message.accept(new PrettyPrinter(System.out));
-            }
-        });
-    }
 
     /**
      * Compiles the program. Using the parser we parse the source code and create an
@@ -124,15 +96,13 @@ public class Main {
         }
 
         // find variables that must be stored in frame
-        FindEscape findEscape = new FindEscape(allVarsEscape);
+        FindEscape.FindEscape findEscape = new FindEscape.FindEscape(allVarsEscape);
         findEscape.traverse(ast.absyn);
         // semantic analysis & translation to IR
-        Frame frame = new IntelFrame(Label.create("tigermain"), null);
+        Frame.Frame frame = new IntelFrame(Label.create("tigermain"), null);
         Level topLevel = new Level(frame);
         Translator translate = new Translator();
-        this.registerListeners(translate);
-        Semant semant = new Semant(errorMsg, topLevel, translate);
-        this.registerListeners(semant);
+        Semant.Semant semant = new Semant.Semant(errorMsg, topLevel, translate);
         FragList frags = FragList.reverse(semant.getTreeFragments(ast.absyn));
         if (semant.hasErrors()) {
             System.out.println("semant check error");

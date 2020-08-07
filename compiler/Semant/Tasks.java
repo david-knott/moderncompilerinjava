@@ -1,8 +1,7 @@
-package Absyn;
+package Semant;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
@@ -21,10 +20,8 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-         //       PrintStream printStream = new PrintStream(out);
-         //       printStream.println("/* == Abstract Syntax Tree. == */");
-         //       taskContext.program.absyn.accept(new PrettyPrinter(printStream, taskContext.escapesDisplay, taskContext.bindingsDisplay));
+
             }
-        }, "ast-display", "absyn", new String[]{"parse"});
+        }, "types-compute", "check for type violations", new String[]{"parse"});
     }
 }

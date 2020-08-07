@@ -4,7 +4,7 @@ import Symbol.Symbol;
 
 public class VarDec extends Dec {
    public Symbol name;
-   public boolean escape = false;
+   public boolean escape = true;
    public NameTy typ; /* optional */
    public Exp init;
 

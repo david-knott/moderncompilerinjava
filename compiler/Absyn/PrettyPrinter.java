@@ -2,7 +2,7 @@ package Absyn;
 
 import java.io.PrintStream;
 
-import Codegen.Assert;
+import Util.Assert;
 import Symbol.Symbol;
 
 /**
@@ -15,14 +15,22 @@ public class PrettyPrinter implements AbsynVisitor {
     private boolean spaces = true;
     private final int indentation = 2;
     private int currentIndentation = 0;
+    public boolean escapesDisplay = false;
+    public boolean bindingsDisplay = false;
 
     public PrettyPrinter(PrintStream o) {
         Assert.assertNotNull(o);
         this.out = o;
     }
 
-    public void print(Exp exp) {
-        line("/* == Abstract Syntax Tree. == */");
+    public PrettyPrinter(PrintStream printStream, boolean escapesDisplay, boolean bindingsDisplay) {
+        Assert.assertNotNull(printStream);
+        this.out = printStream;
+        this.escapesDisplay = escapesDisplay;
+        this.bindingsDisplay = bindingsDisplay;
+	}
+
+	public void print(Exp exp) {
         lineBreak();
         exp.accept(this);
     }

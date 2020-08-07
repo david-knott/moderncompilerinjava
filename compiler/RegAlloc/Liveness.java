@@ -180,9 +180,9 @@ class Liveness {
     }
 
 	public void dumpLiveness(InstrList instrList) {
-		System.out.println("### Liveness ###");
+		//System.out.println("### Liveness ###");
 		for(; instrList != null; instrList = instrList.tail) {
-            System.out.println(instrList.head.format(new DefaultMap()) + " => " + this.liveMap(instrList.head));
+    //        System.out.println(instrList.head.format(new DefaultMap()) + " => " + this.liveMap(instrList.head));
         }
     }
 
