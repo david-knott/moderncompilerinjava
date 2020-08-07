@@ -5,12 +5,11 @@ import java.util.Hashtable;
 
 import Assem.Instr;
 import Assem.InstrList;
-import Codegen.Assert;
+import Util.Assert;
 import Core.LL;
 import FlowGraph.FlowGraph;
 import Graph.Node;
 import Graph.NodeList;
-import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempList;
 

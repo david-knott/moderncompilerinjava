@@ -1,6 +1,6 @@
 package Tree;
 
-import Codegen.Assert;
+import Util.Assert;
 
 public class StmList {
 

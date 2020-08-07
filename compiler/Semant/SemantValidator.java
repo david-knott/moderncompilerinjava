@@ -4,7 +4,7 @@ import Absyn.Absyn;
 import Absyn.Exp;
 import Absyn.SimpleVar;
 import Absyn.Var;
-import Codegen.Assert;
+import Util.Assert;
 import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
 import Temp.Label;

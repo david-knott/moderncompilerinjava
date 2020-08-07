@@ -1,6 +1,6 @@
 package Core;
 
-import Codegen.Assert;
+import Util.Assert;
 
 public class LL<T> {
 

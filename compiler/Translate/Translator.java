@@ -1,6 +1,6 @@
 package Translate;
 
-import Codegen.Assert;
+import Util.Assert;
 import Core.CompilerEventType;
 import Core.Component;
 import Semant.Semant;

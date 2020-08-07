@@ -5,7 +5,7 @@ import java.util.Hashtable;
 import Assem.Instr;
 import Assem.InstrList;
 import Assem.MOVE;
-import Codegen.Assert;
+import Util.Assert;
 import Core.Component;
 import Core.LL;
 import FlowGraph.AssemFlowGraph;

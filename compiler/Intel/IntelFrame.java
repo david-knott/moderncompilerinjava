@@ -21,7 +21,7 @@ import Assem.Instr;
 import Assem.InstrList;
 import Assem.OPER;
 import Codegen.Codegen;
-import Codegen.Assert;
+import Util.Assert;
 import Frame.*;
 import java.util.Hashtable;
 

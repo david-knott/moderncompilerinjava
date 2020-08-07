@@ -3,7 +3,7 @@ package Semant;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
-import Codegen.Assert;
+import Util.Assert;
 import Core.CompilerEventType;
 import Core.Component;
 import ErrorMsg.ArgumentMismatchError;
