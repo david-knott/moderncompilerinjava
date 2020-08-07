@@ -67,7 +67,7 @@ class TilePatternMatcher implements TilePatternVisitor {
     public void visit(BINOPT binopt) {
         if (this.exp instanceof BINOP) {
             BINOP binop = (BINOP) this.exp;
-            if (binop.binop == binopt.op) {
+            if (binopt.op == -1 || binop.binop == binopt.op) {
                 this.exp = binop.left;
                 binopt.left.accept(this);
                 this.exp = binop.right;

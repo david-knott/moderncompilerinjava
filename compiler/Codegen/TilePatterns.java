@@ -58,6 +58,17 @@ public class TilePatterns {
         )
     );
 
+    public static TilePattern BINOP_1 = new BINOPT(
+        -1,
+        new ExpT("left"),
+        new MEMT(
+            new BINOPT(
+                BINOP.PLUS, 
+                new CONSTT("offset"), 
+                new ExpT("right"))
+        )
+    );
+
     public static TilePattern STORE = new MOVET(
         new MEMT(
             new ExpT("dst")

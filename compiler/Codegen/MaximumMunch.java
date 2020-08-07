@@ -90,7 +90,6 @@ import Util.Assert;
                     break;
                 case BINOP.PLUS:
                     this.temp = Temp.create();
-                    //emit(new Assem.MOVE("movq %`s0, %`d0 # add lexp -> r", this.temp, leftTemp));
                     emit(new Assem.MOVE("movq %`s0, %`d0 # add lexp -> r", this.temp, leftTemp));
                     emit(new OPER("add %`s0, %`d0", L(this.temp, null), L(rightTemp, L(this.temp, null))));
                     break;
