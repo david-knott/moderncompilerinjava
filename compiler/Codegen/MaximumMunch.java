@@ -288,12 +288,17 @@ import Util.Assert;
                 emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
                 return;
             } 
-            // Unmatched tile case.
-            op.dst.accept(this);
-            var dst = temp;
-            op.src.accept(this);
-            var src = temp;
-            emit(new Assem.MOVE("movq %`s0, %`d0 # default move", dst, src));
+            if (tilePatternMatcher.isMatch(TilePatterns.LOAD_0)) {
+                Exp dstE = (Exp) tilePatternMatcher.getCapture("dst");
+                Exp srcE = (Exp) tilePatternMatcher.getCapture("src");
+                dstE.accept(this);
+                var dst = temp;
+                srcE.accept(this);
+                var src = temp;
+                emit(new Assem.MOVE("movq %`s0, %`d0 # load 0", dst, src));
+                return;
+            } 
+            throw new Error("No Rule !");
         }
 
         @Override

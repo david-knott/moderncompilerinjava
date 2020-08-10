@@ -1,4 +1,4 @@
-package Codegen;
+package Tile;
 
 import java.util.Hashtable;
 
@@ -12,7 +12,7 @@ import Tree.MEM;
 import Tree.MOVE;
 import Tree.TEMP;
 
-class TilePatternMatcher implements TilePatternVisitor {
+public class TilePatternMatcher implements TilePatternVisitor {
     private Object exp;
     private Object originalRef;
     private Hashtable<String, Object> captures = new Hashtable<String, Object>();
@@ -20,6 +20,10 @@ class TilePatternMatcher implements TilePatternVisitor {
 
     public TilePatternMatcher(Object exp) { /* TODO: is this a bad idea ? */
         this.originalRef = exp;
+    }
+
+    public ExpList exps() {
+        return null;
     }
 
     /**
@@ -35,7 +39,6 @@ class TilePatternMatcher implements TilePatternVisitor {
             throw new Error("Key " + key + " does not exist as capture");
         }
     }
-
 
     public boolean isMatch(TilePattern tilePattern) {
         this.exp = this.originalRef;
@@ -95,6 +98,7 @@ class TilePatternMatcher implements TilePatternVisitor {
         if (this.exp instanceof CALL) {
             CALL call = (CALL)this.exp;
             this.captures.put(callt.name, call);
+            
             return;
         }
         this.matches = false;
