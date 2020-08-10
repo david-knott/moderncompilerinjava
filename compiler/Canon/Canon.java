@@ -1,5 +1,6 @@
 package Canon;
 
+import Tree.IR;
 import Tree.TreeVisitor;
 
 class MoveCall extends Tree.Stm {
@@ -21,7 +22,22 @@ class MoveCall extends Tree.Stm {
 
     @Override
     public void accept(TreeVisitor treeVisitor) {
+        throw new Error();
+    }
 
+    @Override
+    public int getOperator() {
+        throw new Error();
+    }
+
+    @Override
+    public int getArity() {
+        throw new Error();
+    }
+
+    @Override
+    public IR getNthChild(int index) {
+        throw new Error();
     }
 }
 
@@ -43,6 +59,22 @@ class ExpCall extends Tree.Stm {
     @Override
     public void accept(TreeVisitor treeVisitor) {
 
+        throw new Error();
+    }
+
+    @Override
+    public int getOperator() {
+        throw new Error();
+    }
+
+    @Override
+    public int getArity() {
+        throw new Error();
+    }
+
+    @Override
+    public IR getNthChild(int index) {
+        throw new Error();
     }
 }
 

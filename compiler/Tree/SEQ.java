@@ -30,7 +30,8 @@ public class SEQ extends Stm {
         }
 
         public void addOrCreate(Stm smt) {
-            if(smt == null) return;
+            if (smt == null)
+                return;
             if (result == null) {
                 result = smt;
             } else {
@@ -60,8 +61,8 @@ public class SEQ extends Stm {
      * @return
      */
     public SEQ normalise() {
-       return (SEQ) (new Normalizer(this).result);
-       // return SEQ.linearize(this);
+        return (SEQ) (new Normalizer(this).result);
+        // return SEQ.linearize(this);
     }
 
     static Tree.SEQ linear(Tree.SEQ s, Tree.SEQ l) {
@@ -79,5 +80,27 @@ public class SEQ extends Stm {
 
     static public Tree.SEQ linearize(Tree.Stm s) {
         return linear(s, null);
+    }
+
+    @Override
+    public int getOperator() {
+        return TreeKind.SEQ;
+    }
+
+    @Override
+    public int getArity() {
+        return 2;
+    }
+
+    @Override
+    public IR getNthChild(int index) {
+        switch (index) {
+            case 0:
+                return this.left;
+            case 1:
+                return this.right;
+            default:
+                throw new Error("Index out of range");
+        }
     }
 }

@@ -1,0 +1,13 @@
+<BurmTest burm="MemoryManagerTest" expectedResult="3">
+
+    <grammar file="tests/cpp/MemoryManager.jbg"/>
+    <language value="cpp"/>
+    <cppsource path="tests/cpp/MemoryManagerMain.cpp"/>
+    <executable path="gensrc/MemoryManager"/>
+
+    <Node opcode="ADD">
+        <Node opcode="INT" userObject="1"/>
+        <Node opcode="INT" userObject="2"/>
+    </Node>
+
+</BurmTest>

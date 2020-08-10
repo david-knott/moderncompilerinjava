@@ -1,0 +1,45 @@
+@Language Java;
+@Package Intel;
+@Header {
+	import Tree.*;
+	import static Tree.TreeKind.*;
+}
+@ReturnType Temp.Temp;
+@INodeType Tree.IR;
+@Constant ERROR_TRAP = 268435456;
+
+
+jumpType = JUMP(expType exp) : 1 
+{
+	return null;
+}
+
+constType = CONST(void) : 1 
+{
+	return null;
+}
+
+labelType = LABEL(void): 1 
+{
+	return null;
+}
+
+nameType = NAME(void): 1 
+{
+	return null;
+}
+
+tempType = TEMP(void): 1 
+{
+	return null;
+}
+
+expType =  constType;
+expType =  labelType;
+expType =  tempType;
+
+move = MOVE(tempType t1, tempType t2) : 1
+{
+	return null;
+
+}
