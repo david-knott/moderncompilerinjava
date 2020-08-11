@@ -22,17 +22,34 @@ import Util.BoolList;
 public class IntelFrameTest {
 
     @Test
-    public void singleConstTest() throws Exception {
+    public void burgConst() throws Exception {
         IR tree = new Tree.CONST(3);
         new Intel.CodeGen().burm(tree);
     }
 
     @Test
-    public void singleMoveTest() throws Exception {
-        IR tree = new Tree.MOVE(
-            new Tree.TEMP(Temp.create()),
-            new Tree.TEMP(Temp.create())
-        );
+    public void burgTemp() throws Exception {
+        IR tree =new Tree.TEMP(Temp.create());
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void burgBinop() throws Exception {
+        IR tree = new Tree.BINOP(
+                        Tree.BINOP.PLUS,
+                        new Tree.TEMP(Temp.create()),
+                        new Tree.CONST(3)
+                    );
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void burgBinopRev() throws Exception {
+        IR tree = new Tree.BINOP(
+                        Tree.BINOP.PLUS,
+                        new Tree.CONST(5),
+                        new Tree.TEMP(Temp.create())
+                    );
         new Intel.CodeGen().burm(tree);
     }
 
@@ -46,7 +63,45 @@ public class IntelFrameTest {
     }
 
     @Test
-    public void singleMoveStore() throws Exception {
+    public void memBinop() throws Exception {
+        IR tree = new MEM(
+            new Tree.BINOP(
+                Tree.BINOP.PLUS,
+                new Tree.TEMP(Temp.create()),
+                new Tree.CONST(3)
+            )
+        ) ;
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void memBinopBinop() throws Exception {
+        IR tree = new MEM(
+                    new Tree.BINOP(
+                        Tree.BINOP.PLUS,
+                        new Tree.TEMP(Temp.create()),
+                        new Tree.BINOP(
+                            Tree.BINOP.PLUS,
+                            new Tree.TEMP(Temp.create()),
+                            new Tree.CONST(3)
+                        )
+                    )
+                );
+        
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void burgMove() throws Exception {
+        IR tree = new Tree.MOVE(
+            new Tree.TEMP(Temp.create()),
+            new Tree.TEMP(Temp.create())
+        );
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void burgMemMove() throws Exception {
         IR tree = new Tree.MOVE(
             new MEM(
                 new Tree.TEMP(Temp.create())
@@ -56,6 +111,16 @@ public class IntelFrameTest {
         new Intel.CodeGen().burm(tree);
     }
 
+    @Test
+    public void singleMoveStore() throws Exception {
+        IR tree = new Tree.MOVE(
+            new Tree.TEMP(Temp.create()),
+            new MEM(
+                new Tree.TEMP(Temp.create())
+            )
+        );
+        new Intel.CodeGen().burm(tree);
+    }
 
     @Test
     public void memToMem() throws Exception {
@@ -68,6 +133,50 @@ public class IntelFrameTest {
             )
         );
         new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void loadMem() throws Exception {
+        Emitter emitter = new Emitter();
+        IR tree = 
+            new Tree.MOVE(
+                new Tree.TEMP(Temp.create()),
+                new MEM(
+                    new Tree.BINOP(
+                        Tree.BINOP.PLUS,
+                        new Tree.TEMP(Temp.create()),
+                        new Tree.CONST(3)
+                    )
+                )
+            )
+        ;
+        var cg = new Intel.CodeGen();
+        cg.setEmitter(emitter);
+        cg.burm(tree);
+    }
+
+    @Test
+    public void moveArray() throws Exception {
+        Emitter emitter = new Emitter();
+        IR tree = 
+            new Tree.MOVE(
+                new Tree.TEMP(Temp.create()),
+                new MEM(
+                    new Tree.BINOP(
+                        Tree.BINOP.PLUS,
+                        new Tree.TEMP(Temp.create()),
+                        new Tree.BINOP(
+                            Tree.BINOP.PLUS,
+                            new Tree.TEMP(Temp.create()),
+                            new Tree.CONST(3)
+                        )
+                    )
+                )
+            )
+        ;
+        var cg = new Intel.CodeGen();
+        cg.setEmitter(emitter);
+        cg.burm(tree);
     }
 
     @Test

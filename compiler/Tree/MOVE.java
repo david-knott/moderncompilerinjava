@@ -41,9 +41,9 @@ public class MOVE extends Stm {
     public IR getNthChild(int index) {
         switch (index) {
             case 0:
-                return this.src;
-            case 1:
                 return this.dst;
+            case 1:
+                return this.src;
             default:
                 throw new Error("Index out of range");
         }

@@ -1,0 +1,39 @@
+stmt = MOVE(temp t1, temp t2) : 1
+{
+	System.out.println("Move tmp -> tmp");
+    System.out.println(t1);
+    System.out.println(t2);
+	return null;
+}
+
+stmt = MOVE(exp t2, MEM(exp l)) : 100
+{
+	System.out.println("Move exp -> mem(exp)");
+    System.out.println(l);
+	return null;
+}
+
+stmt = MOVE(MEM(exp l), exp t2) : 1
+{
+	System.out.println("Move mem(exp)-> exp");
+    System.out.println(l);
+	return null;
+}
+
+stmt = MOVE(MEM(exp t1), MEM(exp t2)) : 1
+{
+	System.out.println("move mem -> mem");
+    System.out.println(t1);
+	System.out.println(t2);
+	return null;
+}
+
+stmt = MOVE(exp t2, MEM(lm t1)) : 1
+{
+	System.out.println("move exp -> mem binop");
+    System.out.println(t1);
+	System.out.println(t2);
+	return null;
+}
+
+

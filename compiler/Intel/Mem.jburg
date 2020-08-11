@@ -1,0 +1,6 @@
+exp = MEM(exp t1) : 100
+{
+	Temp.Temp temp = Temp.Temp.create();
+    System.out.println("Mem");
+	return temp;
+}

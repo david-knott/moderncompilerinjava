@@ -1,0 +1,25 @@
+exp = BINOP(exp t1, exp t2) : 100
+{
+	Temp.Temp temp = Temp.Temp.create();
+	Tree.BINOP binop = ((Tree.BINOP)#exp);
+	System.out.println("Binop1");
+	return temp;
+}
+
+lm = BINOP(exp t1, con t2) : 1
+{
+	Temp.Temp temp = Temp.Temp.create();
+	Tree.BINOP binop = ((Tree.BINOP)#lm);
+	System.out.println("Binop2" + binop);
+	return temp;
+}
+
+lm = BINOP(con t1, exp t2) : 1
+{
+	Temp.Temp temp = Temp.Temp.create();
+	Tree.BINOP binop = ((Tree.BINOP)#lm);
+	System.out.println("Binop3");
+	return temp;
+}
+
+exp = lm;
