@@ -10,6 +10,7 @@ import Temp.Temp;
 import Tree.BINOP;
 import Tree.CONST;
 import Tree.EmptyStm;
+import Tree.IR;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.SEQ;
@@ -19,6 +20,55 @@ import Tree.TEMP;
 import Util.BoolList;
 
 public class IntelFrameTest {
+
+    @Test
+    public void singleConstTest() throws Exception {
+        IR tree = new Tree.CONST(3);
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void singleMoveTest() throws Exception {
+        IR tree = new Tree.MOVE(
+            new Tree.TEMP(Temp.create()),
+            new Tree.TEMP(Temp.create())
+        );
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void singleMemStore() throws Exception {
+        IR tree = 
+            new MEM(
+                new Tree.TEMP(Temp.create())
+            );
+        new Intel.CodeGen().burm(tree);
+    }
+
+    @Test
+    public void singleMoveStore() throws Exception {
+        IR tree = new Tree.MOVE(
+            new MEM(
+                new Tree.TEMP(Temp.create())
+            ),
+            new Tree.TEMP(Temp.create())
+        );
+        new Intel.CodeGen().burm(tree);
+    }
+
+
+    @Test
+    public void memToMem() throws Exception {
+        IR tree = new Tree.MOVE(
+            new MEM(
+                new Tree.TEMP(Temp.create())
+            ),
+            new MEM(
+                new Tree.TEMP(Temp.create())
+            )
+        );
+        new Intel.CodeGen().burm(tree);
+    }
 
     @Test
     public void calleeSaveRestoreTest() {

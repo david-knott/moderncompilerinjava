@@ -1,4 +1,5 @@
 @Language Java;
+//@Include "../arithmetic/IntegerArithmetic.jbg"
 @Package Intel;
 @Header {
 	import Tree.*;
@@ -7,7 +8,34 @@
 @ReturnType Temp.Temp;
 @INodeType Tree.IR;
 @Constant ERROR_TRAP = 268435456;
+@Members
+{
+	private Emitter emitter;
+	public void setEmitter(Emitter emitter) {
+		this.emitter = emitter;
+	}
+}
 
+memType = MEM(expType t1) : 1
+{
+	Temp.Temp temp = Temp.Temp.create();
+	return temp;
+}
+
+binopType = BINOP(expType t1, expType t2) : 1
+{
+	return null;
+}
+
+sxpType = SXP(expType t): 1
+{
+	return null;
+}
+
+cjumpType = CJUMP(expType t1, expType t2) : 1
+{
+	return null;
+}
 
 jumpType = JUMP(expType exp) : 1 
 {
@@ -16,30 +44,65 @@ jumpType = JUMP(expType exp) : 1
 
 constType = CONST(void) : 1 
 {
-	return null;
+	Temp.Temp temp = Temp.Temp.create();
+	int intValue = ((Tree.CONST)#constType).value;
+	emitter.emit();
+	System.out.println("Const");
+    //emit(new OPER("movq $" + cnst.value + ", %`d0 # const", L(temp, null), null));
+	return temp;
 }
 
 labelType = LABEL(void): 1 
 {
+	Tree.LABEL label = ((Tree.LABEL)#labelType);
+	//emit(new Assem.LABEL(op.label.toString() + ":", op.label));
+	System.out.println("Label");
 	return null;
 }
 
 nameType = NAME(void): 1 
 {
-	return null;
+	Temp.Temp temp = Temp.Temp.create();
+	Tree.NAME name = ((Tree.NAME)#nameType);
+	System.out.println("Name");
+	//emit(new Assem.OPER("movq $" + op.label + ", %`d0 # default name", L(temp, null), null));
+	return temp;
 }
 
 tempType = TEMP(void): 1 
 {
+	System.out.println("Temp");
+	return ((Tree.TEMP)#tempType).temp;
+}
+
+expType = constType;
+expType = labelType;
+expType = tempType;
+expType = binopType;
+expType = memType;
+
+moveType = MOVE(expType t1, expType t2) : 1
+{
+	System.out.println("Move1");
+	//emit(new Assem.MOVE("movq %`s0, %`d0 # load 0", t1, t2));
 	return null;
 }
 
-expType =  constType;
-expType =  labelType;
-expType =  tempType;
-
-move = MOVE(tempType t1, tempType t2) : 1
+moveType2 = MOVE(MEM(expType t1), expType t2): 1
 {
+	System.out.println("Move2");
+	//emit(new Assem.OPER("movq %`s0, (%`s1) # store", null, new TempList(srcTemp, new TempList(dstTemp))));
 	return null;
+}
 
+moveType3 = MOVE(expType t1, MEM(expType t2)): 1
+{
+	System.out.println("Move3");
+	return null;
+}
+
+moveType3 = MOVE(MEM(expType t1), MEM(expType t2)) : 1
+{
+	System.out.println("Move4");
+	return null;
 }

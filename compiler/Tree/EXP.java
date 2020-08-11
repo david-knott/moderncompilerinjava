@@ -26,7 +26,7 @@ public class EXP extends Stm {
 
     @Override
     public int getOperator() {
-        return TreeKind.EXP;
+        return TreeKind.SXP;
     }
 
     @Override
