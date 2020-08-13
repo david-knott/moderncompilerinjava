@@ -1,6 +1,31 @@
-exp = MEM(exp t1) : 100
+mem = MEM(BINOP(con left, exp right)) : 1
+{
+    System.out.println("//mem(binop(exp, con)");
+	return null;
+}
+
+mem = MEM(BINOP(exp left, con right)) : 1
+{
+    System.out.println("//mem(binop(exp, con)");
+	return null;
+}
+
+mem = MEM(BINOP(exp left, BINOP(exp left2, con right))) : 1
+{
+    System.out.println("mem(binop(exp, binop(exp, con))");
+	return null;
+}
+
+mem = MEM(con t1) : 100
 {
 	Temp.Temp temp = Temp.Temp.create();
-    System.out.println("Mem");
-	return temp;
+    System.out.println("mem(con)");
+	return null;
 }
+
+mem = MEM(exp t1) : 100
+{
+    System.out.println("//mem(exp)");
+	return null;
+}
+

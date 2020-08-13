@@ -4,35 +4,25 @@
 	import Tree.*;
 	import static Tree.TreeKind.*;
 }
-@ReturnType Temp.Temp;
 @INodeType Tree.IR;
+@ReturnType Temp.Temp;
+@ReturnType con = Temp.Temp;
+@ReturnType binop = Temp.Temp;
+@ReturnType temp = Temp.Temp;
 @Constant ERROR_TRAP = 268435456;
 @Members
 {
+	private Reducer reducer;
+	public void setReducer(Reducer reducer) {
+		this.reducer = reducer;
+	}
+
 	private Emitter emitter;
 	public void setEmitter(Emitter emitter) {
 		this.emitter = emitter;
 	}
 }
 
-@Include "./Mem.jburg"
-@Include "./Move.jburg"
-@Include "./Binop.jburg"
-
-con = CONST(void) : 1 
-{
-	Temp.Temp temp = Temp.Temp.create();
-	System.out.println("Const:" + ((Tree.CONST)#con).value);
-	return temp;
-}
-
-exp = con;
-
-temp = TEMP(void): 1 
-{
-	Temp.Temp temp = ((Tree.TEMP)#temp).temp;
-	System.out.println("Temp:" + temp);
-	return temp;
-}
-
-exp = temp;
+@Include "./Stm.jburg"
+@Include "./Exp.jburg"
+//@Reduction reducer.emitIntegerAdd(left, right);

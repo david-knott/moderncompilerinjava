@@ -29,7 +29,7 @@ public class CALL extends Exp {
 
     @Override
     public int getArity() {
-        return this.args.size();
+        return this.args != null ? this.args.size() : 0;
     }
 
     @Override

@@ -1,0 +1,4 @@
+temp = TEMP(void): 10
+{
+	return ((Tree.TEMP)#temp).temp;
+}

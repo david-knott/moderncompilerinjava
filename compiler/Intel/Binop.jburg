@@ -1,25 +1,37 @@
-exp = BINOP(exp t1, exp t2) : 100
+
+/*
+commented out to test moveIndexdMemToTemp
+
+binop = BINOP(exp t1, exp t2) : 1
 {
 	Temp.Temp temp = Temp.Temp.create();
-	Tree.BINOP binop = ((Tree.BINOP)#exp);
-	System.out.println("Binop1");
+	System.out.println("b(e,e)");
 	return temp;
 }
 
-lm = BINOP(exp t1, con t2) : 1
+*/
+
+binop = BINOP(exp t1, con t2) : 1
 {
 	Temp.Temp temp = Temp.Temp.create();
-	Tree.BINOP binop = ((Tree.BINOP)#lm);
-	System.out.println("Binop2" + binop);
+	Tree.BINOP binop = ((Tree.BINOP)#binop);
+	System.out.println("//Binop2" + binop);
 	return temp;
 }
 
-lm = BINOP(con t1, exp t2) : 1
+binop = BINOP(con t1, exp t2) : 1
 {
 	Temp.Temp temp = Temp.Temp.create();
-	Tree.BINOP binop = ((Tree.BINOP)#lm);
-	System.out.println("Binop3");
+	Tree.BINOP binop = ((Tree.BINOP)#binop);
+	System.out.println("//Binop3");
 	return temp;
 }
 
-exp = lm;
+binop = BINOP(con t1, con t2) : 1
+{
+	Temp.Temp temp = Temp.Temp.create();
+	System.out.println("movcc " + t1 + " " + temp);
+	System.out.println("//Binop3");
+	System.out.println("addcc " + t2 + " " + temp);
+	return temp;
+}

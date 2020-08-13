@@ -1,0 +1,16 @@
+@Include "./Binop.jburg"
+exp = binop;
+@Include "./Call.jburg"
+exp = call;
+@Include "./Mem.jburg"
+exp = mem;
+@Include "./Temp.jburg"
+exp = temp;
+
+con = CONST(void) : 1 
+{
+	Temp.Temp temp = Temp.Temp.create();
+//	return ((Tree.CONST)#con).value;
+	return temp;
+}
+exp = con;

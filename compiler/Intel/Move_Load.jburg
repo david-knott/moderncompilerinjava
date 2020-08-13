@@ -1,0 +1,19 @@
+move = MOVE(temp t1, MEM(exp t2)) : 1
+{
+	System.out.println("movq %" + t1 + ", (%" + t2 + ") # mv(t, mm(e))");
+	return null;
+}
+
+move = MOVE(temp t1, MEM(BINOP(exp t2, CONST(void) c))) : 1
+{
+	int offset = ((Tree.CONST)c).value;
+	System.out.println("movq %" + t1 + ", " + offset + "(%" + t2 + ") # mv(t, mm(b(e, c))");
+	return null;
+}
+
+move = MOVE(temp t1, MEM(BINOP(temp t2, BINOP(temp t3, CONST(void) c)))) : 1
+{
+	int offset = ((Tree.CONST)c).value;
+	System.out.println("movq %" + t1 + ", " + offset + "(%" + t2 + ") # mv(t, mm(b(e, c))");
+	return null;
+}

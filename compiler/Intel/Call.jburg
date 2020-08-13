@@ -1,0 +1,7 @@
+call = CALL(exp args*) : 1
+{
+    System.out.println("call()");
+    Tree.CALL call = ((Tree.CALL)#call);
+    var reducer = this;
+    return null;
+}
