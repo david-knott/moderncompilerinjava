@@ -1,4 +1,4 @@
-/*  Generated Thu Aug 13 09:07:30 IST 2020 by JBurg version 2.0.2  */
+/*  Generated Thu Aug 13 20:05:37 IST 2020 by JBurg version 2.0.2  */
 
 package Intel;
 	import Tree.*;
@@ -19,10 +19,12 @@ final public static int __move_NT = 2;
 final public static int __temp_NT = 3;
 final public static int __con_NT = 4;
 final public static int __mem_NT = 5;
-final public static int __exp_NT = 6;
-final public static int __stmt_NT = 7;
-final public static int __binop_NT = 8;
-final public static int nStates = 8;
+final public static int __sxp_NT = 6;
+final public static int __arrayIndex_NT = 7;
+final public static int __exp_NT = 8;
+final public static int __stmt_NT = 9;
+final public static int __binop_NT = 10;
+final public static int nStates = 10;
 public  JBurgAnnotation label(Tree.IR to_be_labelled) {
     int             arity   = to_be_labelled.getArity();
     JBurgAnnotation result  = this.getJBurgAnnotation(to_be_labelled);
@@ -37,9 +39,10 @@ public  JBurgAnnotation label(Tree.IR to_be_labelled) {
 /* move */
 
 private  Temp.Temp action_1(Tree.IR __p) throws java.lang.Exception {
-    Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
+    Temp.Temp arg1 = (Temp.Temp)__reducedValues.pop();Temp.Temp arg0 = (Temp.Temp)__reducedValues.pop();
     		{
-    			System.out.println("movq %" + t1 + ", (%" + t2 + ") # mv(t, mm(e))");
+    			System.out.println("movq %" + arg0 + ", (%" + arg1 + ") # mv(t, mm(e))");
+    			emitter.loadBuild(arg0, arg1);
     			return null;
     		}
 }
@@ -47,23 +50,28 @@ private  Temp.Temp action_1(Tree.IR __p) throws java.lang.Exception {
 /* move */
 
 private  Temp.Temp action_2(Tree.IR __p) throws java.lang.Exception {
-    Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
-    	 Tree.IR c = __p.getNthChild(1).getNthChild(0).getNthChild(1);;
+    Temp.Temp arg1 = (Temp.Temp)__reducedValues.pop();Temp.Temp arg0 = (Temp.Temp)__reducedValues.pop();
+    	 Tree.IR arg2 = __p.getNthChild(1).getNthChild(0).getNthChild(1);;
     		{
-    			int offset = ((Tree.CONST)c).value;
-    			System.out.println("movq %" + t1 + ", " + offset + "(%" + t2 + ") # mv(t, mm(b(e, c))");
+    			int offset = ((Tree.CONST)arg2).value;
+    		    Tree.BINOP binop = (Tree.BINOP)(__p.getNthChild(1).getNthChild(0));
+    			Util.Assert.assertIsTrue(binop.binop == Tree.BINOP.PLUS || binop.binop == Tree.BINOP.MINUS);
+    			System.out.println("movq %" + arg0 + ", " + offset + "(%" + arg1 + ") # mv(t, mm(b(e, c))");
     			return null;
     		}
 }
 
-/* move */
+/* arrayIndex */
 
 private  Temp.Temp action_3(Tree.IR __p) throws java.lang.Exception {
-    Temp.Temp t3 = (Temp.Temp)__reducedValues.pop();Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
-    	 Tree.IR c = __p.getNthChild(1).getNthChild(0).getNthChild(1).getNthChild(1);;
+    Temp.Temp arg2 = (Temp.Temp)__reducedValues.pop();Temp.Temp arg1 = (Temp.Temp)__reducedValues.pop();
+    	 Tree.IR arg3 = __p.getNthChild(0).getNthChild(1).getNthChild(1);;
     		{
-    			int offset = ((Tree.CONST)c).value;
-    			System.out.println("movq %" + t1 + ", " + offset + "(%" + t2 + ") # mv(t, mm(b(e, c))");
+    			System.out.println("# indirect addressing.");
+    			System.out.println(arg1);
+    			System.out.println(arg2);
+    			System.out.println(arg3);
+    			//bundle arg1, arg2, arg3 together and pass to move below.
     			return null;
     		}
 }
@@ -71,6 +79,18 @@ private  Temp.Temp action_3(Tree.IR __p) throws java.lang.Exception {
 /* move */
 
 private  Temp.Temp action_4(Tree.IR __p) throws java.lang.Exception {
+    Temp.Temp arg1 = (Temp.Temp)__reducedValues.pop();Temp.Temp arg0 = (Temp.Temp)__reducedValues.pop();
+    		{
+    			System.out.println(arg0);
+    			System.out.println(arg1);
+    			System.out.println("# mv(t, mm(b(t b(t, c))))");
+    			return null;
+    		}
+}
+
+/* move */
+
+private  Temp.Temp action_5(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("movq (" + t1 + "), " + t2);
@@ -80,7 +100,7 @@ private  Temp.Temp action_4(Tree.IR __p) throws java.lang.Exception {
 
 /* move */
 
-private  Temp.Temp action_5(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_6(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp src = (Temp.Temp)__reducedValues.pop();Temp.Temp dst = (Temp.Temp)__reducedValues.pop();
     		{
     			System.out.println("move store statment");
@@ -91,7 +111,7 @@ private  Temp.Temp action_5(Tree.IR __p) throws java.lang.Exception {
 
 /* move */
 
-private  Temp.Temp action_6(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_7(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp right = (Temp.Temp)__reducedValues.pop();Temp.Temp left = (Temp.Temp)__reducedValues.pop();Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();
     		{
     			System.out.println("move store statment");
@@ -101,7 +121,7 @@ private  Temp.Temp action_6(Tree.IR __p) throws java.lang.Exception {
 
 /* move */
 
-private  Temp.Temp action_7(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_8(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("movqt " + t1 + ", " + t2);
@@ -111,7 +131,7 @@ private  Temp.Temp action_7(Tree.IR __p) throws java.lang.Exception {
 
 /* move */
 
-private  Temp.Temp action_8(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_9(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("movqc " + t1 + ", " + t2);
@@ -121,7 +141,7 @@ private  Temp.Temp action_8(Tree.IR __p) throws java.lang.Exception {
 
 /* move */
 
-private  Temp.Temp action_9(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_10(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("movqe " + t1 + ", " + t2);
@@ -129,9 +149,49 @@ private  Temp.Temp action_9(Tree.IR __p) throws java.lang.Exception {
     		}
 }
 
+/* sxp */
+
+private  Temp.Temp action_11(Tree.IR __p) throws java.lang.Exception {
+    Temp.Temp arg0 = (Temp.Temp)__reducedValues.pop();
+    		{
+    		    return null;
+    		}
+}
+
+/* temp */
+
+private  Temp.Temp action_12(Tree.IR __p) throws java.lang.Exception {
+
+    		{
+    			return ((Tree.TEMP)__p).temp;
+    		}
+}
+
+/* con */
+
+private  Temp.Temp action_13(Tree.IR __p) throws java.lang.Exception {
+
+    		{
+    			Temp.Temp temp = Temp.Temp.create();
+    		//	return ((Tree.CONST)__p).value;
+    			return temp;
+    		}
+}
+
 /* binop */
 
-private  Temp.Temp action_10(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_14(Tree.IR __p) throws java.lang.Exception {
+    Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
+    		{
+    			Temp.Temp temp = Temp.Temp.create();
+    			System.out.println("b(e,e)");
+    			return temp;
+    		}
+}
+
+/* binop */
+
+private  Temp.Temp action_15(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     			Temp.Temp temp = Temp.Temp.create();
@@ -143,7 +203,7 @@ private  Temp.Temp action_10(Tree.IR __p) throws java.lang.Exception {
 
 /* binop */
 
-private  Temp.Temp action_11(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_16(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     			Temp.Temp temp = Temp.Temp.create();
@@ -155,7 +215,7 @@ private  Temp.Temp action_11(Tree.IR __p) throws java.lang.Exception {
 
 /* binop */
 
-private  Temp.Temp action_12(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_17(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t2 = (Temp.Temp)__reducedValues.pop();Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     			Temp.Temp temp = Temp.Temp.create();
@@ -166,21 +226,9 @@ private  Temp.Temp action_12(Tree.IR __p) throws java.lang.Exception {
     		}
 }
 
-/* call */
-
-private  Temp.Temp action_13(Tree.IR __p) throws java.lang.Exception {
-    java.util.Vector<Temp.Temp> args = (java.util.Vector<Temp.Temp>)__reducedValues.pop();
-    		{
-    		    System.out.println("call()");
-    		    Tree.CALL call = ((Tree.CALL)__p);
-    		    var reducer = this;
-    		    return null;
-    		}
-}
-
 /* mem */
 
-private  Temp.Temp action_14(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_18(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp right = (Temp.Temp)__reducedValues.pop();Temp.Temp left = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("//mem(binop(exp, con)");
@@ -190,7 +238,7 @@ private  Temp.Temp action_14(Tree.IR __p) throws java.lang.Exception {
 
 /* mem */
 
-private  Temp.Temp action_15(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_19(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp right = (Temp.Temp)__reducedValues.pop();Temp.Temp left = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("//mem(binop(exp, con)");
@@ -200,7 +248,7 @@ private  Temp.Temp action_15(Tree.IR __p) throws java.lang.Exception {
 
 /* mem */
 
-private  Temp.Temp action_16(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_20(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp right = (Temp.Temp)__reducedValues.pop();Temp.Temp left2 = (Temp.Temp)__reducedValues.pop();Temp.Temp left = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("mem(binop(exp, binop(exp, con))");
@@ -210,7 +258,7 @@ private  Temp.Temp action_16(Tree.IR __p) throws java.lang.Exception {
 
 /* mem */
 
-private  Temp.Temp action_17(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_21(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     			Temp.Temp temp = Temp.Temp.create();
@@ -221,7 +269,7 @@ private  Temp.Temp action_17(Tree.IR __p) throws java.lang.Exception {
 
 /* mem */
 
-private  Temp.Temp action_18(Tree.IR __p) throws java.lang.Exception {
+private  Temp.Temp action_22(Tree.IR __p) throws java.lang.Exception {
     Temp.Temp t1 = (Temp.Temp)__reducedValues.pop();
     		{
     		    System.out.println("//mem(exp)");
@@ -229,45 +277,21 @@ private  Temp.Temp action_18(Tree.IR __p) throws java.lang.Exception {
     		}
 }
 
-/* temp */
-
-private  Temp.Temp action_19(Tree.IR __p) throws java.lang.Exception {
-
-    		{
-    			return ((Tree.TEMP)__p).temp;
-    		}
-}
-
-/* con */
-
-private  Temp.Temp action_20(Tree.IR __p) throws java.lang.Exception {
-
-    		{
-    			Temp.Temp temp = Temp.Temp.create();
-    		//	return ((Tree.CONST)__p).value;
-    			return temp;
-    		}
-}
-
-/* exp */
-
-private  Temp.Temp action_21(Tree.IR __p) throws java.lang.Exception {
-
-    		return ((Temp.Temp)__reducedValues.pop());
-}
-
-/* exp */
-
-private  Temp.Temp action_22(Tree.IR __p) throws java.lang.Exception {
-
-    		return ((Temp.Temp)__reducedValues.pop());
-}
-
-/* exp */
+/* call */
 
 private  Temp.Temp action_23(Tree.IR __p) throws java.lang.Exception {
-
-    		return ((Temp.Temp)__reducedValues.pop());
+    java.util.Vector<Temp.Temp> args = (java.util.Vector<Temp.Temp>)__reducedValues.pop();
+    		{
+    		    Tree.CALL call = ((Tree.CALL)__p);
+    		    for(var temp : args) {
+    		        //if i <= 6 goes to regiser
+    		
+    		        //if i > 6 goes on stack.
+    		        System.out.println("add instructions to move " + temp + " correct place");
+    		    }
+    		    System.out.println("call()");
+    		    return null;
+    		}
 }
 
 /* exp */
@@ -277,7 +301,7 @@ private  Temp.Temp action_24(Tree.IR __p) throws java.lang.Exception {
     		return ((Temp.Temp)__reducedValues.pop());
 }
 
-/* stmt */
+/* exp */
 
 private  Temp.Temp action_25(Tree.IR __p) throws java.lang.Exception {
 
@@ -287,6 +311,27 @@ private  Temp.Temp action_25(Tree.IR __p) throws java.lang.Exception {
 /* exp */
 
 private  Temp.Temp action_26(Tree.IR __p) throws java.lang.Exception {
+
+    		return ((Temp.Temp)__reducedValues.pop());
+}
+
+/* exp */
+
+private  Temp.Temp action_27(Tree.IR __p) throws java.lang.Exception {
+
+    		return ((Temp.Temp)__reducedValues.pop());
+}
+
+/* stmt */
+
+private  Temp.Temp action_28(Tree.IR __p) throws java.lang.Exception {
+
+    		return ((Temp.Temp)__reducedValues.pop());
+}
+
+/* exp */
+
+private  Temp.Temp action_29(Tree.IR __p) throws java.lang.Exception {
 
     		return ((Temp.Temp)__reducedValues.pop());
 }
@@ -375,33 +420,45 @@ private  void dispatchAction(JBurgAnnotation ___node,int iRule) throws java.lang
         }
         break;
         case 21: {
-            this.reduceAntecedent(___node,__con_NT);
             __reducedValues.push(this.action_21(__p));
         }
         break;
         case 22: {
-            this.reduceAntecedent(___node,__call_NT);
             __reducedValues.push(this.action_22(__p));
         }
         break;
         case 23: {
-            this.reduceAntecedent(___node,__mem_NT);
             __reducedValues.push(this.action_23(__p));
         }
         break;
         case 24: {
-            this.reduceAntecedent(___node,__temp_NT);
+            this.reduceAntecedent(___node,__con_NT);
             __reducedValues.push(this.action_24(__p));
         }
         break;
         case 25: {
-            this.reduceAntecedent(___node,__move_NT);
+            this.reduceAntecedent(___node,__call_NT);
             __reducedValues.push(this.action_25(__p));
         }
         break;
         case 26: {
-            this.reduceAntecedent(___node,__binop_NT);
+            this.reduceAntecedent(___node,__temp_NT);
             __reducedValues.push(this.action_26(__p));
+        }
+        break;
+        case 27: {
+            this.reduceAntecedent(___node,__mem_NT);
+            __reducedValues.push(this.action_27(__p));
+        }
+        break;
+        case 28: {
+            this.reduceAntecedent(___node,__move_NT);
+            __reducedValues.push(this.action_28(__p));
+        }
+        break;
+        case 29: {
+            this.reduceAntecedent(___node,__binop_NT);
+            __reducedValues.push(this.action_29(__p));
         }
         break;
         default: {
@@ -415,12 +472,15 @@ class JBurgAnnotation_BINOP_2  extends JBurgSpecializedAnnotation
 {
 
     private  int getCostForRule_28f67ac7(int goalState)  {
-        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__con_NT), this.getNthChild(0).getCost(__exp_NT))));
+        return (normalizedAdd(10, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__exp_NT))));
     }
     private  int getCostForRule_256216b3(int goalState)  {
-        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__con_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__con_NT), this.getNthChild(0).getCost(__exp_NT))));
     }
     private  int getCostForRule_2a18f23c(int goalState)  {
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__con_NT))));
+    }
+    private  int getCostForRule_d7b1517(int goalState)  {
         return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__con_NT), this.getNthChild(0).getCost(__con_NT))));
     }private  JBurgAnnotation subtree0 = null;private  JBurgAnnotation subtree1 = null;private  int cachedCostFor_binop = -1;
     public   JBurgAnnotation_BINOP_2(Tree.IR node)  {
@@ -433,6 +493,7 @@ class JBurgAnnotation_BINOP_2  extends JBurgSpecializedAnnotation
                 result = getCostForRule_28f67ac7(goalState);
                 result = Math.min(result,getCostForRule_256216b3(goalState));
                 result = Math.min(result,getCostForRule_2a18f23c(goalState));
+                result = Math.min(result,getCostForRule_d7b1517(goalState));
             }
             break;
         }
@@ -475,22 +536,27 @@ class JBurgAnnotation_BINOP_2  extends JBurgSpecializedAnnotation
                  int currentCost = getCostForRule_28f67ac7(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
-                    rule = 10;
+                    rule = 14;
                 } 
                 currentCost = getCostForRule_256216b3(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
-                    rule = 11;
+                    rule = 15;
                 } 
                 currentCost = getCostForRule_2a18f23c(goalState);
                 if ((bestCost > currentCost)) {
-                    rule = 12;
+                    bestCost = currentCost;
+                    rule = 16;
+                } 
+                currentCost = getCostForRule_d7b1517(goalState);
+                if ((bestCost > currentCost)) {
+                    rule = 17;
                 } 
             }
             break;
             case __exp_NT: {
                 if ((Integer.MAX_VALUE > getCost(__binop_NT))) {
-                    rule = 26;
+                    rule = 29;
                 } 
             }
             break;
@@ -586,13 +652,13 @@ class JBurgAnnotation_CALL_0_n  extends JBurgSpecializedAnnotation
         switch(goalState) {
             case __call_NT: {
                 if ((Integer.MAX_VALUE > normalizedAdd(1, getNaryCost(this,__exp_NT,0)))) {
-                    rule = 13;
+                    rule = 23;
                 } 
             }
             break;
             case __exp_NT: {
                 if ((Integer.MAX_VALUE > getCost(__call_NT))) {
-                    rule = 22;
+                    rule = 25;
                 } 
             }
             break;
@@ -671,11 +737,11 @@ class JBurgAnnotation_CONST_0  extends JBurgSpecializedAnnotation
          int rule = -1;
         switch(goalState) {
             case __con_NT: {
-                rule = 20;
+                rule = 13;
             }
             break;
             case __exp_NT: {
-                rule = 21;
+                rule = 24;
             }
             break;
         }
@@ -697,7 +763,16 @@ class JBurgAnnotation_CONST_0  extends JBurgSpecializedAnnotation
 class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation 
 {
 
-    private  int getCostForRule_4ec6a292(int goalState)  {
+    private  int getCostForRule_1b40d5f0(int goalState)  {
+         JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
+         JBurgAnnotation factoredPath_2 = this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation.getArity() > 0? this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation.getNthChild(0): errorAnnotation;
+        if ((this.getNthChild(0).getArity() == 2) && (this.getNthChild(0).getOperator() == BINOP) && (this.getNthChild(0).getNthChild(1).getArity() == 2) && (this.getNthChild(0).getNthChild(1).getOperator() == BINOP) && (this.getNthChild(0).getNthChild(1).getNthChild(1).getArity() == 0) && (this.getNthChild(0).getNthChild(1).getNthChild(1).getOperator() == CONST)) {
+            return (normalizedAdd(1, normalizedAdd(factoredPath_2.getCost(__exp_NT), factoredPath_0.getCost(__exp_NT))));
+        } else  {
+            return (Integer.MAX_VALUE);
+        } 
+    }
+    private  int getCostForRule_ea4a92b(int goalState)  {
          JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_1 = this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation;
         if ((this.getNthChild(0).getArity() == 2) && (this.getNthChild(0).getOperator() == BINOP)) {
@@ -706,7 +781,7 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
             return (Integer.MAX_VALUE);
         } 
     }
-    private  int getCostForRule_1b40d5f0(int goalState)  {
+    private  int getCostForRule_3c5a99da(int goalState)  {
          JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_1 = this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation;
         if ((this.getNthChild(0).getArity() == 2) && (this.getNthChild(0).getOperator() == BINOP)) {
@@ -715,7 +790,7 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
             return (Integer.MAX_VALUE);
         } 
     }
-    private  int getCostForRule_ea4a92b(int goalState)  {
+    private  int getCostForRule_47f37ef1(int goalState)  {
          JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_2 = this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation.getArity() > 0? this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation.getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_3 = this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation.getArity() > 1? this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation.getNthChild(1): errorAnnotation;
@@ -725,24 +800,28 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
             return (Integer.MAX_VALUE);
         } 
     }
-    private  int getCostForRule_3c5a99da(int goalState)  {
+    private  int getCostForRule_5a01ccaa(int goalState)  {
         return (normalizedAdd(100, this.getNthChild(0).getCost(__con_NT)));
     }
-    private  int getCostForRule_47f37ef1(int goalState)  {
+    private  int getCostForRule_71c7db30(int goalState)  {
         return (normalizedAdd(100, this.getNthChild(0).getCost(__exp_NT)));
-    }private  JBurgAnnotation subtree0 = null;private  int cachedCostFor_mem = -1;
+    }private  JBurgAnnotation subtree0 = null;private  int cachedCostFor_mem = -1;private  int cachedCostFor_arrayIndex = -1;
     public   JBurgAnnotation_MEM_1(Tree.IR node)  {
         super(node);
     }
     private  int getPatternMatchCost(int goalState)  {
          int result = Integer.MAX_VALUE;
         switch(goalState) {
+            case __arrayIndex_NT: {
+                result = getCostForRule_1b40d5f0(goalState);
+            }
+            break;
             case __mem_NT: {
-                result = getCostForRule_4ec6a292(goalState);
-                result = Math.min(result,getCostForRule_1b40d5f0(goalState));
-                result = Math.min(result,getCostForRule_ea4a92b(goalState));
+                result = getCostForRule_ea4a92b(goalState);
                 result = Math.min(result,getCostForRule_3c5a99da(goalState));
                 result = Math.min(result,getCostForRule_47f37ef1(goalState));
+                result = Math.min(result,getCostForRule_5a01ccaa(goalState));
+                result = Math.min(result,getCostForRule_71c7db30(goalState));
             }
             break;
         }
@@ -763,6 +842,13 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
     public  int getCost(int goalState)  {
          int result = Integer.MAX_VALUE;
         switch(goalState) {
+            case __arrayIndex_NT: {
+                if ((cachedCostFor_arrayIndex == -1)) {
+                    cachedCostFor_arrayIndex = getPatternMatchCost(__arrayIndex_NT);
+                } 
+                result = cachedCostFor_arrayIndex;
+            }
+            break;
             case __exp_NT: {
                 result = getClosureCost(__exp_NT);
             }
@@ -780,37 +866,43 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
     public  int getRule(int goalState)  {
          int rule = -1;
         switch(goalState) {
+            case __arrayIndex_NT: {
+                if ((Integer.MAX_VALUE > getCostForRule_1b40d5f0(goalState))) {
+                    rule = 3;
+                } 
+            }
+            break;
             case __exp_NT: {
                 if ((Integer.MAX_VALUE > getCost(__mem_NT))) {
-                    rule = 23;
+                    rule = 27;
                 } 
             }
             break;
             case __mem_NT: {
                  int bestCost = Integer.MAX_VALUE;
-                 int currentCost = getCostForRule_4ec6a292(goalState);
+                 int currentCost = getCostForRule_ea4a92b(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
-                    rule = 14;
-                } 
-                currentCost = getCostForRule_1b40d5f0(goalState);
-                if ((bestCost > currentCost)) {
-                    bestCost = currentCost;
-                    rule = 15;
-                } 
-                currentCost = getCostForRule_ea4a92b(goalState);
-                if ((bestCost > currentCost)) {
-                    bestCost = currentCost;
-                    rule = 16;
+                    rule = 18;
                 } 
                 currentCost = getCostForRule_3c5a99da(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
-                    rule = 17;
+                    rule = 19;
                 } 
                 currentCost = getCostForRule_47f37ef1(goalState);
                 if ((bestCost > currentCost)) {
-                    rule = 18;
+                    bestCost = currentCost;
+                    rule = 20;
+                } 
+                currentCost = getCostForRule_5a01ccaa(goalState);
+                if ((bestCost > currentCost)) {
+                    bestCost = currentCost;
+                    rule = 21;
+                } 
+                currentCost = getCostForRule_71c7db30(goalState);
+                if ((bestCost > currentCost)) {
+                    rule = 22;
                 } 
             }
             break;
@@ -853,32 +945,26 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
 class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation 
 {
 
-    private  int getCostForRule_71c7db30(int goalState)  {
+    private  int getCostForRule_4563e9ab(int goalState)  {
          JBurgAnnotation factoredPath_1 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation;
         if ((this.getNthChild(1).getArity() == 1) && (this.getNthChild(1).getOperator() == MEM)) {
-            return (normalizedAdd(1, normalizedAdd(factoredPath_1.getCost(__exp_NT), this.getNthChild(0).getCost(__temp_NT))));
-        } else  {
-            return (Integer.MAX_VALUE);
-        } 
-    }
-    private  int getCostForRule_19bb089b(int goalState)  {
-         JBurgAnnotation factoredPath_2 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getArity() > 0? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getNthChild(0): errorAnnotation;
-        if ((this.getNthChild(1).getArity() == 1) && (this.getNthChild(1).getOperator() == MEM) && (this.getNthChild(1).getNthChild(0).getArity() == 2) && (this.getNthChild(1).getNthChild(0).getOperator() == BINOP) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getArity() == 0) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getOperator() == CONST)) {
-            return (normalizedAdd(1, normalizedAdd(factoredPath_2.getCost(__exp_NT), this.getNthChild(0).getCost(__temp_NT))));
-        } else  {
-            return (Integer.MAX_VALUE);
-        } 
-    }
-    private  int getCostForRule_4563e9ab(int goalState)  {
-         JBurgAnnotation factoredPath_2 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getArity() > 0? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getNthChild(0): errorAnnotation;
-         JBurgAnnotation factoredPath_4 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getArity() > 1? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getNthChild(1): errorAnnotation.getArity() > 0? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getArity() > 1? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getNthChild(1): errorAnnotation.getNthChild(0): errorAnnotation;
-        if ((this.getNthChild(1).getArity() == 1) && (this.getNthChild(1).getOperator() == MEM) && (this.getNthChild(1).getNthChild(0).getArity() == 2) && (this.getNthChild(1).getNthChild(0).getOperator() == BINOP) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getArity() == 2) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getOperator() == BINOP) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getNthChild(1).getArity() == 0) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getNthChild(1).getOperator() == CONST)) {
-            return (normalizedAdd(1, normalizedAdd(normalizedAdd(factoredPath_4.getCost(__temp_NT), factoredPath_2.getCost(__temp_NT)), this.getNthChild(0).getCost(__temp_NT))));
+            return (normalizedAdd(10, normalizedAdd(factoredPath_1.getCost(__exp_NT), this.getNthChild(0).getCost(__exp_NT))));
         } else  {
             return (Integer.MAX_VALUE);
         } 
     }
     private  int getCostForRule_11531931(int goalState)  {
+         JBurgAnnotation factoredPath_2 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getArity() > 0? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getNthChild(0): errorAnnotation;
+        if ((this.getNthChild(1).getArity() == 1) && (this.getNthChild(1).getOperator() == MEM) && (this.getNthChild(1).getNthChild(0).getArity() == 2) && (this.getNthChild(1).getNthChild(0).getOperator() == BINOP) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getArity() == 0) && (this.getNthChild(1).getNthChild(0).getNthChild(1).getOperator() == CONST)) {
+            return (normalizedAdd(1, normalizedAdd(factoredPath_2.getCost(__exp_NT), this.getNthChild(0).getCost(__exp_NT))));
+        } else  {
+            return (Integer.MAX_VALUE);
+        } 
+    }
+    private  int getCostForRule_5e025e70(int goalState)  {
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__arrayIndex_NT), this.getNthChild(0).getCost(__exp_NT))));
+    }
+    private  int getCostForRule_1fbc7afb(int goalState)  {
          JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
         if ((this.getNthChild(0).getArity() == 1) && (this.getNthChild(0).getOperator() == MEM)) {
             return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__temp_NT), factoredPath_0.getCost(__temp_NT))));
@@ -886,7 +972,7 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
             return (Integer.MAX_VALUE);
         } 
     }
-    private  int getCostForRule_5e025e70(int goalState)  {
+    private  int getCostForRule_45c8e616(int goalState)  {
          JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_1 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation;
         if ((this.getNthChild(0).getArity() == 1) && (this.getNthChild(0).getOperator() == MEM) && (this.getNthChild(1).getArity() == 1) && (this.getNthChild(1).getOperator() == MEM)) {
@@ -895,7 +981,7 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
             return (Integer.MAX_VALUE);
         } 
     }
-    private  int getCostForRule_1fbc7afb(int goalState)  {
+    private  int getCostForRule_4cdbe50f(int goalState)  {
          JBurgAnnotation factoredPath_2 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getArity() > 0? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_3 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getArity() > 1? this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation.getNthChild(1): errorAnnotation;
         if ((this.getNthChild(1).getArity() == 1) && (this.getNthChild(1).getOperator() == MEM) && (this.getNthChild(1).getNthChild(0).getArity() == 2) && (this.getNthChild(1).getNthChild(0).getOperator() == BINOP)) {
@@ -904,13 +990,13 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
             return (Integer.MAX_VALUE);
         } 
     }
-    private  int getCostForRule_45c8e616(int goalState)  {
+    private  int getCostForRule_66d33a(int goalState)  {
         return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__temp_NT), this.getNthChild(0).getCost(__temp_NT))));
     }
-    private  int getCostForRule_4cdbe50f(int goalState)  {
+    private  int getCostForRule_7cf10a6f(int goalState)  {
         return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__con_NT), this.getNthChild(0).getCost(__temp_NT))));
     }
-    private  int getCostForRule_66d33a(int goalState)  {
+    private  int getCostForRule_7e0babb1(int goalState)  {
         return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__temp_NT))));
     }private  JBurgAnnotation subtree0 = null;private  JBurgAnnotation subtree1 = null;private  int cachedCostFor_move = -1;
     public   JBurgAnnotation_MOVE_2(Tree.IR node)  {
@@ -920,15 +1006,15 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
          int result = Integer.MAX_VALUE;
         switch(goalState) {
             case __move_NT: {
-                result = getCostForRule_71c7db30(goalState);
-                result = Math.min(result,getCostForRule_19bb089b(goalState));
-                result = Math.min(result,getCostForRule_4563e9ab(goalState));
+                result = getCostForRule_4563e9ab(goalState);
                 result = Math.min(result,getCostForRule_11531931(goalState));
                 result = Math.min(result,getCostForRule_5e025e70(goalState));
                 result = Math.min(result,getCostForRule_1fbc7afb(goalState));
                 result = Math.min(result,getCostForRule_45c8e616(goalState));
                 result = Math.min(result,getCostForRule_4cdbe50f(goalState));
                 result = Math.min(result,getCostForRule_66d33a(goalState));
+                result = Math.min(result,getCostForRule_7cf10a6f(goalState));
+                result = Math.min(result,getCostForRule_7e0babb1(goalState));
             }
             break;
         }
@@ -968,55 +1054,55 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
         switch(goalState) {
             case __move_NT: {
                  int bestCost = Integer.MAX_VALUE;
-                 int currentCost = getCostForRule_71c7db30(goalState);
+                 int currentCost = getCostForRule_4563e9ab(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
                     rule = 1;
                 } 
-                currentCost = getCostForRule_19bb089b(goalState);
+                currentCost = getCostForRule_11531931(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
                     rule = 2;
                 } 
-                currentCost = getCostForRule_4563e9ab(goalState);
-                if ((bestCost > currentCost)) {
-                    bestCost = currentCost;
-                    rule = 3;
-                } 
-                currentCost = getCostForRule_11531931(goalState);
+                currentCost = getCostForRule_5e025e70(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
                     rule = 4;
                 } 
-                currentCost = getCostForRule_5e025e70(goalState);
+                currentCost = getCostForRule_1fbc7afb(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
                     rule = 5;
                 } 
-                currentCost = getCostForRule_1fbc7afb(goalState);
+                currentCost = getCostForRule_45c8e616(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
                     rule = 6;
                 } 
-                currentCost = getCostForRule_45c8e616(goalState);
+                currentCost = getCostForRule_4cdbe50f(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
                     rule = 7;
                 } 
-                currentCost = getCostForRule_4cdbe50f(goalState);
+                currentCost = getCostForRule_66d33a(goalState);
                 if ((bestCost > currentCost)) {
                     bestCost = currentCost;
                     rule = 8;
                 } 
-                currentCost = getCostForRule_66d33a(goalState);
+                currentCost = getCostForRule_7cf10a6f(goalState);
                 if ((bestCost > currentCost)) {
+                    bestCost = currentCost;
                     rule = 9;
+                } 
+                currentCost = getCostForRule_7e0babb1(goalState);
+                if ((bestCost > currentCost)) {
+                    rule = 10;
                 } 
             }
             break;
             case __stmt_NT: {
                 if ((Integer.MAX_VALUE > getCost(__move_NT))) {
-                    rule = 25;
+                    rule = 28;
                 } 
             }
             break;
@@ -1057,6 +1143,83 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
     }
     public  String getSelfDescription()  {
         return ("JBurgAnnotation_MOVE_2");
+    }
+}
+
+
+
+class JBurgAnnotation_SXP_1  extends JBurgSpecializedAnnotation 
+{
+
+    private  int getCostForRule_5ba23b66(int goalState)  {
+        return (normalizedAdd(1, this.getNthChild(0).getCost(__exp_NT)));
+    }private  JBurgAnnotation subtree0 = null;private  int cachedCostFor_sxp = -1;
+    public   JBurgAnnotation_SXP_1(Tree.IR node)  {
+        super(node);
+    }
+    private  int getPatternMatchCost(int goalState)  {
+         int result = Integer.MAX_VALUE;
+        switch(goalState) {
+            case __sxp_NT: {
+                result = getCostForRule_5ba23b66(goalState);
+            }
+            break;
+        }
+        return (result);
+    }
+    public  int getCost(int goalState)  {
+         int result = Integer.MAX_VALUE;
+        switch(goalState) {
+            case __sxp_NT: {
+                if ((cachedCostFor_sxp == -1)) {
+                    cachedCostFor_sxp = getPatternMatchCost(__sxp_NT);
+                } 
+                result = cachedCostFor_sxp;
+            }
+            break;
+        }
+        return (result);
+    }
+    public  int getRule(int goalState)  {
+         int rule = -1;
+        switch(goalState) {
+            case __sxp_NT: {
+                if ((Integer.MAX_VALUE > getCostForRule_5ba23b66(goalState))) {
+                    rule = 11;
+                } 
+            }
+            break;
+        }
+        return (rule);
+    }
+    public  int getArity()  {
+        return (1);
+    }
+    public  JBurgAnnotation getNthChild(int index)  {
+         JBurgAnnotation result = null;
+        switch(index) {
+            case 0: {
+                result = subtree0;
+            }
+            break;
+            default: {
+                throw new IllegalStateException("Invalid index " + index);
+            }
+        }
+        return (result);
+    }
+    public  void addChild(JBurgAnnotation child)  {
+        if (subtree0 == null) {
+            subtree0 = child;
+        } else  {
+            throw new IllegalStateException("too many children");
+        } 
+    }
+    public  int getOperator()  {
+        return (SXP);
+    }
+    public  String getSelfDescription()  {
+        return ("JBurgAnnotation_SXP_1");
     }
 }
 
@@ -1108,11 +1271,11 @@ class JBurgAnnotation_TEMP_0  extends JBurgSpecializedAnnotation
          int rule = -1;
         switch(goalState) {
             case __exp_NT: {
-                rule = 24;
+                rule = 26;
             }
             break;
             case __temp_NT: {
-                rule = 19;
+                rule = 12;
             }
             break;
         }
@@ -1162,6 +1325,12 @@ public  JBurgAnnotation getJBurgAnnotation(Tree.IR node)  {
             } 
         }
         break;
+        case SXP: {
+            if ((node.getArity() == 1)) {
+                return (new JBurgAnnotation_SXP_1(node));
+            } 
+        }
+        break;
         case TEMP: {
             if ((node.getArity() == 0)) {
                 return (new JBurgAnnotation_TEMP_0(node));
@@ -1179,17 +1348,20 @@ private static final JBurgSubgoal[][] ___subgoals_by_rule =
 {
     null,
     {
-        new JBurgSubgoal(__temp_NT,false, 0,0),
+        new JBurgSubgoal(__exp_NT,false, 0,0),
         new JBurgSubgoal(__exp_NT,false, 0,1,0)
     },
     {
-        new JBurgSubgoal(__temp_NT,false, 0,0),
+        new JBurgSubgoal(__exp_NT,false, 0,0),
         new JBurgSubgoal(__exp_NT,false, 0,1,0,0)
     },
     {
-        new JBurgSubgoal(__temp_NT,false, 0,0),
-        new JBurgSubgoal(__temp_NT,false, 0,1,0,0),
-        new JBurgSubgoal(__temp_NT,false, 0,1,0,1,0)
+        new JBurgSubgoal(__exp_NT,false, 0,0,0),
+        new JBurgSubgoal(__exp_NT,false, 0,0,1,0)
+    },
+    {
+        new JBurgSubgoal(__exp_NT,false, 0,0),
+        new JBurgSubgoal(__arrayIndex_NT,false, 0,1)
     },
     {
         new JBurgSubgoal(__temp_NT,false, 0,0,0),
@@ -1217,6 +1389,15 @@ private static final JBurgSubgoal[][] ___subgoals_by_rule =
         new JBurgSubgoal(__exp_NT,false, 0,1)
     },
     {
+        new JBurgSubgoal(__exp_NT,false, 0,0)
+    },
+    null,
+    null,
+    {
+        new JBurgSubgoal(__exp_NT,false, 0,0),
+        new JBurgSubgoal(__exp_NT,false, 0,1)
+    },
+    {
         new JBurgSubgoal(__exp_NT,false, 0,0),
         new JBurgSubgoal(__con_NT,false, 0,1)
     },
@@ -1227,9 +1408,6 @@ private static final JBurgSubgoal[][] ___subgoals_by_rule =
     {
         new JBurgSubgoal(__con_NT,false, 0,0),
         new JBurgSubgoal(__con_NT,false, 0,1)
-    },
-    {
-        new JBurgSubgoal(__exp_NT,true, 0)
     },
     {
         new JBurgSubgoal(__con_NT,false, 0,0,0),
@@ -1250,8 +1428,9 @@ private static final JBurgSubgoal[][] ___subgoals_by_rule =
     {
         new JBurgSubgoal(__exp_NT,false, 0,0)
     },
-    null,
-    null,
+    {
+        new JBurgSubgoal(__exp_NT,true, 0)
+    },
     null,
     null,
     null,
@@ -1514,7 +1693,7 @@ final public static int ERROR_TRAP = 268435456;
 		}
 	}
 
-    static final String[] stateName = new String[] { null, "call","move","temp","con","mem","exp","stmt","binop" };
+    static final String[] stateName = new String[] { null, "call","move","temp","con","mem","sxp","arrayIndex","exp","stmt","binop" };
 
     	/** 
          *  JBurgAnnotation is a data structure internal to the

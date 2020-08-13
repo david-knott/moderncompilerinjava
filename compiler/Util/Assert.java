@@ -7,6 +7,11 @@ public class Assert {
             throw new Error("Object is null");
     }
 
+    public static void assertIsTrue(boolean b) {
+        if (!b)
+            throw new Error("Value is false.");
+    }
+
     public static void assertNotNull(Object o, String message) {
         if (o == null)
             throw new Error("Object is null:" + message);

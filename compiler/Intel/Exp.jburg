@@ -1,9 +1,3 @@
-@Include "./Binop.jburg"
-exp = binop;
-@Include "./Call.jburg"
-exp = call;
-@Include "./Mem.jburg"
-exp = mem;
 @Include "./Temp.jburg"
 exp = temp;
 
@@ -14,3 +8,9 @@ con = CONST(void) : 1
 	return temp;
 }
 exp = con;
+@Include "./Binop.jburg"
+exp = binop;
+@Include "./Mem.jburg"
+exp = mem;
+@Include "./Call.jburg"
+exp = call;

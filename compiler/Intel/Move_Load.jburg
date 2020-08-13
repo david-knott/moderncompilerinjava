@@ -1,19 +1,56 @@
-move = MOVE(temp t1, MEM(exp t2)) : 1
+// https://web.stanford.edu/class/archive/cs/cs107/cs107.1194/guide/x86-64.html
+// indirect addressing without displacement
+move = MOVE(exp arg0, MEM(exp arg1)) : 10
 {
-	System.out.println("movq %" + t1 + ", (%" + t2 + ") # mv(t, mm(e))");
+	System.out.println("movq %" + arg0 + ", (%" + arg1 + ") # mv(t, mm(e))");
+	emitter.loadBuild(arg0, arg1);
 	return null;
 }
 
-move = MOVE(temp t1, MEM(BINOP(exp t2, CONST(void) c))) : 1
+/* indirect addressing with displacement */
+move = MOVE(exp arg0, MEM(BINOP(exp arg1, CONST(void) arg2))) : 1
 {
-	int offset = ((Tree.CONST)c).value;
-	System.out.println("movq %" + t1 + ", " + offset + "(%" + t2 + ") # mv(t, mm(b(e, c))");
+	int offset = ((Tree.CONST)arg2).value;
+    Tree.BINOP binop = (Tree.BINOP)(__p.getNthChild(1).getNthChild(0));
+	Util.Assert.assertIsTrue(binop.binop == Tree.BINOP.PLUS || binop.binop == Tree.BINOP.MINUS);
+	emitter.loadBuild(arg0, arg1, offset);
 	return null;
 }
 
-move = MOVE(temp t1, MEM(BINOP(temp t2, BINOP(temp t3, CONST(void) c)))) : 1
+/* indirect addressing with displacement and scaled index */
+arrayIndex =  MEM(BINOP(exp arg1, BINOP(exp arg2, CONST(void) arg3))) : 1
 {
-	int offset = ((Tree.CONST)c).value;
-	System.out.println("movq %" + t1 + ", " + offset + "(%" + t2 + ") # mv(t, mm(b(e, c))");
+	System.out.println("# indirect addressing.");
+	System.out.println(arg1);
+	System.out.println(arg2);
+	System.out.println(arg3);
+	//bundle arg1, arg2, arg3 together and pass to move below.
 	return null;
 }
+
+move = MOVE(exp arg0, arrayIndex arg1) : 1
+{
+	System.out.println(arg0);
+	System.out.println(arg1);
+	System.out.println("# mv(t, mm(b(t b(t, c))))");
+	return null;
+}
+
+
+/*
+move = MOVE(exp arg0, MEM(BINOP(TEMP(void) arg1, BINOP(TEMP(void) arg2, CONST(void) arg3)))) : 1
+{
+
+	System.out.println("# LLOOK mv(t, mm(b(t b(t, c))))");
+	return null;
+}
+*/
+
+/*
+move = MOVE(TEMP(void) arg0, MEM(BINOP(void) arg1, BINOP(TEMP(void) arg2, CONST(void) arg3)))) : 1
+{
+
+	System.out.println("# LLOOK mv(t, mm(b(t b(t, c))))");
+	return null;
+}
+*/

@@ -1,15 +1,9 @@
-
-/*
-commented out to test moveIndexdMemToTemp
-
-binop = BINOP(exp t1, exp t2) : 1
+binop = BINOP(exp t1, exp t2) : 10
 {
 	Temp.Temp temp = Temp.Temp.create();
 	System.out.println("b(e,e)");
 	return temp;
 }
-
-*/
 
 binop = BINOP(exp t1, con t2) : 1
 {

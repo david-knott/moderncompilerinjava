@@ -1,3 +1,7 @@
 @Include "./Move.jburg"
 stmt = move;
 
+sxp = SXP(exp arg0) : 1
+{
+    return null;
+}

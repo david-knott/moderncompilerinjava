@@ -18,17 +18,25 @@ public class Emitter {
     }
 
     //Move Operations
-    public void buildMove(Temp src, Temp dst) {
+    public void loadMoveTemp(Temp src, Temp dst) {
         emit(new Assem.MOVE("movq %`s0, %`d0", dst, src));
     }
 
-    public void buildMove(int immediate, Temp dst) {
+    public void moveImmediate(int immediate, Temp dst) {
         emit(new Assem.OPER("movq $" + immediate + ", %`d0", new TempList(dst), null));
     }
 
     public void buildMove(Label label, Temp dst) {
         emit(new Assem.OPER("leaq $" + label.toString() + ", %`d0", new TempList(dst), null));
     }
+
+	public void loadBuild(Temp dst, Temp src) {
+        emit(new Assem.MOVE("movq (%`s0), %`d0", dst, src));
+    }
+    
+    public void loadBuild(Temp dst, Temp src, int offset) {
+        emit(new Assem.MOVE("movq " + offset + "(%`s0), %`d0", dst, src));
+	}
 
     //store Operations
 
