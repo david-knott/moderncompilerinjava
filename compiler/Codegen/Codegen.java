@@ -13,14 +13,6 @@ public class Codegen {
     public Assem.InstrList codegen(Tree.Stm stm) {
         MaximumMunch maximumMunch = new MaximumMunch(frame);
         stm.accept(maximumMunch);
-
-        try {
-            new Intel.CodeGen().burm(stm);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        ;
         return maximumMunch.iList;
     }
 }

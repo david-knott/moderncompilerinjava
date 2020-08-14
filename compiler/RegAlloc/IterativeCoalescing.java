@@ -20,7 +20,7 @@ import Temp.TempMap;
 /**
  * RegAllocWithCoalescing class manages the spilling.
  */
-public class RegAllocCoalesce extends Component implements TempMap {
+public class IterativeCoalescing extends Component implements TempMap {
     public InstrList instrList;
     public Frame frame;
     private int K;
@@ -631,7 +631,7 @@ public class RegAllocCoalesce extends Component implements TempMap {
         }
     }
 
-    public RegAllocCoalesce(Frame frame, InstrList instrList) {
+    public IterativeCoalescing(Frame frame, InstrList instrList) {
         this.instrList = instrList;
         this.frame = frame;
         this.K = this.frame.registers().size(); // 14

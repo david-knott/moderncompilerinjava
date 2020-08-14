@@ -9,7 +9,7 @@ import Canon.Canonicalization;
 import Core.CompilerEventType;
 import Frame.Frame;
 import Frame.Proc;
-import RegAlloc.RegAllocCoalesce;
+import RegAlloc.IterativeCoalescing;
 import Temp.CombineMap;
 import Temp.Temp;
 import Temp.TempMap;
@@ -78,7 +78,7 @@ public class ProcFrag extends Frag {
         Assem.InstrList instrs = codegen(this.frame, stmList);
         instrs = this.frame.procEntryExit2(instrs);
         //RegAlloc regAlloc = new RegAlloc(this.frame, instrs);
-        RegAllocCoalesce regAlloc = new RegAllocCoalesce(this.frame, instrs);
+        IterativeCoalescing regAlloc = new IterativeCoalescing(this.frame, instrs);
         TempMap tempMap = new CombineMap(this.frame, regAlloc);
         instrs = regAlloc.instrList;
         Proc proc = this.frame.procEntryExit3(instrs);
