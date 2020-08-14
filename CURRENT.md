@@ -1,12 +1,12 @@
-## Diary
-**14th August 2020**
+# Diary
+## 14th August 2020 ##
 Implementing new instruction selection using jburg ( http://jburg.sourceforge.net/ )
 I ran into a problem attempting to match load / store using a tile for indirect scaled
 addressing mode.
 
 I was using a rule like this
 
-move = MOVE(exp arg0, MEM(BINOP(exp arg1, BINOP(exp arg2, CONST(void) arg3)))) : 1
+    move = MOVE(exp arg0, MEM(BINOP(exp arg1, BINOP(exp arg2, CONST(void) arg3)))) : 1
 
 but the generated jburg tree matcher would not match. The only way I could this rule to
 match was to replace the exp non terminals with terminals for TEMPS. Obviously this is not
@@ -29,11 +29,11 @@ to create an auxilary rule that captures this sub pattern
 I am not happy with this as I need to pass the arguments from the arrayIndex tree into
 the move for code emission.
 
-*5th August 2020*
+##5th August 2020##
 Refactoring code to use a command / chain of responsibility pattern for arguments
 
 
-*16 July 2020*
+##16 July 2020##
 Compiler works ( at least all the tests work ). It implements the full iterated
 coalescing graph colouring algorithm as outlined in A Appels book. 
 
@@ -51,8 +51,9 @@ I would like to be able to generate graphs for the register allocation & coalesc
 
 I would like to be able to display the programs liveness analysis
 
+Well done me !
 
-*10 July 2020*
+##10 July 2020##
 Fixed another bug, in maximum munch MEM_TO_MEM, we were using a MEM assembly 
 function instead of a OPER. This was causing the coalesce function to not work
 correctly.
@@ -90,7 +91,7 @@ Fix bugs in Semant Validation checking as per Epita spec.
 
 Finish Coalesce
 
-*6th July 2020*
+## 6th July 2020 ##
 Fixed bug in store array assembly, index and base registers were reversed.
 
 Bug in register allocation / code generation for stores and loads. Possible due
