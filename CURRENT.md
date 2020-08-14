@@ -1,4 +1,34 @@
 ## Diary
+*14th August 2020*
+Implementing new instruction selection using jburg ( http://jburg.sourceforge.net/ )
+I ran into a problem attempting to match load / store using a tile for indirect scaled
+addressing mode.
+
+I was using a rule like this
+
+move = MOVE(exp arg0, MEM(BINOP(exp arg1, BINOP(exp arg2, CONST(void) arg3)))) : 1
+
+but the generated jburg tree matcher would not match. The only way I could this rule to
+match was to replace the exp non terminals with terminals for TEMPS. Obviously this is not
+going work as the tree is never going to have temps in those places. To address this I had
+to create an auxilary rule that captures this sub pattern
+
+    /* indirect addressing with displacement and scaled index */
+    arrayIndex =  MEM(BINOP(exp arg0, BINOP(exp arg1, CONST(void) arg2))) : 1
+    {
+        emitter.startLoadIndirectDispScaled(arg0, arg1, arg2);
+        return null;
+    }
+
+    move = MOVE(exp arg0, arrayIndex arg1) : 1
+    {
+        emitter.endLoadIndirectDispScaled(arg0, arg1);
+        return null;
+    }
+    
+I am not happy with this as I need to pass the arguments from the arrayIndex tree into
+the move for code emission.
+
 *5th August 2020*
 Refactoring code to use a command / chain of responsibility pattern for arguments
 
