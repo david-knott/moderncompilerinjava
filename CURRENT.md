@@ -1,5 +1,5 @@
 ## Diary
-*14th August 2020*
+**14th August 2020**
 Implementing new instruction selection using jburg ( http://jburg.sourceforge.net/ )
 I ran into a problem attempting to match load / store using a tile for indirect scaled
 addressing mode.
@@ -25,7 +25,7 @@ to create an auxilary rule that captures this sub pattern
         emitter.endLoadIndirectDispScaled(arg0, arg1);
         return null;
     }
-    
+
 I am not happy with this as I need to pass the arguments from the arrayIndex tree into
 the move for code emission.
 
