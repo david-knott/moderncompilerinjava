@@ -5,19 +5,17 @@ binop = BINOP(exp t1, exp t2) : 10
 	return temp;
 }
 
-binop = BINOP(exp t1, con t2) : 1
+binop = BINOP(exp arg0, con arg1) : 1
 {
 	Temp.Temp temp = Temp.Temp.create();
-	Tree.BINOP binop = ((Tree.BINOP)#binop);
-	System.out.println("//Binop2" + binop);
+	emitter.binop(arg0, arg1, temp);
 	return temp;
 }
 
-binop = BINOP(con t1, exp t2) : 1
+binop = BINOP(con arg0, exp arg1) : 1
 {
 	Temp.Temp temp = Temp.Temp.create();
-	Tree.BINOP binop = ((Tree.BINOP)#binop);
-	System.out.println("//Binop3");
+	emitter.binop(arg1, arg0, temp);
 	return temp;
 }
 

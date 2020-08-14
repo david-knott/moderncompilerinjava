@@ -1,49 +1,24 @@
 package Intel;
 
-import Assem.Instr;
-import Temp.Label;
 import Temp.Temp;
-import Temp.TempList;
+import Tree.IR;
 
-public class Emitter {
+/**
+ * Interface that code emitters must implement. This abstraction
+ * was created to faciliate testing of the JBURG rules.
+ */
+public interface Emitter {
+    public void loadIndirect(Temp arg0, Temp arg1);
 
-    Assem.InstrList iList = null, last = null;
+	public void loadIndirectDisp(int binop, Temp arg0, Temp arg1, int offset);
 
-    private void emit(Instr instr) {
-        if (last != null) {
-            last = last.tail = new Assem.InstrList(instr, null);
-        } else {
-            last = iList = new Assem.InstrList(instr, null);
-        }
-    }
+	public void startLoadIndirectDispScaled(Temp arg0, Temp arg1, IR arg2);
 
-    //Move Operations
-    public void loadMoveTemp(Temp src, Temp dst) {
-        emit(new Assem.MOVE("movq %`s0, %`d0", dst, src));
-    }
+	public void endLoadIndirectDispScaled(Temp arg0, Temp arg1);
 
-    public void moveImmediate(int immediate, Temp dst) {
-        emit(new Assem.OPER("movq $" + immediate + ", %`d0", new TempList(dst), null));
-    }
+	public void moveConstToTemp(Temp arg0, IR arg1);
 
-    public void buildMove(Label label, Temp dst) {
-        emit(new Assem.OPER("leaq $" + label.toString() + ", %`d0", new TempList(dst), null));
-    }
+	public void moveExpToTemp(Temp arg0, Temp arg1);
 
-	public void loadBuild(Temp dst, Temp src) {
-        emit(new Assem.MOVE("movq (%`s0), %`d0", dst, src));
-    }
-    
-    public void loadBuild(Temp dst, Temp src, int offset) {
-        emit(new Assem.MOVE("movq " + offset + "(%`s0), %`d0", dst, src));
-	}
-
-    //store Operations
-
-    //binop Operations
-
-
-    //jump Operations
-
-    //cjump Operations
+	public void binop(Temp arg0, Temp arg1, Temp temp);
 }

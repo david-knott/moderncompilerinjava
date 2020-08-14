@@ -1,21 +1,18 @@
+/**
+* Rules that match tiles that move temps.
+*/ 
+
 @Include "./Move_Load.jburg"
 @Include "./Move_Store.jburg"
 
-move = MOVE(temp t1, temp t2) : 1
+move = MOVE(temp arg0, CONST(void) arg1) : 1
 {
-    System.out.println("movqt " + t1 + ", " + t2);
+	emitter.moveConstToTemp(arg0, arg1);
 	return null;
 }
 
-move = MOVE(temp t1, con t2) : 1
+move = MOVE(temp arg0, exp arg1) : 1
 {
-    System.out.println("movqc " + t1 + ", " + t2);
+	emitter.moveExpToTemp(arg0, arg1);
 	return null;
 }
-
-move = MOVE(temp t1, exp t2) : 1
-{
-    System.out.println("movqe " + t1 + ", " + t2);
-	return null;
-}
-

@@ -165,6 +165,23 @@ public class LL<T> {
         return andNot;
     }
 
+
+    /**
+     * Method recursively returns element at position i.
+     * @param <S> the type of element.
+     * @param list the list.
+     * @param i the position of the element;
+     * @return the element at i or throws an exception if i is greater than size of list.
+     */
+	public static <S extends Comparable<S>> S get(LL<S> list, int i) {
+        if (i >= size(list)) {
+            throw new Error("out of bounds error.");
+        }
+        if( i == 0 )
+            return list.head;
+		return get(list.tail, i - 1);
+	}
+
     public final T head;
     public LL<T> tail;
 
@@ -182,4 +199,5 @@ public class LL<T> {
     public String toString() {
         return head + "," + (tail != null ? tail.toString() : "");
     }
+
 }
