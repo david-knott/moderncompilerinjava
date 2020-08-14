@@ -33,7 +33,6 @@ class Options {
 public class Main {
 
     public static void main(final String[] args) throws FileNotFoundException {
-        // new Main(args[0]);
         PrintStream out = new PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
         InputStream in = new java.io.FileInputStream(args[0]);
         PrintStream err = System.err;
