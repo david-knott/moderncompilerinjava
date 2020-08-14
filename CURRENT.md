@@ -29,11 +29,11 @@ to create an auxilary rule that captures this sub pattern
 I am not happy with this as I need to pass the arguments from the arrayIndex tree into
 the move for code emission.
 
-##5th August 2020##
+## 5th August 2020 ##
 Refactoring code to use a command / chain of responsibility pattern for arguments
 
 
-##16 July 2020##
+## 16 July 2020 ##
 Compiler works ( at least all the tests work ). It implements the full iterated
 coalescing graph colouring algorithm as outlined in A Appels book. 
 
@@ -53,7 +53,7 @@ I would like to be able to display the programs liveness analysis
 
 Well done me !
 
-##10 July 2020##
+## 10 July 2020 ##
 Fixed another bug, in maximum munch MEM_TO_MEM, we were using a MEM assembly 
 function instead of a OPER. This was causing the coalesce function to not work
 correctly.
@@ -62,7 +62,7 @@ Fixed simple bug in Instr comparator.
 
 All items pass, except for merge_simple.
 
-*9th July 2020*
+## 9th July 2020 ##
 Currently failing
 
 Test Result: ./good/array_assign.tig failed.
@@ -82,7 +82,7 @@ that seg faults.
 It appears that certain temporaries that interfere are being coalesced to the same
 register. This should not happen.
 
-*8th July 2020*
+## 8th July 2020 ##
 Pretty Print is prettier.
 
 Coalesce in progress. Registers allocation is not correct.
@@ -99,7 +99,7 @@ to 2 mems in a move.
 
 Bug in writing \n to standard out, rendering as ^B
 
-*5th July 2020*
+## 5th July 2020 ##
 Fixed bug in register allocation. I had rax as in the calldefs. This was preventing the
 register allocation from generating correct assignments. 
 
@@ -111,7 +111,7 @@ Subscription call...
 init variable => get current frames static link, this points to parent frames frame pointer.
 Use this to reference the varible access.
 
-*26th June 2020*
+## 26th June 2020 ##
 Bug in recursive declarion of functions. if a is declared before b  and a calls b, we get a label error.
 Fixed static link bug. Queens and merge are now passing.
 
@@ -120,7 +120,7 @@ will compile but will not assembly. This is due to missing labels
 
 Bugs: If a variable is defined with the same name as a function we get java compilation errors
 
-*25th June 2020*
+## 25th June 2020 ##
 
 ~~Static link is incorrect in a recursive function call.~
 
@@ -130,7 +130,7 @@ TODO: Reintroduce Sugared For Loop.
 
 ~~Defined N at top level~
 
-*24th June 2020*
+## 24th June 2020 ##
 Fixed binops, strings and ifthenelse. Still bug in queens and merge.
 
 ~~String E2E tests.
@@ -143,13 +143,13 @@ an IF statement. I suspect when it is used like this we jump to the parent IF's 
 these expressions return 1 and we jump to the false label if they return 0.
 
 
-*23nd June 2020*
+## 23nd June 2020 ##
 Continuing to add unit tests for semantic type checking. Fixed read only for loop bug.
 
 ~~TODO: Test string functions
 
 
-*22nd June 2020*
+## 22nd June 2020 ##
 
 Fixed the for loop bug. It was due to an error in the 'AND' set operation. Jeez.
 Started refactoring semantic analysis and adding new type checking tests.
@@ -157,7 +157,7 @@ Started refactoring semantic analysis and adding new type checking tests.
 TODO: Semant -> Visitor, 
 ~~TODO: Readonly Assignment to For Indexer~~
 
-*19th June 2020*
+## 19th June 2020 ##
 Fixed sorting bug in Temps which was breaking register allocation.
 
 ~~Still a bug in for loops if we at a printi() statement inside the loop.
@@ -166,7 +166,7 @@ This causes the loop to repeated spill. I have no idea why.~~
 ~~In the code generation, where there are combinations of instructions that use a move followed by an OPERATION
 We need to be careful when spilling.~~
 
-*18th June 2020*
+## 18th June 2020 ##
 
 ~~Register Allocation. Is it working ?~~
 
