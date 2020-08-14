@@ -1,18 +1,25 @@
-move = MOVE(MEM(temp t1), temp t2) : 1
+move = MOVE(MEM(exp arg0), exp arg1) : 10
 {
-    System.out.println("movq (" + t1 + "), " + t2);
+	emitter.storeIndirect(arg0, arg1);
 	return null;
 }
 
-move = MOVE(MEM(exp dst), MEM(exp src)) : 1
+move = MOVE(MEM(BINOP(exp arg0, CONST(void) arg1)), exp arg2) : 1
 {
-	System.out.println("move store statment");
-
+	int offset = ((Tree.CONST)arg1).value;
+    Tree.BINOP binop = (Tree.BINOP)(__p.getNthChild(0).getNthChild(0));
+	Util.Assert.assertIsTrue(binop.binop == Tree.BINOP.PLUS || binop.binop == Tree.BINOP.MINUS);
+	emitter.storeIndirectDisp(binop.binop, arg0, arg2, offset);
 	return null;
 }
 
-move = MOVE(exp t2, MEM(BINOP(con left, exp right))) : 1
+sia =  MEM(BINOP(exp arg0, BINOP(exp arg1, CONST(void) arg2))) : 1
 {
-	System.out.println("move store statment");
+	return null;
+}
+
+move = MOVE(sia arg1, exp arg0) : 1
+{
+	emitter.startStoreIndirectDispScaled(arg0, null, null);
 	return null;
 }

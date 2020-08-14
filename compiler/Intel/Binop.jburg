@@ -1,7 +1,7 @@
-binop = BINOP(exp t1, exp t2) : 10
+binop = BINOP(exp arg0, exp arg1) : 10
 {
 	Temp.Temp temp = Temp.Temp.create();
-	System.out.println("b(e,e)");
+	emitter.binop(arg1, arg0, temp);
 	return temp;
 }
 

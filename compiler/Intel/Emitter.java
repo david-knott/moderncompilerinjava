@@ -1,6 +1,7 @@
 package Intel;
 
 import Temp.Temp;
+import Tree.CALL;
 import Tree.IR;
 
 /**
@@ -21,4 +22,12 @@ public interface Emitter {
 	public void moveExpToTemp(Temp arg0, Temp arg1);
 
 	public void binop(Temp arg0, Temp arg1, Temp temp);
+
+    public void storeIndirect(Temp arg0, Temp arg1);
+
+    public void storeIndirectDisp(int binop, Temp arg0, Temp arg1, int offset);
+
+	public void startStoreIndirectDispScaled(Temp arg0, Temp arg1, IR arg2);
+
+	public void call(Object call);
 }

@@ -5,8 +5,8 @@ call = CALL(exp args*) : 1
         //if i <= 6 goes to regiser
 
         //if i > 6 goes on stack.
-        System.out.println("add instructions to move " + temp + " correct place");
+ //       System.out.println("add instructions to move " + temp + " correct place");
     }
-    System.out.println("call()");
+	emitter.call(call);
     return null;
 }

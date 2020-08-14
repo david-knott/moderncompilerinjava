@@ -22,13 +22,13 @@ move = MOVE(exp arg0, MEM(BINOP(exp arg1, CONST(void) arg2))) : 1
 }
 
 /* indirect addressing with displacement and scaled index */
-arrayIndex =  MEM(BINOP(exp arg0, BINOP(exp arg1, CONST(void) arg2))) : 1
+lia =  MEM(BINOP(exp arg0, BINOP(exp arg1, CONST(void) arg2))) : 1
 {
 	emitter.startLoadIndirectDispScaled(arg0, arg1, arg2);
 	return null;
 }
 
-move = MOVE(exp arg0, arrayIndex arg1) : 1
+move = MOVE(exp arg0, lia arg1) : 1
 {
 	emitter.endLoadIndirectDispScaled(arg0, arg1);
 	return null;
