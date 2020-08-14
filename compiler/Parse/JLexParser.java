@@ -4,13 +4,12 @@ import java.io.InputStream;
 
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
-import Util.Task;
 import Util.TaskContext;
 
 /**
  * Parses an input stream and reports any lexical or parse errors
  */
-public class ParseTask extends Task {
+public class JLexParser implements Parser {
 
     boolean parserTrace = false;
     final InputStream inputStream;
@@ -18,7 +17,7 @@ public class ParseTask extends Task {
     final Yylex yylex;
     Program ast;
 
-    public ParseTask(InputStream inputStream, ErrorMsg errorMsg) {
+    public JLexParser(InputStream inputStream, ErrorMsg errorMsg) {
         Assert.assertNotNull(inputStream);
         this.inputStream = inputStream;
         this.errorMsg = errorMsg;
@@ -26,7 +25,7 @@ public class ParseTask extends Task {
     }
 
     @Override
-    public void execute(TaskContext context) {
+    public void parse(TaskContext context) {
         Grm parser = new Grm(new DebugLexer(this.yylex, System.out), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
         // lexical error happens when nextToken is called

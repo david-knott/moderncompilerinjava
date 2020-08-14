@@ -10,6 +10,7 @@ import Core.Listener;
 import ErrorMsg.ErrorMsg;
 import Intel.IntelFrame;
 import Parse.Grm;
+import Parse.JLexParser;
 import Parse.Program;
 import Parse.Yylex;
 import Temp.Label;
@@ -41,7 +42,7 @@ public class Main {
                 .setErrorHandler(errorMsg)
                 .setIn(in)
                 .setOut(out)
-                .register(new Parse.Tasks())
+                .register(new Parse.Tasks(new JLexParser(in, errorMsg)))
                 .register(new FindEscape.Tasks())
                 .register(new Absyn.Tasks())
           //      .register(new Frame.Tasks())
