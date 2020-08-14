@@ -13,11 +13,17 @@ import Util.TaskProvider;
 
 import Util.Assert;
 
+/**
+ * Provides a collection of tasks related to the parse
+ * phase. Constructor accepts the parser implementation
+ * to use.
+ */
 public class Tasks implements TaskProvider {
 
     final Parser parseTask;
 
     public Tasks(Parser parser) {
+        Assert.assertNotNull(parser);
         this.parseTask = parser;
 	}
 
@@ -29,7 +35,7 @@ public class Tasks implements TaskProvider {
         new BooleanTask(new BooleanTaskFlag() {
             @Override
             public void set() {
-                //parseTask.
+                parseTask.setParserTrace(true);
             }
         }, "parse-trace", "parse-trace", "parse-trace", null);
         new SimpleTask(new SimpleTaskProvider() {

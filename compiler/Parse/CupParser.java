@@ -7,9 +7,10 @@ import Util.Assert;
 import Util.TaskContext;
 
 /**
- * Parses an input stream and reports any lexical or parse errors
+ * Parses an input stream and reports any lexical or parse errors.
+ * This implementation uses the JLex Lexer & Cup Parser. 
  */
-public class JLexParser implements Parser {
+public class CupParser implements Parser {
 
     boolean parserTrace = false;
     final InputStream inputStream;
@@ -17,7 +18,7 @@ public class JLexParser implements Parser {
     final Yylex yylex;
     Program ast;
 
-    public JLexParser(InputStream inputStream, ErrorMsg errorMsg) {
+    public CupParser(InputStream inputStream, ErrorMsg errorMsg) {
         Assert.assertNotNull(inputStream);
         this.inputStream = inputStream;
         this.errorMsg = errorMsg;
@@ -28,7 +29,6 @@ public class JLexParser implements Parser {
     public void parse(TaskContext context) {
         Grm parser = new Grm(new DebugLexer(this.yylex, System.out), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
-        // lexical error happens when nextToken is called
         try {
             rootSymbol = !this.parserTrace ? parser.parse() : parser.debug_parse();
         } catch (Throwable e) {
@@ -43,5 +43,10 @@ public class JLexParser implements Parser {
         if (!this.errorMsg.anyErrors) {
             context.setAst((Program)rootSymbol.value);
         }
+    }
+
+    @Override
+    public void setParserTrace(boolean value) {
+        this.parserTrace = value;
     }
 }
