@@ -20,7 +20,7 @@ import Temp.TempMap;
 /**
  * RegAllocWithCoalescing class manages the spilling.
  */
-public class IterativeCoalescing extends Component implements TempMap {
+public class IterativeCoalescing extends Component implements TempMap, RegAlloc {
     public InstrList instrList;
     public Frame frame;
     private int K;
@@ -643,5 +643,10 @@ public class IterativeCoalescing extends Component implements TempMap {
         var clr = this.colour.get(this.getAlias(t));
         Assert.assertNotNull(clr, "No colour for " + t);
         return this.frame.tempMap(clr);
+    }
+
+    @Override
+    public InstrList getInstrList() {
+        return this.instrList;
     }
 }

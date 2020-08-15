@@ -62,6 +62,12 @@ public class EmitterImpl implements Emitter {
 
 	}
 
+	@Override
+	public void cjump(int relop, Temp arg0, Temp arg1, Label iftrue, Label iffalse) {
+		// TODO Auto-generated method stub
+
+	}
+
     //store Operations
 
     //binop Operations

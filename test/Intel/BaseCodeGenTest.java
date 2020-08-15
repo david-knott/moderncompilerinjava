@@ -31,5 +31,9 @@ public abstract class BaseCodeGenTest {
             new Tree.CONST(3),
             new Tree.CONST(3)
         );
-	}
+    }
+    
+    public Exp getTemp() {
+        return new Tree.TEMP(Temp.create());
+    }
 }

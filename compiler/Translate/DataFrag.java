@@ -9,7 +9,7 @@ import Tree.StmList;
  **/
 public class DataFrag extends Frag {
 
-	private final String data;
+	final String data;
 
 	public DataFrag(String data) {
 		this.data = data;

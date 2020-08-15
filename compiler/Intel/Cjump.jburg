@@ -1,0 +1,6 @@
+cjump = CJUMP(exp arg0, exp arg1) : 1
+{
+    Tree.CJUMP cjump = ((Tree.CJUMP)#cjump);
+	emitter.cjump(cjump.relop, arg0, arg1, cjump.iftrue, cjump.iffalse);
+    return null;
+}

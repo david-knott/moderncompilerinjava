@@ -3,6 +3,7 @@ package Intel;
 import java.util.Vector;
 
 import Core.LL;
+import Temp.Label;
 import Temp.Temp;
 import Tree.CALL;
 import Tree.IR;
@@ -78,5 +79,12 @@ public class TestEmitter implements Emitter {
     @Override
     public void call(Object call) {
         this.add(AssemInstructionEnum.CALL);
+    }
+
+    @Override
+    public void cjump(int relop, Temp arg0, Temp arg1, Label iftrue, Label iffalse) {
+        // TODO Auto-generated method stub
+        this.add(AssemInstructionEnum.CJUMP);
+
     }
 }

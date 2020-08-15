@@ -10,5 +10,6 @@ enum AssemInstructionEnum {
     STORE_INDIRECT_DISP,
     STORE_INDIRECT_DISP_SCALED,
     BINOP,
-    CALL
+    CALL, 
+    CJUMP
 }

@@ -41,4 +41,9 @@ public class FragList {
         this.tail = tail;
     }
 
+    public void accept(FragmentVisitor fragmentVisitor) {
+        for(FragList fl = this; fl != null; fl = fl.tail) {
+            fl.accept(fragmentVisitor);
+        }
+    }
 }

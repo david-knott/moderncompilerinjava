@@ -1,7 +1,15 @@
 @Include "./Move.jburg"
 stmt = move;
+@Include "./Cjump.jburg"
+stmt = cjump;
 
 sxp = SXP(exp arg0) : 1
+{
+    return null;
+}
+stmt = sxp;
+
+stmt = SEQ(stmt left, stmt right) : 1
 {
     return null;
 }

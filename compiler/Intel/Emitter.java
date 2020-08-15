@@ -1,5 +1,6 @@
 package Intel;
 
+import Temp.Label;
 import Temp.Temp;
 import Tree.CALL;
 import Tree.IR;
@@ -30,4 +31,6 @@ public interface Emitter {
 	public void startStoreIndirectDispScaled(Temp arg0, Temp arg1, IR arg2);
 
 	public void call(Object call);
+
+	public void cjump(int relop, Temp arg0, Temp arg1, Label iftrue, Label iffalse);
 }

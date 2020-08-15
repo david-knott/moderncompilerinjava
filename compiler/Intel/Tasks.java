@@ -4,8 +4,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import Canon.CanonFacadeImpl;
 import ErrorMsg.ErrorMsg;
+import RegAlloc.IterativeCoalescing;
 import Translate.FragList;
+import Translate.TestThingy;
 import Util.Assert;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
@@ -35,6 +38,8 @@ public class Tasks implements TaskProvider {
                     // this.registerFragListners(frags.head);
                     frags.head.process(fileOut);
                 }
+
+//                frags.accept(new TestThingy(/* new IterativeCoalescing(frame, instrList) */, new CanonFacadeImpl(), out));
                 fileOut.close();
             }
         }, "target-x64", "Select x64 as target", new String[] { "" });
