@@ -10,13 +10,12 @@ import Frame.Frame;
 import Frame.Proc;
 import RegAlloc.RegAlloc;
 import RegAlloc.RegAllocFactory;
-import RegAlloc.IterativeCoalescing;
 import Temp.CombineMap;
 import Temp.Temp;
 import Temp.TempMap;
 import Tree.StmList;
 
-public class TestThingy implements FragmentVisitor {
+public class HIRCompute implements FragmentVisitor {
 
     Canonicalization canonicalization;
     PrintStream out;
@@ -24,7 +23,7 @@ public class TestThingy implements FragmentVisitor {
     RegAllocFactory regAllocFactory;
     /* String regAllocStrategy; */
 
-    public TestThingy(RegAllocFactory regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
+    public HIRCompute(RegAllocFactory regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
         this.canonicalization = canonicalization;
         this.out = new PrintStream(outputStream);
         this.regAllocFactory = regAlloc;
