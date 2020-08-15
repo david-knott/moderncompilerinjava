@@ -4,10 +4,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import Canon.CanonFacadeImpl;
 import Canon.Canonicalization;
 import ErrorMsg.ErrorMsg;
-import RegAlloc.IterativeCoalescing;
 import RegAlloc.RegAllocFactory;
 import Translate.FragList;
 import Translate.TestThingy;
