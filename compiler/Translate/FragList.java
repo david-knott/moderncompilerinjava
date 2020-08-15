@@ -43,7 +43,7 @@ public class FragList {
 
     public void accept(FragmentVisitor fragmentVisitor) {
         for(FragList fl = this; fl != null; fl = fl.tail) {
-            fl.accept(fragmentVisitor);
+            fl.head.accept(fragmentVisitor);
         }
     }
 }

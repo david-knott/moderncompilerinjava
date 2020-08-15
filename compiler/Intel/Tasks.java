@@ -5,8 +5,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import Canon.CanonFacadeImpl;
+import Canon.Canonicalization;
 import ErrorMsg.ErrorMsg;
 import RegAlloc.IterativeCoalescing;
+import RegAlloc.RegAllocFactory;
 import Translate.FragList;
 import Translate.TestThingy;
 import Util.Assert;
@@ -16,6 +18,13 @@ import Util.TaskContext;
 import Util.TaskProvider;
 
 public class Tasks implements TaskProvider {
+    final RegAllocFactory regAllocFactory;
+    final Canonicalization canonicalization;
+
+    public Tasks(RegAllocFactory regAllocFactory, Canonicalization canonicalization) {
+        this.regAllocFactory = regAllocFactory;
+        this.canonicalization = canonicalization;
+    }
 
     @Override
     public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
@@ -25,21 +34,10 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                // target_set(new x64(ruleTraceP))
                 FragList frags = taskContext.fragList;
-                /*
-                 * if (semant.hasErrors()) { System.out.println("semant check error");
-                 * System.exit(1); } // codegen, liveness, register allocation
-                 */
                 PrintStream fileOut = new PrintStream(out);
-                // fileOut = new PrintStream(new java.io.FileOutputStream(name + ".s"));
                 fileOut.println(".global tigermain");
-                for (; frags != null; frags = frags.tail) {
-                    // this.registerFragListners(frags.head);
-                    frags.head.process(fileOut);
-                }
-
-//                frags.accept(new TestThingy(/* new IterativeCoalescing(frame, instrList) */, new CanonFacadeImpl(), out));
+                frags.accept(new TestThingy(regAllocFactory, canonicalization, out));
                 fileOut.close();
             }
         }, "target-x64", "Select x64 as target", new String[] { "" });

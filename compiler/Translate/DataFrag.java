@@ -29,4 +29,9 @@ public class DataFrag extends Frag {
 	public Frame getFrame() {
 		throw new Error();
 	}
+
+	@Override
+	public void accept(FragmentVisitor fragmentVisitor) {
+        fragmentVisitor.visit(this);
+	}
 }

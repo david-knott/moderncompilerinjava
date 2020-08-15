@@ -109,4 +109,9 @@ public class ProcFrag extends Frag {
     public Frame getFrame() {
         return this.frame;
     }
+
+    @Override
+    public void accept(FragmentVisitor fragmentVisitor) {
+        fragmentVisitor.visit(this);
+    }
 }

@@ -9,6 +9,8 @@ import Canon.Canonicalization;
 import Frame.Frame;
 import Frame.Proc;
 import RegAlloc.RegAlloc;
+import RegAlloc.RegAllocFactory;
+import RegAlloc.IterativeCoalescing;
 import Temp.CombineMap;
 import Temp.Temp;
 import Temp.TempMap;
@@ -19,12 +21,12 @@ public class TestThingy implements FragmentVisitor {
     Canonicalization canonicalization;
     PrintStream out;
     boolean moves = false;
-    RegAlloc regAlloc;
+    RegAllocFactory regAllocFactory;
 
-    public TestThingy(RegAlloc regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
+    public TestThingy(RegAllocFactory regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
         this.canonicalization = canonicalization;
         this.out = new PrintStream(outputStream);
-        this.regAlloc = regAlloc;
+        this.regAllocFactory = regAlloc;
     }
 
     private InstrList codegen(Frame f, StmList stms) {
@@ -47,6 +49,7 @@ public class TestThingy implements FragmentVisitor {
         StmList stmList = canonicalization.canon(procFrag.body);
         Assem.InstrList instrs = codegen(procFrag.frame, stmList);
         instrs = procFrag.frame.procEntryExit2(instrs);
+        RegAlloc regAlloc = this.regAllocFactory.getRegAlloc("TDB", procFrag.frame, instrs);
         TempMap tempMap = new CombineMap(procFrag.frame, regAlloc);
         instrs = regAlloc.getInstrList();
         Proc proc = procFrag.frame.procEntryExit3(instrs);

@@ -17,4 +17,6 @@ public abstract class Frag extends Component {
 
     public abstract Frame getFrame();
 
+    public abstract void accept(FragmentVisitor fragmentVisitor);
+
 }
