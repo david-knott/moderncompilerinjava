@@ -13,11 +13,6 @@ public class CanonicalizationImpl implements Canonicalization {
     private StmList traces(StmList stmList) {
         BasicBlocks b = new BasicBlocks(stmList);
         StmList traced = (new TraceSchedule(b)).stms;
-        //append done label to trace
-        //DK - This seemed to be adding an duplicate label to the end of the code
-       // var end = traced;
-     //   while(end.tail != null) end = end.tail;
-      //  end.tail = new StmList(new Tree.LABEL(b.done), null);
         return traced;
     }
 
