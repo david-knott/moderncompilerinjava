@@ -8,6 +8,22 @@ con = CONST(void) : 1
 	return temp;
 }
 exp = con;
+
+label = LABEL(void) : 1 
+{
+	Temp.Temp temp = Temp.Temp.create();
+	return temp;
+}
+exp = label;
+
+name = NAME(void) : 1
+{
+	Temp.Temp temp = Temp.Temp.create();
+	return temp;
+}
+exp = name;
+
+
 @Include "./Binop.jburg"
 exp = binop;
 @Include "./Mem.jburg"

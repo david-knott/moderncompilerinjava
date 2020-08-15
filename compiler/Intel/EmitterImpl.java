@@ -3,9 +3,8 @@ package Intel;
 import Assem.Instr;
 import Temp.Label;
 import Temp.Temp;
-import Temp.TempList;
-import Tree.CALL;
 import Tree.IR;
+import Tree.JUMP;
 
 public class EmitterImpl implements Emitter {
 
@@ -64,6 +63,12 @@ public class EmitterImpl implements Emitter {
 
 	@Override
 	public void cjump(int relop, Temp arg0, Temp arg1, Label iftrue, Label iffalse) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void jump(Temp arg0, JUMP jump) {
 		// TODO Auto-generated method stub
 
 	}

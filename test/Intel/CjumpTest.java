@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
 
-import Temp.Temp;
 import Temp.Label;
 import Tree.IR;
 

@@ -7,6 +7,7 @@ import Temp.Label;
 import Temp.Temp;
 import Tree.CALL;
 import Tree.IR;
+import Tree.JUMP;
 
 public class TestEmitter implements Emitter {
 
@@ -83,8 +84,11 @@ public class TestEmitter implements Emitter {
 
     @Override
     public void cjump(int relop, Temp arg0, Temp arg1, Label iftrue, Label iffalse) {
-        // TODO Auto-generated method stub
         this.add(AssemInstructionEnum.CJUMP);
+    }
 
+    @Override
+    public void jump(Temp arg0, JUMP jump) {
+        this.add(AssemInstructionEnum.JUMP);
     }
 }

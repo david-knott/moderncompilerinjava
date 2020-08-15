@@ -13,3 +13,11 @@ stmt = SEQ(stmt left, stmt right) : 1
 {
     return null;
 }
+
+jump = JUMP(exp arg0) : 1 
+{
+	emitter.jump(arg0, ((Tree.JUMP)#jump));
+    return null;
+}
+
+stmt = jump;

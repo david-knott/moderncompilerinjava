@@ -2,8 +2,8 @@ package Intel;
 
 import Temp.Label;
 import Temp.Temp;
-import Tree.CALL;
 import Tree.IR;
+import Tree.JUMP;
 
 /**
  * Interface that code emitters must implement. This abstraction
@@ -33,4 +33,6 @@ public interface Emitter {
 	public void call(Object call);
 
 	public void cjump(int relop, Temp arg0, Temp arg1, Label iftrue, Label iffalse);
+
+	public void jump(Temp arg0, JUMP jump);
 }
