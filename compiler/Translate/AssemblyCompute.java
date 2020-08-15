@@ -21,7 +21,7 @@ public class AssemblyCompute implements FragmentVisitor {
     PrintStream out;
     boolean moves = false;
     RegAllocFactory regAllocFactory;
-    /* String regAllocStrategy; */
+    String regAllocStrategy = "default";
 
     public AssemblyCompute(RegAllocFactory regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
         this.canonicalization = canonicalization;
@@ -49,7 +49,7 @@ public class AssemblyCompute implements FragmentVisitor {
         StmList stmList = canonicalization.canon(procFrag.body);
         Assem.InstrList instrs = codegen(procFrag.frame, stmList);
         instrs = procFrag.frame.procEntryExit2(instrs);
-        RegAlloc regAlloc = this.regAllocFactory.getRegAlloc("TDB", procFrag.frame, instrs);
+        RegAlloc regAlloc = this.regAllocFactory.getRegAlloc(this.regAllocStrategy, procFrag.frame, instrs);
         TempMap tempMap = new CombineMap(procFrag.frame, regAlloc);
         instrs = regAlloc.getInstrList();
         Proc proc = procFrag.frame.procEntryExit3(instrs);
