@@ -10,7 +10,7 @@ import org.junit.Test;
 import Assem.Instr;
 import Assem.InstrList;
 import Assem.TEST;
-import Canon.CanonFacadeImpl;
+import Canon.CanonicalizationImpl;
 import Frame.Frame;
 import Intel.IntelFrame;
 import Semant.Semant;

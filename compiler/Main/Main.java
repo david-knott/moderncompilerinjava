@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import Canon.CanonFacadeImpl;
+import Canon.CanonicalizationImpl;
 import ErrorMsg.ErrorMsg;
 import Parse.CupParser;
 import RegAlloc.RegAllocFactory;
@@ -30,7 +30,7 @@ public class Main {
           //      .register(new Frame.Tasks())
           //      .register(new Semant.Tasks())
                 .register(new Translate.Tasks())
-                .register(new Intel.Tasks(new RegAllocFactory(), new CanonFacadeImpl()))
+                .register(new Intel.Tasks(new RegAllocFactory(), new CanonicalizationImpl()))
                 .parseArgs(args)
                 .execute();
     }

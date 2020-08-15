@@ -4,7 +4,7 @@ import java.io.PrintStream;
 
 import Assem.InstrList;
 import Assem.MOVE;
-import Canon.CanonFacadeImpl;
+import Canon.CanonicalizationImpl;
 import Canon.Canonicalization;
 import Core.CompilerEventType;
 import Frame.Frame;
@@ -48,7 +48,7 @@ public class ProcFrag extends Frag {
     public ProcFrag(Tree.Stm bdt, Frame frm) {
         body = bdt;
         frame = frm;
-        canonicalization = new CanonFacadeImpl();
+        canonicalization = new CanonicalizationImpl();
     }
 
     private InstrList codegen(Frame f, StmList stms) {

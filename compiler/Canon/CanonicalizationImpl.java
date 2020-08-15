@@ -3,7 +3,7 @@ package Canon;
 import Tree.Stm;
 import Tree.StmList;
 
-public class CanonFacadeImpl implements Canonicalization {
+public class CanonicalizationImpl implements Canonicalization {
 
     private StmList linearize(Stm stm) {
         StmList stms = Canon.linearize(stm);

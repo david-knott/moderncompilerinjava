@@ -22,6 +22,7 @@ public class TestThingy implements FragmentVisitor {
     PrintStream out;
     boolean moves = false;
     RegAllocFactory regAllocFactory;
+    /* String regAllocStrategy; */
 
     public TestThingy(RegAllocFactory regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
         this.canonicalization = canonicalization;
