@@ -8,7 +8,7 @@ import Canon.Canonicalization;
 import ErrorMsg.ErrorMsg;
 import RegAlloc.RegAllocFactory;
 import Translate.FragList;
-import Translate.HIRCompute;
+import Translate.AssemblyCompute;
 import Util.Assert;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
@@ -35,7 +35,7 @@ public class Tasks implements TaskProvider {
                 FragList frags = taskContext.fragList;
                 PrintStream fileOut = new PrintStream(out);
                 fileOut.println(".global tigermain");
-                frags.accept(new HIRCompute(regAllocFactory, canonicalization, out));
+                frags.accept(new AssemblyCompute(regAllocFactory, canonicalization, out));
                 fileOut.close();
             }
         }, "target-x64", "Select x64 as target", new String[] { "" });

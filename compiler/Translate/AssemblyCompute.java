@@ -15,7 +15,7 @@ import Temp.Temp;
 import Temp.TempMap;
 import Tree.StmList;
 
-public class HIRCompute implements FragmentVisitor {
+public class AssemblyCompute implements FragmentVisitor {
 
     Canonicalization canonicalization;
     PrintStream out;
@@ -23,7 +23,7 @@ public class HIRCompute implements FragmentVisitor {
     RegAllocFactory regAllocFactory;
     /* String regAllocStrategy; */
 
-    public HIRCompute(RegAllocFactory regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
+    public AssemblyCompute(RegAllocFactory regAlloc, Canonicalization canonicalization, OutputStream outputStream) {
         this.canonicalization = canonicalization;
         this.out = new PrintStream(outputStream);
         this.regAllocFactory = regAlloc;
