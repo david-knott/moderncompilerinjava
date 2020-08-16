@@ -1,4 +1,19 @@
 # Diary
+## 16th August 2020 ##
+Implemented more instruction matching and tests with JBurg
+
+Created new tasks for Canon module so we can separate it from the the intel codegen
+phase. I am stuck on what representation we should use for the canon rep ( lir rep ).
+The current implementation from Appels book returns a StmtList however the canon
+is done as part of the code gen, so we have a referecnce to the current frame.
+
+Do I create a new datatructure for the StmtList and Frame, or modify the existing
+Canon module so that it can return a representation that can use the ProcFrag structure.
+I think I can use a Sequence as we ignore the seq in our IR. Basically replace the 
+StmtList (head, tail) with a SEQ(left, right) where left and right are used as a head
+and tail respectively.
+
+
 ## 14th August 2020 ##
 Implementing new instruction selection using jburg ( http://jburg.sourceforge.net/ )
 I ran into a problem attempting to match load / store using a tile for indirect scaled

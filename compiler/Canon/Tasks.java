@@ -2,20 +2,15 @@ package Canon;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 
-import Canon.Canonicalization;
 import ErrorMsg.ErrorMsg;
-import RegAlloc.RegAllocFactory;
+import Translate.DataFrag;
 import Translate.FragList;
 import Translate.FragmentVisitor;
 import Translate.ProcFrag;
 import Tree.PrettyPrinter;
 import Tree.TreeVisitor;
-import Translate.AssemblyCompute;
-import Translate.DataFrag;
 import Util.Assert;
-import Util.BooleanTask;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -35,6 +30,7 @@ class FragPrettyPrinter implements FragmentVisitor {
 
     @Override
     public void visit(DataFrag dataFrag) {
+        //do nothing.
     }
 
 }
