@@ -2,7 +2,6 @@ package Translate;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 
 import ErrorMsg.ErrorMsg;
 import Intel.IntelFrame;

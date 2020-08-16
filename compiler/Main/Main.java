@@ -29,7 +29,6 @@ public class Main {
                 .register(new Absyn.Tasks())
                 .register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl()))
-                .register(new Tree.Tasks())
               //  .register(new Intel.Tasks(new RegAllocFactory(), ))
                 .parseArgs(args)
                 .execute();
