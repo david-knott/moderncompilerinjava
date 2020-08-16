@@ -15,6 +15,11 @@ import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
 
+/**
+ * A collection of tasks related to code generation for the intel x64 instruction set.
+ * This class will be refactored so the AssemblyCompute visitor will be split into 
+ * separate modules and tasks ( Canon, Instruction Select, Reg Alloc )
+ */
 public class Tasks implements TaskProvider {
     final RegAllocFactory regAllocFactory;
     final Canonicalization canonicalization;
