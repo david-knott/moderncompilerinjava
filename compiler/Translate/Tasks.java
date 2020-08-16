@@ -23,6 +23,7 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
+                // TODO: remove reference to IntelFrame.
                 Frame.Frame frame = new IntelFrame(Label.create("tigermain"), null);
                 Level topLevel = new Level(frame);
                 Translator translate = new Translator();
@@ -34,11 +35,11 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                PrintStream ps = new PrintStream(out);
-                for (FragList fragList = taskContext.fragList; fragList != null; fragList = fragList.tail) {
-                //    ps.println(fragList.head);
+                for (FragList fragList = taskContext.hirFragList; fragList != null; fragList = fragList.tail) {
+                
                 }
             }
         }, "hir-display", "Display the HIR", new String[] { "hir-compute" });
+
     }
 }

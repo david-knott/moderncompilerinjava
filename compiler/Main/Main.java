@@ -27,10 +27,10 @@ public class Main {
                 .register(new Parse.Tasks(new CupParser(in, errorMsg)))
                 .register(new FindEscape.Tasks())
                 .register(new Absyn.Tasks())
-          //      .register(new Frame.Tasks())
-          //      .register(new Semant.Tasks())
                 .register(new Translate.Tasks())
-                .register(new Intel.Tasks(new RegAllocFactory(), new CanonicalizationImpl()))
+                .register(new Canon.Tasks(new CanonicalizationImpl()))
+                .register(new Tree.Tasks())
+              //  .register(new Intel.Tasks(new RegAllocFactory(), ))
                 .parseArgs(args)
                 .execute();
     }

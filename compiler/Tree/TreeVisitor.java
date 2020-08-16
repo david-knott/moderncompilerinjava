@@ -1,5 +1,6 @@
 package Tree;
 
+
 public interface TreeVisitor {
 
     public void visit(BINOP op);

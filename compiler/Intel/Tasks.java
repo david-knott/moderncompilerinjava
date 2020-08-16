@@ -32,7 +32,7 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                FragList frags = taskContext.fragList;
+                FragList frags = taskContext.hirFragList;
                 PrintStream fileOut = new PrintStream(out);
                 fileOut.println(".global tigermain");
                 frags.accept(new AssemblyCompute(regAllocFactory, canonicalization, out));
