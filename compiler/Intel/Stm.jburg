@@ -9,6 +9,14 @@ sxp = SXP(exp arg0) : 1
 }
 stmt = sxp;
 
+label = LABEL(void) : 1 
+{
+	emitter.label(((Tree.LABEL)#label).label);
+	return null;
+}
+stmt = label;
+
+
 stmt = SEQ(stmt left, stmt right) : 1
 {
     return null;

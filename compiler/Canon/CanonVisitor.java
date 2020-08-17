@@ -6,6 +6,7 @@ import Translate.FragmentVisitor;
 import Translate.ProcFrag;
 import Tree.StmList;
 
+
 /**
  * Produces a new FragList that contains the HIR converted
  * to LIR trees. We reuse the Fragment data structure as it
@@ -23,7 +24,7 @@ public class CanonVisitor implements FragmentVisitor {
 	@Override
     public void visit(ProcFrag procFrag) {
         StmList stmList = canonicalization.canon(procFrag.body);
-        ProcFrag lirProcFrag = new ProcFrag(stmList.toSEQ(), procFrag.frame);
+        ProcFrag lirProcFrag = new ProcFrag(stmList, procFrag.frame);
         this.fragList = new FragList(lirProcFrag, this.fragList);
     }
 

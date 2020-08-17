@@ -10,6 +10,9 @@ import Tree.JUMP;
  * was created to faciliate testing of the JBURG rules.
  */
 public interface Emitter {
+
+	public Assem.InstrList getInstrList();
+	
     public void loadIndirect(Temp arg0, Temp arg1);
 
 	public void loadIndirectDisp(int binop, Temp arg0, Temp arg1, int offset);
@@ -35,4 +38,6 @@ public interface Emitter {
 	public void cjump(int relop, Temp arg0, Temp arg1, Label iftrue, Label iffalse);
 
 	public void jump(Temp arg0, JUMP jump);
+
+	public void label(Label label);
 }

@@ -2,6 +2,7 @@ package Intel;
 
 import java.util.Vector;
 
+import Assem.InstrList;
 import Core.LL;
 import Temp.Label;
 import Temp.Temp;
@@ -90,5 +91,17 @@ public class TestEmitter implements Emitter {
     @Override
     public void jump(Temp arg0, JUMP jump) {
         this.add(AssemInstructionEnum.JUMP);
+    }
+
+    @Override
+    public void label(Label label) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public InstrList getInstrList() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

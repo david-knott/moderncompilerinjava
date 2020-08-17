@@ -5,12 +5,22 @@ import Temp.Label;
 import Temp.Temp;
 import Tree.IR;
 import Tree.JUMP;
-
 public class EmitterImpl implements Emitter {
 
+    private Assem.InstrList iList = null, last = null;
 	// AssemInstructionEnum.InstrList iList = null, last = null;
 
+	@Override
+	public Assem.InstrList getInstrList() {
+		return this.iList;
+	}
+
 	private void emit(Instr instr) {
+		if (last != null) {
+			last = last.tail = new Assem.InstrList(instr, null);
+		} else {
+			last = iList = new Assem.InstrList(instr, null);
+		}
 	}
 
 	public void loadIndirect(Temp arg0, Temp arg1) {
@@ -71,6 +81,11 @@ public class EmitterImpl implements Emitter {
 	public void jump(Temp arg0, JUMP jump) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void label(Label label) {
+        emit(new Assem.LABEL(label.toString() + ":", label));
 	}
 
     //store Operations

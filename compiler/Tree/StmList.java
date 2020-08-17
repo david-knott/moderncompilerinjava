@@ -2,7 +2,7 @@ package Tree;
 
 import Util.Assert;
 
-public class StmList {
+public class StmList extends Stm {
 
     public static StmList append(StmList me, Stm t) {
         if (me == null && t == null) {
@@ -87,5 +87,41 @@ public class StmList {
             return new SEQ(this.head, this.tail.toSEQ());
         }
         return this.head;
+    }
+
+    @Override
+    public ExpList kids() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Stm build(ExpList kids) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void accept(TreeVisitor treeVisitor) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public int getOperator() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int getArity() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public IR getNthChild(int index) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

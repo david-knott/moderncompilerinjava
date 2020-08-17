@@ -1,6 +1,6 @@
 package Util;
 
-import Canon.StmListList;
+import Assem.InstrList;
 import Parse.Program;
 import Translate.FragList;
 
@@ -10,6 +10,7 @@ public class TaskContext {
     public boolean bindingsDisplay;
     public FragList hirFragList;
     public FragList lirFragList;
+    //public InstrList instrList;
 
     public void setAst(final Program value) {
         this.program = value;
@@ -29,5 +30,12 @@ public class TaskContext {
 
     public void setLIR(final FragList lirFragList) {
         this.lirFragList = lirFragList;
+	}
+
+	public void setInstrList(InstrList instrList) {
+    //    this.instrList = instrList;
+	}
+
+	public void setAssemFragList(Object object) {
 	}
 }

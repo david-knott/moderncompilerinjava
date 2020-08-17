@@ -9,13 +9,6 @@ con = CONST(void) : 1
 }
 exp = con;
 
-label = LABEL(void) : 1 
-{
-	Temp.Temp temp = Temp.Temp.create();
-	return temp;
-}
-exp = label;
-
 name = NAME(void) : 1
 {
 	Temp.Temp temp = Temp.Temp.create();
