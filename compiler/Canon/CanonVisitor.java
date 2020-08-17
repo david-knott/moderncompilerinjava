@@ -4,6 +4,7 @@ import Translate.DataFrag;
 import Translate.FragList;
 import Translate.FragmentVisitor;
 import Translate.ProcFrag;
+import Tree.StmList;
 
 /**
  * Produces a new FragList that contains the HIR converted
@@ -21,8 +22,8 @@ public class CanonVisitor implements FragmentVisitor {
 
 	@Override
     public void visit(ProcFrag procFrag) {
-        //StmList stmList = canonicalization.canon(procFrag.body);
-        ProcFrag lirProcFrag = procFrag;
+        StmList stmList = canonicalization.canon(procFrag.body);
+        ProcFrag lirProcFrag = new ProcFrag(stmList.toSEQ(), procFrag.frame);
         this.fragList = new FragList(lirProcFrag, this.fragList);
     }
 

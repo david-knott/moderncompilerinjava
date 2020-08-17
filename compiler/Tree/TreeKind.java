@@ -14,4 +14,5 @@ public class TreeKind {
     public static final int TEMP = 11;
     public static final int MEM = 12;
     public static final int EXP= 13;
+    public static final int STMLIST = 13;
 }

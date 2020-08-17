@@ -20,4 +20,6 @@ public class CanonicalizationImpl implements Canonicalization {
     public StmList canon(Stm stm) {
         return traces(linearize(stm));
     }
+
+
 }

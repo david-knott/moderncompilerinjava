@@ -1,4 +1,12 @@
 # Diary
+## 17th August 2020 ##
+I converted the StmtList to a Tree.SEQ after caonicalisation. I am hoping that
+the following instruction selection phase with the new Jburg implementation will
+be able to use the SEQ based structure.
+
+I have wired up an Intel.Task to hit the JBurg code generator. Unfortunately its
+not working correctly yet.
+
 ## 16th August 2020 ##
 Implemented more instruction matching and tests with JBurg
 
