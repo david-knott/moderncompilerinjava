@@ -21,17 +21,15 @@ class AssemblyGeneratorVisitor implements FragmentVisitor {
 
     @Override
     public void visit(ProcFrag procFrag) {
-        // yuck, this smells.
         emitter = new EmitterImpl();
         codeGen.setEmitter(emitter);
+        // yuck, this smells.
         StmList stmList = (StmList)procFrag.body;
         for(; stmList != null; stmList = stmList.tail) {
             try {
                 this.codeGen.burm(stmList.head);
                 this.fragList = new FragList(new Assem.ProcFrag(emitter.getInstrList(), procFrag.frame), this.fragList);
             } catch (Exception e) {
-                // an exception here would suggest that a new tree
-                // struction was visited.
                 throw new Error(e);
             }
         }

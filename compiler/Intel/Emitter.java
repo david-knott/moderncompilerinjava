@@ -17,13 +17,15 @@ public interface Emitter {
 
 	public void loadIndirectDisp(int binop, Temp arg0, Temp arg1, int offset);
 
-	public void startLoadIndirectDispScaled(Temp arg0, Temp arg1, IR arg2);
-
-	public void endLoadIndirectDispScaled(Temp arg0, Temp arg1);
-
-	public void moveConstToTemp(Temp arg0, IR arg1);
+	public void moveConstToTemp(Temp arg0, int arg1);
 
 	public void moveExpToTemp(Temp arg0, Temp arg1);
+
+	public void binop(Temp arg0, int value, Temp temp);
+
+	public void binop(int value, Temp arg0, Temp temp);
+
+	public void binop(int value, int arg0, Temp temp);
 
 	public void binop(Temp arg0, Temp arg1, Temp temp);
 
@@ -31,7 +33,6 @@ public interface Emitter {
 
     public void storeIndirectDisp(int binop, Temp arg0, Temp arg1, int offset);
 
-	public void startStoreIndirectDispScaled(Temp arg0, Temp arg1, IR arg2);
 
 	public void call(Object call);
 
@@ -40,4 +41,6 @@ public interface Emitter {
 	public void jump(Temp arg0, JUMP jump);
 
 	public void label(Label label);
+
+	public void loadIndrectDispScale(int i, Temp arg0, Temp base, Temp index, int value);
 }

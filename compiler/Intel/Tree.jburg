@@ -7,7 +7,6 @@
 @INodeType Tree.IR;
 @ReturnType Temp.Temp;
 @ReturnType con = Temp.Temp;
-@ReturnType binop = Temp.Temp;
 @ReturnType temp = Temp.Temp;
 @Constant ERROR_TRAP = 268435456;
 @Members
@@ -23,6 +22,6 @@
 	}
 }
 
+@Include "./Common.jburg"
 @Include "./Stm.jburg"
 @Include "./Exp.jburg"
-//@Reduction reducer.emitIntegerAdd(left, right);

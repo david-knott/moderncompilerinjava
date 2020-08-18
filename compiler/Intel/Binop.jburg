@@ -1,29 +1,18 @@
-binop = BINOP(exp arg0, exp arg1) : 10
-{
-	Temp.Temp temp = Temp.Temp.create();
-	emitter.binop(arg1, arg0, temp);
-	return temp;
-}
+@ReturnType binop = Tree.BINOP;
 
-binop = BINOP(exp arg0, con arg1) : 1
-{
-	Temp.Temp temp = Temp.Temp.create();
-	emitter.binop(arg0, arg1, temp);
-	return temp;
-}
+/* binop of two expressions, each which returns a temp */
+binop = BINOP(exp left, exp right) : 100
+/* @Prologue reducer.setUpBinopExpression(p) */
+@Reduction reducer.binopExpression(__p, left, right);
 
-binop = BINOP(con arg0, exp arg1) : 1
-{
-	Temp.Temp temp = Temp.Temp.create();
-	emitter.binop(arg1, arg0, temp);
-	return temp;
-}
+/* binop on expression and const */
+binop = BINOP(exp left,  CONST(void) right) : 1
+@Reduction reducer.binopExpression(__p, left, right);
 
-binop = BINOP(con t1, con t2) : 1
-{
-	Temp.Temp temp = Temp.Temp.create();
-	System.out.println("movcc " + t1 + " " + temp);
-	System.out.println("//Binop3");
-	System.out.println("addcc " + t2 + " " + temp);
-	return temp;
-}
+/* binop on expression and const */
+binop = BINOP(CONST(void) left, exp right) : 1
+@Reduction reducer.binopExpression(__p, left, right);
+
+/* binop on two consts, these can be folded */
+binop = BINOP(CONST(void) left, CONST(void) right) : 1
+@Reduction reducer.binopExpression(__p, left, right);

@@ -4,51 +4,13 @@
 */
 
 /* Indirect addressing without displacement */
-move = MOVE(exp arg0, MEM(exp arg1)) : 10
-{
-	//System.out.println("movq %" + arg0 + ", (%" + arg1 + ") # mv(t, mm(e))");
-	emitter.loadIndirect(arg0, arg1);
-	return null;
-}
+move = MOVE(exp arg0, indirect arg1) : 10
+@Reduction reducer.loadindirect(__p, arg0, arg1);
 
 /* indirect addressing with displacement */
-move = MOVE(exp arg0, MEM(BINOP(exp arg1, CONST(void) arg2))) : 1
-{
-	int offset = ((Tree.CONST)arg2).value;
-    Tree.BINOP binop = (Tree.BINOP)(__p.getNthChild(1).getNthChild(0));
-	Util.Assert.assertIsTrue(binop.binop == Tree.BINOP.PLUS || binop.binop == Tree.BINOP.MINUS);
-	emitter.loadIndirectDisp(binop.binop, arg0, arg1, offset);
-	return null;
-}
+move = MOVE(exp arg0, indirectWithDisplacement arg1) : 1
+@Reduction reducer.loadindirectWithDisplacement(__p, arg0, arg1);
 
-/* indirect addressing with displacement and scaled index */
-lia =  MEM(BINOP(exp arg0, BINOP(exp arg1, CONST(void) arg2))) : 1
-{
-	emitter.startLoadIndirectDispScaled(arg0, arg1, arg2);
-	return null;
-}
-
-move = MOVE(exp arg0, lia arg1) : 1
-{
-	emitter.endLoadIndirectDispScaled(arg0, arg1);
-	return null;
-}
-
-
-/*
-move = MOVE(exp arg0, MEM(BINOP(TEMP(void) arg1, BINOP(TEMP(void) arg2, CONST(void) arg3)))) : 1
-{
-
-	System.out.println("# LLOOK mv(t, mm(b(t b(t, c))))");
-	return null;
-}
-*/
-
-/*
-move = MOVE(TEMP(void) arg0, MEM(BINOP(void) arg1, BINOP(TEMP(void) arg2, CONST(void) arg3)))) : 1
-{
-
-	System.out.println("# LLOOK mv(t, mm(b(t b(t, c))))");
-	return null;
-}
-*/
+/* indirect addressing with displacement and scale */
+move = MOVE(exp arg0, indirectWithDisplacementAndScale arg1) : 1
+@Reduction reducer.loadindirectWithDisplacementAndScale(__p, arg0, arg1);

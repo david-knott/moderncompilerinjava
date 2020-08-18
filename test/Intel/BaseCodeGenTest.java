@@ -9,7 +9,8 @@ import Tree.IR;
 public abstract class BaseCodeGenTest {
     public CodeGen createCodeGen(Emitter emitter) {
         CodeGen codeGen = new CodeGen();
-        codeGen.setEmitter(emitter);
+        Reducer reducer = new Reducer(emitter);
+        codeGen.setReducer(reducer);
         return codeGen;
     }
 

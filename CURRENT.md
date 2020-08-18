@@ -1,4 +1,10 @@
 # Diary
+## 18th August 2020 ##
+Redoing JBurg. Returning objects from JBurg specifications that I reduce in a
+Reducer class. I am not sure if its the right way to do this. The instruction
+selection pass is the next thing I need to do, so I will continue with this
+until its complete and can replace the Maximum Munch implementation.
+
 ## 17th August 2020 ##
 I converted the StmtList to a Tree.SEQ after caonicalisation. I am hoping that
 the following instruction selection phase with the new Jburg implementation will

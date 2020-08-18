@@ -9,15 +9,17 @@ move = MOVE(MEM(BINOP(exp arg0, CONST(void) arg1)), exp arg2) : 1
 	int offset = ((Tree.CONST)arg1).value;
     Tree.BINOP binop = (Tree.BINOP)(__p.getNthChild(0).getNthChild(0));
 	Util.Assert.assertIsTrue(binop.binop == Tree.BINOP.PLUS || binop.binop == Tree.BINOP.MINUS);
-	emitter.storeIndirectDisp(binop.binop, arg0, arg2, offset);
+//	emitter.storeIndirectDisp(binop.binop, arg0, arg2, offset);
 	return null;
 }
 
+/* helper production for scaled index stores */
 sia =  MEM(BINOP(exp arg0, BINOP(exp arg1, CONST(void) arg2))) : 1
 {
 	return null;
 }
 
+/* scaled index store */
 move = MOVE(sia arg1, exp arg0) : 1
 {
 	emitter.startStoreIndirectDispScaled(arg0, null, null);

@@ -6,8 +6,7 @@ public class LL<T> {
 
     public static <S extends Comparable<S>> int size(LL<S> l) {
         if(l == null)
-            return 0;
-        else 
+            return 0; 
         return 1 + LL.<S>size(l.tail);
     }
 
@@ -192,6 +191,8 @@ public class LL<T> {
     }
 
     LL(T h, LL<T> t) {
+        Assert.assertNotNull(h);
+        Assert.assertNotNull(t);
         this.head = h;
         this.tail = t;
     }
@@ -199,5 +200,4 @@ public class LL<T> {
     public String toString() {
         return head + "," + (tail != null ? tail.toString() : "");
     }
-
 }

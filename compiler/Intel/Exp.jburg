@@ -1,25 +1,22 @@
 @Include "./Temp.jburg"
 exp = temp;
 
-con = CONST(void) : 1 
-{
-	Temp.Temp temp = Temp.Temp.create();
-//	return ((Tree.CONST)#con).value;
-	return temp;
-}
-exp = con;
+@ReturnType integerConstant = IntegerConstantExpression;
+integerConstant = CONST(void) : 1 
+@Reduction reducer.integerConstant(__p);
+exp = integerConstant;
 
+/*
 name = NAME(void) : 1
-{
-	Temp.Temp temp = Temp.Temp.create();
-	return temp;
-}
+@Reduction reducer.nameExpression(__p);
 exp = name;
-
 
 @Include "./Binop.jburg"
 exp = binop;
+
 @Include "./Mem.jburg"
 exp = mem;
+
 @Include "./Call.jburg"
 exp = call;
+*/

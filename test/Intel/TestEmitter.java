@@ -37,22 +37,6 @@ public class TestEmitter implements Emitter {
     }
 
     @Override
-    public void startLoadIndirectDispScaled(Temp arg0, Temp arg1, IR arg2) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void endLoadIndirectDispScaled(Temp arg0, Temp arg1) {
-        this.add(AssemInstructionEnum.LOAD_INDIRECT_DISP_SCALED);
-    }
-
-    @Override
-    public void moveConstToTemp(Temp arg0, IR arg1) {
-        this.add(AssemInstructionEnum.MOVE_CONST_TO_TEMP);
-    }
-
-    @Override
     public void moveExpToTemp(Temp arg0, Temp arg1) {
         this.add(AssemInstructionEnum.MOVE_EXP_TO_TEMP);
     }
@@ -71,11 +55,6 @@ public class TestEmitter implements Emitter {
     public void storeIndirectDisp(int binop, Temp arg0, Temp arg1, int offset) {
         this.add(AssemInstructionEnum.STORE_INDIRECT_DISP);
 
-    }
-
-    @Override
-    public void startStoreIndirectDispScaled(Temp arg0, Temp arg1, IR arg2) {
-        this.add(AssemInstructionEnum.STORE_INDIRECT_DISP_SCALED);
     }
 
     @Override
@@ -103,5 +82,38 @@ public class TestEmitter implements Emitter {
     public InstrList getInstrList() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void moveConstToTemp(Temp arg0, int arg1) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void binop(Temp arg0, int value, Temp temp) {
+        // TODO Auto-generated method stub
+        this.add(AssemInstructionEnum.BINOP);
+
+    }
+
+    @Override
+    public void binop(int value, Temp arg0, Temp temp) {
+        // TODO Auto-generated method stub
+        this.add(AssemInstructionEnum.BINOP);
+
+    }
+
+    @Override
+    public void binop(int value, int arg0, Temp temp) {
+        // TODO Auto-generated method stub
+        this.add(AssemInstructionEnum.BINOP);
+
+    }
+
+    @Override
+    public void loadIndrectDispScale(int i, Temp arg0, Temp base, Temp index, int value) {
+        this.add(AssemInstructionEnum.LOAD_INDIRECT_DISP_SCALED);
+
     }
 }
