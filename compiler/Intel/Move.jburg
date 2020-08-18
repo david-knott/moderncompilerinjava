@@ -4,18 +4,10 @@
 
 @Include "./Move_Load.jburg"
 
-/*
 @Include "./Move_Store.jburg"
 
-move = MOVE(temp dst, CONST(void) src) : 1
-{
-	emitter.moveConstToTemp(dst, ((Tree.CONST)src).value);
-	return null;
-}
+move = MOVE(temp dst, integerConstant src) : 1
+@Reduction reducer.move(__p, dst, src);
 
 move = MOVE(temp dst, exp src) : 1
-{
-	emitter.moveExpToTemp(dst, src);
-	return null;
-}
-*/
+@Reduction reducer.move(__p, dst, src);

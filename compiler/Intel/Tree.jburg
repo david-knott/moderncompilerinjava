@@ -5,10 +5,12 @@
 	import static Tree.TreeKind.*;
 }
 @INodeType Tree.IR;
-@ReturnType Temp.Temp;
-@ReturnType con = Temp.Temp;
-@ReturnType temp = Temp.Temp;
 @Constant ERROR_TRAP = 268435456;
+@ReturnType integerConstant = Integer;
+@ReturnType temp = Temp.Temp;
+@ReturnType exp = Temp.Temp;
+@ReturnType mem = Temp.Temp;
+@ReturnType binop = Temp.Temp;
 @Members
 {
 	private Reducer reducer;

@@ -93,7 +93,7 @@ public class MoveLoadTest extends BaseCodeGenTest {
                     new Tree.BINOP(
                         Tree.BINOP.MUL,
                         new Tree.TEMP(Temp.create()),
-                        new Tree.CONST(1)
+                        new Tree.CONST(4)
                     )
                 )
             )
@@ -115,7 +115,7 @@ public class MoveLoadTest extends BaseCodeGenTest {
                     new Tree.BINOP(
                         Tree.BINOP.MUL,
                         super.getBinopExp(),
-                        new Tree.CONST(1)
+                        new Tree.CONST(4)
                     )
                 )
             )

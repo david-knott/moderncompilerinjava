@@ -1,12 +1,3 @@
 call = CALL(exp args*) : 1
-{
-    Tree.CALL call = ((Tree.CALL)#call);
-    for(var temp : args) {
-        //if i <= 6 goes to regiser
-
-        //if i > 6 goes on stack.
- //       System.out.println("add instructions to move " + temp + " correct place");
-    }
-	emitter.call(call);
-    return null;
-}
+@Prologue reducer.setUpFunctionExpression(p)
+@Reduction reducer.call(__p, args);

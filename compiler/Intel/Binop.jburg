@@ -1,5 +1,3 @@
-@ReturnType binop = Tree.BINOP;
-
 /* binop of two expressions, each which returns a temp */
 binop = BINOP(exp left, exp right) : 100
 /* @Prologue reducer.setUpBinopExpression(p) */

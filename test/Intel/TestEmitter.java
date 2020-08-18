@@ -54,7 +54,6 @@ public class TestEmitter implements Emitter {
     @Override
     public void storeIndirectDisp(int binop, Temp arg0, Temp arg1, int offset) {
         this.add(AssemInstructionEnum.STORE_INDIRECT_DISP);
-
     }
 
     @Override

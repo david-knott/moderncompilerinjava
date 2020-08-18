@@ -1,12 +1,10 @@
 @Include "./Temp.jburg"
 exp = temp;
 
-@ReturnType integerConstant = Integer;
 integerConstant = CONST(void) : 1 
 @Reduction reducer.integerConstant(__p);
 exp = integerConstant;
 
-/*
 name = NAME(void) : 1
 @Reduction reducer.nameExpression(__p);
 exp = name;
@@ -19,4 +17,3 @@ exp = mem;
 
 @Include "./Call.jburg"
 exp = call;
-*/

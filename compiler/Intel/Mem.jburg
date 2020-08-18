@@ -1,30 +1,8 @@
-mem = MEM(BINOP(CONST(void) left, exp right)) : 1
-{
-    System.out.println("//mem(binop(exp, con)");
-	return null;
-}
+mem = MEM(binopOffsetExpression boe) : 1
+@Reduction reducer.mem(boe);
 
-mem = MEM(BINOP(exp left, CONST(void) right)) : 1
-{
-    System.out.println("//mem(binop(exp, con)");
-	return null;
-}
+mem = MEM(integerConstant ic) : 100
+@Reduction reducer.mem(ic);
 
-mem = MEM(BINOP(exp left, BINOP(exp left2, CONST(void) right))) : 1
-{
-    System.out.println("mem(binop(exp, binop(exp, con))");
-	return null;
-}
-
-mem = MEM(CONST(void) t1) : 100
-{
-	Temp.Temp temp = Temp.Temp.create();
-    System.out.println("mem(con)");
-	return null;
-}
-
-mem = MEM(exp t1) : 100
-{
-    System.out.println("//mem(exp)");
-	return null;
-}
+mem = MEM(exp e) : 100
+@Reduction reducer.mem(e);

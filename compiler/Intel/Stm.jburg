@@ -1,7 +1,7 @@
 @Include "./Move.jburg"
+@ReturnType stmt = Object;
 stmt = move;
 
-/*
 @Include "./Cjump.jburg"
 stmt = cjump;
 
@@ -19,4 +19,3 @@ stmt = SEQ(stmt left, stmt right) : 1
 jump = JUMP(exp arg0) : 1 
 @Reduction reducer.jumpStatement(__p, arg0);
 stmt = jump;
-*/
