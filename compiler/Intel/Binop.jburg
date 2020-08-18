@@ -4,13 +4,13 @@ binop = BINOP(exp left, exp right) : 100
 @Reduction reducer.binopExpression(__p, left, right);
 
 /* binop on expression and const */
-binop = BINOP(exp left,  CONST(void) right) : 1
+binop = BINOP(exp left,  integerConstant right) : 1
 @Reduction reducer.binopExpression(__p, left, right);
 
 /* binop on expression and const */
-binop = BINOP(CONST(void) left, exp right) : 1
+binop = BINOP(integerConstant left, exp right) : 1
 @Reduction reducer.binopExpression(__p, left, right);
 
 /* binop on two consts, these can be folded */
-binop = BINOP(CONST(void) left, CONST(void) right) : 1
+binop = BINOP(integerConstant left, integerConstant right) : 1
 @Reduction reducer.binopExpression(__p, left, right);

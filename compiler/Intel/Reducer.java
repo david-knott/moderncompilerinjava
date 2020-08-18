@@ -7,7 +7,11 @@ import Frame.Frame;
 import Temp.Temp;
 import Temp.TempList;
 import Tree.BINOP;
+import Tree.CJUMP;
 import Tree.IR;
+import Tree.JUMP;
+import Tree.LABEL;
+import Tree.NAME;
 
 public class Reducer {
 
@@ -85,6 +89,7 @@ public class Reducer {
 	}
 
 	public IR cjumpStatement(IR __p, Temp left, Temp right) {
+		CJUMP cjump = (CJUMP)__p;
 		return null;
 	}
 
@@ -93,6 +98,7 @@ public class Reducer {
 	}
 
 	public IR labelStatement(IR __p) {
+		LABEL label = (LABEL)__p;
 		return null;
 	}
 
@@ -101,10 +107,12 @@ public class Reducer {
 	}
 
 	public IR jumpStatement(IR __p, Temp arg0) {
+		JUMP jump = (JUMP)__p;
 		return null;
 	}
 
 	public IR nameExpression(IR __p) {
+		NAME name = (NAME)__p;
 		return null;
 	}
 
@@ -159,6 +167,18 @@ public class Reducer {
 	}
 
 	public IR move(IR __p, Temp dst, Temp src) {
+		return null;
+	}
+
+	public Temp binopExpression(IR __p, Temp left, Integer right) {
+		return null;
+	}
+
+	public Temp binopExpression(IR __p, Integer left, Temp right) {
+		return null;
+	}
+
+	public Temp binopExpression(IR __p, Integer left, Integer right) {
 		return null;
 	}
 }
