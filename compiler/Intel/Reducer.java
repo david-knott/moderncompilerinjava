@@ -2,13 +2,32 @@ package Intel;
 
 import java.util.Vector;
 
+import Assem.Instr;
+import Frame.Frame;
 import Temp.Temp;
+import Temp.TempList;
 import Tree.BINOP;
 import Tree.IR;
 
 public class Reducer {
 
-    final Emitter emitter;
+	final Emitter emitter;
+	
+	Assem.InstrList iList = null, last = null;
+        private Temp temp;
+        private Frame frame;
+
+        private  static TempList L(Temp h, TempList t) {
+            return new TempList(h, t);
+        }
+
+        private void emit(Instr instr) {
+            if (last != null) {
+                last = last.tail = new Assem.InstrList(instr, null);
+            } else {
+                last = iList = new Assem.InstrList(instr, null);
+            }
+        }
 
     public Reducer(Emitter emitter) {
 		this.emitter = emitter;
