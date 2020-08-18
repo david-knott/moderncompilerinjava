@@ -16,11 +16,11 @@ public class Reducer {
 		return ((Tree.TEMP)__p).temp;
 	}
 
-	public IntegerConstantExpression integerConstant(IR __p) {
-		return new IntegerConstantExpression(((Tree.CONST)__p).value);
+	public Integer integerConstant(IR __p) {
+		return ((Tree.CONST)__p).value;
 	}
 
-	public BinopOffsetExpression binopOffsetExpression(IR __p, Temp arg0, IntegerConstantExpression arg1) {
+	public BinopOffsetExpression binopOffsetExpression(IR __p, Temp arg0, Integer arg1) {
 		return null;
 	}
 	public IndirectWithDisplacementExpression indirectWithDisplacement(IR __p, Temp arg0) {

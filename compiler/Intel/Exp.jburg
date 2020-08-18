@@ -1,7 +1,7 @@
 @Include "./Temp.jburg"
 exp = temp;
 
-@ReturnType integerConstant = IntegerConstantExpression;
+@ReturnType integerConstant = Integer;
 integerConstant = CONST(void) : 1 
 @Reduction reducer.integerConstant(__p);
 exp = integerConstant;

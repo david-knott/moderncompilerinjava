@@ -1,4 +1,4 @@
-/*  Generated Tue Aug 18 09:26:53 IST 2020 by JBurg version 2.0.2  */
+/*  Generated Tue Aug 18 15:41:23 IST 2020 by JBurg version 2.0.2  */
 
 package Intel;
 	import Tree.*;
@@ -38,7 +38,7 @@ public  JBurgAnnotation label(Tree.IR to_be_labelled) {
 /* binopOffsetExpression */
 
 private  BinopOffsetExpression action_1(Tree.IR __p) throws java.lang.Exception {
-    IntegerConstantExpression arg1 = (IntegerConstantExpression)__reducedValues.pop();Temp.Temp arg0 = (Temp.Temp)__reducedValues.pop();
+    Integer arg1 = (Integer)__reducedValues.pop();Temp.Temp arg0 = (Temp.Temp)__reducedValues.pop();
     		return (reducer.binopOffsetExpression(__p,arg0,arg1));
 }
 
@@ -93,7 +93,7 @@ private  Temp.Temp action_8(Tree.IR __p) throws java.lang.Exception {
 
 /* integerConstant */
 
-private  IntegerConstantExpression action_9(Tree.IR __p) throws java.lang.Exception {
+private  Integer action_9(Tree.IR __p) throws java.lang.Exception {
 
     		return (reducer.integerConstant(__p));
 }
