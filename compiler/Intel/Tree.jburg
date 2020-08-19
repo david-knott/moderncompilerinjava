@@ -6,7 +6,6 @@
 }
 @INodeType Tree.IR;
 @Constant ERROR_TRAP = 268435456;
-@ReturnType integerConstant = Integer;
 @ReturnType temp = Temp.Temp;
 @ReturnType exp = Temp.Temp;
 @ReturnType mem = Temp.Temp;

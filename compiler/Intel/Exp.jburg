@@ -1,10 +1,17 @@
 @Include "./Temp.jburg"
 exp = temp;
 
+
+@ReturnType integerConstant = Integer;
 integerConstant = CONST(void) : 1 
 @Reduction reducer.integerConstant(__p);
-exp = integerConstant;
 
+@ReturnType integerExpression = Temp.Temp;
+integerExpression = integerConstant : 1
+@Reduction reducer.integerExpression(integerConstant);
+exp = integerExpression;
+
+@ReturnType name = Temp.Temp;
 name = NAME(void) : 1
 @Reduction reducer.nameExpression(__p);
 exp = name;

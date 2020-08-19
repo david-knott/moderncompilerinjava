@@ -23,6 +23,7 @@ class AssemblyGeneratorVisitor implements FragmentVisitor {
     public void visit(ProcFrag procFrag) {
         emitter = new EmitterImpl();
         codeGen.setEmitter(emitter);
+        codeGen.setReducer(new Reducer(null));
         // yuck, this smells.
         StmList stmList = (StmList)procFrag.body;
         for(; stmList != null; stmList = stmList.tail) {
