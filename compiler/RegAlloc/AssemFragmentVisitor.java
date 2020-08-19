@@ -20,6 +20,7 @@ class AssemFragmentVisitor implements FragmentVisitor {
     public AssemFragmentVisitor(RegAllocFactory regAlloc, OutputStream outputStream) {
         this.regAlloc = regAlloc;
         this.out = new PrintStream(outputStream);
+        this.out.println(".global tigermain");
     }
 
     @Override
