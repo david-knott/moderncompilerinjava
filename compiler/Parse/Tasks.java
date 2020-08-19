@@ -35,7 +35,7 @@ public class Tasks implements TaskProvider {
         new BooleanTask(new BooleanTaskFlag() {
             @Override
             public void set() {
-                parseTask.setParserTrace(true);
+           //     parseTask.setParserTrace(true);
             }
         }, "parse-trace", "parse-trace", "parse-trace", null);
         new SimpleTask(new SimpleTaskProvider() {

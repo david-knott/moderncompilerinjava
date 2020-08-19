@@ -445,7 +445,7 @@ public class IntelFrame extends Frame {
             InstrList.append(
                 new Assem.InstrList(
                     new Assem.OPER(
-                        "# sink ", 
+                        "# start ", 
                         null,
                         null
                     )

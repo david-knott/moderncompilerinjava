@@ -1,4 +1,4 @@
-/*  Generated Wed Aug 19 10:17:15 IST 2020 by JBurg version 2.0.2  */
+/*  Generated Wed Aug 19 14:16:46 IST 2020 by JBurg version 2.0.2  */
 
 package Intel;
 	import Tree.*;
@@ -251,7 +251,7 @@ private  Temp.Temp action_29(Tree.IR __p) throws java.lang.Exception {
 
 /* call */
 
-private  Reducer.CallExpression action_30(Tree.IR __p) throws java.lang.Exception {
+private  Object action_30(Tree.IR __p) throws java.lang.Exception {
     java.util.Vector<Temp.Temp> args = (java.util.Vector<Temp.Temp>)__reducedValues.pop();
     		return (reducer.call(__p,args));
 }
@@ -259,15 +259,15 @@ private  Reducer.CallExpression action_30(Tree.IR __p) throws java.lang.Exceptio
 /* expCall */
 
 private  Object action_31(Tree.IR __p) throws java.lang.Exception {
-    Reducer.CallExpression c = (Reducer.CallExpression)__reducedValues.pop();
-    		return (reducer.expCall(__p,c));
+    Object c = (Object)__reducedValues.pop();
+    		return (reducer.expCall());
 }
 
 /* moveCall */
 
 private  Object action_32(Tree.IR __p) throws java.lang.Exception {
-    Reducer.CallExpression c = (Reducer.CallExpression)__reducedValues.pop();Temp.Temp e = (Temp.Temp)__reducedValues.pop();
-    		return (reducer.moveCall(__p,c));
+    Object c = (Object)__reducedValues.pop();Temp.Temp e = (Temp.Temp)__reducedValues.pop();
+    		return (reducer.moveCall());
 }
 
 /* stmt */

@@ -28,7 +28,6 @@ public class Reducer {
 	}
 
 	private void emit(Instr instr) {
-		System.out.println(instr.format(new DefaultMap()));
 		if (last != null) {
 			last = last.tail = new Assem.InstrList(instr, null);
 		} else {
@@ -236,21 +235,21 @@ public class Reducer {
 
 	public Temp binopExpression(IR __p, Temp left, Integer right) {
 		Temp temp = Temp.create();
-		emit(new Assem.OPER("movq %" + right + ", %`d0 # add lexp -> r", new TempList(temp), null));
+		emit(new Assem.OPER("movq $" + right + ", %`d0 # add lexp -> r", new TempList(temp), null));
 		return binOp((BINOP)__p, temp, left);
 	}
 
 	public Temp binopExpression(IR __p, Integer left, Temp right) {
 		Temp temp = Temp.create();
-		emit(new Assem.OPER("movq %" + left + ", %`d0 # add lexp -> r", new TempList(temp), null));
+		emit(new Assem.OPER("movq $" + left + ", %`d0 # add lexp -> r", new TempList(temp), null));
 		return binOp((BINOP)__p, temp, right);
 	}
 
 	public Temp binopExpression(IR __p, Integer left, Integer right) {
 		Temp leftTemp = Temp.create();
-		emit(new Assem.OPER("movq %" + left + ", %`d0 # add lexp -> r", new TempList(leftTemp), null));
+		emit(new Assem.OPER("movq $" + left + ", %`d0 # bin(i,i)", new TempList(leftTemp), null));
 		Temp rightTemp = Temp.create();
-		emit(new Assem.OPER("movq %" + right + ", %`d0 # add lexp -> r", new TempList(rightTemp), null));
+		emit(new Assem.OPER("movq $" + right + ", %`d0 # bin(i,i)", new TempList(rightTemp), null));
 		return binOp((BINOP)__p, leftTemp, rightTemp);
 	}
 
@@ -273,12 +272,7 @@ public class Reducer {
 		return temp;
 	}
 
-	static class CallExpression {
-
-
-	}
-
-	public CallExpression call(IR __p, Vector<Temp> args) {
+	public Object call(IR __p, Vector<Temp> args) {
 		int i = 0;
 		TempList tl = null;
 		TempList pr = IntelFrame.paramRegs;
@@ -298,7 +292,7 @@ public class Reducer {
 		CALL call = (CALL)__p;
 		var name = (NAME) call.func;
 		emit(new OPER("call " + name.label + " call", IntelFrame.callDefs, tl));
-		return new CallExpression();
+		return null;
 	}
 
 	public void setUpFunctionExpression(IR p) {
@@ -315,12 +309,12 @@ public class Reducer {
 	}
 
 	public IR move(IR __p, Temp dst, Integer src) {
-		emit(new Assem.OPER("movq $" + src + ", %`d0 # default load", new TempList(dst), null));
+		emit(new Assem.OPER("movq $" + src + ", %`d0 # move(t, i)", new TempList(dst), null));
 		return null;
 	}
 
 	public IR move(IR __p, Temp dst, Temp src) {
-		emit(new Assem.OPER("movq %`s0, %`d0 # default load", new TempList(dst), new TempList(src)));
+		emit(new Assem.MOVE("movq %`s0, %`d0 # move(t, t)", dst, src));
 		return null;
 	}
 
@@ -329,12 +323,11 @@ public class Reducer {
 		emit(new Assem.OPER("movq $" + integerConstant + ", %`d0 # integerExpression", new TempList(dst), null));
 		return dst;
 	}
-
-	public IR expCall(IR __p, CallExpression c) {
+	public Object expCall() {
 		return null;
 	}
 
-	public IR moveCall(IR __p, CallExpression c) {
+	public Object moveCall() {
 		Temp dstTemp = Temp.create();
 		emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
 		return null;

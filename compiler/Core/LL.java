@@ -192,7 +192,6 @@ public class LL<T> {
 
     LL(T h, LL<T> t) {
         Assert.assertNotNull(h);
-        Assert.assertNotNull(t);
         this.head = h;
         this.tail = t;
     }

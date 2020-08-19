@@ -1,5 +1,6 @@
 package Util;
 
+import Assem.Fragment;
 import Assem.InstrList;
 import Parse.Program;
 import Translate.FragList;
@@ -10,6 +11,7 @@ public class TaskContext {
     public boolean bindingsDisplay;
     public FragList hirFragList;
     public FragList lirFragList;
+    public Assem.FragList assemFragList;
     //public InstrList instrList;
 
     public void setAst(final Program value) {
@@ -36,6 +38,7 @@ public class TaskContext {
     //    this.instrList = instrList;
 	}
 
-	public void setAssemFragList(Object object) {
+	public void setAssemFragList(Assem.FragList frags) {
+        this.assemFragList = frags;
 	}
 }

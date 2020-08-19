@@ -16,7 +16,8 @@ import Util.TaskRegister;
 public class Main {
 
     public static void main(final String[] args) throws FileNotFoundException {
-        PrintStream out = new PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
+       // PrintStream out = new PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
+        PrintStream out = System.out;
         InputStream in = new java.io.FileInputStream(args[0]);
         PrintStream err = System.err;
         ErrorMsg errorMsg = new ErrorMsg(args[0], err);
@@ -30,7 +31,7 @@ public class Main {
                 .register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl()))
                 .register(new Intel.Tasks(null, null))
-              //  .register(new Intel.Tasks(new RegAllocFactory(), ))
+                .register(new RegAlloc.Tasks(new RegAllocFactory()))
                 .parseArgs(args)
                 .execute();
     }

@@ -21,19 +21,19 @@ class AssemblyGeneratorVisitor implements FragmentVisitor {
 
     @Override
     public void visit(ProcFrag procFrag) {
-        emitter = new EmitterImpl();
-        codeGen.setEmitter(emitter);
-        codeGen.setReducer(new Reducer(null));
+        this.fragList = null;
+        var reducer = new Reducer(null); 
+        codeGen.setReducer(reducer);
         // yuck, this smells.
         StmList stmList = (StmList)procFrag.body;
         for(; stmList != null; stmList = stmList.tail) {
             try {
                 this.codeGen.burm(stmList.head);
-                this.fragList = new FragList(new Assem.ProcFrag(emitter.getInstrList(), procFrag.frame), this.fragList);
             } catch (Exception e) {
                 throw new Error(e);
             }
         }
+        this.fragList = new FragList(new Assem.ProcFrag(reducer.iList, procFrag.frame), this.fragList);
     }
 
     @Override
@@ -42,6 +42,6 @@ class AssemblyGeneratorVisitor implements FragmentVisitor {
     }
 
     public FragList getAssemFragList() {
-        return this.fragList;
+        return FragList.reverse(this.fragList);
     }
 }

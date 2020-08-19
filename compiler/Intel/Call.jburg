@@ -1,13 +1,13 @@
-@ReturnType call = Reducer.CallExpression;
+@ReturnType call = Object;
 call = CALL(exp args*) : 100
 @Reduction reducer.call(__p, args);
 
 
 @ReturnType expCall = Object;
 expCall = SXP(call c) : 1
-@Reduction reducer.expCall(__p, c);
+@Reduction reducer.expCall();
 
 
 @ReturnType moveCall = Object;
 moveCall = MOVE(exp e, call c): 1
-@Reduction reducer.moveCall(__p, c);
+@Reduction reducer.moveCall();

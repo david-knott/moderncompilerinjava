@@ -1,6 +1,6 @@
 package Assem;
 
-interface FragmentVisitor {
+public interface FragmentVisitor {
 
     void visit(ProcFrag procFrag);
 
