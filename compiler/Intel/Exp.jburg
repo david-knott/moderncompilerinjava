@@ -23,4 +23,5 @@ exp = binop;
 exp = mem;
 
 @Include "./Call.jburg"
-exp = call;
+exp = expCall;
+stmt = moveCall;

@@ -278,7 +278,7 @@ public class Reducer {
 
 	}
 
-	public Temp call(IR __p, Vector<Temp> args) {
+	public CallExpression call(IR __p, Vector<Temp> args) {
 		int i = 0;
 		TempList tl = null;
 		TempList pr = IntelFrame.paramRegs;
@@ -297,10 +297,8 @@ public class Reducer {
 		}
 		CALL call = (CALL)__p;
 		var name = (NAME) call.func;
-		emit(new OPER("call " + name.label + " call ( no return value )", IntelFrame.callDefs, tl));
-		Temp dstTemp = Temp.create();
-		emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
-		return dstTemp;
+		emit(new OPER("call " + name.label + " call", IntelFrame.callDefs, tl));
+		return new CallExpression();
 	}
 
 	public void setUpFunctionExpression(IR p) {
@@ -332,11 +330,13 @@ public class Reducer {
 		return dst;
 	}
 
-	public IR expCall(IR __p, Temp c) {
+	public IR expCall(IR __p, CallExpression c) {
 		return null;
 	}
 
-	public IR moveCall(IR __p, Temp c) {
+	public IR moveCall(IR __p, CallExpression c) {
+		Temp dstTemp = Temp.create();
+		emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
 		return null;
 	}
 }
