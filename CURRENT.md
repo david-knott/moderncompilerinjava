@@ -1,4 +1,9 @@
 # Diary
+## 19th August 2020 ##
+Added assembly emsssion to the JRurg reducer class.
+TODO: Remove old emitter class and associated tests
+TODO: BINOP operation checks and move call and exp call implementation
+
 ## 18th August 2020 ##
 Redoing JBurg. Returning objects from JBurg specifications that I reduce in a
 Reducer class. I am not sure if its the right way to do this. The instruction
