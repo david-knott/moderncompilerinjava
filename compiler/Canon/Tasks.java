@@ -4,36 +4,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ErrorMsg.ErrorMsg;
-import Translate.DataFrag;
 import Translate.FragList;
-import Translate.FragmentVisitor;
-import Translate.ProcFrag;
 import Tree.PrettyPrinter;
-import Tree.TreeVisitor;
 import Util.Assert;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
-
-class FragPrettyPrinter implements FragmentVisitor {
-    final TreeVisitor treeVisitor;
-
-    public FragPrettyPrinter(TreeVisitor treeVisitor) {
-        this.treeVisitor = treeVisitor;
-    }
-
-    @Override
-    public void visit(ProcFrag procFrag) {
-        procFrag.body.accept(this.treeVisitor);
-    }
-
-    @Override
-    public void visit(DataFrag dataFrag) {
-        //do nothing.
-    }
-
-}
 
 public class Tasks implements TaskProvider {
 

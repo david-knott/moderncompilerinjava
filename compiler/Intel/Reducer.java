@@ -5,8 +5,6 @@ import java.util.Vector;
 
 import Assem.Instr;
 import Assem.OPER;
-import Frame.Frame;
-import Temp.DefaultMap;
 import Temp.LabelList;
 import Temp.Temp;
 import Temp.TempList;
@@ -291,7 +289,7 @@ public class Reducer {
 		}
 		CALL call = (CALL)__p;
 		var name = (NAME) call.func;
-		emit(new OPER("call " + name.label + " call", IntelFrame.callDefs, tl));
+		emit(new OPER("call " + name.label + "", IntelFrame.callDefs, tl));
 		return null;
 	}
 

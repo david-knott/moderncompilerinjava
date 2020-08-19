@@ -103,8 +103,10 @@ public class StmList extends Stm {
 
     @Override
     public void accept(TreeVisitor treeVisitor) {
-        // TODO Auto-generated method stub
-
+        StmList stmList = this;
+        for(;stmList != null; stmList = stmList.tail) {
+            stmList.head.accept(treeVisitor);
+        }
     }
 
     @Override
