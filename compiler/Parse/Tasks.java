@@ -29,9 +29,6 @@ public class Tasks implements TaskProvider {
 
 	@Override
     public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
-        Assert.assertNotNull(errorMsg);
-        Assert.assertNotNull(in);
-        Assert.assertNotNull(out);
         new BooleanTask(new BooleanTaskFlag() {
             @Override
             public void set() {
