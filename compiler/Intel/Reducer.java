@@ -15,6 +15,7 @@ import Tree.IR;
 import Tree.JUMP;
 import Tree.LABEL;
 import Tree.NAME;
+import Util.Assert;
 
 public class Reducer {
 
@@ -105,7 +106,7 @@ public class Reducer {
 	}
 
 	public IR loadindirect(IR __p, Temp dst, IndirectExpression src) {
-		emit(new Assem.MOVE("movq %`s0, %`d0 # load 0", dst, src.temp));
+		emit(new Assem.OPER("movq (%`s0), %`d0 # load indirect", new TempList(dst), new TempList(src.temp)));
 		return null;
 	}
 
@@ -248,8 +249,10 @@ public class Reducer {
 
 	public Temp mem(BinopOffsetExpression boe) {
 		Temp temp = Temp.create();
-		//TODO: Apply binop operator.
-		emit(new Assem.OPER("movq " + boe.offset +  "(%`s0), %`d0 # add lexp -> r", new TempList(temp), new TempList(boe.base)));
+		Assert.assertIsTrue(boe.binop.binop == Tree.BINOP.PLUS
+				|| boe.binop.binop == Tree.BINOP.MINUS);
+		int signedOffset = boe.binop.binop == Tree.BINOP.PLUS ? boe.offset : -boe.offset;
+		emit(new Assem.OPER("movq " + signedOffset +  "(%`s0), %`d0 # add lexp -> r", new TempList(temp), new TempList(boe.base)));
 		return temp;
 	}
 

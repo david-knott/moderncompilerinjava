@@ -4,8 +4,6 @@ import Temp.Temp;
 import Tree.BINOP;
 
 /**
- * Represents a addition or subtraction from a memory address
- * stored in a register.
  */
 public class BinopOffsetExpression {
 
@@ -18,19 +16,20 @@ public class BinopOffsetExpression {
      */
     final Integer offset;
     /**
-     * The Tree.BINOP element. Only PLUS and MINUS are supported.
+     * The Tree.BINOP element.
      */
     final BINOP binop;
 
     /**
      * The default constructor.
+     * 
      * @param binop
      * @param base
      * @param offset
      */
-	public BinopOffsetExpression(BINOP binop, Temp base, Integer offset) {
+    public BinopOffsetExpression(BINOP binop, Temp base, Integer offset) {
         this.base = base;
-        this.offset = offset; 
+        this.offset = offset;
         this.binop = binop;
-	}
+    }
 }
