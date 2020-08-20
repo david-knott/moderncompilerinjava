@@ -53,22 +53,20 @@ public class Reducer {
 		return new IndirectExpression(arg);
 	}
 
+	public IndirectWithDisplacementExpression indirectWithDisplacement(IR __p, BinopOffsetExpression arg0) {
+		return new IndirectWithDisplacementExpression(arg0);
+	}
+
 	public IndirectWithDisplacementAndScaleExpression indirectWithDisplacementAndScale(IR __p, Temp arg0,
 			BinopOffsetExpression arg1) {
 		return new IndirectWithDisplacementAndScaleExpression(arg0, arg1);
 	}
 
-	public IndirectWithDisplacementExpression indirectWithDisplacement(IR __p, BinopOffsetExpression arg0) {
-		return new IndirectWithDisplacementExpression(arg0);
-	}
-
-
 	public IR loadindirectWithDisplacement(IR __p, Temp dst, IndirectWithDisplacementExpression arg1) {
-		//TODO : Check the binop operator !
 		emit(
-			new Assem.OPER("movq " + arg1.binopOffsetExpression.offset + "(%`s0), %`d0 # load to offset", 
+			new Assem.OPER("movq " + arg1.displacement() + "(%`s0), %`d0 # load to offset", 
 				new TempList(dst), 
-				new TempList(arg1.binopOffsetExpression.base)
+				new TempList(arg1.temp())
 			)
 		);
 		return null;
@@ -77,10 +75,9 @@ public class Reducer {
 	public IR loadindirectWithDisplacementAndScale(IR __p, Temp dst,
 			IndirectWithDisplacementAndScaleExpression src) {
 		//TODO : Check the binop operator !
-		int wordSize = 8;
-		emit(new Assem.OPER("movq (%`s0, %`s1, " + wordSize +"), %`d0 # load array", 
+		emit(new Assem.OPER("movq (%`s0, %`s1, " + src.wordSize() +"), %`d0 # load array", 
 			new TempList(dst), 
-			new TempList(src.base, new TempList(src.binopOffsetExpression.base))
+			new TempList(src.base, new TempList(src.index()))
 		));
 		return null;
 	}
@@ -91,21 +88,19 @@ public class Reducer {
 	}
 
 	public Temp storeindirectWithDisplacement(IR __p, IndirectWithDisplacementExpression dst, Temp src) {
-		//TODO : Check the binop operator !
-		emit(new Assem.OPER("movq %`s0, " + dst.binopOffsetExpression.offset + "(%`s1) # store to offset", 
+		emit(new Assem.OPER("movq %`s0, " + dst.displacement() + "(%`s1) # store to offset", 
 			null, 
-			new TempList(src, new TempList(dst.binopOffsetExpression.base))
+			new TempList(src, new TempList(dst.temp()))
 		));
 		return null;
 	}
 
 	public Temp storeindirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression dst, Temp src) {
 		//TODO : Check the binop operator !
-		emit(new Assem.OPER("movq %`s0, (%`s1, %`s2, " + 8 +") # store array", 
+		emit(new Assem.OPER("movq %`s0, (%`s1, %`s2, " + dst.wordSize() + ") # store array", 
 			null, 
-			new TempList(src, new TempList(dst.base, new TempList(dst.binopOffsetExpression.base)))
+			new TempList(src, new TempList(dst.base, new TempList(dst.index())))
 		));
-
 		return null;
 	}
 
