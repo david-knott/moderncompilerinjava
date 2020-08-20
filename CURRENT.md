@@ -1,4 +1,12 @@
 # Diary
+
+## 20th August 2020 ##
+Some minor refactoring. The emitted assembly is not correct. I need to
+compare the working branch pre register allocation assembly with this one
+to see the differences. This may reveal what the problem is.
+~~ TODO: Remove old emitter class and associated tests ~~
+~~ TODO: BINOP operation checks and move call and exp call implementation ~~
+
 ## 19th August 2020 ##
 Added assembly emsssion to the JRurg reducer class.
 TODO: Remove old emitter class and associated tests
