@@ -31,7 +31,7 @@ public class Main {
                 .register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl()))
                 .register(new Intel.Tasks(null, null))
-                .register(new RegAlloc.Tasks(new RegAllocFactory()))
+             //   .register(new RegAlloc.Tasks(new RegAllocFactory()))
                 .parseArgs(args)
                 .execute();
     }

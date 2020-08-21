@@ -8,6 +8,11 @@ import Main.Main;
 
 public class TestDriver {
     @Test
+    public void intDec() throws FileNotFoundException {
+        Main.main(new String[]{"./test/E2E/good/int_dec.tig"});
+    }
+
+    @Test
     public void test() throws FileNotFoundException {
         Main.main(new String[]{"./test/E2E/good/linked_list_size.tig"});
     }
