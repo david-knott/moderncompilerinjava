@@ -77,11 +77,12 @@ public class ProcFrag extends Frag {
         StmList stmList = canonicalization.canon(this.body);
         this.trigger(CANONICAL_COMPLETE, stmList);
         Assem.InstrList instrs = codegen(this.frame, stmList);
+        /*
         for(; instrs != null; instrs = instrs.tail) {
             System.out.println(instrs.head.format(new DefaultMap()));
         }
         return;
-        /*
+        */
         instrs = this.frame.procEntryExit2(instrs);
         RegAllocCoalesce regAlloc = new RegAllocCoalesce(this.frame, instrs);
         TempMap tempMap = new CombineMap(this.frame, regAlloc);
@@ -105,7 +106,7 @@ public class ProcFrag extends Frag {
         }
         for (InstrList epilog = proc.epilog; epilog != null; epilog = epilog.tail) {
             out.println(epilog.head.format(this.frame));
-        }*/
+        }
     }
 
     @Override
