@@ -34,7 +34,14 @@ public class CALL extends Exp {
 
     @Override
     public IR getNthChild(int index) {
-        return this.args.head;
+        if(index >= this.getArity()) {
+            throw new Error("Call: index greater than arity.");
+        }
+        ExpList expList = this.args;
+        while(index-- != 0) {
+            expList = expList.tail;
+        }
+        return expList.head;
     }
 
 }

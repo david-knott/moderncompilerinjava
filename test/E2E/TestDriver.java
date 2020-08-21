@@ -9,7 +9,7 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void intDec() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/int_dec.tig"});
+        Main.main(new String[]{"./test/E2E/good/array_dec.tig"});
     }
 
     @Test
