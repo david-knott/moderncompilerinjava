@@ -55,6 +55,7 @@ public class Tasks implements TaskProvider {
                 taskContext.setAssemFragList(assemblyFragmentVisitor.getAssemFragList());
             }
         }, "instruction-selection", "Select x64 as target", new String[] { "" });
+        
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
