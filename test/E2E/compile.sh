@@ -6,5 +6,5 @@ rm -rf ./good/*.out
 rm -rf ./good/*.s
 $JAVA_HOME/javac -sourcepath ../../compiler/ -d ../../bin ../../compiler/**/*.java
 $JAVA_HOME/java -cp ../../bin Main.Main $1 > $1.s
-gcc -g -w -no-pie -Wimplicit-function-declaration -Wl,--wrap,getchar $1.s ./runtime.c -o $1.out
-./$f.out
+#gcc -g -w -no-pie -Wimplicit-function-declaration -Wl,--wrap,getchar $1.s ./runtime.c -o $1.out
+#./$f.out
