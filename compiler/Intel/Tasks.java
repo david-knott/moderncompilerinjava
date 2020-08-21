@@ -56,6 +56,7 @@ public class Tasks implements TaskProvider {
             }
         }, "instruction-selection", "Select x64 as target", new String[] { "" });
         
+        /*
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
@@ -81,7 +82,7 @@ public class Tasks implements TaskProvider {
                 });
 
 			}
-        }, "dump-it", "", new String[] { "" });
+        }, "dump-it", "", new String[] { "" });*/
         
 
     }

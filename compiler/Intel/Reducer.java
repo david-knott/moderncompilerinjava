@@ -96,6 +96,17 @@ public class Reducer {
 		return null;
 	}
 
+
+	public IR storeIndirectWithDisplacement(IR __p, IndirectWithDisplacementExpression arg0, Temp arg1) {
+		throw new Error("Not implemented");
+	}
+
+	public IR storeIndirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression arg0,
+			Temp arg1) {
+		throw new Error("Not implemented");
+	}
+
+
 	public Temp storeindirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression dst, Temp src) {
 		//TODO : Check the binop operator !
 		emit(new Assem.OPER("movq %`s0, (%`s1, %`s2, " + dst.wordSize() + ") # store array", 
@@ -295,15 +306,6 @@ public class Reducer {
 		System.out.println("prolog");
 	}
 
-	public IR storeIndirectWithDisplacement(IR __p, IndirectWithDisplacementExpression arg0, Temp arg1) {
-		return null;
-	}
-
-	public IR storeIndirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression arg0,
-			Temp arg1) {
-		return null;
-	}
-
 	public IR move(IR __p, Temp dst, Integer src) {
 		emit(new Assem.OPER("movq $" + src + ", %`d0 # move(t, i)", new TempList(dst), null));
 		return null;
@@ -319,12 +321,12 @@ public class Reducer {
 		emit(new Assem.OPER("movq $" + integerConstant + ", %`d0 # integerExpression", new TempList(dst), null));
 		return dst;
 	}
-	public Object expCall() {
+
+	public Object expCall(Object c) {
 		return null;
 	}
 
-	public Object moveCall() {
-		Temp dstTemp = Temp.create();
+	public Object moveCall(Temp dstTemp, Object c) {
 		emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
 		return null;
 	}

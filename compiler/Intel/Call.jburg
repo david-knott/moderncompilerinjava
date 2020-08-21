@@ -5,9 +5,9 @@ call = CALL(exp args*) : 100
 
 @ReturnType expCall = Object;
 expCall = SXP(call c) : 1
-@Reduction reducer.expCall();
+@Reduction reducer.expCall(c);
 
 
 @ReturnType moveCall = Object;
 moveCall = MOVE(exp e, call c): 1
-@Reduction reducer.moveCall();
+@Reduction reducer.moveCall(e, c);

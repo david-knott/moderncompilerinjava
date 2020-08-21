@@ -1,4 +1,4 @@
-/*  Generated Wed Aug 19 14:16:46 IST 2020 by JBurg version 2.0.2  */
+/*  Generated Fri Aug 21 12:12:09 IST 2020 by JBurg version 2.0.2  */
 
 package Intel;
 	import Tree.*;
@@ -260,14 +260,14 @@ private  Object action_30(Tree.IR __p) throws java.lang.Exception {
 
 private  Object action_31(Tree.IR __p) throws java.lang.Exception {
     Object c = (Object)__reducedValues.pop();
-    		return (reducer.expCall());
+    		return (reducer.expCall(c));
 }
 
 /* moveCall */
 
 private  Object action_32(Tree.IR __p) throws java.lang.Exception {
     Object c = (Object)__reducedValues.pop();Temp.Temp e = (Temp.Temp)__reducedValues.pop();
-    		return (reducer.moveCall());
+    		return (reducer.moveCall(e,c));
 }
 
 /* stmt */
