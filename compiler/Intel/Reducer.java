@@ -1,6 +1,8 @@
 package Intel;
 
+
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Vector;
 
 import Assem.Instr;
@@ -88,7 +90,7 @@ public class Reducer {
 		return null;
 	}
 
-	public Temp storeindirectWithDisplacement(IR __p, IndirectWithDisplacementExpression dst, Temp src) {
+	public IR storeIndirectWithDisplacement(IR __p, IndirectWithDisplacementExpression dst, Temp src) {
 		emit(new Assem.OPER("movq %`s0, " + dst.displacement() + "(%`s1) # store to offset", 
 			null, 
 			new TempList(src, new TempList(dst.temp()))
@@ -96,24 +98,15 @@ public class Reducer {
 		return null;
 	}
 
-
-	public IR storeIndirectWithDisplacement(IR __p, IndirectWithDisplacementExpression arg0, Temp arg1) {
-		throw new Error("Not implemented");
-	}
-
-	public IR storeIndirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression arg0,
-			Temp arg1) {
-		throw new Error("Not implemented");
-	}
-
-
-	public Temp storeindirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression dst, Temp src) {
+	public IR storeIndirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression dst,
+			Temp src) {
 		//TODO : Check the binop operator !
 		emit(new Assem.OPER("movq %`s0, (%`s1, %`s2, " + dst.wordSize() + ") # store array", 
 			null, 
 			new TempList(src, new TempList(dst.base, new TempList(dst.index())))
 		));
 		return null;
+
 	}
 
 	public IR loadindirect(IR __p, Temp dst, IndirectExpression src) {
@@ -279,13 +272,30 @@ public class Reducer {
 		return temp;
 	}
 
-	public Object call(IR __p, Vector<Temp> args) {
-		int i = 0;
+	public Object call(IR __p, Vector<Temp> functionArguments) {
 		TempList tl = null;
-		TempList pr = IntelFrame.paramRegs;
-		//TODO : Yuck !
-		Collections.reverse(args);
-		for(Temp arg : args) {
+		TempList argRegisters = IntelFrame.paramRegs;
+		int argCount = functionArguments.size();
+		for(int i = 0; i < Math.min(6, argCount); ++i) {
+			emit(new Assem.MOVE("movq %`s0, %`d0 # move reg arg " + i + " to temp", argRegisters.head, functionArguments.get(i)));
+			tl = TempList.append(tl, argRegisters.head);
+			argRegisters = argRegisters.tail;
+		}
+		for(int i = argCount - 1; i >= 6; --i) {
+			emit(new Assem.OPER("pushq %`s1 # move reg arg " + i + " to stack", null,
+						L(IntelFrame.rsp, L(functionArguments.get(i), null))));
+		}
+		
+		/*
+		while(argRegisters != null) {
+
+			emit(new Assem.MOVE("movq %`s0, %`d0 # move reg arg " + i + " to temp", pr.head, arg));
+			tl = TempList.append(tl, pr);
+
+			argRegisters = argRegisters.tail;
+		}*/
+		/*
+		for(args) {
 			if (pr != null) {
 				emit(new Assem.MOVE("movq %`s0, %`d0 # move reg arg " + i + " to temp", pr.head, arg));
 				tl = TempList.append(tl, pr);
@@ -296,6 +306,12 @@ public class Reducer {
 			}
 			++i;
 		}
+		if(args != null) {
+			Collections.reverse(args);
+			for(Temp arg : args) {
+
+			}
+		}*/
 		CALL call = (CALL)__p;
 		var name = (NAME) call.func;
 		emit(new OPER("call " + name.label + "", IntelFrame.callDefs, tl));

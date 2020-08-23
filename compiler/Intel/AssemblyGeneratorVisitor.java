@@ -21,7 +21,6 @@ class AssemblyGeneratorVisitor implements FragmentVisitor {
 
     @Override
     public void visit(ProcFrag procFrag) {
-        this.fragList = null;
         var reducer = new Reducer(null); 
         codeGen.setReducer(reducer);
         // yuck, this smells.
@@ -38,7 +37,7 @@ class AssemblyGeneratorVisitor implements FragmentVisitor {
 
     @Override
     public void visit(DataFrag dataFrag) {
-        this.fragList = new FragList(new Assem.DataFrag(dataFrag.toString()));
+        this.fragList = new FragList(new Assem.DataFrag(dataFrag.toString()), this.fragList);
     }
 
     public FragList getAssemFragList() {
