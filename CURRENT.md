@@ -1,4 +1,16 @@
 # Diary
+## 25th August 2020 ##
+Command line parsing next.
+
+Rules 
+
+* zero args except for tiger file name, compiles for x64, writes assembly to standard out.
+* if args present, we process them and figure out what dependencies need to be executed.
+* build a sequence of tasks and then execute them.
+* create a special argument to write assembly to file
+* create special argument that reads tiger from standard in.
+
+
 ## 24th August 2020 ##
 Added pretty printer functionality into the translate and canon tasks. This
 is to assist in tracking down a bug in the jburg code generation. I am focusing
@@ -10,7 +22,6 @@ register is being saved to the frame, this is the static link. It looks correct.
     movq %rax, %rax # does nothing 
     add %rbp, %rax # add -8 to  base pointer address
     movq %rdi, (%rax) # store value in rdi into the -8 fromm the base pointer
-
 
 The jburg implementation appears to be using a higher cost tiling, which should be easy to 
 fix by tweaking the  tile costs. However, the even with the subopitmal tiling pattern, 
