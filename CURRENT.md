@@ -17,6 +17,9 @@ fix by tweaking the  tile costs. However, the even with the subopitmal tiling pa
 I would still expect the code to compile and work. So I think we need to further examine 
 the assembly and use GDB to trace the code execution. 
 
+I also need to implement the command argument functionality as I keep having to comment out 
+stuff. 
+
 ## 20th August 2020 ##
 Some minor refactoring. The emitted assembly is not correct. I need to
 compare the working branch pre register allocation assembly with this one
