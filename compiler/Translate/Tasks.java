@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import ErrorMsg.ErrorMsg;
 import Intel.IntelFrame;
 import Temp.Label;
+import Tree.PrettyPrinter;
+import Tree.TreeVisitor;
 import Util.Assert;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
@@ -34,9 +36,19 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                for (FragList fragList = taskContext.hirFragList; fragList != null; fragList = fragList.tail) {
-                
-                }
+                TreeVisitor prettyPrinter = new PrettyPrinter(out);
+                taskContext.hirFragList.accept(new FragmentVisitor(){
+
+                    @Override
+                    public void visit(ProcFrag procFrag) {
+                        procFrag.body.accept(prettyPrinter);
+                    }
+
+                    @Override
+                    public void visit(DataFrag dataFrag) {
+                        // TODO: Implement.
+                    }
+                });
             }
         }, "hir-display", "Display the HIR", new String[] { "hir-compute" });
 

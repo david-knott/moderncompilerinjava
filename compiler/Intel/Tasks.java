@@ -2,18 +2,11 @@ package Intel;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 
-import Assem.DataFrag;
-import Assem.FragmentVisitor;
-import Assem.InstrList;
-import Assem.ProcFrag;
 import Canon.Canonicalization;
 import ErrorMsg.ErrorMsg;
 import RegAlloc.RegAllocFactory;
-import Temp.DefaultMap;
 import Translate.FragList;
-import Util.Assert;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -36,15 +29,6 @@ public class Tasks implements TaskProvider {
 
     @Override
     public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
-        /*
-         * new SimpleTask(new SimpleTaskProvider() {
-         * 
-         * @Override public void only(TaskContext taskContext) { FragList frags =
-         * taskContext.hirFragList; PrintStream fileOut = new PrintStream(out);
-         * fileOut.println(".global tigermain"); frags.accept(new
-         * AssemblyCompute(regAllocFactory, canonicalization, out)); fileOut.close(); }
-         * }, "target-x64", "Select x64 as target", new String[] { "" });
-         */
 
         new SimpleTask(new SimpleTaskProvider() {
             @Override
@@ -56,34 +40,14 @@ public class Tasks implements TaskProvider {
             }
         }, "instruction-selection", "Select x64 as target", new String[] { "" });
         
-        /*
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
                 Assem.FragList assemblyFragList = taskContext.assemFragList;
-                assemblyFragList.accept(new FragmentVisitor() {
-
-                    @Override
-                    public void visit(ProcFrag procFrag) {
-                        PrintStream printStream = new PrintStream(out);
-                        printStream.println("proc:" + procFrag.frame.name);
-                        for(InstrList instrList = procFrag.body; instrList != null; instrList = instrList.tail) {
-                            printStream.println(instrList.head.format(new DefaultMap()));
-                        }
-                        printStream.println();
-                    }
-
-                    @Override
-                    public void visit(DataFrag dataFrag) {
-                        // TODO Auto-generated method stub
-
-                    }
-                    
-                });
+                assemblyFragList.accept(new UnallocatedAssmeblyDump(out));
 
 			}
-        }, "dump-it", "", new String[] { "" });*/
-        
+        }, "dump-it", "", new String[] { "" });
 
     }
 }

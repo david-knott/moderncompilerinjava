@@ -34,12 +34,11 @@ public class Tasks implements TaskProvider {
                 taskContext.setLIR(canonVisitor.fragList);
             }
         }, "lir-compute", "Perform canonicalisation of HIR tree", new String[] { "" });
-        /*
         new SimpleTask(
             (taskContext) -> taskContext.lirFragList.accept(new FragPrettyPrinter(new PrettyPrinter(out))), 
             "lir-display", 
             "Displays the lir",
             new String[]{"lir-compute"}
-        );*/
+        );
     }
 }

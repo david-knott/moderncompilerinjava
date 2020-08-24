@@ -22,7 +22,9 @@ public class TaskRegister {
     public TaskRegister execute() {
         TaskContext taskContext = new TaskContext();
         for (LL<Task> t = this.tasks; t != null; t = t.tail) {
-            t.head.execute(taskContext);
+            if(t.head.active) {
+                t.head.execute(taskContext);
+            }
         }
         return this;
     }

@@ -9,25 +9,66 @@ import java.io.PrintStream;
 public class PrettyPrinter implements TreeVisitor {
 
     final PrintStream printStream;
+    int level = 0;
+
+    void incLevel() {
+        level++;
+    }
+
+    void decLevel() {
+        level--;
+    }
 
     public PrettyPrinter(OutputStream out) {
         this.printStream = new PrintStream(out);
+        this.printStream.println("### Tree Pretty Printer ###");
     }
-    
+
     private void write(String s) {
+        for (int i = 0; i < level; ++i) {
+            this.printStream.print("  ");
+        }
         this.printStream.println(s);
     }
 
-	@Override
+    @Override
     public void visit(BINOP op) {
-        this.write("binop(" + op.binop);
+        this.write("binop(");
+        switch (op.binop) {
+            case BINOP.PLUS:
+                this.write("PLUS");
+                break;
+            case BINOP.MINUS:
+                this.write("MINUS");
+                break;
+            case BINOP.MUL:
+                this.write("MUL");
+                break;
+            case BINOP.DIV:
+                this.write("DIV");
+                break;
+            default:
+                this.write(Integer.toString(op.binop));
+                break;
+        }
+        this.incLevel();
+        op.left.accept(this);
+        op.right.accept(this);
+        this.decLevel();
+        this.write(")");
     }
 
     @Override
     public void visit(CALL op) {
-        // TODO Auto-generated method stub
-        this.write("call(" + op.func + ")");
-
+        this.write("call(");
+        this.incLevel();
+        ;
+        op.func.accept(this);
+        for (ExpList el = op.args; el != null; el = el.tail) {
+            el.head.accept(this);
+        }
+        this.decLevel();
+        this.write(")");
     }
 
     @Override
@@ -37,73 +78,87 @@ public class PrettyPrinter implements TreeVisitor {
 
     @Override
     public void visit(ESEQ op) {
-        // TODO Auto-generated method stub
-        this.write("eseq");
-
+        this.write("eseq(");
+        this.incLevel();
+        ;
+        op.exp.accept(this);
+        op.stm.accept(this);
+        this.decLevel();
+        this.write(")");
     }
 
     @Override
     public void visit(EXP op) {
-        // TODO Auto-generated method stub
         this.write("sxp(");
-
+        this.incLevel();
+        op.exp.accept(this);
+        this.decLevel();
+        this.write(")");
     }
 
     @Override
     public void visit(JUMP op) {
-        // TODO Auto-generated method stub
-        this.write("jump");
+        this.write("jump(");
+        this.incLevel();
+        op.exp.accept(this);
+        this.decLevel();
+        this.write(")");
+        // Targets
 
     }
 
     @Override
     public void visit(LABEL op) {
-        // TODO Auto-generated method stub
-        this.write("label");
-
+        this.write("label(" + op.label + ")");
     }
 
     @Override
     public void visit(MEM op) {
-        // TODO Auto-generated method stub
-        this.write("mem");
-
+        this.write("mem(");
+        this.incLevel();
+        op.exp.accept(this);
+        this.decLevel();
+        this.write(")");
     }
 
     @Override
     public void visit(MOVE op) {
-        // TODO Auto-generated method stub
-        
-        this.write("move");
-
+        this.write("move(");
+        this.incLevel();
+        op.dst.accept(this);
+        op.src.accept(this);
+        this.decLevel();
+        this.write(")");
     }
 
     @Override
     public void visit(NAME op) {
-        // TODO Auto-generated method stub
-        this.write("name");
+        this.write("name(" + op.label + ")");
 
     }
 
     @Override
     public void visit(SEQ op) {
-        // TODO Auto-generated method stub
-        this.write("seq");
-
+        this.write("seq(");
+        this.incLevel();
+        op.left.accept(this);
+        op.right.accept(this);
+        this.decLevel();
+        this.write(")");
     }
 
     @Override
     public void visit(TEMP op) {
-        // TODO Auto-generated method stub
-        this.write("temp");
-
+        this.write("temp(" + op.temp.toString() + ")");
     }
 
     @Override
     public void visit(CJUMP cjump) {
-        // TODO Auto-generated method stub
-        this.write("cjump");
-
+        this.write("cjump(");
+        this.incLevel();
+        cjump.left.accept(this);
+        cjump.right.accept(this);
+        this.decLevel();
+        this.write(")");
     }
-
 }

@@ -233,13 +233,13 @@ public class Reducer {
 
 	public Temp binopExpression(IR __p, Temp left, Integer right) {
 		Temp temp = Temp.create();
-		emit(new Assem.OPER("movq $" + right + ", %`d0 # add lexp -> r", new TempList(temp), null));
+		emit(new Assem.OPER("movq $" + right + ", %`d0 # bin(t, i)", new TempList(temp), null));
 		return binOp((BINOP)__p, temp, left);
 	}
 
 	public Temp binopExpression(IR __p, Integer left, Temp right) {
 		Temp temp = Temp.create();
-		emit(new Assem.OPER("movq $" + left + ", %`d0 # add lexp -> r", new TempList(temp), null));
+		emit(new Assem.OPER("movq $" + left + ", %`d0 # bin(i, t)", new TempList(temp), null));
 		return binOp((BINOP)__p, temp, right);
 	}
 

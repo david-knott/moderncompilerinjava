@@ -37,4 +37,8 @@ public class TEMP extends Exp {
     public IR getNthChild(int index) {
         throw new Error("Not supported");
     }
+
+    public String toString() {
+        return temp.toString();
+    }
 }
