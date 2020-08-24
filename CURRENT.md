@@ -1,5 +1,6 @@
 # Diary
 ## 25th August 2020 ##
+
 Command line parsing next.
 
 Rules 
@@ -10,6 +11,9 @@ Rules
 * create a special argument to write assembly to file
 * create special argument that reads tiger from standard in.
 
+Once a basic command line arg parser is in place, we can continue debuging the code gen.
+Without the command line parser, I will need to comment out all the pretty print code.
+RUn GDB and find what is causing the seg fault. The static link code looks correct.
 
 ## 24th August 2020 ##
 Added pretty printer functionality into the translate and canon tasks. This
@@ -29,7 +33,8 @@ I would still expect the code to compile and work. So I think we need to further
 the assembly and use GDB to trace the code execution. 
 
 I also need to implement the command argument functionality as I keep having to comment out 
-stuff. 
+stuff. I want to be able to view the canon tree and non allocated assmebly without all the other 
+debug information.
 
 ## 20th August 2020 ##
 Some minor refactoring. The emitted assembly is not correct. I need to
