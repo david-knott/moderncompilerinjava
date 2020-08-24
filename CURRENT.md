@@ -1,4 +1,21 @@
 # Diary
+## 24th August 2020 ##
+Added pretty printer functionality into the translate and canon tasks. This
+is to assist in tracking down a bug in the jburg code generation. I am focusing
+on the factorial.tig test at the moment. It passes in master but fails in the
+jburg feature branch. The seg fault occurs at Label L7 where a value in a
+register is being saved to the frame, this is the static link. It looks correct. 
+
+    movq $-8, %rax # move -8 to rax
+    movq %rax, %rax # does nothing 
+    add %rbp, %rax # add -8 to  base pointer address
+    movq %rdi, (%rax) # store value in rdi into the -8 fromm the base pointer
+
+
+The jburg implementation appears to be using a higher cost tiling, which should be easy to 
+fix by tweaking the  tile costs. However, the even with the subopitmal tiling pattern, 
+I would still expect the code to compile and work. So I think we need to further examine 
+the assembly and use GDB to trace the code execution. 
 
 ## 20th August 2020 ##
 Some minor refactoring. The emitted assembly is not correct. I need to
