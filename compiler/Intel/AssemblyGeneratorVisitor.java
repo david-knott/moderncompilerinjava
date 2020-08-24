@@ -41,6 +41,7 @@ class AssemblyGeneratorVisitor implements FragmentVisitor {
     }
 
     public FragList getAssemFragList() {
-        return FragList.reverse(this.fragList);
+      //  return FragList.reverse(this.fragList);
+      return this.fragList;
     }
 }
