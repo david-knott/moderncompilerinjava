@@ -20,7 +20,6 @@ public class Main {
         if (args.length == 1) {
             args = new String[] { "reg-alloc", args[0] };
         }
-        // PrintStream out = System.out;
         InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
         ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);

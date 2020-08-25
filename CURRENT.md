@@ -1,7 +1,11 @@
 # Diary
 ## 25th August 2020 ##
-For the factorial.tig test file, the problem appears to be a non terminating
-recursive loop. This is likey due to either a comparison bug or arithmetic operand bug.
+Added code to move named memory locations into registers, this fixed most errors.
+
+TODO: Fix bug in nested binop expressions, see function_six_arg.tig for example.
+
+~~For the factorial.tig test file, the problem appears to be a non terminating
+recursive loop. This is likey due to either a comparison bug or arithmetic operand bug.~~
 
 TODO: Detect cyles in task register.
 
