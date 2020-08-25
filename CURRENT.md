@@ -1,5 +1,7 @@
 # Diary
 ## 25th August 2020 ##
+For the factorial.tig test file, the problem appears to be a non terminating
+recursive loop. This is likey due to either a comparison bug or arithmetic operand bug.
 
 TODO: Detect cyles in task register.
 
