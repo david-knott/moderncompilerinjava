@@ -32,7 +32,7 @@ public class Tasks implements TaskProvider {
                 FragList frags = FragList.reverse(semant.getTreeFragments(taskContext.program.absyn));
                 taskContext.setFragList(frags);
             }
-        }, "hir-compute", "Translate abstract syntax to HIR", new String[] { "typed" });
+        }, "hir-compute", "Translate abstract syntax to HIR", "typed");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
@@ -50,7 +50,7 @@ public class Tasks implements TaskProvider {
                     }
                 });
             }
-        }, "hir-display", "Display the HIR", new String[] { "hir-compute" });
+        }, "hir-display", "Display the HIR", "hir-compute");
 
     }
 }

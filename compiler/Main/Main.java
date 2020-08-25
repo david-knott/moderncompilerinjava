@@ -18,9 +18,9 @@ public class Main {
     public static void main(final String[] args) throws FileNotFoundException {
      //   PrintStream out = new PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
         PrintStream out = System.out;
-        InputStream in = new java.io.FileInputStream(args[0]);
+        InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
-        ErrorMsg errorMsg = new ErrorMsg(args[0], err);
+        ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);
         TaskRegister.instance
                 .setErrorHandler(errorMsg)
                 .setIn(in)
@@ -28,6 +28,7 @@ public class Main {
                 .register(new Parse.Tasks(new CupParser(in, errorMsg)))
                 .register(new FindEscape.Tasks())
                 .register(new Absyn.Tasks())
+                .register(new Semant.Tasks())
                 .register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl()))
                 .register(new Intel.Tasks(null, null))

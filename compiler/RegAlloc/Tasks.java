@@ -28,6 +28,6 @@ public class Tasks implements TaskProvider {
 			public void only(TaskContext taskContext) {
                 taskContext.assemFragList.accept(new AssemFragmentVisitor(regAllocFactory, out));
 			}
-        }, "instruction-selection", "Select x64 as target", new String[] { "" });
+        }, "reg-alloc", "Select x64 as target", "instr-compute");
     }
 }

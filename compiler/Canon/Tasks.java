@@ -22,23 +22,25 @@ public class Tasks implements TaskProvider {
 
     @Override
     public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
-        Assert.assertNotNull(errorMsg);
-        Assert.assertNotNull(in);
-        Assert.assertNotNull(out);
-        new SimpleTask(new SimpleTaskProvider() {
-            @Override
-            public void only(TaskContext taskContext) {
-                FragList frags = taskContext.hirFragList;
-                CanonVisitor canonVisitor = new CanonVisitor(canonicalization);
-                frags.accept(canonVisitor);
-                taskContext.setLIR(canonVisitor.fragList);
-            }
-        }, "lir-compute", "Perform canonicalisation of HIR tree", new String[] { "" });
+        new SimpleTask(
+            new SimpleTaskProvider() {
+                @Override
+                public void only(TaskContext taskContext) {
+                    FragList frags = taskContext.hirFragList;
+                    CanonVisitor canonVisitor = new CanonVisitor(canonicalization);
+                    frags.accept(canonVisitor);
+                    taskContext.setLIR(canonVisitor.fragList);
+                }
+            }, 
+            "lir-compute", 
+            "Perform canonicalisation of HIR tree", 
+            "hir-compute"
+        );
         new SimpleTask(
             (taskContext) -> taskContext.lirFragList.accept(new FragPrettyPrinter(new PrettyPrinter(out))), 
             "lir-display", 
             "Displays the lir",
-            new String[]{"lir-compute"}
+            "lir-compute"
         );
     }
 }

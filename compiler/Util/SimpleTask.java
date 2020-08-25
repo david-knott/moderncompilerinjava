@@ -1,15 +1,16 @@
 package Util;
 
 public class SimpleTask extends Task {
-    private SimpleTaskProvider name;
+    private SimpleTaskProvider prov;
 
-    public SimpleTask(SimpleTaskProvider name, String module, String description, String[] deps) {
+    public SimpleTask(SimpleTaskProvider prov, String name, String description, String deps) {
+        super(name, description, deps);
         TaskRegister.instance.register(this);
-        this.name = name;
+        this.prov = prov;
     }
 
     @Override
     public void execute(TaskContext taskContext) {
-        this.name.only(taskContext);
+        this.prov.only(taskContext);
     }
 }

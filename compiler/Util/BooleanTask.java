@@ -6,7 +6,9 @@ package Util;
 public class BooleanTask extends Task {
     private BooleanTaskFlag booleanTaskFlag;
 
-    public BooleanTask(BooleanTaskFlag flag, String module, String description, String name, String[] deps) {
+    public BooleanTask(BooleanTaskFlag flag, String name, String description, String deps) {
+        super(name, description, deps);
+        Assert.assertNotNull(flag);
         TaskRegister.instance.register(this);
         this.booleanTaskFlag = flag;
     }

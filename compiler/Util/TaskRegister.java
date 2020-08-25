@@ -16,7 +16,29 @@ public class TaskRegister {
     private LL<Task> tasks = null;
 
     public TaskRegister parseArgs(String[] args) {
+        for(int i = 0; i < args.length - 1; ++i) {
+            this.resolve(args[i]);
+        }
         return this;
+    }
+
+    private Task findTask(String name) {
+        LL<Task> f = this.tasks;
+        for(;f != null && f.head.name != name; f = f.tail);
+        if(f == null) throw new Error("No task for name = " +  name);
+        return f.head;
+    }
+
+    private void resolve(String name) {
+        Task task = this.findTask(name);
+        task.active = true;
+        if(task.deps != null) {
+            for(String dep : task.deps.split("\\s+")) {
+                if(dep != "") {
+                    this.resolve(dep);
+                }
+            }
+        }
     }
 
     public TaskRegister execute() {

@@ -38,7 +38,7 @@ public class Tasks implements TaskProvider {
                 lirFragList.accept(assemblyFragmentVisitor);
                 taskContext.setAssemFragList(assemblyFragmentVisitor.getAssemFragList());
             }
-        }, "instruction-selection", "Select x64 as target", new String[] { "" });
+        }, "instr-compute", "Select x64 as target", "lir-compute" );
         
         new SimpleTask(new SimpleTaskProvider() {
             @Override
@@ -47,7 +47,7 @@ public class Tasks implements TaskProvider {
                 assemblyFragList.accept(new UnallocatedAssmeblyDump(out));
 
 			}
-        }, "dump-it", "", new String[] { "" });
+        }, "instr-display", "Dump the unallocated assembly", "instr-compute");
 
     }
 }
