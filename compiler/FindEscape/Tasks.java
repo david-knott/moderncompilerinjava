@@ -24,7 +24,7 @@ public class Tasks implements TaskProvider {
                 FindEscape findEscape = new FindEscape(false);
                 findEscape.traverse(taskContext.program.absyn);
             }
-        }, "escapes-compute", "escape", "bound");
+        }, "escapes-compute", "escape", "parse");
 
         new SimpleTask(new SimpleTaskProvider() {
             @Override

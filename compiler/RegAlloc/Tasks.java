@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import ErrorMsg.ErrorMsg;
+import Util.BooleanTask;
+import Util.BooleanTaskFlag;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -16,6 +18,7 @@ import Util.TaskProvider;
  */
 public class Tasks implements TaskProvider {
     final RegAllocFactory regAllocFactory;
+    boolean demove = false;
 
     public Tasks(RegAllocFactory regAllocFactory) {
         this.regAllocFactory = regAllocFactory;
@@ -23,10 +26,19 @@ public class Tasks implements TaskProvider {
 
     @Override
     public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
+
+        new BooleanTask(new BooleanTaskFlag(){
+            @Override
+            public void set() {
+                demove = true;
+            }
+            
+        }, "demove", "Remove redundant moves", "reg-alloc");
+
         new SimpleTask(new SimpleTaskProvider(){
 			@Override
 			public void only(TaskContext taskContext) {
-                taskContext.assemFragList.accept(new AssemFragmentVisitor(regAllocFactory, out));
+                taskContext.assemFragList.accept(new AssemFragmentVisitor(demove, regAllocFactory, out));
 			}
         }, "reg-alloc", "Select x64 as target", "instr-compute");
     }

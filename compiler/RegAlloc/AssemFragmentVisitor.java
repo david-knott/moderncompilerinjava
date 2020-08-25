@@ -16,11 +16,13 @@ import Temp.TempMap;
 class AssemFragmentVisitor implements FragmentVisitor {
     final RegAllocFactory regAlloc;
     final PrintStream out;
+    final boolean demove;
 
-    public AssemFragmentVisitor(RegAllocFactory regAlloc, OutputStream outputStream) {
+    public AssemFragmentVisitor(boolean demove, RegAllocFactory regAlloc, OutputStream outputStream) {
         this.regAlloc = regAlloc;
         this.out = new PrintStream(outputStream);
         this.out.println(".global tigermain");
+        this.demove = demove;
     }
 
     @Override
@@ -39,9 +41,9 @@ class AssemFragmentVisitor implements FragmentVisitor {
             if(body.head instanceof MOVE) {
                 Temp def = body.head.def().head;
                 Temp use = body.head.use().head;
-          //      if(tempMap.tempMap(def) != tempMap.tempMap(use)) {
+                if(!this.demove || tempMap.tempMap(def) != tempMap.tempMap(use)) {
                     out.println(body.head.format(tempMap));
-            //    }
+                }
             }
             else {
                 out.println(body.head.format(tempMap));
