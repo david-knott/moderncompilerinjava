@@ -1,6 +1,8 @@
 # Diary
 ## 25th August 2020 ##
 
+TODO: Detect cyles in task register.
+
 Command line parsing next.
 
 Rules 

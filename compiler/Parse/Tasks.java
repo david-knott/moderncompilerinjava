@@ -34,7 +34,7 @@ public class Tasks implements TaskProvider {
             public void set() {
                 parseTask.setParserTrace(true);
             }
-        }, "parse-trace", "parse-trace", "parse-trace");
+        }, "parse-trace", "parse-trace", "parse");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {

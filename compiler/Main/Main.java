@@ -15,8 +15,11 @@ import Util.TaskRegister;
  */
 public class Main {
 
-    public static void main(final String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException {
      //   PrintStream out = new PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
+        if(args.length == 1) {
+          args = new String[]{"reg-alloc", args[0]};
+        }
         PrintStream out = System.out;
         InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
