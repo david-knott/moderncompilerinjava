@@ -179,7 +179,7 @@ public class Reducer {
 	public Temp nameExpression(IR __p) {
 		NAME op = (NAME)__p;
 		Temp temp = Temp.create();
-     //   emit(new Assem.OPER("movq $" + op.label + ", %`d0 # default name", L(temp, null), null));
+        emit(new Assem.OPER("movq $" + op.label + ", %`d0 # default name", L(temp, null), null));
 		return temp;
 	}
 
