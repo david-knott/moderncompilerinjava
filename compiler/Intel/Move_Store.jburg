@@ -1,3 +1,6 @@
+move = MOVE(MEM(exp arg0), MEM(exp arg1)): 1
+@Reduction reducer.storeMemToMem(__p, arg0, arg1);
+
 /* Indirect addressing without displacement */
 move = MOVE(indirect arg0, exp arg1) : 10
 @Reduction reducer.storeIndirect(__p, arg0, arg1);

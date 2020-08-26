@@ -347,4 +347,17 @@ public class Reducer {
 		emit(new Assem.MOVE("movq %`s0, %`d0 # rax to temp ", dstTemp, IntelFrame.rax));
 		return null;
 	}
+
+	public IR storeMemToMem(IR __p, Temp dst, Temp src) {
+		Temp reg = Temp.create();
+                emit(new Assem.OPER("movq (%`s0), %`d0 # m2m mem to temp", 
+                        new TempList(reg), 
+                        new TempList(src)
+                        ));
+                 emit(new Assem.OPER("movq %`s0, (%`s1) # m2m temp to mem", 
+                        null, 
+                        new TempList(reg, new TempList(dst)) 
+                        ));
+		return null;
+	}
 }
