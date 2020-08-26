@@ -26,8 +26,8 @@ movq %r8, %r8 # move reg arg 4 to temp
 movq %r9, %r9 # move reg arg 5 to temp
 pushq %rax # move reg arg 6 to stack
 call L0
-movq %rax, %rdi # rax to temp 
-movq %rdi, %rdi # move reg arg 0 to temp
+movq %rax, %rax # rax to temp 
+movq %rax, %rdi # move reg arg 0 to temp
 call printi
 movq %rbx, %rbx # move(t, t)
 movq %r12, %r12 # move(t, t)
@@ -54,28 +54,28 @@ movq $-8, %rax # bin(i, t)
 movq %rax, %rax # add lexp -> r
 add %rbp, %rax
 movq %rdi, (%rax) # store
-movq %rsi, %rax # move(t, t)
+movq %rsi, %rsi # move(t, t)
 movq %rdx, %rdx # move(t, t)
 movq %rcx, %rcx # move(t, t)
 movq %r8, %r8 # move(t, t)
 movq %r9, %r9 # move(t, t)
-movq 16(%rbp), %rsi # add lexp -> r
-movq %rsi, %rsi # move(t, t)
+movq 16(%rbp), %rdi # add lexp -> r
+movq %rdi, %rdi # move(t, t)
 movq %rbx, %rbx # move(t, t)
 movq %r12, %r12 # move(t, t)
 movq %r13, %r13 # move(t, t)
 movq %r14, %r14 # move(t, t)
 movq %r15, %r15 # move(t, t)
-movq %rax, %rax # add lexp -> r
-add %rdx, %rax
-movq %rax, %rax # add lexp -> r
-add %rcx, %rax
-movq %rax, %rax # add lexp -> r
-add %r8, %rax
-movq %rax, %rax # add lexp -> r
-add %r9, %rax
-movq %rax, %rax # add lexp -> r
-add %rsi, %rax
+movq %rsi, %rsi # add lexp -> r
+add %rdx, %rsi
+movq %rsi, %rsi # add lexp -> r
+add %rcx, %rsi
+movq %rsi, %rsi # add lexp -> r
+add %r8, %rsi
+movq %rsi, %rsi # add lexp -> r
+add %r9, %rsi
+movq %rsi, %rax # add lexp -> r
+add %rdi, %rax
 movq %rax, %rax # move(t, t)
 movq %rbx, %rbx # move(t, t)
 movq %r12, %r12 # move(t, t)

@@ -34,6 +34,7 @@ public class PrettyPrinter implements TreeVisitor {
     @Override
     public void visit(BINOP op) {
         this.write("binop(");
+        this.incLevel();
         switch (op.binop) {
             case BINOP.PLUS:
                 this.write("PLUS");
@@ -51,7 +52,6 @@ public class PrettyPrinter implements TreeVisitor {
                 this.write(Integer.toString(op.binop));
                 break;
         }
-        this.incLevel();
         op.left.accept(this);
         op.right.accept(this);
         this.decLevel();

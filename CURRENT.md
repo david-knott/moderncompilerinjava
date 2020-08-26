@@ -1,4 +1,8 @@
 # Diary
+## 26th August 2020 ##
+Problem with task arguments. First need to see why utility bash scripts are not recognising the
+escapes-compute. I was seeing differences due to the new code defaulting to every variable escaping.
+
 ## 25th August 2020 ##
 Added code to move named memory locations into registers, this fixed most errors.
 
