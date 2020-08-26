@@ -25,7 +25,7 @@ public class TaskRegister {
     private Task findTask(String name) {
         LL<Task> f = this.tasks;
         for(;f != null && f.head.name != name; f = f.tail);
-        if(f == null) throw new Error("No task for name = " +  name);
+        if(f == null) throw new Error("No task for name = '" +  name + "'");
         return f.head;
     }
 

@@ -251,12 +251,13 @@ public class Reducer {
 		return binOp((BINOP)__p, leftTemp, rightTemp);
 	}
 
+	//TODO: Not correct.
 	public Temp mem(BinopOffsetExpression boe) {
 		Temp temp = Temp.create();
 		Assert.assertIsTrue(boe.binop.binop == Tree.BINOP.PLUS
 				|| boe.binop.binop == Tree.BINOP.MINUS);
 		int signedOffset = boe.binop.binop == Tree.BINOP.PLUS ? boe.offset : -boe.offset;
-		emit(new Assem.OPER("movq " + signedOffset +  "(%`s0), %`d0 # add lexp -> r", new TempList(temp), new TempList(boe.base)));
+		emit(new Assem.OPER("movq " + signedOffset +  "(%`s0), %`d0 # mem(boe)", new TempList(temp), new TempList(boe.base)));
 		return temp;
 	}
 
