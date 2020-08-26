@@ -1,15 +1,13 @@
 package Translate;
 
-import java.io.PrintStream;
 import Frame.Frame;
-import Tree.StmList;
 
 /**
  * Stores string literal data
  **/
 public class DataFrag extends Frag {
 
-	private final String data;
+	final String data;
 
 	public DataFrag(String data) {
 		this.data = data;
@@ -20,13 +18,12 @@ public class DataFrag extends Frag {
 	}
 
 	@Override
-	public void process(PrintStream out) {
-		out.println(".data");
-		out.println(this.data);
+	public Frame getFrame() {
+		throw new Error();
 	}
 
 	@Override
-	public Frame getFrame() {
-		throw new Error();
+	public void accept(FragmentVisitor fragmentVisitor) {
+        fragmentVisitor.visit(this);
 	}
 }

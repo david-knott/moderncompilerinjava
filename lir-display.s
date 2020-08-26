@@ -1,0 +1,174 @@
+### Tree Pretty Printer ###
+label(L4)
+move(
+  mem(
+    binop(
+    PLUS
+      const(-8)
+      temp(t0)
+    )
+  )
+  temp(t7)
+)
+move(
+  temp(t16)
+  temp(t6)
+)
+move(
+  temp(t17)
+  temp(t5)
+)
+move(
+  temp(t18)
+  temp(t4)
+)
+move(
+  temp(t19)
+  temp(t8)
+)
+move(
+  temp(t20)
+  temp(t9)
+)
+move(
+  temp(t21)
+  mem(
+    binop(
+    PLUS
+      const(16)
+      temp(t0)
+    )
+  )
+)
+move(
+  temp(t22)
+  temp(t3)
+)
+move(
+  temp(t23)
+  temp(t12)
+)
+move(
+  temp(t24)
+  temp(t13)
+)
+move(
+  temp(t25)
+  temp(t14)
+)
+move(
+  temp(t26)
+  temp(t15)
+)
+move(
+  temp(t2)
+  binop(
+  PLUS
+    binop(
+    PLUS
+      binop(
+      PLUS
+        binop(
+        PLUS
+          binop(
+          PLUS
+            temp(t16)
+            temp(t17)
+          )
+          temp(t18)
+        )
+        temp(t19)
+      )
+      temp(t20)
+    )
+    temp(t21)
+  )
+)
+move(
+  temp(t3)
+  temp(t22)
+)
+move(
+  temp(t12)
+  temp(t23)
+)
+move(
+  temp(t13)
+  temp(t24)
+)
+move(
+  temp(t14)
+  temp(t25)
+)
+move(
+  temp(t15)
+  temp(t26)
+)
+jump(
+  name(L3)
+)
+label(L3)
+label(L2)
+move(
+  temp(t27)
+  temp(t3)
+)
+move(
+  temp(t28)
+  temp(t12)
+)
+move(
+  temp(t29)
+  temp(t13)
+)
+move(
+  temp(t30)
+  temp(t14)
+)
+move(
+  temp(t31)
+  temp(t15)
+)
+move(
+  temp(t32)
+  call(
+    name(L0)
+    temp(t0)
+    const(1)
+    const(2)
+    const(3)
+    const(4)
+    const(5)
+    const(6)
+  )
+)
+sxp(
+  call(
+    name(printi)
+    temp(t32)
+  )
+)
+move(
+  temp(t3)
+  temp(t27)
+)
+move(
+  temp(t12)
+  temp(t28)
+)
+move(
+  temp(t13)
+  temp(t29)
+)
+move(
+  temp(t14)
+  temp(t30)
+)
+move(
+  temp(t15)
+  temp(t31)
+)
+jump(
+  name(L1)
+)
+label(L1)

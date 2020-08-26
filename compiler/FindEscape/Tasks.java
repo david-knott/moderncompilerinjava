@@ -24,7 +24,7 @@ public class Tasks implements TaskProvider {
                 FindEscape findEscape = new FindEscape(false);
                 findEscape.traverse(taskContext.program.absyn);
             }
-        }, "escapes-compute", "escape", new String[]{"bound"});
+        }, "escapes-compute", "escape", "parse");
 
         new SimpleTask(new SimpleTaskProvider() {
             @Override
@@ -32,7 +32,7 @@ public class Tasks implements TaskProvider {
                 taskContext.setEscapesDisplay(true);
 
             }
-        }, "escapes-display", "escape", new String[]{"parse"});
+        }, "escapes-display", "escape", "parse");
 
     }
 }

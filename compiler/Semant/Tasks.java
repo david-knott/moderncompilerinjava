@@ -14,14 +14,11 @@ public class Tasks implements TaskProvider {
 
     @Override
     public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
-        Assert.assertNotNull(errorMsg);
-        Assert.assertNotNull(in);
-        Assert.assertNotNull(out);
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
 
             }
-        }, "types-compute", "check for type violations", new String[]{"parse"});
+        }, "typed", "check for type violations", "parse");
     }
 }

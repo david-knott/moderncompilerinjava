@@ -1,9 +1,129 @@
-## Diary
-*5th August 2020*
+# Diary
+## 26th August 2020 ##
+Problem with task arguments. First need to see why utility bash scripts are not recognising the
+escapes-compute. I was seeing differences due to the new code defaulting to every variable escaping.
+
+## 25th August 2020 ##
+Added code to move named memory locations into registers, this fixed most errors.
+
+TODO: Fix bug in nested binop expressions, see function_six_arg.tig for example.
+
+~~For the factorial.tig test file, the problem appears to be a non terminating
+recursive loop. This is likey due to either a comparison bug or arithmetic operand bug.~~
+
+TODO: Detect cyles in task register.
+
+Command line parsing next.
+
+Rules 
+
+* zero args except for tiger file name, compiles for x64, writes assembly to standard out.
+* if args present, we process them and figure out what dependencies need to be executed.
+* build a sequence of tasks and then execute them.
+* create a special argument to write assembly to file
+* create special argument that reads tiger from standard in.
+
+Once a basic command line arg parser is in place, we can continue debuging the code gen.
+Without the command line parser, I will need to comment out all the pretty print code.
+RUn GDB and find what is causing the seg fault. The static link code looks correct.
+
+## 24th August 2020 ##
+Added pretty printer functionality into the translate and canon tasks. This
+is to assist in tracking down a bug in the jburg code generation. I am focusing
+on the factorial.tig test at the moment. It passes in master but fails in the
+jburg feature branch. The seg fault occurs at Label L7 where a value in a
+register is being saved to the frame, this is the static link. It looks correct. 
+
+    movq $-8, %rax # move -8 to rax
+    movq %rax, %rax # does nothing 
+    add %rbp, %rax # add -8 to  base pointer address
+    movq %rdi, (%rax) # store value in rdi into the -8 fromm the base pointer
+
+The jburg implementation appears to be using a higher cost tiling, which should be easy to 
+fix by tweaking the  tile costs. However, the even with the subopitmal tiling pattern, 
+I would still expect the code to compile and work. So I think we need to further examine 
+the assembly and use GDB to trace the code execution. 
+
+I also need to implement the command argument functionality as I keep having to comment out 
+stuff. I want to be able to view the canon tree and non allocated assmebly without all the other 
+debug information.
+
+## 20th August 2020 ##
+Some minor refactoring. The emitted assembly is not correct. I need to
+compare the working branch pre register allocation assembly with this one
+to see the differences. This may reveal what the problem is.
+~~ TODO: Remove old emitter class and associated tests ~~
+~~ TODO: BINOP operation checks and move call and exp call implementation ~~
+
+## 19th August 2020 ##
+Added assembly emsssion to the JRurg reducer class.
+TODO: Remove old emitter class and associated tests
+TODO: BINOP operation checks and move call and exp call implementation
+
+## 18th August 2020 ##
+Redoing JBurg. Returning objects from JBurg specifications that I reduce in a
+Reducer class. I am not sure if its the right way to do this. The instruction
+selection pass is the next thing I need to do, so I will continue with this
+until its complete and can replace the Maximum Munch implementation.
+
+## 17th August 2020 ##
+I converted the StmtList to a Tree.SEQ after caonicalisation. I am hoping that
+the following instruction selection phase with the new Jburg implementation will
+be able to use the SEQ based structure.
+
+I have wired up an Intel.Task to hit the JBurg code generator. Unfortunately its
+not working correctly yet.
+
+## 16th August 2020 ##
+Implemented more instruction matching and tests with JBurg
+
+Created new tasks for Canon module so we can separate it from the the intel codegen
+phase. I am stuck on what representation we should use for the canon rep ( lir rep ).
+The current implementation from Appels book returns a StmtList however the canon
+is done as part of the code gen, so we have a referecnce to the current frame.
+
+Do I create a new datatructure for the StmtList and Frame, or modify the existing
+Canon module so that it can return a representation that can use the ProcFrag structure.
+I think I can use a Sequence as we ignore the seq in our IR. Basically replace the 
+StmtList (head, tail) with a SEQ(left, right) where left and right are used as a head
+and tail respectively.
+
+
+## 14th August 2020 ##
+Implementing new instruction selection using jburg ( http://jburg.sourceforge.net/ )
+I ran into a problem attempting to match load / store using a tile for indirect scaled
+addressing mode.
+
+I was using a rule like this
+
+    move = MOVE(exp arg0, MEM(BINOP(exp arg1, BINOP(exp arg2, CONST(void) arg3)))) : 1
+
+but the generated jburg tree matcher would not match. The only way I could this rule to
+match was to replace the exp non terminals with terminals for TEMPS. Obviously this is not
+going work as the tree is never going to have temps in those places. To address this I had
+to create an auxilary rule that captures this sub pattern
+
+    /* indirect addressing with displacement and scaled index */
+    arrayIndex =  MEM(BINOP(exp arg0, BINOP(exp arg1, CONST(void) arg2))) : 1
+    {
+        emitter.startLoadIndirectDispScaled(arg0, arg1, arg2);
+        return null;
+    }
+
+    move = MOVE(exp arg0, arrayIndex arg1) : 1
+    {
+        emitter.endLoadIndirectDispScaled(arg0, arg1);
+        return null;
+    }
+
+I am not happy with this as I need to pass the arguments from the arrayIndex tree into
+the move for code emission.
+
+## 5th August 2020 ##
 Refactoring code to use a command / chain of responsibility pattern for arguments
 
 
-*16 July 2020*
+## 16 July 2020 ##
 Compiler works ( at least all the tests work ). It implements the full iterated
 coalescing graph colouring algorithm as outlined in A Appels book. 
 
@@ -21,8 +141,9 @@ I would like to be able to generate graphs for the register allocation & coalesc
 
 I would like to be able to display the programs liveness analysis
 
+Well done me !
 
-*10 July 2020*
+## 10 July 2020 ##
 Fixed another bug, in maximum munch MEM_TO_MEM, we were using a MEM assembly 
 function instead of a OPER. This was causing the coalesce function to not work
 correctly.
@@ -31,7 +152,7 @@ Fixed simple bug in Instr comparator.
 
 All items pass, except for merge_simple.
 
-*9th July 2020*
+## 9th July 2020 ##
 Currently failing
 
 Test Result: ./good/array_assign.tig failed.
@@ -51,7 +172,7 @@ that seg faults.
 It appears that certain temporaries that interfere are being coalesced to the same
 register. This should not happen.
 
-*8th July 2020*
+## 8th July 2020 ##
 Pretty Print is prettier.
 
 Coalesce in progress. Registers allocation is not correct.
@@ -60,7 +181,7 @@ Fix bugs in Semant Validation checking as per Epita spec.
 
 Finish Coalesce
 
-*6th July 2020*
+## 6th July 2020 ##
 Fixed bug in store array assembly, index and base registers were reversed.
 
 Bug in register allocation / code generation for stores and loads. Possible due
@@ -68,7 +189,7 @@ to 2 mems in a move.
 
 Bug in writing \n to standard out, rendering as ^B
 
-*5th July 2020*
+## 5th July 2020 ##
 Fixed bug in register allocation. I had rax as in the calldefs. This was preventing the
 register allocation from generating correct assignments. 
 
@@ -80,7 +201,7 @@ Subscription call...
 init variable => get current frames static link, this points to parent frames frame pointer.
 Use this to reference the varible access.
 
-*26th June 2020*
+## 26th June 2020 ##
 Bug in recursive declarion of functions. if a is declared before b  and a calls b, we get a label error.
 Fixed static link bug. Queens and merge are now passing.
 
@@ -89,7 +210,7 @@ will compile but will not assembly. This is due to missing labels
 
 Bugs: If a variable is defined with the same name as a function we get java compilation errors
 
-*25th June 2020*
+## 25th June 2020 ##
 
 ~~Static link is incorrect in a recursive function call.~
 
@@ -99,7 +220,7 @@ TODO: Reintroduce Sugared For Loop.
 
 ~~Defined N at top level~
 
-*24th June 2020*
+## 24th June 2020 ##
 Fixed binops, strings and ifthenelse. Still bug in queens and merge.
 
 ~~String E2E tests.
@@ -112,13 +233,13 @@ an IF statement. I suspect when it is used like this we jump to the parent IF's 
 these expressions return 1 and we jump to the false label if they return 0.
 
 
-*23nd June 2020*
+## 23nd June 2020 ##
 Continuing to add unit tests for semantic type checking. Fixed read only for loop bug.
 
 ~~TODO: Test string functions
 
 
-*22nd June 2020*
+## 22nd June 2020 ##
 
 Fixed the for loop bug. It was due to an error in the 'AND' set operation. Jeez.
 Started refactoring semantic analysis and adding new type checking tests.
@@ -126,7 +247,7 @@ Started refactoring semantic analysis and adding new type checking tests.
 TODO: Semant -> Visitor, 
 ~~TODO: Readonly Assignment to For Indexer~~
 
-*19th June 2020*
+## 19th June 2020 ##
 Fixed sorting bug in Temps which was breaking register allocation.
 
 ~~Still a bug in for loops if we at a printi() statement inside the loop.
@@ -135,7 +256,7 @@ This causes the loop to repeated spill. I have no idea why.~~
 ~~In the code generation, where there are combinations of instructions that use a move followed by an OPERATION
 We need to be careful when spilling.~~
 
-*18th June 2020*
+## 18th June 2020 ##
 
 ~~Register Allocation. Is it working ?~~
 

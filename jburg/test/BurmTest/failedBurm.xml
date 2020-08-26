@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<BurmDump date="Wed Nov 19 16:43:27 EST 2014">
+<AST>
+<Node operator="1"> <Node operator="5"> <Node operator="2" userObject="1"/><Node operator="2" userObject="2"/> </Node> </Node>
+</AST>
+</BurmDump>

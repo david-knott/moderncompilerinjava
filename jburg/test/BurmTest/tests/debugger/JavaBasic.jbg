@@ -1,0 +1,33 @@
+@Language java;
+@implements burmTest.ArithmeticOpcodes;
+
+@INodeType  burmTest.TestINode;
+@ReturnType Long;
+
+@Header
+{
+    import java.io.*;
+}
+
+@ErrorHandler
+{
+    try {
+        PrintWriter f = new PrintWriter("gensrc/javaDebug.xml");
+        dump(p.getNode(),f);
+        f.flush();
+        f.close();
+    } catch (Exception nogo) {
+        nogo.printStackTrace();
+        System.exit(1);
+    }
+}
+
+expression=ADD(expression d1, expression d2, expression d3): 1
+{
+    throw new IllegalStateException("dummy rule called");
+}
+
+traalfaaz = INT(void): 1
+{
+    return 4L;
+}

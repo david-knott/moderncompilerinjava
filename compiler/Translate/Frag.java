@@ -13,8 +13,8 @@ public abstract class Frag extends Component {
 
     public Frag next;
 
-    public abstract void process(PrintStream out);
-
     public abstract Frame getFrame();
+
+    public abstract void accept(FragmentVisitor fragmentVisitor);
 
 }

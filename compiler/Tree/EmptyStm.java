@@ -34,4 +34,22 @@ public class EmptyStm extends Stm {
 		return this.title;
 	}
 
+	@Override
+	public int getOperator() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getArity() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public IR getNthChild(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

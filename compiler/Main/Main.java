@@ -4,51 +4,30 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import Absyn.Exp;
-import Absyn.PrettyPrinter;
-import Core.Listener;
+import Canon.CanonicalizationImpl;
 import ErrorMsg.ErrorMsg;
-import Intel.IntelFrame;
-import Parse.Grm;
-import Parse.Program;
-import Parse.Yylex;
-import Temp.Label;
-import Translate.Frag;
-import Translate.FragList;
-import Translate.Level;
-import Translate.ProcFrag;
-import Translate.Translator;
-import Tree.Stm;
-import Tree.StmList;
+import Parse.CupParser;
+import RegAlloc.RegAllocFactory;
 import Util.TaskRegister;
-
-class Options {
-
-}
 
 /**
  * Main class that executes the compiler.
  */
 public class Main {
 
-    public static void main(final String[] args) throws FileNotFoundException {
-        // new Main(args[0]);
-        PrintStream out = new PrintStream(new java.io.FileOutputStream(args[0] + ".s"));
-        InputStream in = new java.io.FileInputStream(args[0]);
+    public static void main(String[] args) throws FileNotFoundException {
+        PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
+        if (args.length == 1) {
+            args = new String[] {"escapes-compute", "reg-alloc", args[0] };
+        }
+      //  PrintStream out = System.out;
+        InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
-        ErrorMsg errorMsg = new ErrorMsg(args[0], err);
-        TaskRegister.instance
-                .setErrorHandler(errorMsg)
-                .setIn(in)
-                .setOut(out)
-                .register(new Parse.Tasks())
-                .register(new FindEscape.Tasks())
-                .register(new Absyn.Tasks())
-          //      .register(new Frame.Tasks())
-          //      .register(new Semant.Tasks())
-                .register(new Translate.Tasks())
-                .register(new Intel.Tasks())
-                .parseArgs(args)
-                .execute();
+        ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);
+        TaskRegister.instance.setErrorHandler(errorMsg).setIn(in).setOut(out)
+                .register(new Parse.Tasks(new CupParser(in, errorMsg))).register(new FindEscape.Tasks())
+                .register(new Absyn.Tasks()).register(new Semant.Tasks()).register(new Translate.Tasks())
+                .register(new Canon.Tasks(new CanonicalizationImpl())).register(new Intel.Tasks(null, null))
+                .register(new RegAlloc.Tasks(new RegAllocFactory())).parseArgs(args).execute();
     }
 }

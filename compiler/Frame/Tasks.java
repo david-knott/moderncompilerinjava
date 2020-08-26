@@ -22,25 +22,25 @@ public class Tasks implements TaskProvider {
             public void only(TaskContext taskContext) {
 
             }
-        }, "inst-compute", "select the instructions", new String[]{"lir-compute", "targeted"});
+        }, "compute", "select the instructions", "lir-compute targeted");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
 
             }
-        }, "runtime-display", "display the runtime", new String[]{"targeted"});
+        }, "runtime-display", "display the runtime", "targeted");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
 
             }
-        }, "inst-debug", "Enable verbose instruction display", new String[]{"targeted"});
+        }, "inst-debug", "Enable verbose instruction display", "targeted");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
 
             }
-        }, "targeted", "Enable verbose instruction display", new String[]{"target-ia64"});
+        }, "targeted", "Enable verbose instruction display", "target-ia64");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {

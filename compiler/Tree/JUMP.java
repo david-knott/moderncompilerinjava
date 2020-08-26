@@ -25,4 +25,19 @@ public class JUMP extends Stm {
   public void accept(TreeVisitor treeVisitor) {
     treeVisitor.visit(this);
   }
+
+  @Override
+  public int getOperator() {
+    return TreeKind.JUMP;
+  }
+
+  @Override
+  public int getArity() {
+    return 1;
+  }
+
+  @Override
+  public IR getNthChild(int index) {
+    return this.exp;
+  }
 }

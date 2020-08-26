@@ -1,0 +1,16 @@
+// https://web.stanford.edu/class/archive/cs/cs107/cs107.1194/guide/x86-64.html
+/**
+* Rules that match tiles that load memory address contents into temporoary.
+*/
+
+/* Indirect addressing without displacement */
+move = MOVE(exp arg0, indirect arg1) : 10
+@Reduction reducer.loadindirect(__p, arg0, arg1);
+
+/* indirect addressing with displacement */
+move = MOVE(exp arg0, indirectWithDisplacement arg1) : 1
+@Reduction reducer.loadindirectWithDisplacement(__p, arg0, arg1);
+
+/* indirect addressing with displacement and scale */
+move = MOVE(exp arg0, indirectWithDisplacementAndScale arg1) : 1
+@Reduction reducer.loadindirectWithDisplacementAndScale(__p, arg0, arg1);

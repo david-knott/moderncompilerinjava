@@ -1,0 +1,52 @@
+@Language Java;
+@Package Target.x64;
+@Header {
+
+}
+@INodeType Tree.IR;
+@ReturnType int;
+
+
+exp = CALL : 1
+{	
+	return 0;
+}
+
+exp = BINOP(Exp left, Const right) : 1
+{
+	var binop = (BINOP)__p;
+	var cst = (CONST)__p.getNthChild(right);
+	var exp = (EXP)__p.getNthChild(left);
+}
+
+exp = BINOP(Exp left, Exp right) : 1
+{
+	//emit code..
+}
+
+
+exp = EXP(CALL call) : 1
+{
+	return 0;
+}
+
+stmt = MOVE(BINOP(op o1, reg r1, reg r2), reg r2) : 1
+{
+	return 0;
+}
+
+stmt = MOVE(reg r1, reg r2) : 1
+{
+	return 0;
+}
+
+exp = PLUS(reg r1, reg r2) : 1
+{
+	return r;
+}
+
+exp = XXX(regx rx1, regx rx2): 1
+{
+	retuen r;
+}
+

@@ -1,5 +1,6 @@
 package Intel;
 
+
 import Temp.Label;
 import Temp.Temp;
 import Temp.TempList;
@@ -142,6 +143,22 @@ public class IntelFrame extends Frame {
             )
         )
     );
+
+    public static TempList paramRegs = new TempList(
+        rdi, new TempList(
+            rsi, new TempList(
+                rdx, new TempList(
+                    rcx, new TempList(
+                        r8, new TempList(
+                            r9
+                        )
+                    )
+                )
+            )
+        )
+    );
+
+
 
     public static TempList callDefs = callerSaves;
     public static TempList returnSink = new TempList(rbp, new TempList(rsp, new TempList(rax,  calleeSaves)));
@@ -428,7 +445,7 @@ public class IntelFrame extends Frame {
             InstrList.append(
                 new Assem.InstrList(
                     new Assem.OPER(
-                        "# sink ", 
+                        "# start ", 
                         null,
                         null
                     )

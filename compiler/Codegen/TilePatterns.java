@@ -1,17 +1,6 @@
 package Codegen;
 
-import java.util.Hashtable;
-
-import javax.xml.catalog.Catalog;
-
 import Tree.BINOP;
-import Tree.CALL;
-import Tree.CONST;
-import Tree.EXP;
-import Tree.Exp;
-import Tree.MEM;
-import Tree.MOVE;
-import Tree.TEMP;
 
 public class TilePatterns {
 
@@ -28,6 +17,11 @@ public class TilePatterns {
         new MEMT(
             new ExpT("src")
         )
+    );
+
+    public static TilePattern LOAD_0 = new MOVET(
+        new ExpT("dst"),
+        new ExpT("src")
     );
 
     public static TilePattern LOAD = new MOVET(

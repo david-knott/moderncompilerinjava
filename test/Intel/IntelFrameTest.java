@@ -10,6 +10,7 @@ import Temp.Temp;
 import Tree.BINOP;
 import Tree.CONST;
 import Tree.EmptyStm;
+import Tree.IR;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.SEQ;
