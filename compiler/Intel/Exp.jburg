@@ -12,7 +12,7 @@ integerExpression = integerConstant : 1
 exp = integerExpression;
 
 @ReturnType name = Temp.Temp;
-name = NAME(void) : 10
+name = NAME(void) : 1
 @Reduction reducer.nameExpression(__p);
 exp = name;
 

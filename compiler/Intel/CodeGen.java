@@ -1,4 +1,4 @@
-/*  Generated Wed Aug 26 16:57:17 IST 2020 by JBurg version 2.0.2  */
+/*  Generated Thu Aug 27 16:06:50 IST 2020 by JBurg version 2.0.2  */
 
 package Intel;
 	import Tree.*;
@@ -569,10 +569,10 @@ class JBurgAnnotation_BINOP_2  extends JBurgSpecializedAnnotation
 {
 
     private  int getCostForRule_75bd9247(int goalState)  {
-        return (normalizedAdd(20, normalizedAdd(this.getNthChild(1).getCost(__integerConstant_NT), this.getNthChild(0).getCost(__exp_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__integerConstant_NT), this.getNthChild(0).getCost(__exp_NT))));
     }
     private  int getCostForRule_7d417077(int goalState)  {
-        return (normalizedAdd(20, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__integerConstant_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__integerConstant_NT))));
     }
     private  int getCostForRule_7dc36524(int goalState)  {
         return (normalizedAdd(10, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__exp_NT))));
@@ -1162,16 +1162,16 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
 {
 
     private  int getCostForRule_6bdf28bb(int goalState)  {
-        return (normalizedAdd(20, this.getNthChild(0).getCost(__exp_NT)));
+        return (normalizedAdd(1, this.getNthChild(0).getCost(__exp_NT)));
     }
     private  int getCostForRule_6b71769e(int goalState)  {
-        return (normalizedAdd(20, this.getNthChild(0).getCost(__binopOffsetExpression_NT)));
+        return (normalizedAdd(1, this.getNthChild(0).getCost(__binopOffsetExpression_NT)));
     }
     private  int getCostForRule_2752f6e2(int goalState)  {
          JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_1 = this.getNthChild(0).getArity() > 1? this.getNthChild(0).getNthChild(1): errorAnnotation;
         if ((this.getNthChild(0).getArity() == 2) && (this.getNthChild(0).getOperator() == BINOP)) {
-            return (normalizedAdd(20, normalizedAdd(factoredPath_1.getCost(__binopOffsetExpression_NT), factoredPath_0.getCost(__exp_NT))));
+            return (normalizedAdd(1, normalizedAdd(factoredPath_1.getCost(__binopOffsetExpression_NT), factoredPath_0.getCost(__exp_NT))));
         } else  {
             return (Integer.MAX_VALUE);
         } 
@@ -1180,10 +1180,10 @@ class JBurgAnnotation_MEM_1  extends JBurgSpecializedAnnotation
         return (normalizedAdd(1, this.getNthChild(0).getCost(__binopOffsetExpression_NT)));
     }
     private  int getCostForRule_1cd072a9(int goalState)  {
-        return (normalizedAdd(100, this.getNthChild(0).getCost(__integerConstant_NT)));
+        return (normalizedAdd(1, this.getNthChild(0).getCost(__integerConstant_NT)));
     }
     private  int getCostForRule_7c75222b(int goalState)  {
-        return (normalizedAdd(100, this.getNthChild(0).getCost(__exp_NT)));
+        return (normalizedAdd(1, this.getNthChild(0).getCost(__exp_NT)));
     }private  JBurgAnnotation subtree0 = null;private  int cachedCostFor_indirectWithDisplacementAndScale = -1;private  int cachedCostFor_indirect = -1;private  int cachedCostFor_mem = -1;private  int cachedCostFor_indirectWithDisplacement = -1;
     public   JBurgAnnotation_MEM_1(Tree.IR node)  {
         super(node);
@@ -1347,31 +1347,31 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
 {
 
     private  int getCostForRule_27f674d(int goalState)  {
-        return (normalizedAdd(10, normalizedAdd(this.getNthChild(1).getCost(__indirect_NT), this.getNthChild(0).getCost(__exp_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__indirect_NT), this.getNthChild(0).getCost(__exp_NT))));
     }
     private  int getCostForRule_1d251891(int goalState)  {
-        return (normalizedAdd(10, normalizedAdd(this.getNthChild(1).getCost(__indirectWithDisplacement_NT), this.getNthChild(0).getCost(__exp_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__indirectWithDisplacement_NT), this.getNthChild(0).getCost(__exp_NT))));
     }
     private  int getCostForRule_48140564(int goalState)  {
-        return (normalizedAdd(10, normalizedAdd(this.getNthChild(1).getCost(__indirectWithDisplacementAndScale_NT), this.getNthChild(0).getCost(__exp_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__indirectWithDisplacementAndScale_NT), this.getNthChild(0).getCost(__exp_NT))));
     }
     private  int getCostForRule_58ceff1(int goalState)  {
          JBurgAnnotation factoredPath_0 = this.getNthChild(0).getArity() > 0? this.getNthChild(0).getNthChild(0): errorAnnotation;
          JBurgAnnotation factoredPath_1 = this.getNthChild(1).getArity() > 0? this.getNthChild(1).getNthChild(0): errorAnnotation;
         if ((this.getNthChild(0).getArity() == 1) && (this.getNthChild(0).getOperator() == MEM) && (this.getNthChild(1).getArity() == 1) && (this.getNthChild(1).getOperator() == MEM)) {
-            return (normalizedAdd(10, normalizedAdd(factoredPath_1.getCost(__exp_NT), factoredPath_0.getCost(__exp_NT))));
+            return (normalizedAdd(1, normalizedAdd(factoredPath_1.getCost(__exp_NT), factoredPath_0.getCost(__exp_NT))));
         } else  {
             return (Integer.MAX_VALUE);
         } 
     }
     private  int getCostForRule_7c30a502(int goalState)  {
-        return (normalizedAdd(9, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirect_NT))));
+        return (normalizedAdd(2, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirect_NT))));
     }
     private  int getCostForRule_49e4cb85(int goalState)  {
-        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacement_NT))));
+        return (normalizedAdd(2, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacement_NT))));
     }
     private  int getCostForRule_2133c8f8(int goalState)  {
-        return (normalizedAdd(7, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacementAndScale_NT))));
+        return (normalizedAdd(2, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacementAndScale_NT))));
     }
     private  int getCostForRule_43a25848(int goalState)  {
         return (normalizedAdd(10, normalizedAdd(this.getNthChild(1).getCost(__integerConstant_NT), this.getNthChild(0).getCost(__temp_NT))));
@@ -1566,7 +1566,7 @@ class JBurgAnnotation_NAME_0  extends JBurgSpecializedAnnotation
          int result = Integer.MAX_VALUE;
         switch(goalState) {
             case __name_NT: {
-                result = 10;
+                result = 1;
             }
             break;
         }
@@ -1588,11 +1588,11 @@ class JBurgAnnotation_NAME_0  extends JBurgSpecializedAnnotation
          int result = Integer.MAX_VALUE;
         switch(goalState) {
             case __exp_NT: {
-                result = 10;
+                result = 1;
             }
             break;
             case __name_NT: {
-                result = 10;
+                result = 1;
             }
             break;
         }

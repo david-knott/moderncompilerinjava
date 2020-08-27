@@ -1,8 +1,8 @@
 mem = MEM(binopOffsetExpression boe) : 1
 @Reduction reducer.mem(boe);
 
-mem = MEM(integerConstant ic) : 100
+mem = MEM(integerConstant ic) : 1
 @Reduction reducer.mem(ic);
 
-mem = MEM(exp e) : 100
+mem = MEM(exp e) : 1
 @Reduction reducer.mem(e);
