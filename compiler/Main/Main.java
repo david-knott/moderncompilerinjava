@@ -20,7 +20,7 @@ public class Main {
         if (args.length == 1) {
             //args = new String[] {"demove", "escapes-compute", "reg-alloc", args[0] };
           //  args = new String[] {"lir-display", "escapes-compute" , args[0] };
-           args = new String[] {"reg-alloc", "demove", args[0] };
+           args = new String[] {"reg-alloc", "escapes-compute", "demove", args[0] };
         }
       //  PrintStream out = System.out;
         InputStream in = new java.io.FileInputStream(args[args.length - 1]);

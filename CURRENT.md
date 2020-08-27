@@ -1,4 +1,9 @@
 # Diary
+## 27th August 2020 ##
+Fixed escaping bug, all tests pass again. 
+
+TODO: Still need to fix code gen.
+
 ## 26th August 2020 ##
 Problem with task arguments. First need to see why utility bash scripts are not recognising the
 escapes-compute. I was seeing differences due to the new code defaulting to every variable escaping.
@@ -6,7 +11,9 @@ escapes-compute. I was seeing differences due to the new code defaulting to ever
 ## 25th August 2020 ##
 Added code to move named memory locations into registers, this fixed most errors.
 
-TODO: Fix bug in nested binop expressions, see function_six_arg.tig for example.
+TODO: Fix bug in nested binop expressions, see function_six_arg.tig for example. Bug was actually 
+in Intel frame where we move arguments into their correct places within the function. This bug
+was present in the original version, I just hadn't noticed it.
 
 ~~For the factorial.tig test file, the problem appears to be a non terminating
 recursive loop. This is likey due to either a comparison bug or arithmetic operand bug.~~
