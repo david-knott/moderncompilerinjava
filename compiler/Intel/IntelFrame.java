@@ -246,9 +246,13 @@ public class IntelFrame extends Frame {
                 break;
             default:
                 // allocate space on frame
-                InFrame inFrame = (InFrame) this.allocLocal(true);
-                var srcLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(inFrame.offset), new TEMP(this.FP())));
-                var destLocation = new MEM(new BINOP(BINOP.MINUS, new CONST(offset), new TEMP(this.FP())));
+                 int frameArgPos = i - 6;
+                //rbp + 8: return address
+                //rpb + 16 : parent frame arg1
+                //rpb + 24 : parent frame arg2
+                int parentOffset = 16 + (frameArgPos * 8); 
+                var srcLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(parentOffset), new TEMP(this.FP())));
+                var destLocation = new MEM(new BINOP(BINOP.PLUS, new CONST(offset), new TEMP(this.FP())));
                 this.addCallingConvention(new Tree.MOVE(destLocation, srcLocation));
                 return;
         }

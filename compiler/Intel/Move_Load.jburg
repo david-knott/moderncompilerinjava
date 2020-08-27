@@ -8,9 +8,9 @@ move = MOVE(exp arg0, indirect arg1) : 10
 @Reduction reducer.loadindirect(__p, arg0, arg1);
 
 /* indirect addressing with displacement */
-move = MOVE(exp arg0, indirectWithDisplacement arg1) : 1
+move = MOVE(exp arg0, indirectWithDisplacement arg1) : 10
 @Reduction reducer.loadindirectWithDisplacement(__p, arg0, arg1);
 
 /* indirect addressing with displacement and scale */
-move = MOVE(exp arg0, indirectWithDisplacementAndScale arg1) : 1
+move = MOVE(exp arg0, indirectWithDisplacementAndScale arg1) : 10
 @Reduction reducer.loadindirectWithDisplacementAndScale(__p, arg0, arg1);

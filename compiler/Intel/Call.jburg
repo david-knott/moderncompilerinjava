@@ -1,5 +1,6 @@
 @ReturnType call = Object;
 call = CALL(exp args*) : 100
+@Prologue reducer.callPrologue()
 @Reduction reducer.call(__p, args);
 
 

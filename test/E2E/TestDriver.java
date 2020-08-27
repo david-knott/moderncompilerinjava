@@ -9,7 +9,7 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void intDec() throws FileNotFoundException {
-        Main.main(new String[]{"instr-display", "escapes-compute", "./test/E2E/good/function_six_arg.tig"});
+        Main.main(new String[]{ "./test/E2E/good/function_six_arg.tig"});
     }
 
     @Test

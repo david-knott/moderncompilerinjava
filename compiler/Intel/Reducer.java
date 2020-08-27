@@ -1,8 +1,5 @@
 package Intel;
 
-
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Vector;
 
 import Assem.Instr;
@@ -251,7 +248,6 @@ public class Reducer {
 		return binOp((BINOP)__p, leftTemp, rightTemp);
 	}
 
-	//TODO: Not correct.
 	public Temp mem(BinopOffsetExpression boe) {
 		Temp temp = Temp.create();
 		Assert.assertIsTrue(boe.binop.binop == Tree.BINOP.PLUS
@@ -286,33 +282,6 @@ public class Reducer {
 			emit(new Assem.OPER("pushq %`s1 # move reg arg " + i + " to stack", null,
 						L(IntelFrame.rsp, L(functionArguments.get(i), null))));
 		}
-		
-		/*
-		while(argRegisters != null) {
-
-			emit(new Assem.MOVE("movq %`s0, %`d0 # move reg arg " + i + " to temp", pr.head, arg));
-			tl = TempList.append(tl, pr);
-
-			argRegisters = argRegisters.tail;
-		}*/
-		/*
-		for(args) {
-			if (pr != null) {
-				emit(new Assem.MOVE("movq %`s0, %`d0 # move reg arg " + i + " to temp", pr.head, arg));
-				tl = TempList.append(tl, pr);
-				pr = pr.tail;
-			} else {
-				emit(new Assem.OPER("pushq %`s1 # move reg arg " + i + " to stack", null,
-						L(IntelFrame.rsp, L(arg, null))));
-			}
-			++i;
-		}
-		if(args != null) {
-			Collections.reverse(args);
-			for(Temp arg : args) {
-
-			}
-		}*/
 		CALL call = (CALL)__p;
 		var name = (NAME) call.func;
 		emit(new OPER("call " + name.label + "", IntelFrame.callDefs, tl));
@@ -320,7 +289,6 @@ public class Reducer {
 	}
 
 	public void setUpFunctionExpression(IR p) {
-		System.out.println("prolog");
 	}
 
 	public IR move(IR __p, Temp dst, Integer src) {
@@ -350,14 +318,17 @@ public class Reducer {
 
 	public IR storeMemToMem(IR __p, Temp dst, Temp src) {
 		Temp reg = Temp.create();
-                emit(new Assem.OPER("movq (%`s0), %`d0 # m2m mem to temp", 
-                        new TempList(reg), 
-                        new TempList(src)
-                        ));
-                 emit(new Assem.OPER("movq %`s0, (%`s1) # m2m temp to mem", 
-                        null, 
-                        new TempList(reg, new TempList(dst)) 
-                        ));
+		emit(new Assem.OPER("movq (%`s0), %`d0 # m2m mem to temp", new TempList(reg), new TempList(src)));
+		emit(new Assem.OPER("movq %`s0, (%`s1) # m2m temp to mem", null, new TempList(reg, new TempList(dst))));
+		return null;
+	}
+
+	public void callPrologue() {
+	}
+
+	public IR jumpStatement(IR __p, IR arg0) {
+		JUMP op = (JUMP)__p;
+		emit(new OPER("jmp `j0", null, null, op.targets));
 		return null;
 	}
 }
