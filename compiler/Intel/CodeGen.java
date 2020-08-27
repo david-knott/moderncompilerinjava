@@ -1,4 +1,4 @@
-/*  Generated Thu Aug 27 16:06:50 IST 2020 by JBurg version 2.0.2  */
+/*  Generated Thu Aug 27 16:24:20 IST 2020 by JBurg version 2.0.2  */
 
 package Intel;
 	import Tree.*;
@@ -1365,13 +1365,13 @@ class JBurgAnnotation_MOVE_2  extends JBurgSpecializedAnnotation
         } 
     }
     private  int getCostForRule_7c30a502(int goalState)  {
-        return (normalizedAdd(2, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirect_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirect_NT))));
     }
     private  int getCostForRule_49e4cb85(int goalState)  {
-        return (normalizedAdd(2, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacement_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacement_NT))));
     }
     private  int getCostForRule_2133c8f8(int goalState)  {
-        return (normalizedAdd(2, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacementAndScale_NT))));
+        return (normalizedAdd(1, normalizedAdd(this.getNthChild(1).getCost(__exp_NT), this.getNthChild(0).getCost(__indirectWithDisplacementAndScale_NT))));
     }
     private  int getCostForRule_43a25848(int goalState)  {
         return (normalizedAdd(10, normalizedAdd(this.getNthChild(1).getCost(__integerConstant_NT), this.getNthChild(0).getCost(__temp_NT))));
