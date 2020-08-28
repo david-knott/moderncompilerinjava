@@ -1,13 +1,11 @@
 package Frame;
 
-import Assem.Instr;
 import Assem.InstrList;
 import Temp.Label;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
 import Tree.Stm;
-import Util.GenericLinkedList;
 
 public abstract class Frame implements TempMap {
     public Label name;
