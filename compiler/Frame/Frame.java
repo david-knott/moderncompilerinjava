@@ -101,8 +101,6 @@ public abstract class Frame implements TempMap {
 
     abstract public String string(Label l, String literal);
 
-	abstract public InstrList codegen(Stm head);
-
     abstract public TempList registers();
 
 	public abstract InstrList tempToMemory(Temp temp, Temp spillTemp, Access access); 

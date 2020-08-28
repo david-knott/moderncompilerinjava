@@ -21,7 +21,6 @@ import Util.BoolList;
 import Assem.Instr;
 import Assem.InstrList;
 import Assem.OPER;
-import Codegen.Codegen;
 import Util.Assert;
 import Frame.*;
 import java.util.Hashtable;
@@ -166,7 +165,6 @@ public class IntelFrame extends Frame {
     // offset within the frame
     private int localOffset = 0;
     private StmList callingConventions;
-    private Codegen codegen;
     private AccessList accesses;
     // map to store callee registers and the temp created to store them.
     private Hashtable<Temp, Temp> calleeTempMap = new Hashtable<Temp, Temp>();
@@ -286,7 +284,6 @@ public class IntelFrame extends Frame {
     public IntelFrame(Label nm, BoolList frml) {
         Assert.assertNotNull(nm);
         this.name = nm;
-        this.codegen = new Codegen(this);
         int i = 0;
         while (frml != null) {
             Access local;
@@ -500,14 +497,6 @@ public class IntelFrame extends Frame {
     @Override
     public String string(Label l, String literal) {
         return l + ":\n\t.long  0x" + Integer.toHexString(literal.length()) + "\n\t.ascii \"" + literal + "\"";
-    }
-
-    /**
-     * Returns assembly for the supplied statement.
-     */
-    @Override
-    public InstrList codegen(Stm head) {
-        return this.codegen.codegen(head);
     }
 
     /**

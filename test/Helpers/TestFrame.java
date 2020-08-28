@@ -95,12 +95,6 @@ public class TestFrame extends Frame {
     }
 
     @Override
-    public InstrList codegen(Stm head) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public TempList registers() {
         return this.registers;
     }
