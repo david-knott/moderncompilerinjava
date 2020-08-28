@@ -95,6 +95,14 @@ public class Reducer {
 		return null;
 	}
 
+	public IR storeIndirectWithDisplacement(IR __p, IndirectWithDisplacementExpression dst, Integer src) {
+		emit(new Assem.OPER("movq $" + src + ", " + dst.displacement() + "(%`s0) # store to offset", 
+			null, 
+			new TempList(dst.temp())
+		));
+		return null;
+	}
+
 	public IR storeIndirectWithDisplacementAndScale(IR __p, IndirectWithDisplacementAndScaleExpression dst,
 			Temp src) {
 		//TODO : Check the binop operator !
@@ -331,4 +339,5 @@ public class Reducer {
 		emit(new OPER("jmp `j0", null, null, op.targets));
 		return null;
 	}
+
 }

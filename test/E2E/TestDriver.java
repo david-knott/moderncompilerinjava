@@ -9,7 +9,7 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void intDec() throws FileNotFoundException {
-        Main.main(new String[]{"reg-alloc", "./test/E2E/good/merge_simple.tig"});
+        Main.main(new String[]{"reg-alloc", "demove", "./test/E2E/good/pplus.tig"});
     }
 
     @Test
