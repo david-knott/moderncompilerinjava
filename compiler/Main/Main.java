@@ -18,11 +18,10 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
         Timer.instance.push("rest");
-    //    PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
+        PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
         if (args.length == 1) {
            args = new String[] {"reg-alloc", "escapes-compute", "demove", args[0] };
         }
-        PrintStream out = System.out;
         InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
         ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);

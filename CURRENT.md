@@ -1,4 +1,28 @@
 # Diary
+
+## 29th August 2020 ##
+Added timing code. The cumulative count has been commented out as it doesn't work. I am using a
+stack to timers. In the main method there is a timer start, there are also timers started and stoped
+for the various tasks. The sequence is as follows
+* Main is called, start the 'rest' timer
+* Tasks register calls tasks
+* Each task starts a new timer and pauses the previously running timer
+* WHen task completes, it resumes the previously running timer
+* A main exit, it stops the 'rest' timer.
+
+This approach allows me to time the entire main call, rather than just the tasks. The cumulative
+figure is incorrect as is shows the timing for each function in sequence. The problem is the
+rest function is started and stopped between each task call. Maybe the 'rest' timer should be 
+displayed for each stop / start event ?
+
+Bug: using inst-stats flag seems to stop the reg allocation from happing.
+Bug: instruction count does not take into account moves that were removed by coalescing. I think I
+would prefer to actually remove the MOVEs from the instruction list. 
+
+TODO: Introduce flag to write to either system out of a file path.
+TODO: Separate out debug information from assembly code. If user specifies a file location, write debug to system.out
+If user does not specify a file location, write debug and assembly to system out.
+
 ## 27th August 2020 ##
 Fixed escaping bug, all tests pass again. 
 
