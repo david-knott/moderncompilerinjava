@@ -25,7 +25,7 @@ public class TaskRegister {
     private Task findTask(String name) {
         LL<Task> f = this.tasks;
         for(;f != null && f.head.name != name; f = f.tail);
-        if(f == null) throw new Error("No task for name = '" +  name + "'");
+        if(f == null) throw new Error("No task for name:  '" +  name + "'");
         return f.head;
     }
 
@@ -45,7 +45,9 @@ public class TaskRegister {
         TaskContext taskContext = new TaskContext();
         for (LL<Task> t = this.tasks; t != null; t = t.tail) {
             if(t.head.active) {
+                Timer.instance.push(t.head.name);
                 t.head.execute(taskContext);
+                Timer.instance.pop();
             }
         }
         return this;
