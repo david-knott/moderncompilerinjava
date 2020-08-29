@@ -49,5 +49,15 @@ public class Tasks implements TaskProvider {
 			}
         }, "instr-display", "Dump the unallocated assembly", "instr-compute");
 
+        new SimpleTask(new SimpleTaskProvider() {
+            @Override
+            public void only(TaskContext taskContext) {
+                Assem.FragList assemblyFragList = taskContext.assemFragList;
+                UnAllocatedAssemblyStats assemblyStats = new UnAllocatedAssemblyStats();
+                assemblyFragList.accept(assemblyStats);
+                assemblyStats.dump(out);
+
+			}
+        }, "instr-stats", "Display instruction type counts", "instr-compute");
     }
 }
