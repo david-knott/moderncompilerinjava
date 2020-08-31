@@ -2,13 +2,13 @@ package Tree;
 
 import Temp.Temp;
 
-public class ExpandTempVisitor implements TreeVisitor {
+public class TreeSimplifierVisitor implements TreeVisitor {
 
     Exp exp;
     Stm stm;
 
     private static Exp rewrite(Exp exp) {
-        if(exp instanceof MEM|| exp instanceof BINOP) {
+        if(exp instanceof MEM || exp instanceof BINOP) {
             Temp temp = Temp.create();
             return new ESEQ(new MOVE(new TEMP(temp), exp), new TEMP(temp));
         }

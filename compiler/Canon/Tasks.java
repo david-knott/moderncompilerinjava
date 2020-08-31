@@ -8,7 +8,7 @@ import Translate.DataFrag;
 import Translate.FragList;
 import Translate.FragmentVisitor;
 import Translate.ProcFrag;
-import Tree.ExpandTempVisitor;
+import Tree.TreeSimplifierVisitor;
 import Tree.PrettyPrinter;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
@@ -40,7 +40,7 @@ public class Tasks implements TaskProvider {
 
             @Override
             public void visit(ProcFrag procFrag) {
-                ExpandTempVisitor expandTempVisitor = new ExpandTempVisitor();
+                TreeSimplifierVisitor expandTempVisitor = new TreeSimplifierVisitor();
                 procFrag.body.accept(expandTempVisitor);
             }
 
@@ -49,9 +49,9 @@ public class Tasks implements TaskProvider {
             }
                 
             }), 
-            "temp-expand", 
-            "Expands the hir",
-            "lir-compute"
+            "hir-simplify", 
+            "Simplifies the hir in preparation for optimisation",
+            "hir-compute"
         );
 
 
