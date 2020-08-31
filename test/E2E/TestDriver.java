@@ -19,6 +19,6 @@ public class TestDriver {
 
     @Test
     public void test4() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/array_dec.tig"});
+        Main.main(new String[]{"temp-expand", "./test/E2E/good/array_dec.tig"});
     }
 }
