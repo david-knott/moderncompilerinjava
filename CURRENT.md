@@ -1,4 +1,6 @@
 # Diary
+## 1st September ##
+Starting command line parser. Still need to implement short code arguments.
 
 ## 29th August 2020 ##
 Added timing code. The cumulative count has been commented out as it doesn't work. I am using a

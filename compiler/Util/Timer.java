@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 
+/**
+ * Timer class used to timing how long each task takes.
+ */
 public class Timer {
 
     private TimeVar total;

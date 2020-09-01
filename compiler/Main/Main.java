@@ -21,7 +21,7 @@ public class Main {
         Timer.instance.push("rest");
         PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
         if (args.length == 1) {
-           args = new String[] {"reg-alloc", "escapes-compute", "demove", args[0] };
+           args = new String[] {"--reg-alloc", "--escapes-compute", "--demove", args[0] };
         }
         InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
