@@ -17,6 +17,7 @@ import Util.Timer;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
+        Timer.instance.start();
         Timer.instance.push("rest");
         PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
         if (args.length == 1) {
@@ -30,6 +31,7 @@ public class Main {
                 .register(new Absyn.Tasks()).register(new Semant.Tasks()).register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl())).register(new Intel.Tasks(null, null))
                 .register(new RegAlloc.Tasks(new RegAllocFactory())).parseArgs(args).execute();
-        Timer.instance.done();
+        Timer.instance.stop();
+        Timer.instance.dump(err);
     }
 }

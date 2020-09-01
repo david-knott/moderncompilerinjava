@@ -1,6 +1,9 @@
 package Translate;
 
 import Util.Assert;
+
+import java.util.Hashtable;
+
 import Core.CompilerEventType;
 import Core.Component;
 import Semant.Semant;

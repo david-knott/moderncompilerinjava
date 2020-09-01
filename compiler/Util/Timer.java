@@ -8,30 +8,26 @@ import java.util.Stack;
 
 public class Timer {
 
-    private Long begin;
-    private Long end;
+    private TimeVar total;
 
     class TimeVar {
 
-        final String name;
         long start;
         long stop;
+        long first;
         long elapsed;
-
-        public TimeVar(String name) {
-            this.name = name;
-        }
+        boolean initial = true;
 
         public boolean isZero() {
             return (this.start - this.stop) == 0;
         }
 
         public void start() {
-            // store reference to first timing.
-            if(begin == null) {
-                begin = System.currentTimeMillis();
-            }
             this.start = System.currentTimeMillis();
+            if(this.initial) {
+                this.first = this.start;
+                this.initial = false;
+            }
         }
 
         public void stop() {
@@ -48,18 +44,33 @@ public class Timer {
     final Stack<TimeVar> tasks = new Stack<TimeVar>();
     final Map<String, TimeVar> table = new LinkedHashMap<String, TimeVar>();
 
+    /**
+     * Default constructor. 
+     */
+    public Timer() {
+        this.total = new TimeVar();
+    }
+
+    /**
+     * Start a subtimer for a named task.
+     * @param name
+     */
     public void push(String name) {
         // stop previous task if any.
         if(!this.tasks.empty()) {
             this.tasks.peek().stop();
         }
         // create and start next task
-        TimeVar current = new TimeVar(name);
+        TimeVar current = new TimeVar();
         this.table.put(name, current);
         this.tasks.push(current);
         current.start();
     }
 
+    /**
+     * Stops the current task and pops it off the stack.
+     * If there is a previous task on the stack, start it.
+     */
     public void pop() {
         Assert.assertIsTrue(!this.tasks.empty());
         this.tasks.peek().stop();
@@ -70,10 +81,13 @@ public class Timer {
         }
     }
 
-    private String displayTiming(TimeVar timing) {
-        return "0 (totaltime ? ( time * 100 / totaltime )) : time) %)";
+    private String displayTiming(String key, double timing, double total) {
+        return String.format("%15s | %-5f | %5f %%", key, timing, timing * 100 / total);
     }
    
+    /**
+     * Dumps the task timings to the supplied output stream.
+     */
     public void dump(OutputStream outputStream) {
         try(PrintStream ps = new PrintStream(outputStream)) {
             // execution time, time for each function to execute
@@ -81,35 +95,47 @@ public class Timer {
             for(String key : this.table.keySet()) {
                 TimeVar timing = this.table.get(key);
                 if(!timing.isZero()) {
-                    ps.println(" " + timing.name + " " + timing.elapsed());
+                  //  ps.println(" " + key + " " + timing.elapsed());
+                  ps.println(this.displayTiming(key, timing.elapsed(), this.total.elapsed()));
                 }
             }
-            // cumulative time, timings from start to end of compilation
+            ps.println();
+            // cumulative time - commented out as it doesn't work correctly.
             /*
             ps.println("Cumulative times ( seconds )");
             for(String key : this.table.keySet()) {
                 TimeVar timing = this.table.get(key);
-                ps.println(" " + timing.name + " " + (((double)timing.stop - this.begin)/1000));
+                if(timing.stop != timing.first) {
+                    ps.println(this.displayTiming(key, ((double)timing.stop - timing.first)/1000, this.total.elapsed()));
+                }
             }
+            ps.println();
             */
             // total time, time to complete compilation.
-            ps.println("Total ( seconds ) : " + ((double)this.end - this.begin)/ 1000);
+            ps.println("Total ( seconds ) : " + ((double)this.total.stop - this.total.start)/ 1000);
         }
     }
+
+    /**
+     * Starts the root timer.
+     */
+    public void start() {
+        this.total.start();
+    }
+
 
     /**
      * Signals to the timer that we are finished timing. This
      * ensures any remaning timings are stopped. It also records
      * the time when this function was called.
      */
-	public void done() {
+	public void stop() {
         if(!this.tasks.empty()) {
             do {
                 this.tasks.peek().stop();
                 this.tasks.pop();
             }while(!this.tasks.empty());
         }
-        // store reference to last timing.
-        this.end = System.currentTimeMillis();
+        this.total.stop();
 	}
 }
