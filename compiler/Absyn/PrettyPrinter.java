@@ -35,11 +35,6 @@ public class PrettyPrinter implements AbsynVisitor {
         exp.accept(this);
     }
 
-    private void line(String line) {
-        say(line);
-        lineBreak();
-    }
-
     private void lineBreak() {
         say(System.lineSeparator());
         for (int i = 0; i < this.currentIndentation * this.indentation; i++)
@@ -242,11 +237,13 @@ public class PrettyPrinter implements AbsynVisitor {
         lineBreak();
         say("in");
         currentIndentation++;
+        lineBreak();
         if (letExp.body != null)
             letExp.body.accept(this);
         currentIndentation--;
         lineBreak();
         say("end");
+        lineBreak();
     }
 
     @Override
