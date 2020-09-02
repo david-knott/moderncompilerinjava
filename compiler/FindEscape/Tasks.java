@@ -33,6 +33,5 @@ public class Tasks implements TaskProvider {
 
             }
         }, "escapes-display", "escape", "parse");
-
     }
 }

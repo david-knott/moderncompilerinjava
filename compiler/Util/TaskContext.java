@@ -7,8 +7,8 @@ import Translate.FragList;
 
 public class TaskContext {
     public Program program;
-    public boolean escapesDisplay;
-    public boolean bindingsDisplay;
+    public boolean escapesDisplay = false;
+    public boolean bindingsDisplay = false;
     public FragList hirFragList;
     public FragList lirFragList;
     public Assem.FragList assemFragList;

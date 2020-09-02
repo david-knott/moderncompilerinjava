@@ -16,10 +16,10 @@ public class TaskRegister {
     class TaskWrapper implements Comparable<TaskWrapper> {
         final Task task;
         final String longName;
-        final char shortName;
+        final String shortName;
         String args = null;
 
-        public TaskWrapper(Task task, String longName, char shortName) {
+        public TaskWrapper(Task task, String longName, String shortName) {
             this.task = task;
             this.longName = longName;
             this.shortName = shortName;
@@ -49,11 +49,9 @@ public class TaskRegister {
                 }
             } else if(args[i].startsWith("-")) {
                 for(int j = 1; j < args[i].length(); j++) {
-                    System.out.println("sarg=" + args[i].charAt(j));
-                    Task task = this.findTaskByShortName(args[i].charAt(j));
+                    Task task = this.findTaskByShortName(args[i].substring(j, j + 1));
                     this.resolveDeps(task);
                 }
-
             } else {
                 throw new Error("Invalid argument syntax, show help.. " + args[i]);
             }
@@ -65,7 +63,7 @@ public class TaskRegister {
         task.active = true;
         if(task.deps != null) {
             for(String dep : task.deps.split("\\s+")) {
-                if(dep != "") {
+                if(!dep.equals("")) {
                     Task depTask = this.findTaskByLongName(dep);
                     this.resolveDeps(depTask);
                 }
@@ -80,10 +78,12 @@ public class TaskRegister {
         return f.head.task;
     }
 
-
-    private Task findTaskByShortName(char name) {
+    private Task findTaskByShortName(String name) {
         LL<TaskWrapper> f = this.tasks;
-        for(;f != null && f.head.shortName != name; f = f.tail);
+        for(;f != null; f = f.tail) {
+            if(f.head.shortName.equals("")) continue;
+            if(f.head.shortName.equals(name)) break;;
+        }
         if(f == null) throw new Error("No task for short name:  '" +  name + "'");
         return f.head.task;
     }
@@ -117,15 +117,34 @@ public class TaskRegister {
         return this;
     }
 
+    /**
+     * Returns short and long name in result[0] and
+     * result[1] respectively. It is assumed at least the
+     * long form is present.
+     * @param task
+     * @return
+     */
+    public String[] extractNames(Task task) {
+        String name = task.name;
+        String[] results = new String[2];
+        int i = 0;
+        for(; i < name.length() && name.charAt(i) != '|'; i++);
+        results[0] = name.substring(0, i);
+        results[1] = i < name.length() - 1? name.substring(i + 1) : "";
+        return results;
+    }
+
     public void register(SimpleTask simpleTask) {
-        String longName = simpleTask.name;
-        char shortName = 'x';
+        String[] names = this.extractNames(simpleTask);
+        String longName = !names[1].equals("") ? names[1] : names[0];
+        String shortName = !names[1].equals("") ? names[0] : names[1];
         this.tasks = LL.<TaskWrapper>insertRear(this.tasks, new TaskWrapper(simpleTask, longName, shortName));
     }
 
     public void register(BooleanTask booleanTask) {
-        String longName = booleanTask.name;
-        char shortName = 'x';
+        String[] names = this.extractNames(booleanTask);
+        String longName = !names[1].equals("") ? names[1] : names[0];
+        String shortName = !names[1].equals("") ? names[0] : names[1];
         this.tasks = LL.<TaskWrapper>insertRear(this.tasks, new TaskWrapper(booleanTask, longName, shortName));
     }
 

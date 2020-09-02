@@ -148,7 +148,7 @@ public class PrettyPrinter implements AbsynVisitor {
                 say(":");
                 space();
                 say(exp.typ);
-                if(exp.escape) {
+                if(this.escapesDisplay && exp.escape) {
                     space();
                     say("/* escapes */");
                 }
@@ -353,7 +353,7 @@ public class PrettyPrinter implements AbsynVisitor {
         say(":=");
         space();
         exp.init.accept(this);
-        if(exp.escape) {
+        if(this.escapesDisplay && exp.escape) {
             say("/* escapes */");
             space();
         }

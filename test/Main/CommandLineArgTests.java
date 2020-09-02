@@ -15,6 +15,46 @@ public class CommandLineArgTests {
         this.findArgs(args);
     }
 
+    public String[] extractNames(String name) {
+        String[] results = new String[2];
+        int i = 0;
+        for(; i < name.length() && name.charAt(i) != '|'; i++);
+        results[0] = name.substring(0, i);
+        results[1] = i < name.length() - 1? name.substring(i + 1) : "";
+        return results;
+    }
+
+    @Test
+    public void extractNames() {
+        String[] result = extractNames("a|bbb");
+        assertEquals("a", result[0]);
+        assertEquals("bbb", result[1]);
+    }
+
+    @Test
+    public void extractNames2() {
+        String[] result = extractNames("bbb");
+        assertEquals("bbb", result[0]);
+        assertEquals("", result[1]);
+    }
+
+    @Test
+    public void extractNames3() {
+        String[] result = extractNames("|bbb");
+        assertEquals("", result[0]);
+        assertEquals("bbb", result[1]);
+    }
+
+
+    @Test
+    public void extractNames4() {
+        String[] result = extractNames("a|");
+        assertEquals("a", result[0]);
+        assertEquals(null, result[1]);
+    }
+
+
+
     public void findArgs(String[] args) {
         for(int i = 0; i < args.length; i++) {
             if(args[i].startsWith("--")) {

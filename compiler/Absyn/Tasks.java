@@ -21,10 +21,11 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-         //       PrintStream printStream = new PrintStream(out);
-         //       printStream.println("/* == Abstract Syntax Tree. == */");
-         //       taskContext.program.absyn.accept(new PrettyPrinter(printStream, taskContext.escapesDisplay, taskContext.bindingsDisplay));
+                try(PrintStream printStream = new PrintStream(out)) {
+                    printStream.println("/* == Abstract Syntax Tree. == */");
+                    taskContext.program.absyn.accept(new PrettyPrinter(printStream, taskContext.escapesDisplay, taskContext.bindingsDisplay));
+                }
             }
-        }, "ast-display", "absyn", "parse");
+        }, "A|ast-display", "display abstract syntax tree", "parse");
     }
 }
