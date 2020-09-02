@@ -19,8 +19,8 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         Timer.instance.start();
         Timer.instance.push("rest");
-     //   PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
-        PrintStream out = System.out;
+        PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
+     //   PrintStream out = System.out;
         if (args.length == 1) {
            args = new String[] {"--reg-alloc", "--escapes-compute", "--demove", args[0] };
         }
