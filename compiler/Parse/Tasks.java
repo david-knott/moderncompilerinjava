@@ -1,9 +1,5 @@
 package Parse;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import ErrorMsg.ErrorMsg;
 import Util.BooleanTask;
 import Util.BooleanTaskFlag;
 import Util.SimpleTask;
@@ -28,7 +24,7 @@ public class Tasks implements TaskProvider {
 	}
 
 	@Override
-    public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
+    public void build() {
         new BooleanTask(new BooleanTaskFlag() {
             @Override
             public void set() {

@@ -17,10 +17,7 @@ import Util.TaskProvider;
 public class Tasks implements TaskProvider {
 
     @Override
-    public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
-        Assert.assertNotNull(errorMsg);
-        Assert.assertNotNull(in);
-        Assert.assertNotNull(out);
+    public void build() {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
@@ -28,7 +25,7 @@ public class Tasks implements TaskProvider {
                 Frame.Frame frame = new IntelFrame(Label.create("tigermain"), null);
                 Level topLevel = new Level(frame);
                 Translator translate = new Translator();
-                Semant.Semant semant = new Semant.Semant(errorMsg, topLevel, translate);
+                Semant.Semant semant = new Semant.Semant(taskContext.errorMsg, topLevel, translate);
                 FragList frags = FragList.reverse(semant.getTreeFragments(taskContext.program.absyn));
                 taskContext.setFragList(frags);
             }
@@ -36,7 +33,7 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                TreeVisitor prettyPrinter = new PrettyPrinter(out);
+                TreeVisitor prettyPrinter = new PrettyPrinter(taskContext.log);
                 taskContext.hirFragList.accept(new FragmentVisitor(){
 
                     @Override

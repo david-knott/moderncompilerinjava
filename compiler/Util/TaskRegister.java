@@ -88,8 +88,8 @@ public class TaskRegister {
         return f.head.task;
     }
 
-    public TaskRegister execute() {
-        TaskContext taskContext = new TaskContext();
+    public TaskRegister execute(InputStream in, OutputStream out, OutputStream log, ErrorMsg errorMsg) {
+        TaskContext taskContext = new TaskContext(in, out, log, errorMsg);
         for (LL<TaskWrapper> t = this.tasks; t != null; t = t.tail) {
             if(t.head.task.active) {
                 Timer.instance.push(t.head.task.name);
@@ -113,7 +113,7 @@ public class TaskRegister {
     }
 
     public TaskRegister register(TaskProvider taskProvider) {
-        taskProvider.build(this.in, this.out, this.errorMsg);
+        taskProvider.build();
         return this;
     }
 

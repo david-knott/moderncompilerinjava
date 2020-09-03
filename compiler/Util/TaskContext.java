@@ -1,7 +1,10 @@
 package Util;
 
-import Assem.Fragment;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import Assem.InstrList;
+import ErrorMsg.ErrorMsg;
 import Parse.Program;
 import Translate.FragList;
 
@@ -12,6 +15,19 @@ public class TaskContext {
     public FragList hirFragList;
     public FragList lirFragList;
     public Assem.FragList assemFragList;
+    public InputStream in = null;
+    public OutputStream out = null;
+    public OutputStream log = null;
+    public ErrorMsg errorMsg = null;
+
+    public TaskContext(InputStream in, OutputStream out, OutputStream log, ErrorMsg errorMsg) {
+        this.in = in;
+        this.out = out;
+        this.log = log;
+        this.errorMsg = errorMsg;
+    }
+
+
     //public InstrList instrList;
 
     public void setAst(final Program value) {

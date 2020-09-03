@@ -7,5 +7,5 @@ import ErrorMsg.ErrorMsg;
 
 public interface TaskProvider {
 
-	void build(InputStream in, OutputStream out, ErrorMsg errorMsg);
+	void build();
 }

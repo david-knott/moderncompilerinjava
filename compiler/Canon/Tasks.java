@@ -24,7 +24,7 @@ public class Tasks implements TaskProvider {
     }
 
     @Override
-    public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
+    public void build() {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
@@ -34,7 +34,7 @@ public class Tasks implements TaskProvider {
                 taskContext.setLIR(canonVisitor.fragList);
             }
         }, "lir-compute", "Perform canonicalisation of HIR tree", "hir-compute");
-        new SimpleTask((taskContext) -> taskContext.lirFragList.accept(new FragPrettyPrinter(new PrettyPrinter(out))),
+        new SimpleTask((taskContext) -> taskContext.lirFragList.accept(new FragPrettyPrinter(new PrettyPrinter(taskContext.log))),
                 "lir-display", "Displays the lir", "lir-compute");
         new SimpleTask((taskContext) -> taskContext.lirFragList.accept(new FragmentVisitor() {
 
@@ -46,6 +46,7 @@ public class Tasks implements TaskProvider {
 
             @Override
             public void visit(DataFrag dataFrag) {
+                // do nothing.
             }
                 
             }), 

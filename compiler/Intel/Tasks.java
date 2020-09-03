@@ -1,10 +1,6 @@
 package Intel;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import Canon.Canonicalization;
-import ErrorMsg.ErrorMsg;
 import RegAlloc.RegAllocFactory;
 import Translate.FragList;
 import Util.SimpleTask;
@@ -28,7 +24,7 @@ public class Tasks implements TaskProvider {
     }
 
     @Override
-    public void build(InputStream in, OutputStream out, ErrorMsg errorMsg) {
+    public void build() {
 
         new SimpleTask(new SimpleTaskProvider() {
             @Override
@@ -44,7 +40,7 @@ public class Tasks implements TaskProvider {
             @Override
             public void only(TaskContext taskContext) {
                 Assem.FragList assemblyFragList = taskContext.assemFragList;
-                assemblyFragList.accept(new UnallocatedAssmeblyDump(out));
+                assemblyFragList.accept(new UnallocatedAssmeblyDump(taskContext.log));
 
 			}
         }, "instr-display", "Dump the unallocated assembly", "instr-compute");
@@ -55,7 +51,7 @@ public class Tasks implements TaskProvider {
                 Assem.FragList assemblyFragList = taskContext.assemFragList;
                 UnAllocatedAssemblyStats assemblyStats = new UnAllocatedAssemblyStats();
                 assemblyFragList.accept(assemblyStats);
-                assemblyStats.dump(out);
+                assemblyStats.dump(taskContext.log);
 
 			}
         }, "instr-stats", "Display instruction type counts", "instr-compute");
