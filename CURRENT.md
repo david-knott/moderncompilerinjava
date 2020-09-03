@@ -4,6 +4,9 @@
 Finished command line parser. I did some refactoring on the tasks module. 
 I am now looking at having different streams for output and input.
 
+compiler --input some_file.tig --output another_file.asm / input from some_file, output to another_file
+compiler  / takes input from standard in, writes output to standard out.
+
 
 ## 1st September ##
 Starting command line parser. Still need to implement short code arguments.

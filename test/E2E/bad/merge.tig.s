@@ -5,39 +5,39 @@ pushq %rbp
 movq %rsp, %rbp
 subq $24, %rsp
 # start main
-# sink 
+# start 
 L77:
 movq %r14, -24(%rbp) # spill store
 movq %r15, -16(%rbp) # spill store
-movq $-8, %rcx # const
+movq $-8, %rax # bin(t, i)
 movq %rbp, %r14 # add lexp -> r
-add %rcx, %r14
-call getchar # move call
+add %rax, %r14
+call getchar
 movq %rax, (%r14) # store
 movq %rbp, %rdi # move reg arg 0 to temp
-call L24 # move call
-movq %rax, %r14 # rax to temp 
-movq $-8, %rcx # const
-movq %rbp, %r15 # add lexp -> r
-add %rcx, %r15
-call getchar # move call
-movq %rax, (%r15) # store
-movq %rbp, %rdi # move reg arg 0 to temp
-call L24 # move call
+call L24
 movq %rax, %r15 # rax to temp 
-movq %r14, %rsi # move reg arg 1 to temp
+movq $-8, %rax # bin(t, i)
+movq %rbp, %r14 # add lexp -> r
+add %rax, %r14
+call getchar
+movq %rax, (%r14) # store
 movq %rbp, %rdi # move reg arg 0 to temp
-call L27 # exp call ( no return value )
+call L24
+movq %rax, %r14 # rax to temp 
+movq %rbp, %rdi # move reg arg 0 to temp
 movq %r15, %rsi # move reg arg 1 to temp
+call L27
 movq %rbp, %rdi # move reg arg 0 to temp
-call L27 # exp call ( no return value )
-movq %r15, %rdx # move reg arg 2 to temp
 movq %r14, %rsi # move reg arg 1 to temp
+call L27
 movq %rbp, %rdi # move reg arg 0 to temp
-call L25 # move call
+movq %r15, %rsi # move reg arg 1 to temp
+movq %r14, %rdx # move reg arg 2 to temp
+call L25
 movq %rax, %rsi # rax to temp 
 movq %rbp, %rdi # move reg arg 0 to temp
-call L27 # exp call ( no return value )
+call L27
 movq -24(%rbp), %r14 # spill load
 movq -16(%rbp), %r15 # spill load
 jmp L76
@@ -53,40 +53,30 @@ pushq %rbp
 movq %rsp, %rbp
 subq $16, %rsp
 # start main
-# sink 
+# start 
 L79:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, -16(%rbp) # spill store
-movq $0, %rax # const
+movq $0, %rax # integerExpression
 movq -16(%rbp), %rsi # spill load
 cmp %rax, %rsi
 je L73
 L74:
-movq $0, %rax # const
+movq -8(%rbp), %rdi # mem(boe)
 movq -16(%rbp), %rsi # spill load
-add %rax, %rsi
-movq (%rsi), %rsi # default load
-movq $8, %rcx # const
-movq %rbp, %rax # minus lexp -> r
-sub %rcx, %rax
-movq (%rax), %rdi # default load
-call L26 # exp call ( no return value )
+movq 0(%rsi), %rsi # mem(boe)
+call L26
 movq $L70, %rdi # default name
-call print # exp call ( no return value )
-movq $8, %rax # const
+call print
+movq -8(%rbp), %rdi # mem(boe)
 movq -16(%rbp), %rsi # spill load
-add %rax, %rsi
-movq (%rsi), %rsi # default load
-movq $8, %rcx # const
-movq %rbp, %rax # minus lexp -> r
-sub %rcx, %rax
-movq (%rax), %rdi # default load
-call L27 # exp call ( no return value )
+movq 8(%rsi), %rsi # mem(boe)
+call L27
 L75:
 jmp L78
 L73:
 movq $L67, %rdi # default name
-call print # exp call ( no return value )
+call print
 jmp L75
 L78:
 # sink 
@@ -108,39 +98,39 @@ pushq %rbp
 movq %rsp, %rbp
 subq $16, %rsp
 # start main
-# sink 
+# start 
 L81:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, -16(%rbp) # spill store
-movq $0, %rax # const
+movq $0, %rax # integerExpression
 movq -16(%rbp), %rsi # spill load
 cmp %rax, %rsi
 jl L64
 L65:
-movq $0, %rax # const
+movq $0, %rax # integerExpression
 movq -16(%rbp), %rsi # spill load
 cmp %rax, %rsi
 jg L61
 L62:
 movq $L60, %rdi # default name
-call print # exp call ( no return value )
+call print
 L63:
 L66:
 jmp L80
 L64:
 movq $L59, %rdi # default name
-call print # exp call ( no return value )
-movq $0, %rax # const
+call print
+movq $0, %rax # bin(i, t)
 movq -16(%rbp), %rsi # spill load
 sub %rsi, %rax
-movq %rax, %rsi # move reg arg 1 to temp
 movq %rbp, %rdi # move reg arg 0 to temp
-call L54 # exp call ( no return value )
+movq %rax, %rsi # move reg arg 1 to temp
+call L54
 jmp L66
 L61:
-movq -16(%rbp), %rsi # spill load
 movq %rbp, %rdi # move reg arg 0 to temp
-call L54 # exp call ( no return value )
+movq -16(%rbp), %rsi # spill load
+call L54
 jmp L63
 L80:
 # sink 
@@ -162,12 +152,12 @@ pushq %rbp
 movq %rsp, %rbp
 subq $24, %rsp
 # start main
-# sink 
+# start 
 L83:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, -24(%rbp) # spill store
 movq %r15, -16(%rbp) # spill store
-movq $0, %rcx # const
+movq $0, %rcx # integerExpression
 movq -24(%rbp), %rsi # spill load
 cmp %rcx, %rsi
 jg L56
@@ -176,34 +166,31 @@ L58:
 movq -16(%rbp), %r15 # spill load
 jmp L82
 L56:
-movq $10, %rcx # const
+movq -8(%rbp), %rdi # mem(boe)
+movq $10, %rcx # bin(t, i)
 movq -24(%rbp), %rsi # spill load
 movq %rsi, %rax # div r -> rax
 xor %rdx, %rdx # div clear bits rdx 
 idiv %rcx # div rax * rexp 
 movq %rax, %rsi # move reg arg 1 to temp
-movq $8, %rcx # const
-movq %rbp, %rax # minus lexp -> r
-sub %rcx, %rax
-movq (%rax), %rdi # default load
-call L54 # exp call ( no return value )
-movq $10, %rcx # const
+call L54
+movq $10, %rcx # bin(t, i)
 movq -24(%rbp), %rsi # spill load
 movq %rsi, %rax # div r -> rax
 xor %rdx, %rdx # div clear bits rdx 
 idiv %rcx # div rax * rexp 
-movq $10, %rcx # const
+movq $10, %rcx # bin(t, i)
 imul %rcx # imul rax * r 
 movq -24(%rbp), %rsi # spill load
-sub %rax, %rsi
-movq %rsi, %r15 # default move
+movq %rsi, %r15 # minus lexp -> r
+sub %rax, %r15
 movq $L55, %rdi # default name
-call ord # move call
+call ord
 movq %r15, %rdi # add lexp -> r
 add %rax, %rdi
-call chr # move call
-movq %rax, %rdi # move reg arg 0 to temp
-call print # exp call ( no return value )
+call chr
+movq %rax, %rdi # rax to temp 
+call print
 jmp L58
 L82:
 # sink 
@@ -221,100 +208,87 @@ pushq %rbp
 movq %rsp, %rbp
 subq $40, %rsp
 # start main
-# sink 
+# start 
 L85:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, -40(%rbp) # spill store
 movq %rdx, -32(%rbp) # spill store
 movq %r12, -24(%rbp) # spill store
 movq %r13, -16(%rbp) # spill store
-movq $0, %rcx # const
+movq $0, %rax # integerExpression
 movq -40(%rbp), %rsi # spill load
-cmp %rcx, %rsi
+cmp %rax, %rsi
 je L51
 L52:
-movq $0, %rcx # const
+movq $0, %rax # integerExpression
 movq -32(%rbp), %rdx # spill load
-cmp %rcx, %rdx
+cmp %rax, %rdx
 je L48
 L49:
-movq $0, %rcx # const
 movq -40(%rbp), %rsi # spill load
-add %rcx, %rsi
-movq (%rsi), %rcx # default load
-movq $0, %rsi # const
+movq 0(%rsi), %rax # mem(boe)
 movq -32(%rbp), %rdx # spill load
-add %rsi, %rdx
-movq (%rdx), %rdx # default load
-cmp %rdx, %rcx
+movq 0(%rdx), %rcx # mem(boe)
+cmp %rcx, %rax
 jl L45
 L46:
-movq $16, %rdi # const
-call initRecord # move call
+movq $16, %rdi # integerExpression
+call initRecord
 movq %rax, %r12 # rax to temp 
-movq $0, %rdx # const
-movq %r12, %rcx # add lexp -> r
-add %rdx, %rcx
-movq $0, %rsi # const
-movq -32(%rbp), %rdx # spill load
-add %rsi, %rdx
-movq (%rdx), %rdx # mem to temp
-movq %rdx, (%rcx) # temp to mem
-movq $8, %rcx # const
-movq %r12, %r13 # add lexp -> r
-add %rcx, %r13
-movq $8, %rcx # const
+movq $0, %rcx # bin(t, i)
+movq %r12, %rax # add lexp -> r
+add %rcx, %rax
+movq $0, %rcx # bin(t, i)
 movq -32(%rbp), %rdx # spill load
 add %rcx, %rdx
-movq (%rdx), %rdx # default load
+movq (%rdx), %rcx # m2m mem to temp
+movq %rcx, (%rax) # m2m temp to mem
+movq $8, %rax # bin(t, i)
+movq %r12, %r13 # add lexp -> r
+add %rax, %r13
+movq -8(%rbp), %rdi # mem(boe)
+movq -32(%rbp), %rdx # spill load
+movq 8(%rdx), %rdx # mem(boe)
 movq -40(%rbp), %rsi # spill load
-movq $8, %rdi # const
-movq %rbp, %rcx # minus lexp -> r
-sub %rdi, %rcx
-movq (%rcx), %rdi # default load
-call L25 # move call
+call L25
 movq %rax, (%r13) # store
+movq %r12, %rsi # move(t, t)
 L47:
-movq %r12, %rdx # default move
 L50:
 L53:
-movq %rdx, %rax # default move
+movq %rsi, %rax # move(t, t)
 movq -24(%rbp), %r12 # spill load
 movq -16(%rbp), %r13 # spill load
 jmp L84
 L51:
 movq -32(%rbp), %rdx # spill load
+movq %rdx, %rsi # move(t, t)
 jmp L53
 L48:
 movq -40(%rbp), %rsi # spill load
-movq %rsi, %rdx # default move
 jmp L50
 L45:
-movq $16, %rdi # const
-call initRecord # move call
+movq $16, %rdi # integerExpression
+call initRecord
 movq %rax, %r12 # rax to temp 
-movq $0, %rdx # const
-movq %r12, %rcx # add lexp -> r
-add %rdx, %rcx
-movq $0, %rdx # const
-movq -40(%rbp), %rsi # spill load
-add %rdx, %rsi
-movq (%rsi), %rdx # mem to temp
-movq %rdx, (%rcx) # temp to mem
-movq $8, %rcx # const
-movq %r12, %r13 # add lexp -> r
-add %rcx, %r13
-movq -32(%rbp), %rdx # spill load
-movq $8, %rcx # const
+movq $0, %rcx # bin(t, i)
+movq %r12, %rax # add lexp -> r
+add %rcx, %rax
+movq $0, %rcx # bin(t, i)
 movq -40(%rbp), %rsi # spill load
 add %rcx, %rsi
-movq (%rsi), %rsi # default load
-movq $8, %rdi # const
-movq %rbp, %rcx # minus lexp -> r
-sub %rdi, %rcx
-movq (%rcx), %rdi # default load
-call L25 # move call
+movq (%rsi), %rcx # m2m mem to temp
+movq %rcx, (%rax) # m2m temp to mem
+movq $8, %rax # bin(t, i)
+movq %r12, %r13 # add lexp -> r
+add %rax, %r13
+movq -8(%rbp), %rdi # mem(boe)
+movq -40(%rbp), %rsi # spill load
+movq 8(%rsi), %rsi # mem(boe)
+movq -32(%rbp), %rdx # spill load
+call L25
 movq %rax, (%r13) # store
+movq %r12, %rsi # move(t, t)
 jmp L47
 L84:
 # sink 
@@ -328,50 +302,41 @@ pushq %rbp
 movq %rsp, %rbp
 subq $24, %rsp
 # start main
-# sink 
+# start 
 L87:
 movq %rdi, -8(%rbp) # store to offset
 movq %r14, -24(%rbp) # spill store
 movq %r15, -16(%rbp) # spill store
-movq $8, %rdi # const
-call initRecord # move call
-movq %rax, %r14 # rax to temp 
-movq $0, %rcx # const
-movq %rcx, 0(%r14) # store to offset
+movq $8, %rdi # integerExpression
+call initRecord
+movq $0, 0(%rax) # store to offset
+movq %rax, %r14 # move(t, t)
+movq -8(%rbp), %rdi # mem(boe)
 movq %r14, %rsi # move reg arg 1 to temp
-movq $8, %rdx # const
-movq %rbp, %rcx # minus lexp -> r
-sub %rdx, %rcx
-movq (%rcx), %rdi # default load
-call L0 # move call
+call L0
 movq %rax, %r15 # rax to temp 
-movq $0, %rcx # const
-add %rcx, %r14
-movq (%r14), %rcx # default load
-movq $1, %rdx # const
-cmp %rdx, %rcx
+movq 0(%r14), %rax # mem(boe)
+movq $1, %rcx # integerExpression
+cmp %rcx, %rax
 je L30
 L31:
-movq $0, %rax # const
+movq $0, %rax # move(t, i)
 L32:
 movq -24(%rbp), %r14 # spill load
 movq -16(%rbp), %r15 # spill load
 jmp L86
 L30:
-movq $16, %rdi # const
-call initRecord # move call
+movq $16, %rdi # integerExpression
+call initRecord
 movq %rax, %r14 # rax to temp 
 movq %r15, 0(%r14) # store to offset
-movq $8, %rcx # const
+movq $8, %rax # bin(t, i)
 movq %r14, %r15 # add lexp -> r
-add %rcx, %r15
-movq $8, %rdx # const
-movq %rbp, %rcx # minus lexp -> r
-sub %rdx, %rcx
-movq (%rcx), %rdi # default load
-call L24 # move call
+add %rax, %r15
+movq -8(%rbp), %rdi # mem(boe)
+call L24
 movq %rax, (%r15) # store
-movq %r14, %rax # default move
+movq %r14, %rax # move(t, t)
 jmp L32
 L86:
 # sink 
@@ -385,67 +350,53 @@ pushq %rbp
 movq %rsp, %rbp
 subq $32, %rsp
 # start main
-# sink 
+# start 
 L89:
 movq %rdi, -8(%rbp) # store to offset
 movq %rsi, -32(%rbp) # spill store
 movq %r14, -24(%rbp) # spill store
 movq %r15, -16(%rbp) # spill store
-movq $0, %r14 # const
+movq $0, %r14 # move(t, i)
 movq %rbp, %rdi # move reg arg 0 to temp
-call L2 # exp call ( no return value )
-movq $0, %rcx # const
+call L2
+movq $0, %rax # bin(t, i)
 movq -32(%rbp), %rsi # spill load
-add %rcx, %rsi
-movq %rsi, %r15 # default move
-movq $-8, %rcx # const
-add %rbp, %rcx
-movq (%rcx), %rcx # default load
-movq $-8, %rdx # const
-add %rdx, %rcx
-movq (%rcx), %rsi # default load
+add %rax, %rsi
+movq %rsi, %r15 # move(t, t)
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %rsi # mem(boe)
 movq %rbp, %rdi # move reg arg 0 to temp
-call L1 # move call
+call L1
 movq %rax, (%r15) # store
 L22:
-movq $-8, %rcx # const
-add %rbp, %rcx
-movq (%rcx), %rcx # default load
-movq $-8, %rdx # const
-add %rdx, %rcx
-movq (%rcx), %rsi # default load
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %rsi # mem(boe)
 movq %rbp, %rdi # move reg arg 0 to temp
-call L1 # move call
-movq $1, %rcx # const
+call L1
+movq $1, %rcx # integerExpression
 cmp %rcx, %rax
 je L23
 L20:
-movq %r14, %rax # default move
+movq %r14, %rax # move(t, t)
 movq -24(%rbp), %r14 # spill load
 movq -16(%rbp), %r15 # spill load
 jmp L88
 L23:
-movq $10, %rcx # const
+movq $10, %rcx # bin(t, i)
 movq %r14, %rax # imul l -> rax
 imul %rcx # imul rax * r 
-movq %rax, %r14 # default move
-movq $-8, %rcx # const
-add %rbp, %rcx
-movq (%rcx), %rcx # default load
-movq $-8, %rdx # const
-add %rdx, %rcx
-movq (%rcx), %rdi # default load
-call ord # move call
+movq %rax, %r14 # move(t, t)
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %rdi # mem(boe)
+call ord
 add %rax, %r14
 movq $L21, %rdi # default name
-call ord # move call
+call ord
 sub %rax, %r14
-movq $-8, %rcx # const
-add %rbp, %rcx
-movq (%rcx), %r15 # default load
-movq $-8, %rcx # const
-add %rcx, %r15
-call getchar # move call
+movq -8(%rbp), %r15 # mem(boe)
+movq $-8, %rax # bin(t, i)
+add %rax, %r15
+call getchar
 movq %rax, (%r15) # store
 jmp L22
 L88:
@@ -464,38 +415,26 @@ pushq %rbp
 movq %rsp, %rbp
 subq $16, %rsp
 # start main
-# sink 
+# start 
 L91:
 movq %rdi, -8(%rbp) # store to offset
 movq %r15, -16(%rbp) # spill store
 L16:
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %rax # mem(boe)
+movq -8(%rax), %rdi # mem(boe)
 movq $L10, %rsi # default name
-movq $-8, %rdx # const
-movq $-8, %rcx # const
-add %rbp, %rcx
-movq (%rcx), %rcx # default load
-add %rcx, %rdx
-movq (%rdx), %rcx # default load
-movq $-8, %rdx # const
-add %rdx, %rcx
-movq (%rcx), %rdi # default load
-call stringEqual # move call
-movq $1, %rcx # const
+call stringEqual
+movq $1, %rcx # integerExpression
 cmp %rcx, %rax
 je L12
 L13:
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %rax # mem(boe)
+movq -8(%rax), %rdi # mem(boe)
 movq $L11, %rsi # default name
-movq $-8, %rdx # const
-movq $-8, %rcx # const
-add %rbp, %rcx
-movq (%rcx), %rcx # default load
-add %rcx, %rdx
-movq (%rdx), %rcx # default load
-movq $-8, %rdx # const
-add %rdx, %rcx
-movq (%rcx), %rdi # default load
-call stringEqual # move call
-movq $1, %rcx # const
+call stringEqual
+movq $1, %rcx # integerExpression
 cmp %rcx, %rax
 je L17
 L15:
@@ -503,15 +442,11 @@ movq -16(%rbp), %r15 # spill load
 jmp L90
 L12:
 L17:
-movq $-8, %rcx # const
-movq $-8, %rdx # const
-add %rbp, %rdx
-movq (%rdx), %rdx # default load
-add %rdx, %rcx
-movq (%rcx), %r15 # default load
-movq $-8, %rcx # const
-add %rcx, %r15
-call getchar # move call
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %r15 # mem(boe)
+movq $-8, %rax # bin(t, i)
+add %rax, %r15
+call getchar
 movq %rax, (%r15) # store
 jmp L16
 L90:
@@ -534,53 +469,41 @@ pushq %rbp
 movq %rsp, %rbp
 subq $24, %rsp
 # start main
-# sink 
+# start 
 L93:
 movq %rdi, -8(%rbp) # store to offset
 movq %r14, -24(%rbp) # spill store
 movq %r15, -16(%rbp) # spill store
-movq $-8, %rdx # const
-movq $-8, %rcx # const
-add %rbp, %rcx
-movq (%rcx), %rcx # default load
-add %rcx, %rdx
-movq (%rdx), %rcx # default load
-movq $-8, %rdx # const
-add %rdx, %rcx
-movq (%rcx), %rdi # default load
-call ord # move call
-movq %rax, %r14 # rax to temp 
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %rax # mem(boe)
+movq -8(%rax), %rdi # mem(boe)
+call ord
+movq %rax, %r14 # move(t, t)
 movq $L3, %rdi # default name
-call ord # move call
+call ord
 cmp %rax, %r14
 jge L5
 L6:
-movq $0, %rax # const
+movq $0, %rax # move(t, i)
 L7:
 movq -24(%rbp), %r14 # spill load
 movq -16(%rbp), %r15 # spill load
 jmp L92
 L5:
-movq $1, %r15 # const
-movq $-8, %rcx # const
-movq $-8, %rdx # const
-add %rbp, %rdx
-movq (%rdx), %rdx # default load
-add %rdx, %rcx
-movq (%rcx), %rcx # default load
-movq $-8, %rdx # const
-add %rdx, %rcx
-movq (%rcx), %rdi # default load
-call ord # move call
-movq %rax, %r14 # rax to temp 
+movq $1, %r14 # move(t, i)
+movq -8(%rbp), %rax # mem(boe)
+movq -8(%rax), %rax # mem(boe)
+movq -8(%rax), %rdi # mem(boe)
+call ord
+movq %rax, %r15 # move(t, t)
 movq $L4, %rdi # default name
-call ord # move call
-cmp %rax, %r14
+call ord
+cmp %rax, %r15
 jle L8
 L9:
-movq $0, %r15 # const
+movq $0, %r14 # move(t, i)
 L8:
-movq %r15, %rax # default move
+movq %r14, %rax # move(t, t)
 jmp L7
 L92:
 # sink 
