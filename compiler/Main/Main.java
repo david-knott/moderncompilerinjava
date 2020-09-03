@@ -27,7 +27,8 @@ public class Main {
         InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
         ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);
-        TaskRegister.instance.setErrorHandler(errorMsg).setIn(in).setOut(out)
+        TaskRegister.instance
+                .register(new Tasks())
                 .register(new Parse.Tasks(new CupParser(in, errorMsg))).register(new FindEscape.Tasks())
                 .register(new Absyn.Tasks()).register(new Semant.Tasks()).register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl())).register(new Intel.Tasks(null, null))

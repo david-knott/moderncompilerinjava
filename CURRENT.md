@@ -1,4 +1,10 @@
 # Diary
+
+## 3st September ##
+Finished command line parser. I did some refactoring on the tasks module. 
+I am now looking at having different streams for output and input.
+
+
 ## 1st September ##
 Starting command line parser. Still need to implement short code arguments.
 

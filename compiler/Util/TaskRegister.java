@@ -100,18 +100,6 @@ public class TaskRegister {
         return this;
     }
 
-    public TaskRegister setIn(InputStream in) {
-        Assert.assertNotNull(in);
-        this.in = in;
-        return this;
-    }
-
-    public TaskRegister setOut(PrintStream out) {
-        Assert.assertNotNull(out);
-        this.out = out;
-        return this;
-    }
-
     public TaskRegister register(TaskProvider taskProvider) {
         taskProvider.build();
         return this;
