@@ -1,7 +1,5 @@
 package Semant;
 
-import Absyn.Absyn;
-import Absyn.Exp;
 import Absyn.SimpleVar;
 import Absyn.Var;
 import Util.Assert;
