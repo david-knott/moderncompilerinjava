@@ -7,12 +7,9 @@ import Util.Assert;
 import Core.CompilerEventType;
 import Core.Component;
 import ErrorMsg.ArgumentMismatchError;
-import ErrorMsg.BreakNestingError;
 import ErrorMsg.ErrorMsg;
-import ErrorMsg.FieldNotDefinedError;
 import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
-import ErrorMsg.TypeNotIntError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
 import Symbol.Symbol;
@@ -315,7 +312,7 @@ public class Semant extends Component{
             // I think we begin scope here because we
             // are processing the function body in this loop
             env.venv.beginScope();
-            // get the new level for this function
+            // get the new level created in the parent scope for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
             var vent = (FunEntry) env.venv.get(current.name);
             // iterate formals adding access to the created var entries
