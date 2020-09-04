@@ -2,10 +2,20 @@ package Absyn;
 
 import Symbol.Symbol;
 
+/**
+ * An ArrayExp class used to define a new tiger array.
+ */
 public class ArrayExp extends Exp {
    public Symbol typ;
    public Exp size, init;
 
+   /**
+    * Default constructor
+    * @param p the related character position in the source file
+    * @param t the symbol that represents this class
+    * @param s the expression that supplies the array size
+    * @param i the expression that supplies the element initial values.
+    */
    public ArrayExp(int p, Symbol t, Exp s, Exp i) {
       pos = p;
       typ = t;

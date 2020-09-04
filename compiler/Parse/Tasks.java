@@ -36,6 +36,6 @@ public class Tasks implements TaskProvider {
             public void only(TaskContext taskContext) {
                 parseTask.parse(taskContext);
             }
-        }, "parse", "parse", ""); // should return a function to the
+        }, "parse", "parse", ""); 
     }
 }

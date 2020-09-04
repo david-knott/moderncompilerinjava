@@ -1,7 +1,6 @@
 package Assem;
 
 import Temp.DefaultMap;
-import Temp.TempList;
 
 public class InstrList {
     

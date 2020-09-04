@@ -1,8 +1,15 @@
 # Diary
 
+## 4st September ##
+Working on separating out the binding from the type checking.
+Started on a default abstract syntax visitor which is used to
+cut down on code repetition when we are only interested in certain
+types in the tree traversal.
+
+
 ## 3st September ##
 Finished command line parser. I did some refactoring on the tasks module. 
-I am now looking at having different streams for output and input.
+~~ I am now looking at having different streams for output and input. ~~
 
 compiler --input some_file.tig --output another_file.asm / input from some_file, output to another_file
 compiler  / takes input from standard in, writes output to standard out.

@@ -2,6 +2,11 @@ package Absyn;
 
 import Symbol.Symbol;
 
+/**
+ * This class defines the type of an array.
+ * The typ member represents the name of the
+ * type.
+ */
 public class ArrayTy extends Ty {
    public Symbol typ;
 

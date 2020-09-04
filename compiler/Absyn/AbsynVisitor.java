@@ -1,5 +1,6 @@
 package Absyn;
 
+
 public interface AbsynVisitor {
 
     void visit(ArrayExp exp);
