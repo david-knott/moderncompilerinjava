@@ -25,11 +25,27 @@ class Scope {
         this.parent = parent;
     }
 
-    public void beginScope() {
+    public void put(Symbol symbol, Object o) {
 
     }
 
+    public Object lookup(Symbol symbol) {
+        return null;
+    }
+
+    /**
+     * Create a new scope for the given namespace
+     */
+    public void beginScope() {
+        System.out.println("beginscope");
+
+    }
+
+    /**
+     * Destroy the most recently used scope namespace.
+     */
     public void endScope() {
+        System.out.println("endscope");
 
     }
 }
@@ -54,29 +70,16 @@ public class Binder extends DefaultVisitor {
             exp.body.accept(this);
         }
         this.scope.endScope();
-
-    }
-
-    @Override
-    public void visit(WhileExp exp) {
-        exp.test.accept(this);
-        this.scope.beginScope();
-        exp.body.accept(this);
-        this.scope.endScope();
-    }
-
-    @Override
-    public void visit(ForExp exp) {
-        exp.var.accept(this);
-        exp.hi.accept(this);
-        this.scope.beginScope();
-        exp.body.accept(this);
-        this.scope.endScope();
     }
 
     @Override
     public void visit(FunctionDec exp) {
-        System.out.println("bind:function:" + exp.name + " => ?");
+        this.scope.beginScope();
+        if(exp.params != null) {
+            exp.params.accept(this);
+        }
+        exp.body.accept(this);
+        this.scope.endScope();
     }
 
     /**
@@ -87,10 +90,13 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(TypeDec exp) {
         System.out.println("bind:type:" + exp.name +  " => " + exp.ty);
+        // we need to construct the type type
+        this.scope.put(exp.name, exp);
     }
 
     @Override
     public void visit(VarDec exp) {
         System.out.println("bind:var:" + exp.name +  " => " + exp.typ);
+        this.scope.put(exp.name, exp);
     }
 }
