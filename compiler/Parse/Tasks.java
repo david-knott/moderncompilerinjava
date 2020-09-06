@@ -34,7 +34,12 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                parseTask.parse(taskContext);
+                Program program = parseTask.parse();
+                if(!parseTask.hasErrors()) {
+                    taskContext.setAst(program);
+                } else {
+                    throw new Error("Errors");
+                }
             }
         }, "parse", "parse", ""); 
     }

@@ -19,8 +19,8 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         Timer.instance.start();
         Timer.instance.push("rest");
-        PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
-     //   PrintStream out = System.out;
+     //   PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
+        PrintStream out = System.out;
         if (args.length == 1) {
            args = new String[] {"--reg-alloc", "--escapes-compute", "--demove", args[0] };
         }
@@ -29,7 +29,9 @@ public class Main {
         ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);
         TaskRegister.instance
                 .register(new Tasks())
-                .register(new Parse.Tasks(new CupParser(in, errorMsg))).register(new FindEscape.Tasks())
+                .register(new Parse.Tasks(new CupParser(in, errorMsg)))
+                .register(new Bind.Tasks())
+                .register(new FindEscape.Tasks())
                 .register(new Absyn.Tasks()).register(new Semant.Tasks()).register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl())).register(new Intel.Tasks(null, null))
                 .register(new RegAlloc.Tasks(new RegAllocFactory())).parseArgs(args).execute(in, out, err, errorMsg);

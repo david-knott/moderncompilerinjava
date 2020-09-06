@@ -2,6 +2,10 @@ package Absyn;
 
 import Symbol.Symbol;
 
+/**
+ * This class represents the declaration of a variable.
+ * The declarion can contain an optional type.
+ */
 public class VarDec extends Dec {
    public Symbol name;
    public boolean escape = true;
@@ -13,10 +17,6 @@ public class VarDec extends Dec {
       name = n;
       typ = t;
       init = i;
-   }
-
-   public String toString() {
-      return "{ VarDec name='" + name + "', type='" + typ.name + "'}";
    }
 
    @Override

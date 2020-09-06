@@ -1,35 +1,38 @@
 package Bind;
 
+import java.util.Hashtable;
+
 import Absyn.DefaultVisitor;
-import Absyn.ArrayExp;
-import Absyn.ArrayTy;
-import Absyn.AssignExp;
-import Absyn.BreakExp;
-import Absyn.CallExp;
-import Absyn.DecList;
-import Absyn.ExpList;
-import Absyn.FieldExpList;
-import Absyn.FieldList;
-import Absyn.FieldVar;
 import Absyn.ForExp;
 import Absyn.FunctionDec;
-import Absyn.IfExp;
-import Absyn.IntExp;
 import Absyn.LetExp;
-import Absyn.NameTy;
-import Absyn.NilExp;
-import Absyn.OpExp;
-import Absyn.RecordExp;
-import Absyn.RecordTy;
-import Absyn.SeqExp;
-import Absyn.SimpleVar;
-import Absyn.StringExp;
-import Absyn.SubscriptVar;
 import Absyn.TypeDec;
-import Absyn.Var;
 import Absyn.VarDec;
-import Absyn.VarExp;
 import Absyn.WhileExp;
+import Symbol.Symbol;
+
+
+class Scope {
+
+    public Hashtable<Symbol, Object> table = new Hashtable<Symbol, Object>();
+    public final Scope parent;
+
+    public Scope() {
+        parent = null;
+    }
+
+    Scope(Scope parent) {
+        this.parent = parent;
+    }
+
+    public void beginScope() {
+
+    }
+
+    public void endScope() {
+
+    }
+}
 
 /**
  * The Binder class traverses the abstract syntax tree
@@ -39,173 +42,55 @@ import Absyn.WhileExp;
  */
 public class Binder extends DefaultVisitor {
 
-
-    @Override
-    public void visit(ArrayExp exp) {
-        exp.size.accept(this);
-        exp.init.accept(this);
-    }
-
-    @Override
-    public void visit(ArrayTy exp) {
-    }
-
-    @Override
-    public void visit(AssignExp exp) {
-        exp.exp.accept(this);
-        exp.var.accept(this);
-    }
-
-    @Override
-    public void visit(BreakExp exp) {
-    }
-
-    @Override
-    public void visit(CallExp exp) {
-        exp.args.accept(this);
-    }
-
-    @Override
-    public void visit(DecList exp) {
-        for(;exp != null; exp = exp.tail) {
-            exp.head.accept(this);
-        }
-    }
-
-    @Override
-    public void visit(ExpList exp) {
-        for(;exp != null; exp = exp.tail) {
-            exp.head.accept(this);
-        }
-    }
-
-    @Override
-    public void visit(FieldExpList exp) {
-        for(;exp != null; exp = exp.tail) {
-            exp.init.accept(this);
-        }
-    }
-
-    @Override
-    public void visit(FieldList exp) {
-    }
-
-    @Override
-    public void visit(FieldVar exp) {
-    }
-
-    @Override
-    public void visit(ForExp exp) {
-        exp.body.accept(this);
-        exp.hi.accept(this);
-        exp.var.accept(this);
-    }
-
-    @Override
-    public void visit(FunctionDec exp) {
-        exp.body.accept(this);
-        exp.params.accept(this);
-    }
-
-    @Override
-    public void visit(IfExp exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(IntExp exp) {
-        // TODO Auto-generated method stub
-
-    }
+    Scope scope = new Scope();
 
     @Override
     public void visit(LetExp exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(NameTy exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(NilExp exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(OpExp exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(RecordExp exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(RecordTy exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(SeqExp exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(SimpleVar exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(StringExp exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(SubscriptVar exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(TypeDec exp) {
-        //type declared here.
-
-    }
-
-    @Override
-    public void visit(Var exp) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void visit(VarDec exp) {
-        //variable is being declared here.
-
-    }
-
-    @Override
-    public void visit(VarExp exp) {
-        // TODO Auto-generated method stub
+        this.scope.beginScope();
+        if(exp.decs != null) {
+            exp.decs.accept(this);
+        }
+        if(exp.body != null) {
+            exp.body.accept(this);
+        }
+        this.scope.endScope();
 
     }
 
     @Override
     public void visit(WhileExp exp) {
-        // TODO Auto-generated method stub
+        exp.test.accept(this);
+        this.scope.beginScope();
+        exp.body.accept(this);
+        this.scope.endScope();
+    }
 
+    @Override
+    public void visit(ForExp exp) {
+        exp.var.accept(this);
+        exp.hi.accept(this);
+        this.scope.beginScope();
+        exp.body.accept(this);
+        this.scope.endScope();
+    }
+
+    @Override
+    public void visit(FunctionDec exp) {
+        System.out.println("bind:function:" + exp.name + " => ?");
+    }
+
+    /**
+     * Visits a user defined type declaration and binds the symbol to its 
+     * type representation. This allows further looks using
+     * the exp.name which will resolve the the user defined type.
+     */
+    @Override
+    public void visit(TypeDec exp) {
+        System.out.println("bind:type:" + exp.name +  " => " + exp.ty);
+    }
+
+    @Override
+    public void visit(VarDec exp) {
+        System.out.println("bind:var:" + exp.name +  " => " + exp.typ);
     }
 }

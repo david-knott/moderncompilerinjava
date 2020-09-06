@@ -9,16 +9,16 @@ import Main.Main;
 public class TestDriver {
     @Test
     public void intDec() throws FileNotFoundException {
-        Main.main(new String[]{"reg-alloc", "demove", "./test/E2E/good/pplus.tig"});
+        Main.main(new String[]{"--bind", "./test/E2E/good/pplus.tig"});
     }
 
     @Test
     public void test() throws FileNotFoundException {
-        Main.main(new String[]{"./test/E2E/good/linked_list_size.tig"});
+        Main.main(new String[]{"--bind", "./test/E2E/good/linked_list_size.tig"});
     }
 
     @Test
     public void test4() throws FileNotFoundException {
-        Main.main(new String[]{"temp-expand", "./test/E2E/good/array_dec.tig"});
+        Main.main(new String[]{"--temp-expand", "./test/E2E/good/array_dec.tig"});
     }
 }

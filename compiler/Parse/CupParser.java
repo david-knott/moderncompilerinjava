@@ -1,6 +1,8 @@
 package Parse;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
@@ -20,13 +22,22 @@ public class CupParser implements Parser {
 
     public CupParser(InputStream inputStream, ErrorMsg errorMsg) {
         Assert.assertNotNull(inputStream);
+        Assert.assertNotNull(errorMsg);
         this.inputStream = inputStream;
         this.errorMsg = errorMsg;
         this.yylex = new Yylex(inputStream, errorMsg);
     }
 
+    public CupParser(String string, ErrorMsg errorMsg) {
+        Assert.assertNotNull(string);
+        Assert.assertNotNull(errorMsg);
+        this.inputStream = new ByteArrayInputStream(string.getBytes(Charset.forName("UTF-8")));
+        this.errorMsg = errorMsg;
+        this.yylex = new Yylex(inputStream, errorMsg);
+    }
+
     @Override
-    public void parse(TaskContext context) {
+    public Program parse() {
         Grm parser = new Grm(new DebugLexer(this.yylex, System.out), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
         try {
@@ -40,9 +51,12 @@ public class CupParser implements Parser {
                 throw new Error(e.toString());
             }
         }
-        if (!this.errorMsg.anyErrors) {
-            context.setAst((Program)rootSymbol.value);
-        }
+        return (Program)rootSymbol.value;
+    }
+
+    @Override
+    public boolean hasErrors() {
+        return this.errorMsg.anyErrors;
     }
 
     @Override

@@ -1,9 +1,5 @@
 package Canon;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import ErrorMsg.ErrorMsg;
 import Translate.DataFrag;
 import Translate.FragList;
 import Translate.FragmentVisitor;

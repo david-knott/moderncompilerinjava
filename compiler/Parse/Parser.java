@@ -1,10 +1,10 @@
 package Parse;
 
-import Util.TaskContext;
-
 public interface Parser {
 
-    public void parse(TaskContext context);
+    public Program parse();
+
+    public boolean hasErrors();
 
 	public void setParserTrace(boolean value);
 }
