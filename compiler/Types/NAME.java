@@ -34,4 +34,8 @@ public class NAME extends Type {
    public void bind(Type t) {
       binding = t;
    }
+
+   public String toString() {
+      return "{Types.NAME: name=" + this.name + ", binding=" + this.binding + "}";
+   }
 }

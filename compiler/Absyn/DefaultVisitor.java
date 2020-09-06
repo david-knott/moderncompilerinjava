@@ -68,6 +68,9 @@ public class DefaultVisitor implements AbsynVisitor{
     public void visit(FunctionDec exp) {
         exp.body.accept(this);
         exp.params.accept(this);
+        if(exp.result != null) {
+            exp.result.accept(this);
+        }
     }
 
     @Override
@@ -148,6 +151,9 @@ public class DefaultVisitor implements AbsynVisitor{
     @Override
     public void visit(VarDec exp) {
         exp.init.accept(this);
+        if(exp.typ != null) {
+            exp.typ.accept(this);
+        }
     }
 
     @Override
