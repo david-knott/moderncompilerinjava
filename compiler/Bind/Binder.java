@@ -1,5 +1,7 @@
 package Bind;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Hashtable;
 
 import Absyn.ArrayTy;
@@ -15,6 +17,7 @@ import Absyn.VarDec;
 import Absyn.WhileExp;
 import Parse.sym;
 import Symbol.Symbol;
+import Types.ARRAY;
 import Types.INT;
 import Types.NAME;
 import Types.RECORD;
@@ -43,7 +46,6 @@ class Scope {
         Assert.assertNotNull(symbol);
         Assert.assertNotNull(o);
         this.table.put(symbol, o);
-
     }
 
     public Type lookup(Symbol symbol) {
@@ -72,6 +74,13 @@ class Scope {
     public void endScope() {
         System.out.println("endscope");
 
+    }
+
+    public void debug(OutputStream outputStream) {
+        try(PrintStream printStream = new PrintStream(outputStream)) {
+            printStream.println("## scope debug information");
+
+        }
     }
 }
 
@@ -108,17 +117,16 @@ public class Binder extends DefaultVisitor {
 
     /**
      * Visits a user defined type declaration and binds the symbol to its type
-     * representation. This allows further looks using the exp.name which will
+     * representation. This allows further lookups using the exp.name which will
      * resolve the the user defined type.
      */
     @Override
     public void visit(TypeDec exp) {
-        // set the type to null before visitation.
-        this.type = null;
-        // visit the type
+        this.type = new NAME(exp.name);
+        this.typeScope.put(exp.name, this.type);
+        // visit the type definition.
         exp.ty.accept(this);
-        // create bind with symbol name and type
-        // this.typeScope.put(exp.name, this.type);
+        // bind symbol to empty name type 
         System.out.println("bind:type:" + exp.name + " => " + this.type);
     }
 
@@ -128,9 +136,14 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(RecordTy exp) {
-        System.out.println("record type =" + exp);
-        // this is just the fields {id = int, name = string, address = address}
-        super.visit(exp);
+        RECORD last = null;
+        FieldList expList = exp.fields;
+        do
+        {
+            last = new RECORD(expList.name, this.typeScope.lookup(expList.typ), last);
+            expList = expList.tail;
+        }while(expList != null);
+        ((NAME)this.type).bind(last);
     }
 
     /**
@@ -139,28 +152,16 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(ArrayTy exp) {
+        ((NAME)this.type).bind(new ARRAY(this.typeScope.lookup(exp.typ)));
     }
 
     /**
      * Visit a explicity type in a var declaration, eg var a:int = 1, where int is
      * the NameTy or visit the return type defined in a function declaration eg
-     * function a():int, where int is the NameTy
+     * function a():int, where int is the NameTy, or type t = int, where int is NameTy
      */
     @Override
     public void visit(NameTy exp) {
-        super.visit(exp);
-    }
-
-    /**
-     * Visit each field in a record.
-     */
-    @Override
-    public void visit(FieldList exp) {
-        for (; exp != null; exp = exp.tail) {
-            // lookup the type of exp in the symbol table
-            // this.type = new RECORD(/* symbol */ exp.name, /* type */
-            // this.typeScope.lookup(exp.typ), /* next */ (RECORD)this.type);
-            System.out.println("bind:record:type:fieldname=" + exp.name + " => type-symbol=" + exp.typ);
-        }
+        ((NAME)this.type).bind(this.typeScope.lookup(exp.name));
     }
 }
