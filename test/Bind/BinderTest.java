@@ -18,7 +18,6 @@ public class BinderTest {
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
-
     }
 
     @Test
