@@ -1,5 +1,13 @@
 # Diary
 
+## 7th September ##
+Continuing work on Binder. 
+
+Question: How can be have a separate binder visitor from the translation ?
+All the binder scopes will have been destroyed when the binder visitor has
+completed its AST traversal.
+
+
 ## 4st September ##
 Working on separating out the binding from the type checking.
 Started on a default abstract syntax visitor which is used to
