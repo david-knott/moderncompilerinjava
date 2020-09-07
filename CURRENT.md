@@ -7,6 +7,7 @@ Question: How can be have a separate binder visitor from the translation ?
 All the binder scopes will have been destroyed when the binder visitor has
 completed its AST traversal.
 
+Question: What happens if recursive type declaration are NOT contiguous.
 
 ## 4st September ##
 Working on separating out the binding from the type checking.
