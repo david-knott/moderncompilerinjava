@@ -23,10 +23,9 @@ import Types.RECORD;
 import Types.Type;
 
 /**
- * The Binder class traverses the abstract syntax tree and remembers variable,
- * function and type declarations.
- * 
- * These are used in the type checking and semantic analysis phase.
+ * The Binder class traverses the abstract syntax tree and binds variable,
+ * function and type declarations to their respective symbol tables.
+ * These are used in the type checking and translation phases.
  */
 public class Binder extends DefaultVisitor {
 
