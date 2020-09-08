@@ -37,6 +37,7 @@ public class Binder extends DefaultVisitor {
     SymbolTable varSymbolTable;
     SymbolTable functionSymbolTable;
     Type type = null;
+    BreakExp lastBreak = null;
 
     public Binder() {
         // base system types
@@ -123,13 +124,17 @@ public class Binder extends DefaultVisitor {
         this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
     }
 
-    public BreakExp lastBreak;
-
+    /**
+     * Visit break expression and assign it to member lastBreak. 
+     */
     @Override
     public void visit(BreakExp exp) {
         this.lastBreak = exp;
     }
 
+    /**
+     * Visit while loop and capture and breaks within its body.
+     */
     @Override
     public void visit(WhileExp exp) {
         exp.test.accept(this);
@@ -141,6 +146,9 @@ public class Binder extends DefaultVisitor {
         }
     }
 
+    /**
+     * Visit for loop and capture and breaks within its body.
+     */
     @Override
     public void visit(ForExp exp) {
         exp.var.accept(this);
@@ -151,7 +159,6 @@ public class Binder extends DefaultVisitor {
             this.lastBreak = null;
         }
     }
-
 
     /**
      * Visit a function declaration. Visit the function header first, this includes the function name
