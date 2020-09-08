@@ -1,6 +1,8 @@
 package Absyn;
 
 public class BreakExp extends Exp {
+   public Absyn loop;
+
    public BreakExp(int p) {
       pos = p;
    }

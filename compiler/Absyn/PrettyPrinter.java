@@ -88,6 +88,11 @@ public class PrettyPrinter implements AbsynVisitor {
     public void visit(BreakExp exp) {
         space();
         say("break");
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp.loop) + " */");
+            space();
+        }
     }
 
     @Override
@@ -170,6 +175,11 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(ForExp exp) {
         say("for");  
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp) + " */");
+            space();
+        }
         space();
         exp.var.accept(this);
         space();
@@ -187,6 +197,11 @@ public class PrettyPrinter implements AbsynVisitor {
         say("function");
         space();
         say(functionDec.name.toString());
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(functionDec) + " */");
+            space();
+        }
         say("(");
         if (functionDec.params != null)
             functionDec.params.accept(this);
@@ -198,11 +213,6 @@ public class PrettyPrinter implements AbsynVisitor {
             functionDec.result.accept(this);
         }
         space();
-        if(this.bindingsDisplay) {
-            space();
-            say("/* " + System.identityHashCode(functionDec) + " */");
-            space();
-        }
         say("=");
         space();
         currentIndentation++;
@@ -357,6 +367,11 @@ public class PrettyPrinter implements AbsynVisitor {
         say("var");
         space();
         say(exp.name);
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp) + " */");
+            space();
+        }
         space();
         if(exp.typ != null) {
             say(":");
@@ -372,11 +387,7 @@ public class PrettyPrinter implements AbsynVisitor {
             say("/* escapes */");
             space();
         }
-        if(this.bindingsDisplay) {
-            space();
-            say("/* " + System.identityHashCode(exp) + " */");
-            space();
-        }
+        
     }
 
     @Override
@@ -387,10 +398,20 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(WhileExp exp) {
         say("while");
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp) + " */");
+            space();
+        }
+        space();
         exp.test.accept(this);
+        space();
         say("do");
+        space();
         say("(");
+        space();
         exp.body.accept(this);
+        space();
         say(")");
     }
 }

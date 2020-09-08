@@ -95,6 +95,17 @@ public class BinderTest {
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
-
     }
+
+    @Test
+    public void breakTest() {
+        Parser parser = new CupParser("let var x := 0 in while 1 do ( for i := 0 to 10 do ( x := x + i; if x >= 42 then break ); if x >= 51 then break ) end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        Binder binder = new Binder();
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+    }
+
+
 }

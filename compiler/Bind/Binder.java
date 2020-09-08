@@ -3,9 +3,11 @@ package Bind;
 import java.util.Hashtable;
 
 import Absyn.ArrayTy;
+import Absyn.BreakExp;
 import Absyn.CallExp;
 import Absyn.DefaultVisitor;
 import Absyn.FieldList;
+import Absyn.ForExp;
 import Absyn.FunctionDec;
 import Absyn.IntExp;
 import Absyn.LetExp;
@@ -15,6 +17,7 @@ import Absyn.SimpleVar;
 import Absyn.StringExp;
 import Absyn.TypeDec;
 import Absyn.VarDec;
+import Absyn.WhileExp;
 import Symbol.Symbol;
 import Types.ARRAY;
 import Types.Constants;
@@ -89,6 +92,9 @@ public class Binder extends DefaultVisitor {
         this.type = Constants.STRING;
     }
 
+    /**
+     * Visit a simple var expression and bind it to its declaration.
+     */
     @Override
     public void visit(SimpleVar exp) {
         SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
@@ -96,6 +102,9 @@ public class Binder extends DefaultVisitor {
         exp.def(def.exp);
     }
 
+    /**
+     * Visit a call expression and bind it to the function declaration.
+     */
     @Override
     public void visit(CallExp exp) {
         SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
@@ -113,6 +122,36 @@ public class Binder extends DefaultVisitor {
         Type initType = this.type;
         this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
     }
+
+    public BreakExp lastBreak;
+
+    @Override
+    public void visit(BreakExp exp) {
+        this.lastBreak = exp;
+    }
+
+    @Override
+    public void visit(WhileExp exp) {
+        exp.test.accept(this);
+        exp.body.accept(this);
+        if(this.lastBreak != null) {
+            //this.lastBreak
+            this.lastBreak.loop = exp;
+            this.lastBreak = null;
+        }
+    }
+
+    @Override
+    public void visit(ForExp exp) {
+        exp.var.accept(this);
+        exp.hi.accept(this);
+        exp.body.accept(this);
+        if(this.lastBreak != null) {
+            this.lastBreak.loop = exp;
+            this.lastBreak = null;
+        }
+    }
+
 
     /**
      * Visit a function declaration. Visit the function header first, this includes the function name
