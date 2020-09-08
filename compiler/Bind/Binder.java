@@ -1,88 +1,24 @@
 package Bind;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Hashtable;
 
 import Absyn.ArrayTy;
 import Absyn.DefaultVisitor;
 import Absyn.FieldList;
-import Absyn.ForExp;
 import Absyn.FunctionDec;
 import Absyn.LetExp;
 import Absyn.NameTy;
 import Absyn.RecordTy;
 import Absyn.TypeDec;
 import Absyn.VarDec;
-import Absyn.WhileExp;
-import Parse.sym;
 import Symbol.Symbol;
 import Types.ARRAY;
+import Types.FUNCTION;
 import Types.INT;
 import Types.NAME;
 import Types.RECORD;
 import Types.STRING;
 import Types.Type;
-import Util.Assert;
-
-class Scope {
-
-    private INT INT = new INT();
-    private STRING STRING = new STRING();
-    public Hashtable<Symbol, Type> table = new Hashtable<Symbol, Type>();
-    public final Scope parent;
-
-    public Scope() {
-        parent = null;
-        this.table.put(Symbol.symbol("int"), INT);
-        this.table.put(Symbol.symbol("string"), STRING);
-    }
-
-    Scope(Scope parent) {
-        this.parent = parent;
-    }
-
-    public void put(Symbol symbol, Type o) {
-        Assert.assertNotNull(symbol);
-        Assert.assertNotNull(o);
-        this.table.put(symbol, o);
-    }
-
-    public Type lookup(Symbol symbol) {
-        Assert.assertNotNull(symbol);
-        Scope currentScope = this;
-        do {
-            if (currentScope.table.containsKey(symbol)) {
-                return currentScope.table.get(symbol);
-            }
-            currentScope = currentScope.parent;
-        } while (currentScope != null);
-        throw new Error("Cannot find symbol " + symbol);
-    }
-
-    /**
-     * Create a new scope for the given namespace
-     */
-    public void beginScope() {
-        System.out.println("beginscope");
-
-    }
-
-    /**
-     * Destroy the most recently used scope namespace.
-     */
-    public void endScope() {
-        System.out.println("endscope");
-
-    }
-
-    public void debug(OutputStream outputStream) {
-        try(PrintStream printStream = new PrintStream(outputStream)) {
-            printStream.println("## scope debug information");
-
-        }
-    }
-}
 
 /**
  * The Binder class traverses the abstract syntax tree and remembers variable,
@@ -92,27 +28,74 @@ class Scope {
  */
 public class Binder extends DefaultVisitor {
 
-    Scope typeScope = new Scope();
+    SymbolTable typeSymbolTable;
+    SymbolTable varSymbolTable;
+    SymbolTable functionSymbolTable;
     Type type = null;
 
+    public Binder() {
+        Hashtable<Symbol, Type> tinit = new Hashtable<Symbol, Type>();
+        tinit.put(Symbol.symbol("int"), new INT());
+        tinit.put(Symbol.symbol("string"), new STRING());
+        this.typeSymbolTable = new SymbolTable(tinit);
+        this.varSymbolTable = new SymbolTable();
+        this.functionSymbolTable = new SymbolTable();
+    }
+
+    /**
+     * Visit the letexp expression. This creates new
+     * function, variable and type scopes.
+     */
     @Override
     public void visit(LetExp exp) {
-        this.typeScope.beginScope();
+        this.typeSymbolTable.beginScope();
+        this.varSymbolTable.beginScope();
+        this.functionSymbolTable.beginScope();
         if (exp.decs != null) {
             exp.decs.accept(this);
         }
         if (exp.body != null) {
             exp.body.accept(this);
         }
-        this.typeScope.endScope();
+        this.functionSymbolTable.endScope();
+        this.varSymbolTable.endScope();
+        this.typeSymbolTable.endScope();
     }
 
+    /**
+     * Visit a variable declaration and add it to the symbol table.
+     */
+    @Override
+    public void visit(VarDec exp) {
+        Type varType = this.typeSymbolTable.lookup(exp.typ.name);
+        this.varSymbolTable.put(exp.name, varType);
+    }
+
+    /**
+     * Visit a function declaration. Visit the function header first, this includes the function name
+     * its formal arguments and return type. These are added to the function symbol table. A second pass
+     * then examines each contigour function body and adds the formals to variable environment.
+     */
     @Override
     public void visit(FunctionDec exp) {
-        /*
-         * this.typeScope.beginScope(); if(exp.params != null) {
-         * exp.params.accept(this); } exp.body.accept(this); this.typeScope.endScope();
-         */
+        // first pass for function headers.
+        for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
+            Type returnType = functionDec.result != null ? this.typeSymbolTable.lookup(functionDec.result.name) : null;
+            if(exp.params != null) {
+                exp.params.accept(this);
+                this.functionSymbolTable.put(functionDec.name, new FUNCTION((RECORD)this.type, returnType));
+            }
+        }
+        // second pass for function body.
+        for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
+            this.varSymbolTable.beginScope();
+            for (var param = functionDec.params; param != null; param = param.tail) {
+                Type paramType = this.typeSymbolTable.lookup(param.typ);
+                this.varSymbolTable.put(param.name, paramType);
+                exp.body.accept(this);
+            }
+            this.varSymbolTable.endScope();
+        }
     }
 
     /**
@@ -122,28 +105,46 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(TypeDec exp) {
-        this.type = new NAME(exp.name);
-        this.typeScope.put(exp.name, this.type);
-        // visit the type definition.
-        exp.ty.accept(this);
-        // bind symbol to empty name type 
-        System.out.println("bind:type:" + exp.name + " => " + this.type);
+        for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
+            this.type = new NAME(typeDec.name);
+            this.typeSymbolTable.put(typeDec.name, this.type);
+        }
+        for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
+            typeDec.ty.accept(this);
+        }
     }
 
     /**
-     * Visits a record type within a type declaration. This method is probably not
-     * needed.
+     * Visits a record type within a type declaration. It expects
+     * that named is set.
      */
     @Override
     public void visit(RecordTy exp) {
-        RECORD last = null;
-        FieldList expList = exp.fields;
+        NAME named = (NAME)this.type;
+        exp.fields.accept(this);
+        named.bind(this.type);
+    }
+
+    /**
+     * Visits a fieldlist, used for both function arguments and
+     * record definitions. Sets the this.type field to the record.
+     */
+    @Override
+    public void visit(FieldList exp) {
+        RECORD last = null, first = null, temp = null;
+        FieldList expList = exp;
         do
         {
-            last = new RECORD(expList.name, this.typeScope.lookup(expList.typ), last);
+            temp = last;
+            last = new RECORD(expList.name, this.typeSymbolTable.lookup(expList.typ), null);
+            if(first == null) {
+                first = last;
+            } else {
+               temp.tail = last; 
+            }
             expList = expList.tail;
         }while(expList != null);
-        ((NAME)this.type).bind(last);
+        this.type = first;
     }
 
     /**
@@ -152,16 +153,16 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(ArrayTy exp) {
-        ((NAME)this.type).bind(new ARRAY(this.typeScope.lookup(exp.typ)));
+        ((NAME)this.type).bind(new ARRAY(this.typeSymbolTable.lookup(exp.typ)));
     }
 
     /**
-     * Visit a explicity type in a var declaration, eg var a:int = 1, where int is
+     * Visit a explicit type in a var declaration, eg var a:int = 1, where int is
      * the NameTy or visit the return type defined in a function declaration eg
      * function a():int, where int is the NameTy, or type t = int, where int is NameTy
      */
     @Override
     public void visit(NameTy exp) {
-        ((NAME)this.type).bind(this.typeScope.lookup(exp.name));
+        ((NAME)this.type).bind(this.typeSymbolTable.lookup(exp.name));
     }
 }

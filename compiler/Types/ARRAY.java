@@ -1,7 +1,7 @@
 package Types;
 
 public class ARRAY extends Type {
-   public Type element;
+   public final Type element;
 
    public ARRAY(Type e) {
       element = e;

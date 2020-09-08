@@ -3,13 +3,15 @@ package Absyn;
 import Symbol.Symbol;
 
 /**
- * Represents a list of fields in a record. A field
- * list always escapes as it is stored on the heap.
+ * Represents a list of fields in a record. This can be in a record type
+ * declarion or as the formal arguments for a function call.
+ * By default this ast escapes, unless the FindEscape phase marks this item as
+ * not escaping.
  */
 public class FieldList extends Absyn {
-   public Symbol name;
-   public Symbol typ;
-   public FieldList tail;
+   public final Symbol name;
+   public final Symbol typ;
+   public final FieldList tail;
    public boolean escape = true;
 
    public FieldList(int p, Symbol n, Symbol t, FieldList x) {
@@ -17,10 +19,6 @@ public class FieldList extends Absyn {
       name = n;
       typ = t;
       tail = x;
-   }
-
-   public String toString() {
-      return "[FieldList:{name=" + name + ",typ=" + typ + ",tail=" + tail + ",escape=" + escape + "}]";
    }
 
    @Override

@@ -18,6 +18,7 @@ public class BinderTest {
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
+        //expect the binder to have a in the type symbol table.
     }
 
     @Test
@@ -61,10 +62,21 @@ public class BinderTest {
     }
 
     @Test
+    public void functionArgsDef() {
+        Parser parser = new CupParser("let function a(a: int, b:int):int = 1 in end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        Binder binder = new Binder();
+        program.absyn.accept(binder);
+    }
+
+
+    @Test
     public void scopeVarDef() {
         Parser parser = new CupParser("let function a() = let var b:int := 1 in end in end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
+        //expect functiona  at scope + 1
+        //expect var b at scope + 1
     }
 }

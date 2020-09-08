@@ -1,5 +1,9 @@
 package Types;
 
+/**
+ * This class represents an user defined type.
+ * Such as type t = int
+ */
 public class NAME extends Type {
    public Symbol.Symbol name;
    private Type binding;
@@ -33,9 +37,5 @@ public class NAME extends Type {
 
    public void bind(Type t) {
       binding = t;
-   }
-
-   public String toString() {
-      return "{Types.NAME: name=" + this.name + ", binding=" + this.binding + "}";
    }
 }
