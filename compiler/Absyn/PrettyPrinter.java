@@ -150,13 +150,19 @@ public class PrettyPrinter implements AbsynVisitor {
             {
                 say(exp.name);
                 space();
-                say(":");
-                space();
-                say(exp.typ);
+                if(this.bindingsDisplay) {
+                    space();
+                    say("/* " + System.identityHashCode(exp) + " */");
+                    space();
+                }
                 if(this.escapesDisplay && exp.escape) {
                     space();
                     say("/* escapes */");
                 }
+                say(":");
+                space();
+                say(exp.typ);
+                
                 if(exp.tail != null) {
                     say(",");
                 }

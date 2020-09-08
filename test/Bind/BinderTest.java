@@ -80,10 +80,13 @@ public class BinderTest {
 
     @Test
     public void functionArgsDef() {
-        Parser parser = new CupParser("let function a(a: int, b:int):int = 1 in end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let function a(a: int, b:int):int = a + b in a(3,4) end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+
     }
 
 
