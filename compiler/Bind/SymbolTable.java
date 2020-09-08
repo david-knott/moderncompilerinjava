@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 
 import Symbol.Symbol;
-import Types.Type;
 import Util.Assert;
 
 class SymbolTable {
@@ -13,7 +12,7 @@ class SymbolTable {
     private InnerTable current;
 
     private class InnerTable {
-        public final Hashtable<Symbol, Type> table = new Hashtable<Symbol, Type>();
+        public final Hashtable<Symbol, SymbolTableElement> table = new Hashtable<Symbol, SymbolTableElement>();
         public final InnerTable parent;
 
         InnerTable() {
@@ -33,20 +32,23 @@ class SymbolTable {
         this.root = this.current = new InnerTable();
     }
 
-    public SymbolTable(Hashtable<Symbol, Type> initial) {
+    public SymbolTable(Hashtable<Symbol, SymbolTableElement> initial) {
         this.root = this.current = new InnerTable();
-        for(Symbol key : initial.keySet()) {
+        for (Symbol key : initial.keySet()) {
             this.root.table.put(key, initial.get(key));
         }
     }
-    
+
     public SymbolTable rootSymbolTable() {
         return new SymbolTable(this.root);
     }
 
-    public void put(Symbol symbol, Type o) {
+    public void put(Symbol symbol, SymbolTableElement o) {
         Assert.assertNotNull(symbol);
         Assert.assertNotNull(o);
+        if(this.current.table.containsKey(symbol)) {
+            throw new Error("Duplicate symbol in scope.");
+        }
         this.current.table.put(symbol, o);
     }
 
@@ -62,7 +64,12 @@ class SymbolTable {
         return false;
     }
 
-    public Type lookup(Symbol symbol) {
+    /**
+     * Finds symbol in current scope or parent.
+     * @param symbol
+     * @return the symbol element or throws an exception.
+     */
+    public SymbolTableElement lookup(Symbol symbol) {
         Assert.assertNotNull(symbol);
         InnerTable currentScope = this.current;
         do {
@@ -89,13 +96,13 @@ class SymbolTable {
     }
 
     public void debug(PrintStream printStream) {
-    //    try(PrintStream printStream = new PrintStream(outputStream)) {
-            printStream.println("## scope debug information");
-            printStream.format("%10s%10s\n", "symbol", "type");
-            for(var keys : this.current.table.keySet()) {
-                Type type = this.current.table.get(keys);
-                printStream.format("%10s%10s\n", keys, type);
-            }
-     //   }
+        // try(PrintStream printStream = new PrintStream(outputStream)) {
+        printStream.println("## scope debug information");
+        printStream.format("%10s%10s\n", "symbol", "type");
+        for (var keys : this.current.table.keySet()) {
+            // SymbolElement type = this.current.table.get(keys);
+            // printStream.format("%10s%10s\n", keys, type);
+        }
+        // }
     }
 }

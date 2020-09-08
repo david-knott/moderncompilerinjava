@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
 
+import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
 import Parse.CupParser;
 import Parse.Parser;
@@ -23,7 +24,7 @@ public class BinderTest {
 
     @Test
     public void recursiveTypeDefs() {
-        Parser parser = new CupParser("let type list = {first: int, rest: list} in end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let type list = {first: int, rest: list} in 1 end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
@@ -31,10 +32,13 @@ public class BinderTest {
 
     @Test
     public void varDefWithType() {
-        Parser parser = new CupParser("let var a:int := 0 in end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let var a:int := 0 in a + a end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+
     }
 
     @Test
@@ -43,6 +47,8 @@ public class BinderTest {
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
     }
 
     @Test
@@ -55,15 +61,18 @@ public class BinderTest {
 
     @Test
     public void procedureDef() {
-        Parser parser = new CupParser("let function a() = () in end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let function a() = () in a() end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+
     }
 
     @Test
     public void functionDef() {
-        Parser parser = new CupParser("let function a():int = 1 in end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let function a():int = 1 in a() end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);

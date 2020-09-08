@@ -4,14 +4,19 @@ import Symbol.Symbol;
 
 public class SimpleVar extends Var {
    public Symbol name;
+   public Absyn def;
 
    public SimpleVar(int p, Symbol n) {
       pos = p;
       name = n;
    }
-   
+
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
+   }
+
+   public void def(Absyn exp) {
+      this.def = exp;
    }
 }

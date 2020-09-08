@@ -13,6 +13,7 @@ public class FieldList extends Absyn {
    public final Symbol typ;
    public final FieldList tail;
    public boolean escape = true;
+   public Absyn def;
 
    public FieldList(int p, Symbol n, Symbol t, FieldList x) {
       pos = p;
@@ -25,4 +26,9 @@ public class FieldList extends Absyn {
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
    }
+
+   public void def(Absyn exp) {
+      this.def = exp;
+   }
+
 }

@@ -4,6 +4,7 @@ import Symbol.Symbol;
 
 public class NameTy extends Ty {
    public Symbol name;
+   public Absyn def;
 
    public NameTy(int p, Symbol n) {
       pos = p;
@@ -19,4 +20,10 @@ public class NameTy extends Ty {
       visitor.visit(this);
 
    }
+
+
+   public void def(Absyn exp) {
+      this.def = exp;
+   }
+
 }

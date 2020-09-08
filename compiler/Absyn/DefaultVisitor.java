@@ -24,7 +24,9 @@ public class DefaultVisitor implements AbsynVisitor{
 
     @Override
     public void visit(CallExp exp) {
-        exp.args.accept(this);
+        if(exp.args != null) {
+            exp.args.accept(this);
+        }
     }
 
     @Override

@@ -100,6 +100,11 @@ public class PrettyPrinter implements AbsynVisitor {
                 say(",");
         }
         say(")");
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp.def) + " */");
+            space();
+        }
 
     }
 
@@ -193,6 +198,11 @@ public class PrettyPrinter implements AbsynVisitor {
             functionDec.result.accept(this);
         }
         space();
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(functionDec) + " */");
+            space();
+        }
         say("=");
         space();
         currentIndentation++;
@@ -293,13 +303,20 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(SeqExp exp) {
         say("(");
-        exp.list.accept(this);
+        if(exp.list != null) {
+            exp.list.accept(this);
+        }
         say(")");
     }
 
     @Override
     public void visit(SimpleVar exp) {
         say(exp.name);
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp.def) + " */");
+            space();
+        }
     }
 
     @Override
@@ -351,7 +368,13 @@ public class PrettyPrinter implements AbsynVisitor {
         space();
         exp.init.accept(this);
         if(this.escapesDisplay && exp.escape) {
+            space();
             say("/* escapes */");
+            space();
+        }
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp) + " */");
             space();
         }
     }
