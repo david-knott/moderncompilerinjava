@@ -38,8 +38,16 @@ public class BinderTest {
     }
 
     @Test
+    public void varDefBinop() {
+        Parser parser = new CupParser("let var a:int := 3 + 4 in a end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        Binder binder = new Binder();
+        program.absyn.accept(binder);
+    }
+
+    @Test
     public void varDefWithoutType() {
-        Parser parser = new CupParser("let var a := 0 in end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let var a := 0 in a end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
@@ -76,7 +84,5 @@ public class BinderTest {
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
-        //expect functiona  at scope + 1
-        //expect var b at scope + 1
     }
 }

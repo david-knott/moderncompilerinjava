@@ -6,18 +6,20 @@ import Absyn.ArrayTy;
 import Absyn.DefaultVisitor;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
+import Absyn.IntExp;
 import Absyn.LetExp;
 import Absyn.NameTy;
+import Absyn.OpExp;
 import Absyn.RecordTy;
+import Absyn.StringExp;
 import Absyn.TypeDec;
 import Absyn.VarDec;
 import Symbol.Symbol;
 import Types.ARRAY;
+import Types.Constants;
 import Types.FUNCTION;
-import Types.INT;
 import Types.NAME;
 import Types.RECORD;
-import Types.STRING;
 import Types.Type;
 
 /**
@@ -34,12 +36,18 @@ public class Binder extends DefaultVisitor {
     Type type = null;
 
     public Binder() {
+        // base system types
         Hashtable<Symbol, Type> tinit = new Hashtable<Symbol, Type>();
-        tinit.put(Symbol.symbol("int"), new INT());
-        tinit.put(Symbol.symbol("string"), new STRING());
+        tinit.put(Symbol.symbol("int"), Constants.INT);
+        tinit.put(Symbol.symbol("string"), Constants.STRING);
         this.typeSymbolTable = new SymbolTable(tinit);
+        // base functions
+        Hashtable<Symbol, Type> finit = new Hashtable<Symbol, Type>();
+        finit.put(Symbol.symbol("print"),
+                new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.STRING, null), Constants.VOID));
+        this.functionSymbolTable = new SymbolTable(finit);
+        // var tableo
         this.varSymbolTable = new SymbolTable();
-        this.functionSymbolTable = new SymbolTable();
     }
 
     /**
@@ -62,13 +70,29 @@ public class Binder extends DefaultVisitor {
         this.typeSymbolTable.endScope();
     }
 
+    @Override
+    public void visit(IntExp exp) {
+        this.type = Constants.INT;
+    }
+
+    @Override
+    public void visit(StringExp exp) {
+        this.type = Constants.STRING;
+    }
+
+    @Override
+    public void visit(OpExp exp) {
+        this.type = Constants.INT;
+    }
+
     /**
      * Visit a variable declaration and add it to the symbol table.
      */
     @Override
     public void visit(VarDec exp) {
-        Type varType = this.typeSymbolTable.lookup(exp.typ.name);
-        this.varSymbolTable.put(exp.name, varType);
+        exp.init.accept(this);
+        Type initType = this.type;
+        this.varSymbolTable.put(exp.name, initType);
     }
 
     /**
@@ -80,11 +104,13 @@ public class Binder extends DefaultVisitor {
     public void visit(FunctionDec exp) {
         // first pass for function headers.
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
-            Type returnType = functionDec.result != null ? this.typeSymbolTable.lookup(functionDec.result.name) : null;
+            Type returnType = functionDec.result != null ? this.typeSymbolTable.lookup(functionDec.result.name) : Constants.VOID;
+            RECORD paramType = null;
             if(exp.params != null) {
                 exp.params.accept(this);
-                this.functionSymbolTable.put(functionDec.name, new FUNCTION((RECORD)this.type, returnType));
+                paramType = (RECORD)this.type;
             }
+            this.functionSymbolTable.put(functionDec.name, new FUNCTION(paramType, returnType));
         }
         // second pass for function body.
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
