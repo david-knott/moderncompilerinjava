@@ -17,6 +17,7 @@ import Absyn.SimpleVar;
 import Absyn.StringExp;
 import Absyn.TypeDec;
 import Absyn.VarDec;
+import Absyn.VarExp;
 import Absyn.WhileExp;
 import Symbol.Symbol;
 import Types.ARRAY;
@@ -171,8 +172,8 @@ public class Binder extends DefaultVisitor {
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
             Type returnType = functionDec.result != null ? this.typeSymbolTable.lookup(functionDec.result.name).type : Constants.VOID;
             RECORD paramType = null;
-            if(exp.params != null) {
-                exp.params.accept(this);
+            if(functionDec.params != null) {
+                functionDec.params.accept(this);
                 paramType = (RECORD)this.type;
             }
             // function definition
@@ -185,8 +186,8 @@ public class Binder extends DefaultVisitor {
                 SymbolTableElement paramType = this.typeSymbolTable.lookup(param.typ);
                 // formal variable definition
                 this.varSymbolTable.put(param.name, new SymbolTableElement(paramType.type, param));
-                exp.body.accept(this);
             }
+            functionDec.body.accept(this);
             this.varSymbolTable.endScope();
         }
     }

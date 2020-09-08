@@ -89,7 +89,7 @@ public class BinderTest {
 
     @Test
     public void scopeVarDef() {
-        Parser parser = new CupParser("let function a() = let var b:int := 1 in end in a() end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let function a() = let var b:int := 1 + 3 in end in a() end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
