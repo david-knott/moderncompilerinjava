@@ -496,7 +496,7 @@ public class IntelFrame extends Frame {
      */
     @Override
     public String string(Label l, String literal) {
-        return l + ":\n\t.long  0x" + Integer.toHexString(literal.length()) + "\n\t.ascii \"" + literal + "\"";
+        return l + ":\n\t.long  0x" + Integer.toHexString(literal.length()) + "\n\t.ascii \"" + literal + "\\0\"";
     }
 
     /**
