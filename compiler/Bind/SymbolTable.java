@@ -52,7 +52,12 @@ class SymbolTable {
         this.current.table.put(symbol, o);
     }
 
+
     public boolean contains(Symbol symbol) {
+        return this.contains(symbol, true);
+    }
+
+    public boolean contains(Symbol symbol, boolean rec) {
         Assert.assertNotNull(symbol);
         InnerTable currentScope = this.current;
         do {
@@ -60,7 +65,7 @@ class SymbolTable {
                 return true;
             }
             currentScope = currentScope.parent;
-        } while (currentScope != null);
+        } while (rec == true && currentScope != null);
         return false;
     }
 

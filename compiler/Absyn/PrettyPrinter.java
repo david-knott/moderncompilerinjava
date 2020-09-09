@@ -13,7 +13,7 @@ import Symbol.Symbol;
 public class PrettyPrinter implements AbsynVisitor {
     private PrintStream out;
     private boolean spaces = true;
-    private final int indentation = 2;
+    private final int indentation = 4;
     private int currentIndentation = 0;
     public boolean escapesDisplay = false;
     public boolean bindingsDisplay = false;
@@ -30,12 +30,7 @@ public class PrettyPrinter implements AbsynVisitor {
         this.bindingsDisplay = bindingsDisplay;
 	}
 
-	public void print(Exp exp) {
-        lineBreak();
-        exp.accept(this);
-    }
-
-    private void lineBreak() {
+    private void lineBreakAndIndent() {
         say(System.lineSeparator());
         for (int i = 0; i < this.currentIndentation * this.indentation; i++)
             out.print(this.spaces ? " " : "\t");
@@ -116,7 +111,7 @@ public class PrettyPrinter implements AbsynVisitor {
     public void visit(DecList exp) {
         for(;exp != null; exp = exp.tail) {
             exp.head.accept(this);
-            lineBreak();
+          //  lineBreakAndIndent();
         }
     }
 
@@ -126,8 +121,8 @@ public class PrettyPrinter implements AbsynVisitor {
             exp.head.accept(this);
             if(exp.tail != null) {
                 say(";");
+                lineBreakAndIndent();
             }
-            //lineBreak();
         }
     }
 
@@ -186,7 +181,6 @@ public class PrettyPrinter implements AbsynVisitor {
             space();
         }
         space();
-        //exp.var.accept(this);
         say(exp.var.name);
         if(this.bindingsDisplay) {
             space();
@@ -196,7 +190,6 @@ public class PrettyPrinter implements AbsynVisitor {
         space();
         say(":=");
         space();
-
         exp.var.init.accept(this);
         space();
         say("to");
@@ -204,7 +197,7 @@ public class PrettyPrinter implements AbsynVisitor {
         exp.hi.accept(this);
         space();
         say("do");
-        space();
+        lineBreakAndIndent();
         exp.body.accept(this);
     }
 
@@ -232,7 +225,7 @@ public class PrettyPrinter implements AbsynVisitor {
         say("=");
         space();
         currentIndentation++;
-        lineBreak();
+        lineBreakAndIndent();
         functionDec.body.accept(this);
         currentIndentation--;
     }
@@ -241,22 +234,17 @@ public class PrettyPrinter implements AbsynVisitor {
     public void visit(IfExp exp) {
         say("if");
         space();
-        say("(");
         exp.test.accept(this);
-        say(")");
         space();
+        lineBreakAndIndent();
         say("then");
         space();
-        say("(");
         exp.thenclause.accept(this);
-        say(")");
         if (exp.elseclause != null) {
-            lineBreak();
+            lineBreakAndIndent();
             say("else");
             space();
-            say("(");
             exp.elseclause.accept(this);
-            say(")");
         }
     }
 
@@ -269,20 +257,20 @@ public class PrettyPrinter implements AbsynVisitor {
     public void visit(LetExp letExp) {
         say("let");
         currentIndentation++;
-        lineBreak();
+        lineBreakAndIndent();
         if (letExp.decs != null)
             letExp.decs.accept(this);
         currentIndentation--;
-        lineBreak();
+        lineBreakAndIndent();
         say("in");
         currentIndentation++;
-        lineBreak();
+        lineBreakAndIndent();
         if (letExp.body != null)
             letExp.body.accept(this);
         currentIndentation--;
-        lineBreak();
+        lineBreakAndIndent();
         say("end");
-        lineBreak();
+        lineBreakAndIndent();
     }
 
     @Override
@@ -333,12 +321,12 @@ public class PrettyPrinter implements AbsynVisitor {
     public void visit(SeqExp exp) {
         say("(");
         this.currentIndentation++;
-        this.lineBreak();
+        this.lineBreakAndIndent();
         if(exp.list != null) {
             exp.list.accept(this);
         }
         this.currentIndentation--;
-        this.lineBreak();
+        this.lineBreakAndIndent();
         say(")");
     }
 
@@ -410,7 +398,7 @@ public class PrettyPrinter implements AbsynVisitor {
             say("/* escapes */");
             space();
         }
-        
+        lineBreakAndIndent();
     }
 
     @Override
@@ -430,11 +418,8 @@ public class PrettyPrinter implements AbsynVisitor {
         exp.test.accept(this);
         space();
         say("do");
-        space();
-        say("(");
-        space();
+        lineBreakAndIndent();
         exp.body.accept(this);
         space();
-        say(")");
     }
 }

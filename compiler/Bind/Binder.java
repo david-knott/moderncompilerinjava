@@ -18,7 +18,6 @@ import Absyn.StringExp;
 import Absyn.Typable;
 import Absyn.TypeDec;
 import Absyn.VarDec;
-import Absyn.VarExp;
 import Absyn.WhileExp;
 import Symbol.Symbol;
 import Types.ARRAY;
@@ -53,6 +52,10 @@ public class Binder extends DefaultVisitor {
         finit.put(Symbol.symbol("print"),
                 new SymbolTableElement(
                     new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.STRING, null), Constants.VOID))
+        );
+        finit.put(Symbol.symbol("print_int"),
+                new SymbolTableElement(
+                    new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.INT, null), Constants.VOID))
         );
         this.functionSymbolTable = new SymbolTable(finit);
         // var table
@@ -115,6 +118,7 @@ public class Binder extends DefaultVisitor {
 
         } else {
             //TODO: report error.
+            throw new Error("undeclared variable:" + exp.name);
         }
     }
 
@@ -131,6 +135,7 @@ public class Binder extends DefaultVisitor {
             super.visit(exp);
         } else {
             //TODO: report error.
+            throw new Error("undefined symbol " + exp.func);
         }
     }
 
@@ -142,10 +147,10 @@ public class Binder extends DefaultVisitor {
         exp.init.accept(this);
         Type initType = this.type;
         // variable definition
-        if(!this.varSymbolTable.contains(exp.name)) {
+        if(!this.varSymbolTable.contains(exp.name, false)) {
             this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
         } else {
-            //TODO: report error.
+            throw new Error("redefinition: " + exp.name);
         }
     }
 
@@ -155,6 +160,9 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(BreakExp exp) {
         this.lastBreak = exp;
+        if(this.lastBreak.loop == null) {
+            throw new Error("`break' outside any loop");
+        }
     }
 
     /**
@@ -199,8 +207,7 @@ public class Binder extends DefaultVisitor {
                 if(this.typeSymbolTable.contains(functionDec.result.name)) {
                     returnType = this.typeSymbolTable.lookup(functionDec.result.name).type;
                 } else {
-                    //TODO: Report error and continue ?
-                    continue;
+                    throw new Error("undeclared type: " + functionDec.result.name);
                 }
             } else {
                 returnType = Constants.VOID;
@@ -211,7 +218,7 @@ public class Binder extends DefaultVisitor {
                 paramType = (RECORD)this.type;
             }
             // function definition
-            if(!this.functionSymbolTable.contains(functionDec.result.name)) {
+            if(!this.functionSymbolTable.contains(functionDec.name, false)) {
                 this.functionSymbolTable.put(
                     functionDec.name, 
                     new SymbolTableElement(
@@ -223,7 +230,7 @@ public class Binder extends DefaultVisitor {
                     )
                 );
             } else {
-                //TODO: Report error.
+                throw new Error("redefinition: " + functionDec.name);
             }
         }
         // second pass for function body.
@@ -232,10 +239,10 @@ public class Binder extends DefaultVisitor {
             for (var param = functionDec.params; param != null; param = param.tail) {
                 SymbolTableElement paramType = this.typeSymbolTable.lookup(param.typ);
                 // formal variable definition
-                if(!this.varSymbolTable.contains(param.name)) {
+                if(!this.varSymbolTable.contains(param.name, false)) {
                     this.varSymbolTable.put(param.name, new SymbolTableElement(paramType.type, param));
                 } else {
-                    //TODO: Report error
+                    throw new Error("redefinition: " + param.name);
                 }
             }
             functionDec.body.accept(this);
@@ -247,19 +254,23 @@ public class Binder extends DefaultVisitor {
      * Visits a user defined type declaration and binds the symbol to its type
      * representation. This allows further lookups using the exp.name which will
      * resolve the the user defined type.
+     * 
+     * BUG: When type defs are contigous we have this called extra times.
      */
     @Override
     public void visit(TypeDec exp) {
+        // visit the header first and create a name 
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
             this.type = new NAME(typeDec.name);
             // install type definition
             if(!this.typeSymbolTable.contains(typeDec.name)) {
                 this.typeSymbolTable.put(typeDec.name, new SymbolTableElement(this.type, typeDec));
             } else {
-                //TODO: Report error
+                throw new Error("redefinition: " + typeDec.name);
             }
         }
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
+            this.type = this.typeSymbolTable.lookup(typeDec.name).type;
             typeDec.ty.accept(this);
         }
     }
@@ -299,6 +310,7 @@ public class Binder extends DefaultVisitor {
                 }
             } else {
                 //TODO: report error
+                throw new Error("undeclared type: " + expList.typ);
             }
             expList = expList.tail;
         }while(expList != null);
@@ -318,6 +330,7 @@ public class Binder extends DefaultVisitor {
             ((NAME)this.type).bind(new ARRAY(def.type));
         } else {
             //TODO: Report error
+            throw new Error("undeclared type: " + exp.typ);
         }
     }
 
@@ -335,6 +348,7 @@ public class Binder extends DefaultVisitor {
             ((NAME)this.type).bind(def.type);
         } else {
             //TODO: Report error
+            throw new Error("undeclared type: " + exp.name);
         }
     }
 }
