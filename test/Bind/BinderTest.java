@@ -86,7 +86,6 @@ public class BinderTest {
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
-
     }
 
 

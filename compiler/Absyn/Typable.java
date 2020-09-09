@@ -1,5 +1,5 @@
 package Absyn;
 
-interface Typable {
+public interface Typable {
 
 }

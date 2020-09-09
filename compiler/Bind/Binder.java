@@ -15,6 +15,7 @@ import Absyn.NameTy;
 import Absyn.RecordTy;
 import Absyn.SimpleVar;
 import Absyn.StringExp;
+import Absyn.Typable;
 import Absyn.TypeDec;
 import Absyn.VarDec;
 import Absyn.VarExp;
@@ -26,6 +27,7 @@ import Types.FUNCTION;
 import Types.NAME;
 import Types.RECORD;
 import Types.Type;
+import Util.Assert;
 
 /**
  * The Binder class traverses the abstract syntax tree and binds variable,
@@ -57,6 +59,10 @@ public class Binder extends DefaultVisitor {
         this.varSymbolTable = new SymbolTable();
     }
 
+    private void setType(Typable typable, Type type) {
+        
+    }
+
     /**
      * Visit the letexp expression. This creates new
      * function, variable and type scopes.
@@ -84,6 +90,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(IntExp exp) {
         this.type = Constants.INT;
+        this.setType(exp, Constants.INT);
     }
 
     /**
@@ -92,6 +99,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(StringExp exp) {
         this.type = Constants.STRING;
+        this.setType(exp, Constants.STRING);
     }
 
     /**
@@ -99,9 +107,15 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(SimpleVar exp) {
-        SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
-        this.type = def.type;
-        exp.def(def.exp);
+        if(this.varSymbolTable.contains(exp.name)) {
+            SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
+            this.type = def.type;
+            exp.def(def.exp);
+            this.setType(exp, def.type);
+
+        } else {
+            //TODO: report error.
+        }
     }
 
     /**
@@ -109,10 +123,15 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(CallExp exp) {
-        SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
-        exp.def(def.exp);
-        this.type = def.type;
-        super.visit(exp);
+        if(this.functionSymbolTable.contains(exp.func)) {
+            SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
+            exp.def(def.exp);
+            this.type = def.type;
+            this.setType(exp, def.type);
+            super.visit(exp);
+        } else {
+            //TODO: report error.
+        }
     }
 
     /**
@@ -122,7 +141,12 @@ public class Binder extends DefaultVisitor {
     public void visit(VarDec exp) {
         exp.init.accept(this);
         Type initType = this.type;
-        this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
+        // variable definition
+        if(!this.varSymbolTable.contains(exp.name)) {
+            this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
+        } else {
+            //TODO: report error.
+        }
     }
 
     /**
@@ -170,14 +194,28 @@ public class Binder extends DefaultVisitor {
     public void visit(FunctionDec exp) {
         // first pass for function headers.
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
-            Type returnType = functionDec.result != null ? this.typeSymbolTable.lookup(functionDec.result.name).type : Constants.VOID;
+            Type returnType = null;
+            if(functionDec.result != null) {
+                if(this.typeSymbolTable.contains(functionDec.result.name)) {
+                    returnType = this.typeSymbolTable.lookup(functionDec.result.name).type;
+                } else {
+                    //TODO: Report error and continue ?
+                    continue;
+                }
+            } else {
+                returnType = Constants.VOID;
+            }
             RECORD paramType = null;
             if(functionDec.params != null) {
                 functionDec.params.accept(this);
                 paramType = (RECORD)this.type;
             }
             // function definition
-            this.functionSymbolTable.put(functionDec.name, new SymbolTableElement(new FUNCTION(paramType, returnType), functionDec));
+            if(!this.functionSymbolTable.contains(functionDec.result.name)) {
+                this.functionSymbolTable.put(functionDec.name, new SymbolTableElement(new FUNCTION(paramType, returnType), functionDec));
+            } else {
+                //TODO: Report error.
+            }
         }
         // second pass for function body.
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
@@ -185,7 +223,11 @@ public class Binder extends DefaultVisitor {
             for (var param = functionDec.params; param != null; param = param.tail) {
                 SymbolTableElement paramType = this.typeSymbolTable.lookup(param.typ);
                 // formal variable definition
-                this.varSymbolTable.put(param.name, new SymbolTableElement(paramType.type, param));
+                if(!this.varSymbolTable.contains(param.name)) {
+                    this.varSymbolTable.put(param.name, new SymbolTableElement(paramType.type, param));
+                } else {
+                    //TODO: Report error
+                }
             }
             functionDec.body.accept(this);
             this.varSymbolTable.endScope();
@@ -202,7 +244,11 @@ public class Binder extends DefaultVisitor {
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
             this.type = new NAME(typeDec.name);
             // install type definition
-            this.typeSymbolTable.put(typeDec.name, new SymbolTableElement(this.type, typeDec));
+            if(!this.typeSymbolTable.contains(typeDec.name)) {
+                this.typeSymbolTable.put(typeDec.name, new SymbolTableElement(this.type, typeDec));
+            } else {
+                //TODO: Report error
+            }
         }
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
             typeDec.ty.accept(this);
@@ -215,6 +261,7 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(RecordTy exp) {
+        Assert.assertNotNull(this.type);
         NAME named = (NAME)this.type;
         exp.fields.accept(this);
         named.bind(this.type);
@@ -232,13 +279,17 @@ public class Binder extends DefaultVisitor {
         {
             temp = last;
             // type usage
-            SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ);
-            expList.def(def.exp);
-            last = new RECORD(expList.name, def.type, null);
-            if(first == null) {
-                first = last;
+            if(this.typeSymbolTable.contains(expList.typ)) {
+                SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ);
+                expList.def(def.exp);
+                last = new RECORD(expList.name, def.type, null);
+                if(first == null) {
+                    first = last;
+                } else {
+                temp.tail = last; 
+                }
             } else {
-               temp.tail = last; 
+                //TODO: report error
             }
             expList = expList.tail;
         }while(expList != null);
@@ -252,9 +303,13 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(ArrayTy exp) {
         // type usage
-        SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
-        exp.def(def.exp);
-        ((NAME)this.type).bind(new ARRAY(def.type));
+        if(this.typeSymbolTable.contains(exp.typ)) {
+            SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
+            exp.def(def.exp);
+            ((NAME)this.type).bind(new ARRAY(def.type));
+        } else {
+            //TODO: Report error
+        }
     }
 
     /**
@@ -265,8 +320,12 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(NameTy exp) {
         // type usuge
-        SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
-        exp.def(def.exp);
-        ((NAME)this.type).bind(def.type);
+        if(this.typeSymbolTable.contains(exp.name)) {
+            SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
+            exp.def(def.exp);
+            ((NAME)this.type).bind(def.type);
+        } else {
+            //TODO: Report error
+        }
     }
 }

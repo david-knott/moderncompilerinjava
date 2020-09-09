@@ -110,7 +110,6 @@ public class PrettyPrinter implements AbsynVisitor {
             say("/* " + System.identityHashCode(exp.def) + " */");
             space();
         }
-
     }
 
     @Override
@@ -128,7 +127,7 @@ public class PrettyPrinter implements AbsynVisitor {
             if(exp.tail != null) {
                 say(";");
             }
-            lineBreak();
+            //lineBreak();
         }
     }
 
@@ -319,9 +318,13 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(SeqExp exp) {
         say("(");
+        this.currentIndentation++;
+        this.lineBreak();
         if(exp.list != null) {
             exp.list.accept(this);
         }
+        this.currentIndentation--;
+        this.lineBreak();
         say(")");
     }
 

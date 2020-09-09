@@ -1,6 +1,6 @@
 package Absyn;
 
-public class IntExp extends Exp {
+public class IntExp extends Exp implements Typable {
    public int value;
 
    public IntExp(int p, int v) {

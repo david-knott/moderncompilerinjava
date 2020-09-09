@@ -1,5 +1,18 @@
 # Diary
 
+# 9th September ##
+Continuing work on Binder.
+
+We bind AST uses ( eg VarExp ) to their definitions ( eg VarDec ), this gets around
+the fact that the binder scopes are destroyed at the end of traversal. Additionally 
+we set the Types on AST nodes that are typable.
+
+Some bugs in the AST pretty printer were also fixed.
+
+TODO: Report errors from the binder.
+TODO: Finish setting types on the AST.
+TODO: Figure out how to test the binder.
+
 ## 7th September ##
 Continuing work on Binder. 
 

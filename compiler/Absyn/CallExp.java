@@ -2,7 +2,7 @@ package Absyn;
 
 import Symbol.Symbol;
 
-public class CallExp extends Exp {
+public class CallExp extends Exp implements Typable {
     public Symbol func;
     public ExpList args;
     public Absyn def;
