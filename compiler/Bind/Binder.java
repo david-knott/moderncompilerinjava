@@ -127,7 +127,7 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
             exp.def(def.exp);
             this.type = def.type;
-            this.setType(exp, def.type);
+            this.setType(exp, def.type); //Binds the function type to callExp
             super.visit(exp);
         } else {
             //TODO: report error.
@@ -212,7 +212,16 @@ public class Binder extends DefaultVisitor {
             }
             // function definition
             if(!this.functionSymbolTable.contains(functionDec.result.name)) {
-                this.functionSymbolTable.put(functionDec.name, new SymbolTableElement(new FUNCTION(paramType, returnType), functionDec));
+                this.functionSymbolTable.put(
+                    functionDec.name, 
+                    new SymbolTableElement(
+                        new FUNCTION(
+                            paramType, 
+                            returnType
+                        ),
+                        functionDec
+                    )
+                );
             } else {
                 //TODO: Report error.
             }
