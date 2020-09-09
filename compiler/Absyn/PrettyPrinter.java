@@ -186,7 +186,18 @@ public class PrettyPrinter implements AbsynVisitor {
             space();
         }
         space();
-        exp.var.accept(this);
+        //exp.var.accept(this);
+        say(exp.var.name);
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp.var) + " */");
+            space();
+        }
+        space();
+        say(":=");
+        space();
+
+        exp.var.init.accept(this);
         space();
         say("to");
         space();
@@ -233,13 +244,16 @@ public class PrettyPrinter implements AbsynVisitor {
         say("(");
         exp.test.accept(this);
         say(")");
+        space();
         say("then");
+        space();
         say("(");
         exp.thenclause.accept(this);
         say(")");
         if (exp.elseclause != null) {
             lineBreak();
             say("else");
+            space();
             say("(");
             exp.elseclause.accept(this);
             say(")");
