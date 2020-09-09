@@ -278,9 +278,9 @@ public class Semant extends Component{
         // add function entry to environment tables so it
         // is available for lookup inside the function body
         // this is to facilitate recursive function calls
-        if(env.venv.get(e.name) != null) {
-            return this.translator.Noop(); 
-        }
+    //    if(env.venv.get(e.name) != null) {
+      //      return this.translator.Noop(); 
+      //  }
         for(FunctionDec current = e; current != null; current = current.next) {
             // get the functions return type
             var functionReturnType = current.result != null ? transTy(current.result) : Semant.VOID;

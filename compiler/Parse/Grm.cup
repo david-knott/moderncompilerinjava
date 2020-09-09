@@ -52,8 +52,8 @@ non terminal Absyn.Exp letExp;
 non terminal Absyn.DecList decList;
 non terminal Absyn.Dec dec;
 non terminal Absyn.VarDec varDec;
-non terminal Absyn.FunctionDec funcDec; 
-non terminal Absyn.TypeDec tyDec;
+non terminal Absyn.FunctionDec funcDec, funcDecList; 
+non terminal Absyn.TypeDec tyDec, tyDecList;
 non terminal Absyn.Ty ty;
 non terminal Absyn.ArrayTy arrTy;
 non terminal Absyn.RecordTy recTy;
@@ -83,9 +83,31 @@ start with program;
 
 program ::= exp:e {: RESULT = new Program(e); :};
 
-dec ::= varDec:vd {: RESULT = vd; :}
-| tyDec:td {: RESULT = td; :}
-| funcDec:fd {: RESULT = fd; :} ;
+tyDecList ::= tyDec:h {: RESULT = new Absyn.TypeDec(h.pos, h.name, h.ty, null); :}
+| tyDec:h tyDecList:t {: RESULT = new Absyn.TypeDec(h.pos, h.name, h.ty, t);  :}
+;
+
+funcDecList ::= funcDec:h {: RESULT = new Absyn.FunctionDec(h.pos, h.name, h.params, h.result, h.body, null); :}
+| funcDec:h funcDecList:t {: RESULT = new Absyn.FunctionDec(h.pos, h.name, h.params, h.result, h.body, t); :}
+;
+
+dec ::= tyDecList:td {: RESULT = td; :}
+| varDec:vd {: RESULT = vd; :}
+| funcDecList:fd {: RESULT = fd; :} ;
+
+decList ::= dec:d decList:dl {: 
+/*
+if(d instanceof Absyn.FunctionDec && dl != null && dl.head != null && dl.head instanceof Absyn.FunctionDec ){
+  ((Absyn.FunctionDec)d).next = ((Absyn.FunctionDec)dl.head);
+}
+if(d instanceof Absyn.TypeDec && dl != null && dl.head != null && dl.head instanceof Absyn.TypeDec ){
+  ((Absyn.TypeDec)d).next = ((Absyn.TypeDec)dl.head);
+}
+*/
+RESULT = new Absyn.DecList(d, dl); 
+:} 
+| /* empty */ ;
+
 
 tyDec ::= TYPE ID:i EQ ty:t {: RESULT = new Absyn.TypeDec(ileft, Symbol.Symbol.symbol(i), t, null); :};
 
@@ -194,16 +216,6 @@ forExp ::= FOR ID:i ASSIGN exp:e0 TO exp:e1 DO exp:e2 {: RESULT = new Absyn.ForE
 
 letExp ::= LET decList:e1 IN expList:e2 END {: RESULT = new Absyn.LetExp(e1left, (Absyn.DecList)e1, (Absyn.Exp)new Absyn.SeqExp(e1left, e2)); :};
 
-decList ::= dec:d decList:dl {: 
-if(d instanceof Absyn.FunctionDec && dl != null && dl.head != null && dl.head instanceof Absyn.FunctionDec ){
-  ((Absyn.FunctionDec)d).next = ((Absyn.FunctionDec)dl.head);
-}
-if(d instanceof Absyn.TypeDec && dl != null && dl.head != null && dl.head instanceof Absyn.TypeDec ){
-  ((Absyn.TypeDec)d).next = ((Absyn.TypeDec)dl.head);
-}
-RESULT = new Absyn.DecList(d, dl); 
-:} 
-| /* empty */ ;
 
 arrCreate ::= ID:i LBRACK exp:e1 RBRACK OF exp:e2 {: RESULT = new Absyn.ArrayExp(ileft, Symbol.Symbol.symbol(i), e1, e2); :};
 
