@@ -130,7 +130,9 @@ public class PrettyPrinter implements AbsynVisitor {
     public void visit(FieldExpList exp) {
         for(;exp != null; exp = exp.tail) {
             say(exp.name);
+            space();
             say("=");
+            space();
             exp.init.accept(this);
             if(exp.tail != null)
                 say(",");
@@ -156,7 +158,11 @@ public class PrettyPrinter implements AbsynVisitor {
                 say(":");
                 space();
                 say(exp.typ);
-                
+                if(this.bindingsDisplay) {
+                    space();
+                    say("/* 0 */");
+                    space();
+                }
                 if(exp.tail != null) {
                     say(",");
                 }
@@ -228,6 +234,9 @@ public class PrettyPrinter implements AbsynVisitor {
         lineBreakAndIndent();
         functionDec.body.accept(this);
         currentIndentation--;
+        if(functionDec.next != null) {
+            functionDec.next.accept(this);
+        }
     }
 
     @Override
@@ -276,6 +285,11 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(NameTy exp) {
         say(exp.name);
+        if(this.bindingsDisplay) {
+            space();
+            say("/* 0 */");
+            space();
+        }
     }
 
     @Override
@@ -307,8 +321,11 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(RecordExp exp) {
         say(exp.typ);
+        space();
         say("{");
+        space();
         exp.fields.accept(this);
+        space();
         say("}");
     }
 
@@ -366,6 +383,10 @@ public class PrettyPrinter implements AbsynVisitor {
         exp.ty.accept(this);
         space();
         say("}");
+        lineBreakAndIndent();
+        if(exp.next != null) {
+            exp.next.accept(this);
+        }
     }
 
     @Override

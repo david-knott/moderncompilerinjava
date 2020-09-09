@@ -189,4 +189,14 @@ public class BinderTest {
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
         program.absyn.accept(prettyPrinter);
     }
+
+    @Test
+    public void test4_29() {
+        Parser parser = new CupParser("let type rec = { a : unknown } in rec { a = 42 } end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        Binder binder = new Binder();
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+    }
 }

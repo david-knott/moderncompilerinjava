@@ -134,7 +134,6 @@ public class PrettyPrinter implements TreeVisitor {
     @Override
     public void visit(NAME op) {
         this.write("name(" + op.label + ")");
-
     }
 
     @Override

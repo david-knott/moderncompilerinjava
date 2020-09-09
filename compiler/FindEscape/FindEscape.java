@@ -153,6 +153,9 @@ public class FindEscape {
         }
         traverseExp(depth, e.body);
         this.escEnv.endScope();
+        if(e.next != null) {
+            this.traverseDec(depth, e.next);
+        }
     }
 
     private void traverseDec(int depth, Absyn.VarDec e) {
