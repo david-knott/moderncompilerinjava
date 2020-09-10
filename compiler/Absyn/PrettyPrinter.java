@@ -323,6 +323,12 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(RecordExp exp) {
         say(exp.typ);
+        // type usage
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp.def) + " */");
+            space();
+        }
         space();
         say("{");
         space();
@@ -377,6 +383,11 @@ public class PrettyPrinter implements AbsynVisitor {
         say("type");
         space();
         say(exp.name);
+        if(this.bindingsDisplay) {
+            space();
+            say("/* " + System.identityHashCode(exp) + " */");
+            space();
+        }
         space();
         say("=");
         space();

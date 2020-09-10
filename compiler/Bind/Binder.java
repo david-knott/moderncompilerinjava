@@ -2,6 +2,7 @@ package Bind;
 
 import java.util.Hashtable;
 
+import Absyn.ArrayExp;
 import Absyn.ArrayTy;
 import Absyn.BreakExp;
 import Absyn.CallExp;
@@ -12,6 +13,7 @@ import Absyn.FunctionDec;
 import Absyn.IntExp;
 import Absyn.LetExp;
 import Absyn.NameTy;
+import Absyn.RecordExp;
 import Absyn.RecordTy;
 import Absyn.SimpleVar;
 import Absyn.StringExp;
@@ -160,6 +162,34 @@ public class Binder extends DefaultVisitor {
         if(this.lastBreak.loop == null) {
             throw new Error("`break' outside any loop");
         }
+    }
+
+    @Override
+    public void visit(ArrayExp exp) {
+        if(this.typeSymbolTable.contains(exp.typ)) {
+            SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
+            exp.setDef(def.exp);
+            this.type = def.type;
+            super.visit(exp);
+        } else {
+            //TODO: report error.
+            throw new Error("undefined type" + exp.typ);
+        }
+        super.visit(exp);
+    }
+
+    @Override
+    public void visit(RecordExp exp) {
+        if(this.typeSymbolTable.contains(exp.typ)) {
+            SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
+            exp.setDef(def.exp);
+            this.type = def.type;
+            super.visit(exp);
+        } else {
+            //TODO: report error.
+            throw new Error("undefined type" + exp.typ);
+        }
+        super.visit(exp);
     }
 
     /**

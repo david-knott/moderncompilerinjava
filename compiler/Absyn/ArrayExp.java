@@ -8,6 +8,7 @@ import Symbol.Symbol;
 public class ArrayExp extends Exp {
    public Symbol typ;
    public Exp size, init;
+   public Absyn def;
 
    /**
     * Default constructor
@@ -31,4 +32,10 @@ public class ArrayExp extends Exp {
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
    }
+
+    public void setDef(Absyn exp) {
+        this.def = exp;
+    }
+
+
 }
