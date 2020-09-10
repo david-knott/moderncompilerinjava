@@ -33,6 +33,7 @@ import Types.RECORD;
 import Types.Type;
 import Util.Assert;
 
+
 /**
  * The Binder class traverses the abstract syntax tree and binds variable,
  * function and type declarations to their respective symbol tables.

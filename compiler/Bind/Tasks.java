@@ -1,5 +1,6 @@
 package Bind;
 
+import Parse.Program;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -16,5 +17,15 @@ public class Tasks implements TaskProvider {
                 taskContext.program.absyn.accept(b);
             }
         }, "bind", "Performs binding", "parse");
+
+        new SimpleTask(new SimpleTaskProvider() {
+            @Override
+            public void only(TaskContext taskContext) {
+                Program boundProgram = taskContext.program;
+                
+            }
+        }, "rename", "Performs binding", "bind");
+
+
     }
 }

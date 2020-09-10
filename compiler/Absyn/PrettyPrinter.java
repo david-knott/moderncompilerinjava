@@ -235,6 +235,7 @@ public class PrettyPrinter implements AbsynVisitor {
         lineBreakAndIndent();
         functionDec.body.accept(this);
         currentIndentation--;
+        lineBreakAndIndent();
         if(functionDec.next != null) {
             functionDec.next.accept(this);
         }
