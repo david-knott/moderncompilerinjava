@@ -6,7 +6,6 @@ Absyn.Typable is not used for now.
 
 Fixed bug in Parser that was doubling up on FunctionDecs and TypeDecs.
 
-
 # 9th September ##
 Continuing work on Binder.
 

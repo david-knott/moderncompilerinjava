@@ -143,6 +143,13 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(VarDec exp) {
+        if(this.typeSymbolTable.contains(exp.typ.name)) {
+            SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ.name);
+            exp.typ.setDef(def.exp);
+        } else {
+            //TODO: report error.
+            throw new Error("undefined type" + exp.typ);
+        }
         exp.init.accept(this);
         Type initType = this.type;
         // variable definition

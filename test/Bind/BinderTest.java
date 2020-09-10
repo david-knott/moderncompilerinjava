@@ -201,4 +201,14 @@ public class BinderTest {
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
         program.absyn.accept(prettyPrinter);
     }
+
+    @Test
+    public void test4_30() {
+        Parser parser = new CupParser("let type a = { a: int } function a(a: a): a = a{ a = a + a } var a : a := a(1) in a.a end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        Binder binder = new Binder();
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+    }
 }
