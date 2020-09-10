@@ -238,6 +238,7 @@ public class Binder extends DefaultVisitor {
             this.varSymbolTable.beginScope();
             for (var param = functionDec.params; param != null; param = param.tail) {
                 SymbolTableElement paramType = this.typeSymbolTable.lookup(param.typ);
+                param.setDef(paramType.exp);
                 // formal variable definition
                 if(!this.varSymbolTable.contains(param.name, false)) {
                     this.varSymbolTable.put(param.name, new SymbolTableElement(paramType.type, param));
@@ -254,8 +255,6 @@ public class Binder extends DefaultVisitor {
      * Visits a user defined type declaration and binds the symbol to its type
      * representation. This allows further lookups using the exp.name which will
      * resolve the the user defined type.
-     * 
-     * BUG: When type defs are contigous we have this called extra times.
      */
     @Override
     public void visit(TypeDec exp) {
@@ -270,7 +269,8 @@ public class Binder extends DefaultVisitor {
             }
         }
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
-            this.type = this.typeSymbolTable.lookup(typeDec.name).type;
+            SymbolTableElement def = this.typeSymbolTable.lookup(typeDec.name);
+            this.type = def.type;
             typeDec.ty.accept(this);
         }
     }

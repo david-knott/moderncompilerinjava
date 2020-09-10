@@ -1,5 +1,12 @@
 # Diary
 
+# 10th September ##
+Continuing work on Binder, displaying type definitions in PrettyPrinter.
+Removed Typable for now as I dont use it.
+
+Fixed bug in Parser that was doubling up on FunctionDecs and TypeDecs.
+
+
 # 9th September ##
 Continuing work on Binder.
 
