@@ -34,7 +34,6 @@ public class PrettyPrinter implements AbsynVisitor {
         say(System.lineSeparator());
         for (int i = 0; i < this.currentIndentation * this.indentation; i++)
             out.print(this.spaces ? " " : "\t");
-
     }
 
     private void say(Symbol symbol) {
