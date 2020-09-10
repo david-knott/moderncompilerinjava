@@ -486,6 +486,9 @@ public class IntelFrame extends Frame {
         return new Proc(prolog, body, epilog);
     }
 
+    /**
+     * Creates an external function call IR fragment.
+     */
     @Override
     public Exp externalCall(String func, ExpList args) {
         return new CALL(new NAME(Label.create(func)), args);
@@ -525,6 +528,9 @@ public class IntelFrame extends Frame {
         return stringBuilder.toString();
     }
 
+    /**
+     * Used in spilling to move a temporary to a memory location.
+     */
     @Override
     public InstrList tempToMemory(Temp temp, Temp spillTemp, Access access) {
         Assert.assertNotNull(temp);
@@ -538,6 +544,9 @@ public class IntelFrame extends Frame {
         return new InstrList(moveTempToNewTemp, new InstrList(moveNewTempToFrame, null));
     }
 
+    /**
+     * Used in spilling to move a memory location value back into a temporary.
+     */
     @Override
     public InstrList memoryToTemp(Temp temp, Temp spillTemp, Access access) {
         Assert.assertNotNull(temp);
