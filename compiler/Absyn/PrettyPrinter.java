@@ -331,14 +331,18 @@ public class PrettyPrinter implements AbsynVisitor {
         space();
         say("{");
         space();
-        exp.fields.accept(this);
+        if(exp.fields != null) {
+            exp.fields.accept(this);
+        }
         space();
         say("}");
     }
 
     @Override
     public void visit(RecordTy exp) {
-        exp.fields.accept(this);
+        if(exp.fields != null) {
+            exp.fields.accept(this);
+        }
     }
 
     @Override

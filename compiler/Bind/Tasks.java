@@ -1,16 +1,9 @@
 package Bind;
 
-import Util.TaskProvider;
-
-import Translate.DataFrag;
-import Translate.FragList;
-import Translate.FragmentVisitor;
-import Translate.ProcFrag;
-import Tree.TreeSimplifierVisitor;
-import Tree.PrettyPrinter;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
+import Util.TaskProvider;
 
 public class Tasks implements TaskProvider {
 
@@ -19,7 +12,7 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                Binder b = new Binder();
+                Binder b = new Binder(taskContext.errorMsg);
                 taskContext.program.absyn.accept(b);
             }
         }, "bind", "Performs binding", "parse");

@@ -1,7 +1,9 @@
 package Bind;
 
 import java.util.Hashtable;
+import java.util.Stack;
 
+import Absyn.Absyn;
 import Absyn.ArrayExp;
 import Absyn.ArrayTy;
 import Absyn.BreakExp;
@@ -21,6 +23,7 @@ import Absyn.Typable;
 import Absyn.TypeDec;
 import Absyn.VarDec;
 import Absyn.WhileExp;
+import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
 import Types.ARRAY;
 import Types.Constants;
@@ -41,9 +44,11 @@ public class Binder extends DefaultVisitor {
     SymbolTable varSymbolTable;
     SymbolTable functionSymbolTable;
     Type type = null;
-    BreakExp lastBreak = null;
+    private Stack<Absyn> loops = new Stack<Absyn>();
+    private final ErrorMsg errorMsg;
 
-    public Binder() {
+    public Binder(ErrorMsg errorMsg) {
+        this.errorMsg = errorMsg;
         // base system types
         Hashtable<Symbol, SymbolTableElement> tinit = new Hashtable<Symbol, SymbolTableElement>();
         // hack so that type usages for ints and string does not show a zero.
@@ -63,10 +68,6 @@ public class Binder extends DefaultVisitor {
         this.functionSymbolTable = new SymbolTable(finit);
         // var table
         this.varSymbolTable = new SymbolTable();
-    }
-
-    private void setType(Typable typable, Type type) {
-      //  typable.setType(type);
     }
 
     /**
@@ -115,10 +116,8 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
             this.type = def.type;
             exp.setDef(def.exp);
-
         } else {
-            //TODO: report error.
-            throw new Error("undeclared variable:" + exp.name);
+            this.errorMsg.error(exp.pos, "undeclared variable:" + exp.name);
         }
     }
 
@@ -133,8 +132,7 @@ public class Binder extends DefaultVisitor {
             this.type = def.type;
             super.visit(exp);
         } else {
-            //TODO: report error.
-            throw new Error("undefined symbol " + exp.func);
+            this.errorMsg.error(exp.pos, "undeclared function:" + exp.func);
         }
     }
 
@@ -143,12 +141,13 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(VarDec exp) {
-        if(this.typeSymbolTable.contains(exp.typ.name)) {
-            SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ.name);
-            exp.typ.setDef(def.exp);
-        } else {
-            //TODO: report error.
-            throw new Error("undefined type" + exp.typ);
+        if(exp.typ != null) {
+            if(this.typeSymbolTable.contains(exp.typ.name)) {
+                SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ.name);
+                exp.typ.setDef(def.exp);
+            } else {
+                this.errorMsg.error(exp.pos, "undefined type:" + exp.typ.pos);
+            }
         }
         exp.init.accept(this);
         Type initType = this.type;
@@ -156,18 +155,7 @@ public class Binder extends DefaultVisitor {
         if(!this.varSymbolTable.contains(exp.name, false)) {
             this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
         } else {
-            throw new Error("redefinition: " + exp.name);
-        }
-    }
-
-    /**
-     * Visit break expression and assign it to member lastBreak. 
-     */
-    @Override
-    public void visit(BreakExp exp) {
-        this.lastBreak = exp;
-        if(this.lastBreak.loop == null) {
-            throw new Error("`break' outside any loop");
+            this.errorMsg.error(exp.pos, "redefinition:" + exp.name);
         }
     }
 
@@ -179,8 +167,7 @@ public class Binder extends DefaultVisitor {
             this.type = def.type;
             super.visit(exp);
         } else {
-            //TODO: report error.
-            throw new Error("undefined type" + exp.typ);
+            this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
         }
         super.visit(exp);
     }
@@ -193,24 +180,34 @@ public class Binder extends DefaultVisitor {
             this.type = def.type;
             super.visit(exp);
         } else {
-            //TODO: report error.
-            throw new Error("undefined type" + exp.typ);
+            this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
         }
         super.visit(exp);
     }
+
+    /**
+     * Visit break expression and assign it to member lastBreak. 
+     */
+    @Override
+    public void visit(BreakExp exp) {
+        if(this.loops.empty()) {
+            this.errorMsg.error(exp.pos, "`break' outside any loop:" + exp.pos);
+        } else {
+            exp.loop = this.loops.peek();
+        }
+    }
+
 
     /**
      * Visit while loop and capture and breaks within its body.
      */
     @Override
     public void visit(WhileExp exp) {
+        this.loops.push(exp);
         exp.test.accept(this);
+        //visit the body which could contain a break.
         exp.body.accept(this);
-        if(this.lastBreak != null) {
-            //this.lastBreak
-            this.lastBreak.loop = exp;
-            this.lastBreak = null;
-        }
+        this.loops.pop();
     }
 
     /**
@@ -218,13 +215,11 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(ForExp exp) {
+        this.loops.push(exp);
         exp.var.accept(this);
         exp.hi.accept(this);
         exp.body.accept(this);
-        if(this.lastBreak != null) {
-            this.lastBreak.loop = exp;
-            this.lastBreak = null;
-        }
+        this.loops.pop();
     }
 
     /**
@@ -243,7 +238,7 @@ public class Binder extends DefaultVisitor {
                     functionDec.result.setDef(def.exp);
                     returnType = def.type;
                 } else {
-                    throw new Error("undeclared type: " + functionDec.result.name);
+                    this.errorMsg.error(functionDec.result.pos, "undefined type:" + functionDec.result.name);
                 }
             } else {
                 returnType = Constants.VOID;
@@ -267,7 +262,7 @@ public class Binder extends DefaultVisitor {
                     )
                 );
             } else {
-                throw new Error("redefinition: " + functionDec.name);
+                this.errorMsg.error(exp.pos, "redefinition:" + functionDec.name);
             }
         }
         // second pass for function body.
@@ -280,7 +275,7 @@ public class Binder extends DefaultVisitor {
                 if(!this.varSymbolTable.contains(param.name, false)) {
                     this.varSymbolTable.put(param.name, new SymbolTableElement(paramType.type, param));
                 } else {
-                    throw new Error("redefinition: " + param.name);
+                    this.errorMsg.error(param.pos, "redefinition:" + param.name);
                 }
             }
             functionDec.body.accept(this);
@@ -302,7 +297,7 @@ public class Binder extends DefaultVisitor {
             if(!this.typeSymbolTable.contains(typeDec.name)) {
                 this.typeSymbolTable.put(typeDec.name, new SymbolTableElement(this.type, typeDec));
             } else {
-                throw new Error("redefinition: " + typeDec.name);
+                this.errorMsg.error(typeDec.pos, "redefinition:" + typeDec.name);
             }
         }
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
@@ -320,8 +315,10 @@ public class Binder extends DefaultVisitor {
     public void visit(RecordTy exp) {
         Assert.assertNotNull(this.type);
         NAME named = (NAME)this.type;
-        exp.fields.accept(this);
-        named.bind(this.type);
+        if(exp.fields != null) {
+            exp.fields.accept(this);
+            named.bind(this.type);
+        }
     }
 
     /**
@@ -343,11 +340,10 @@ public class Binder extends DefaultVisitor {
                 if(first == null) {
                     first = last;
                 } else {
-                temp.tail = last; 
+                    temp.tail = last; 
                 }
             } else {
-                //TODO: report error
-                throw new Error("undeclared type: " + expList.typ);
+                this.errorMsg.error(expList.pos, "undefined type:" + expList.typ);
             }
             expList = expList.tail;
         }while(expList != null);
@@ -366,8 +362,7 @@ public class Binder extends DefaultVisitor {
             exp.setDef(def.exp);
             ((NAME)this.type).bind(new ARRAY(def.type));
         } else {
-            //TODO: Report error
-            throw new Error("undeclared type: " + exp.typ);
+            this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
         }
     }
 
@@ -384,8 +379,7 @@ public class Binder extends DefaultVisitor {
             exp.setDef(def.exp);
             ((NAME)this.type).bind(def.type);
         } else {
-            //TODO: Report error
-            throw new Error("undeclared type: " + exp.name);
+            this.errorMsg.error(exp.pos, "undefined type:" + exp.name);
         }
     }
 }

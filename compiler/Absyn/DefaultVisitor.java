@@ -114,12 +114,16 @@ public class DefaultVisitor implements AbsynVisitor{
 
     @Override
     public void visit(RecordExp exp) {
-        exp.fields.accept(this);
+        if(exp.fields != null) {
+            exp.fields.accept(this);
+        }
     }
 
     @Override
     public void visit(RecordTy exp) {
-        exp.fields.accept(this);
+        if(exp.fields != null) {
+            exp.fields.accept(this);
+        }
     }
 
     @Override
