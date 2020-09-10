@@ -9,10 +9,13 @@ import Symbol.Symbol;
  * not escaping.
  */
 public class FieldList extends Absyn {
-   public final Symbol name;
-   public final Symbol typ;
+   public Symbol name;
+   public Symbol typ;
    public final FieldList tail;
    public boolean escape = true;
+   /**
+    * Pointer to Type definition of this FieldList.
+    */
    public Absyn def;
 
    public FieldList(int p, Symbol n, Symbol t, FieldList x) {

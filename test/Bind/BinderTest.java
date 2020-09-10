@@ -291,7 +291,7 @@ public class BinderTest {
         program.absyn.accept(binder);
         Renamer renamer = new Renamer();
         program.absyn.accept(renamer);
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
         program.absyn.accept(prettyPrinter);
     }
 }
