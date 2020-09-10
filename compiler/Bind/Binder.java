@@ -44,8 +44,9 @@ public class Binder extends DefaultVisitor {
     public Binder() {
         // base system types
         Hashtable<Symbol, SymbolTableElement> tinit = new Hashtable<Symbol, SymbolTableElement>();
-        tinit.put(Symbol.symbol("int"), new SymbolTableElement(Constants.INT));
-        tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING));
+        // hack so that type usages for ints and string does not show a zero.
+        tinit.put(Symbol.symbol("int"), new SymbolTableElement(Constants.INT, new IntExp(0, 0)));
+        tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING, new StringExp(0, "")));
         this.typeSymbolTable = new SymbolTable(tinit);
         // base functions
         Hashtable<Symbol, SymbolTableElement> finit = new Hashtable<Symbol, SymbolTableElement>();
@@ -63,7 +64,7 @@ public class Binder extends DefaultVisitor {
     }
 
     private void setType(Typable typable, Type type) {
-        
+      //  typable.setType(type);
     }
 
     /**
@@ -93,7 +94,6 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(IntExp exp) {
         this.type = Constants.INT;
-        this.setType(exp, Constants.INT);
     }
 
     /**
@@ -102,7 +102,6 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(StringExp exp) {
         this.type = Constants.STRING;
-        this.setType(exp, Constants.STRING);
     }
 
     /**
@@ -113,8 +112,7 @@ public class Binder extends DefaultVisitor {
         if(this.varSymbolTable.contains(exp.name)) {
             SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
             this.type = def.type;
-            exp.def(def.exp);
-            this.setType(exp, def.type);
+            exp.setDef(def.exp);
 
         } else {
             //TODO: report error.
@@ -129,9 +127,8 @@ public class Binder extends DefaultVisitor {
     public void visit(CallExp exp) {
         if(this.functionSymbolTable.contains(exp.func)) {
             SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
-            exp.def(def.exp);
+            exp.setDef(def.exp);
             this.type = def.type;
-            this.setType(exp, def.type); //Binds the function type to callExp
             super.visit(exp);
         } else {
             //TODO: report error.
@@ -205,7 +202,9 @@ public class Binder extends DefaultVisitor {
             Type returnType = null;
             if(functionDec.result != null) {
                 if(this.typeSymbolTable.contains(functionDec.result.name)) {
-                    returnType = this.typeSymbolTable.lookup(functionDec.result.name).type;
+                    SymbolTableElement def = this.typeSymbolTable.lookup(functionDec.result.name);
+                    functionDec.result.setDef(def.exp);
+                    returnType = def.type;
                 } else {
                     throw new Error("undeclared type: " + functionDec.result.name);
                 }
@@ -214,6 +213,7 @@ public class Binder extends DefaultVisitor {
             }
             RECORD paramType = null;
             if(functionDec.params != null) {
+                // call accept, which sets this.type
                 functionDec.params.accept(this);
                 paramType = (RECORD)this.type;
             }
@@ -301,7 +301,7 @@ public class Binder extends DefaultVisitor {
             // type usage
             if(this.typeSymbolTable.contains(expList.typ)) {
                 SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ);
-                expList.def(def.exp);
+                expList.setDef(def.exp);
                 last = new RECORD(expList.name, def.type, null);
                 if(first == null) {
                     first = last;
@@ -326,7 +326,7 @@ public class Binder extends DefaultVisitor {
         // type usage
         if(this.typeSymbolTable.contains(exp.typ)) {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
-            exp.def(def.exp);
+            exp.setDef(def.exp);
             ((NAME)this.type).bind(new ARRAY(def.type));
         } else {
             //TODO: Report error
@@ -344,7 +344,7 @@ public class Binder extends DefaultVisitor {
         // type usuge
         if(this.typeSymbolTable.contains(exp.name)) {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
-            exp.def(def.exp);
+            exp.setDef(def.exp);
             ((NAME)this.type).bind(def.type);
         } else {
             //TODO: Report error

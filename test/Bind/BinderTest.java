@@ -77,6 +77,8 @@ public class BinderTest {
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
     }
 
     @Test
@@ -85,7 +87,7 @@ public class BinderTest {
         Program program = parser.parse();
         Binder binder = new Binder();
         program.absyn.accept(binder);
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
         program.absyn.accept(prettyPrinter);
     }
 

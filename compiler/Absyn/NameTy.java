@@ -22,7 +22,7 @@ public class NameTy extends Ty {
    }
 
 
-   public void def(Absyn exp) {
+   public void setDef(Absyn exp) {
       this.def = exp;
    }
 

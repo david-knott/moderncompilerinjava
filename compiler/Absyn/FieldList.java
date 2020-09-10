@@ -27,7 +27,7 @@ public class FieldList extends Absyn {
       visitor.visit(this);
    }
 
-   public void def(Absyn exp) {
+   public void setDef(Absyn exp) {
       this.def = exp;
    }
 

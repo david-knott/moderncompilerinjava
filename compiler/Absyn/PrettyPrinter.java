@@ -287,7 +287,7 @@ public class PrettyPrinter implements AbsynVisitor {
         say(exp.name);
         if(this.bindingsDisplay) {
             space();
-            say("/* 0 */");
+            say("/* " + System.identityHashCode(exp.def) + " */");
             space();
         }
     }
@@ -408,7 +408,7 @@ public class PrettyPrinter implements AbsynVisitor {
         if(exp.typ != null) {
             say(":");
             space();
-            say(exp.typ.name);
+            exp.typ.accept(this);
             space();
         }
         say(":=");

@@ -1,11 +1,12 @@
 package Absyn;
 
-
 import Symbol.Symbol;
+import Types.Type;
 
 public class SimpleVar extends Var implements Typable {
    public Symbol name;
    public Absyn def;
+   private Type type;
 
    public SimpleVar(int p, Symbol n) {
       pos = p;
@@ -17,7 +18,17 @@ public class SimpleVar extends Var implements Typable {
       visitor.visit(this);
    }
 
-   public void def(Absyn exp) {
+   public void setDef(Absyn exp) {
       this.def = exp;
+   }
+
+   @Override
+   public Type getType() {
+      return this.type;
+   }
+
+   @Override
+   public void setType(Type type) {
+      this.type = type;
    }
 }
