@@ -2,7 +2,7 @@
 
 # 10th September ##
 Continuing work on Binder, displaying type definitions in PrettyPrinter.
-Removed Typable for now as I dont use it.
+Absyn.Typable is not used for now.
 
 Fixed bug in Parser that was doubling up on FunctionDecs and TypeDecs.
 
