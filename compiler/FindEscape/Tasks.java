@@ -13,8 +13,11 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                FindEscape findEscape = new FindEscape(false);
-                findEscape.traverse(taskContext.program.absyn);
+
+                EscapeVisitor escapeVisitor = new EscapeVisitor(taskContext.errorMsg);
+                taskContext.program.absyn.accept(escapeVisitor);
+            //     FindEscape findEscape = new FindEscape(false);
+              //  findEscape.traverse(taskContext.program.absyn);
             }
         }, "escapes-compute", "escape", "parse");
 

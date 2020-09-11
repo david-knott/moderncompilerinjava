@@ -61,9 +61,9 @@ public class DefaultVisitor implements AbsynVisitor{
 
     @Override
     public void visit(ForExp exp) {
+        exp.var.accept(this);
         exp.body.accept(this);
         exp.hi.accept(this);
-        exp.var.accept(this);
     }
 
     @Override
@@ -143,6 +143,7 @@ public class DefaultVisitor implements AbsynVisitor{
 
     @Override
     public void visit(SubscriptVar exp) {
+        exp.var.accept(this);
         exp.index.accept(this);
     }
 

@@ -234,6 +234,7 @@ public class Binder extends DefaultVisitor {
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
             Type returnType = null;
             if(functionDec.result != null) {
+                //lookup the type of the return value
                 if(this.typeSymbolTable.contains(functionDec.result.name)) {
                     SymbolTableElement def = this.typeSymbolTable.lookup(functionDec.result.name);
                     functionDec.result.setDef(def.exp);

@@ -61,12 +61,15 @@ public class Renamer extends DefaultVisitor {
                     newNames.put(fl, newPSymbol);
                     fl.name = newPSymbol;
                 }
-                if(functionDec.result != null) {
-                    functionDec.result.name  = newNames.get(functionDec.result.def);
+            }
+            if (functionDec.result != null) {
+                Symbol newSymbol = newNames.get(functionDec.result.def);
+                if(newSymbol != null) {
+                    newSymbol = functionDec.result.name;
                 }
-                if(functionDec.body != null) {
-                    functionDec.body.accept(this);
-                }
+            }
+            if (functionDec.body != null) {
+                functionDec.body.accept(this);
             }
         }
     }

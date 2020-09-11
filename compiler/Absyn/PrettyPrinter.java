@@ -281,7 +281,7 @@ public class PrettyPrinter implements AbsynVisitor {
         currentIndentation--;
         lineBreakAndIndent();
         say("end");
-        lineBreakAndIndent();
+     //   lineBreakAndIndent();
     }
 
     @Override
