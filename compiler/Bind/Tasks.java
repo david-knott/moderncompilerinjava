@@ -22,10 +22,8 @@ public class Tasks implements TaskProvider {
             @Override
             public void only(TaskContext taskContext) {
                 Program boundProgram = taskContext.program;
-                
+                boundProgram.absyn.accept(new Renamer());
             }
         }, "rename", "Performs binding", "bind");
-
-
     }
 }

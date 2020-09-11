@@ -1,5 +1,11 @@
 # Diary
 
+## 11 September 2020 ##
+In Absyn.PrettyPrinter parenthese no longer stack for free. for example
+((((((((((0)))))))))) is pretty printed as (0)
+
+Started on recursive function and type renaming.
+
 # 10th September ##
 Continuing work on Binder, displaying type definitions in PrettyPrinter.
 Absyn.Typable is not used for now.
