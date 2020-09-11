@@ -1,19 +1,16 @@
 package Bind;
 
+import java.util.Hashtable;
+
+import Absyn.Absyn;
+import Absyn.CallExp;
 import Absyn.DefaultVisitor;
 import Absyn.FieldList;
-import Absyn.FieldVar;
 import Absyn.FunctionDec;
 import Absyn.RecordExp;
 import Absyn.SimpleVar;
 import Absyn.TypeDec;
 import Absyn.VarDec;
-import Absyn.VarExp;
-
-import java.util.Hashtable;
-
-import Absyn.CallExp;
-import Absyn.Absyn;
 import Symbol.Symbol;
 
 /**
@@ -49,27 +46,28 @@ public class Renamer extends DefaultVisitor {
 
     @Override
     public void visit(FunctionDec exp) {
-        if(exp.params != null) {
-            for(FieldList fl = exp.params; fl != null; fl = fl.tail) {
-                fl.typ = newNames.get(fl.def);
-                String uniqueParamName = fl.name + "_" + (this.id++);
-                Symbol newPSymbol = Symbol.symbol(uniqueParamName);
-                newNames.put(fl, newPSymbol);
-                fl.name = newPSymbol;
+        for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
+            String uniqueFunctionName = functionDec.name.toString() + "_" + (this.id++);
+            Symbol newSymbol = Symbol.symbol(uniqueFunctionName);
+            newNames.put(functionDec, newSymbol);
+            functionDec.name = newSymbol;
+        }
+        for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
+            if(functionDec.params != null) {
+                for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
+                    fl.typ = newNames.get(fl.def);
+                    String uniqueParamName = fl.name + "_" + (this.id++);
+                    Symbol newPSymbol = Symbol.symbol(uniqueParamName);
+                    newNames.put(fl, newPSymbol);
+                    fl.name = newPSymbol;
+                }
+                if(functionDec.result != null) {
+                    functionDec.result.name  = newNames.get(functionDec.result.def);
+                }
+                if(functionDec.body != null) {
+                    functionDec.body.accept(this);
+                }
             }
-        }
-        String uniqueFunctionName = exp.name.toString() + "_" + (this.id++);
-        Symbol newSymbol = Symbol.symbol(uniqueFunctionName);
-        newNames.put(exp, newSymbol);
-        exp.name = newSymbol;
-        if(exp.result != null) {
-            exp.result.name  = newNames.get(exp.result.def);
-        }
-        if(exp.body != null) {
-            exp.body.accept(this);
-        }
-        if(exp.next != null) {
-            exp.next.accept(this);
         }
     }
 

@@ -32,7 +32,7 @@ public class RenamerTest {
     @Test
     public void test4_recfunction() {
         Parser parser = new CupParser(
-                "let function foo() : int = bar() function bar() : int = foo() in 0 end",
+                "let function foo() : int = bar() function bar() : int = foo() function foobar() : int = let function foo() : int = 1 in 1 end in 0 end",
                 new ErrorMsg("", System.out));
         Program program = parser.parse();
         PrintStream outputStream = System.out;

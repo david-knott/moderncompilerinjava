@@ -6,6 +6,8 @@ In Absyn.PrettyPrinter parenthese no longer stack for free. for example
 
 Started on recursive function and type renaming.
 
+There is a bug in Absyn.Renamer for nested functions, it does rename them.
+
 # 10th September ##
 Continuing work on Binder, displaying type definitions in PrettyPrinter.
 Absyn.Typable is not used for now.
