@@ -87,4 +87,5 @@ public class ParseTests {
         new CupParser(targetStream, errorMsg).parse();
         assertTrue(errorMsg.anyErrors);
     }
+
 }

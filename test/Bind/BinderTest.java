@@ -1,9 +1,7 @@
 package Bind;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.junit.Test;
@@ -74,18 +72,16 @@ public class BinderTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-
         program.absyn.accept(binder);
     }
 
     @Test
     public void procedureDef() {
-        Parser parser = new CupParser("let function a() = () in a() end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("let function a() = (1) in a() end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
@@ -276,22 +272,5 @@ public class BinderTest {
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
         program.absyn.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
-    }
-
-    @Test
-    public void test4_30() {
-        Parser parser = new CupParser(
-                "let type a = { a: int } function a(a: a): a = a { a = a + a } var a : a := a( a {a = 1 } ) in a.a end",
-                new ErrorMsg("", System.out));
-        Program program = parser.parse();
-        PrintStream outputStream = System.out;
-        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
-        Binder binder = new Binder(errorMsg);
-
-        program.absyn.accept(binder);
-        Renamer renamer = new Renamer();
-        program.absyn.accept(renamer);
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
     }
 }

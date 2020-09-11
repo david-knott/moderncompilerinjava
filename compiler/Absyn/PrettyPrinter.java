@@ -346,8 +346,19 @@ public class PrettyPrinter implements AbsynVisitor {
         }
     }
 
+    private SeqExp foldSeqExp(SeqExp exp) {
+        if(exp.list == null) {
+            return exp;
+        }
+        if(exp.list.tail == null && exp.list.head instanceof SeqExp) {
+           return foldSeqExp((SeqExp)exp.list.head);
+        }
+        return exp;
+    }
+
     @Override
     public void visit(SeqExp exp) {
+        exp = this.foldSeqExp(exp);
         say("(");
         this.currentIndentation++;
         this.lineBreakAndIndent();
