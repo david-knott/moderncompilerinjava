@@ -166,7 +166,6 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             exp.setDef(def.exp);
             this.type = def.type;
-            super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
         }
@@ -337,6 +336,7 @@ public class Binder extends DefaultVisitor {
             // type usage
             if(this.typeSymbolTable.contains(expList.typ)) {
                 SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ);
+                //sets the type definition for the field list.
                 expList.setDef(def.exp);
                 last = new RECORD(expList.name, def.type, null);
                 if(first == null) {

@@ -16,14 +16,19 @@ public class Tasks implements TaskProvider {
                 Binder b = new Binder(taskContext.errorMsg);
                 taskContext.program.absyn.accept(b);
             }
-        }, "bind", "Performs binding", "parse");
-
+        }, "b|bindings-compute", "Performs binding", "parse");
+        new SimpleTask(new SimpleTaskProvider() {
+            @Override
+            public void only(TaskContext taskContext) {
+                taskContext.setBindingsDisplay(true);
+            }
+        }, "B|bindings-display", "escape", "bindings-compute");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
                 Program boundProgram = taskContext.program;
                 boundProgram.absyn.accept(new Renamer());
             }
-        }, "rename", "Performs binding", "bind");
+        }, "rename", "Performs binding", "bindings-compute");
     }
 }

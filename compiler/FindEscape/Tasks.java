@@ -16,7 +16,7 @@ public class Tasks implements TaskProvider {
                 EscapeVisitor escapeVisitor = new EscapeVisitor(taskContext.errorMsg);
                 taskContext.program.absyn.accept(escapeVisitor);
             }
-        }, "escapes-compute", "escape", "parse");
+        }, "e|escapes-compute", "escape", "parse");
 
         new SimpleTask(new SimpleTaskProvider() {
             @Override
@@ -24,6 +24,6 @@ public class Tasks implements TaskProvider {
                 taskContext.setEscapesDisplay(true);
 
             }
-        }, "escapes-display", "escape", "parse");
+        }, "E|escapes-display", "escape", "escapes-compute");
     }
 }

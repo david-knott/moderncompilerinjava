@@ -1,6 +1,13 @@
 # Diary
 
 ## 11 September 2020 ##
+Binder isn't quite right. There is a problem when a type is int or string.
+Enable renamer to see if happening.
+
+Bug with short form and long form argumennts combined.
+
+Added a new escaping visitor
+
 In Absyn.PrettyPrinter parenthese no longer stack for free. for example
 ((((((((((0)))))))))) is pretty printed as (0)
 

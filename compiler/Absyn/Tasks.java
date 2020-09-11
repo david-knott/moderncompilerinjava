@@ -16,8 +16,8 @@ public class Tasks implements TaskProvider {
             public void only(TaskContext taskContext) {
                 try(PrintStream printStream = new PrintStream(taskContext.log)) {
                     printStream.println("/* == Abstract Syntax Tree. == */");
-                    //taskContext.program.absyn.accept(new PrettyPrinter(printStream, taskContext.escapesDisplay, taskContext.bindingsDisplay));
-                    new Print(printStream).prExp(taskContext.program.absyn);
+                    taskContext.program.absyn.accept(new PrettyPrinter(printStream, taskContext.escapesDisplay, taskContext.bindingsDisplay));
+                    //new Print(printStream).prExp(taskContext.program.absyn);
                 }
             }
         }, "A|ast-display", "display abstract syntax tree", "parse");

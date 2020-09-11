@@ -36,7 +36,10 @@ public class Renamer extends DefaultVisitor {
 
     @Override
     public void visit(VarDec exp) {
-        exp.typ.name = newNames.get(exp.typ.def);
+        // exp.typ can be null eg var a := 0
+        if(exp.typ != null) {
+            exp.typ.name = newNames.get(exp.typ.def);
+        }
         String uniqueVarName = exp.name + "_" + (this.id++);
         Symbol newSymbol = Symbol.symbol(uniqueVarName);
         newNames.put(exp, newSymbol);
@@ -56,6 +59,9 @@ public class Renamer extends DefaultVisitor {
             if(functionDec.params != null) {
                 for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
                     fl.typ = newNames.get(fl.def);
+                    if(fl.typ == null) {
+                        throw new Error("fl.typ is null" + fl.def);
+                    }
                     String uniqueParamName = fl.name + "_" + (this.id++);
                     Symbol newPSymbol = Symbol.symbol(uniqueParamName);
                     newNames.put(fl, newPSymbol);
@@ -76,7 +82,10 @@ public class Renamer extends DefaultVisitor {
 
     @Override
     public void visit(CallExp exp) {
-        exp.func = newNames.get(exp.def);
+        // if runtime function exp.def will be null
+        if(exp.def != null) {
+            exp.func = newNames.get(exp.def);
+        }
         if(exp.args != null) {
             exp.args.accept(this);
         }
