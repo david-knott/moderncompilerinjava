@@ -7,6 +7,12 @@ import Absyn.SimpleVar;
 import Absyn.VarDec;
 import ErrorMsg.ErrorMsg;
 
+/**
+ * The EscapeVisitor class traverses the Abtract Syntax Tree looking
+ * for variables that are defined at a lower static nesting level than
+ * where they are used. This generally occurs when a nested function
+ * calls a variable that is defined outside of it.
+ */
 public class EscapeVisitor extends DefaultVisitor {
 
     final ErrorMsg  errorMsg;
