@@ -61,7 +61,10 @@ public class Renamer extends DefaultVisitor {
                 // update the ty name, create new symbol for formal args, except for int & strings.
                 for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
                     // set the renamed type symbol.
-                    fl.typ = newNames.get(fl.def);
+                    // TODO: change FieldList.ty field to use NameTy rather than Symbol.
+                    if(fl.def != null) {
+                        fl.typ =  newNames.get(fl.def);
+                    }
                     // create new param names for formal arguments.
                     String uniqueParamName = fl.name + "_" + (this.id++);
                     Symbol newPSymbol = Symbol.symbol(uniqueParamName);
@@ -110,12 +113,19 @@ public class Renamer extends DefaultVisitor {
         }
     }
 
+    /**
+     * Sets the record type to its renamed equivalent.
+     */
     @Override
     public void visit(RecordExp exp) {
         exp.typ = newNames.get(exp.def);
         exp.fields.accept(this);
     }
     
+    /**
+     * Sets a simple variable reference to its renamed
+     * equivalent.
+     */
     @Override
     public void visit(SimpleVar exp) {
         exp.name = newNames.get(exp.def);

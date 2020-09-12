@@ -241,6 +241,7 @@ public class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(IfExp exp) {
+        lineBreakAndIndent();
         say("if");
         space();
         exp.test.accept(this);
@@ -458,6 +459,7 @@ public class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(WhileExp exp) {
+        lineBreakAndIndent();
         say("while");
         if(this.bindingsDisplay) {
             space();

@@ -32,7 +32,8 @@ public class Tasks implements TaskProvider {
         }, "lir-compute", "Perform canonicalisation of HIR tree", "hir-compute");
         new SimpleTask((taskContext) -> taskContext.lirFragList.accept(new FragPrettyPrinter(new PrettyPrinter(taskContext.log))),
                 "lir-display", "Displays the lir", "lir-compute");
-        new SimpleTask((taskContext) -> taskContext.lirFragList.accept(new FragmentVisitor() {
+
+        new SimpleTask((taskContext) -> taskContext.hirFragList.accept(new FragmentVisitor() {
 
             @Override
             public void visit(ProcFrag procFrag) {
@@ -49,6 +50,44 @@ public class Tasks implements TaskProvider {
             "hir-simplify", 
             "Simplifies the hir in preparation for optimisation",
             "hir-compute"
+        );
+
+        
+
+        new SimpleTask((taskContext) -> taskContext.hirFragList.accept(new FragmentVisitor() {
+
+            public void visit(ProcFrag frags) {
+                CanonVisitor canonVisitor = new CanonVisitor(canonicalization);
+                frags.accept(canonVisitor);
+                taskContext.setLIR(canonVisitor.fragList);
+            }
+
+            @Override
+            public void visit(DataFrag dataFrag) {
+                // do nothing.
+            }
+                
+            }), 
+            "hir-simplify-canon", 
+            "Simplifies the hir in preparation for optimisation",
+            "hir-simplify"
+        );
+
+        new SimpleTask((taskContext) -> taskContext.lirFragList.accept(new FragmentVisitor() {
+
+            public void visit(ProcFrag procFrag) {
+                procFrag.body.accept(new PrettyPrinter(taskContext.log));
+            }
+
+            @Override
+            public void visit(DataFrag dataFrag) {
+                // do nothing.
+            }
+                
+            }), 
+            "lir-simplify-display", 
+            "Simplifies the hir in preparation for optimisation",
+            "hir-simplify-canon"
         );
 
 

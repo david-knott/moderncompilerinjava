@@ -337,6 +337,9 @@ public class Binder extends DefaultVisitor {
             if(this.typeSymbolTable.contains(expList.typ)) {
                 SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ);
                 //sets the type definition for the field list.
+                if(def == null) {
+                    throw new Error("No thing found.");
+                }
                 expList.setDef(def.exp);
                 last = new RECORD(expList.name, def.type, null);
                 if(first == null) {

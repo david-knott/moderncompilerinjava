@@ -8,10 +8,11 @@ public class TreeSimplifierVisitor implements TreeVisitor {
     Stm stm;
 
     private static Exp rewrite(Exp exp) {
+        /*
         if(exp instanceof MEM || exp instanceof BINOP) {
             Temp temp = Temp.create();
             return new ESEQ(new MOVE(new TEMP(temp), exp), new TEMP(temp));
-        }
+        }*/
         return exp; 
      }
 
@@ -33,7 +34,6 @@ public class TreeSimplifierVisitor implements TreeVisitor {
             arg.head.accept(this);
             Exp cloneArg = this.exp;
             cloneExpList = ExpList.append(cloneExpList, cloneArg);
-
         }
         this.exp = new CALL(funcClone, cloneExpList);
     }

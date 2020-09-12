@@ -1,5 +1,9 @@
 # Diary
 
+## 12 September 2020 ##
+
+TODO: change FieldList.ty field to use NameTy rather than Symbol.
+
 ## 11 September 2020 ##
 Binder isn't quite right. There is a problem when a type is int or string.
 Enable renamer to see if happening.
