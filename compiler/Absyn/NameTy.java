@@ -2,6 +2,11 @@ package Absyn;
 
 import Symbol.Symbol;
 
+/**
+ * A NameTy class represents a named type within the AST.
+ * This could be a primitive string or int, or it could be
+ * a custom type, created using the type contruct.
+ */
 public class NameTy extends Ty {
    public Symbol name;
    public Absyn def;

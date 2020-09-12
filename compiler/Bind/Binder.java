@@ -53,8 +53,8 @@ public class Binder extends DefaultVisitor {
         // base system types
         Hashtable<Symbol, SymbolTableElement> tinit = new Hashtable<Symbol, SymbolTableElement>();
         // hack so that type usages for ints and string does not show a zero.
-        tinit.put(Symbol.symbol("int"), new SymbolTableElement(Constants.INT, new IntExp(0, 0)));
-        tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING, new StringExp(0, "")));
+        tinit.put(Symbol.symbol("int"), new SymbolTableElement(Constants.INT, null));
+        tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING, null));
         this.typeSymbolTable = new SymbolTable(tinit);
         // base functions
         Hashtable<Symbol, SymbolTableElement> finit = new Hashtable<Symbol, SymbolTableElement>();

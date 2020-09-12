@@ -7,6 +7,7 @@ import Absyn.CallExp;
 import Absyn.DefaultVisitor;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
+import Absyn.NameTy;
 import Absyn.RecordExp;
 import Absyn.SimpleVar;
 import Absyn.TypeDec;
@@ -57,29 +58,47 @@ public class Renamer extends DefaultVisitor {
         }
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
             if(functionDec.params != null) {
+                // update the ty name, create new symbol for formal args, except for int & strings.
                 for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
+                    // set the renamed type symbol.
                     fl.typ = newNames.get(fl.def);
-                    if(fl.typ == null) {
-                        throw new Error("fl.typ is null" + fl.def);
-                    }
+                    // create new param names for formal arguments.
                     String uniqueParamName = fl.name + "_" + (this.id++);
                     Symbol newPSymbol = Symbol.symbol(uniqueParamName);
                     newNames.put(fl, newPSymbol);
                     fl.name = newPSymbol;
                 }
             }
+            // rename the return type of the function, except for int & strings.
             if (functionDec.result != null) {
-                Symbol newSymbol = newNames.get(functionDec.result.def);
-                if(newSymbol != null) {
-                    newSymbol = functionDec.result.name;
-                }
+                functionDec.result.accept(this);
             }
+            // process body.
             if (functionDec.body != null) {
                 functionDec.body.accept(this);
             }
         }
     }
 
+    /**
+     * Sets the name field in the NameTy to its renamed
+     * equivalent, except when then the NameTy references 
+     * a string or int type.
+     */
+    @Override
+    public void visit(NameTy exp) {
+        if(exp.name == Symbol.symbol("int") || exp.name == Symbol.symbol("string")) {
+            return;
+        }
+        Symbol newSymbol = newNames.get(exp.def);
+        exp.name = newSymbol;
+    }
+
+    /**
+     * Sets the function name in the CallExp to its
+     * renamed equivalent, except when the function is
+     * a runtime function.
+     */
     @Override
     public void visit(CallExp exp) {
         // if runtime function exp.def will be null
