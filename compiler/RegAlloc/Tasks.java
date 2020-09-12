@@ -11,10 +11,15 @@ import Util.TaskProvider;
  * A collection of tasks related to code generation for the intel x64 instruction set.
  * This class will be refactored so the AssemblyCompute visitor will be split into 
  * separate modules and tasks ( Canon, Instruction Select, Reg Alloc )
+ * 
+ * asm-coalesce-disable - disable coalescing /sets a flag.
+ * asm-trace - trace register allocation / sets a flag.
+ * asm-compute - perform register allocation
+ * asm-display - display the final assmebly.
  */
 public class Tasks implements TaskProvider {
     final RegAllocFactory regAllocFactory;
-    boolean demove = false;
+    boolean disableCoalesce = false;
 
     public Tasks(RegAllocFactory regAllocFactory) {
         this.regAllocFactory = regAllocFactory;
@@ -22,19 +27,18 @@ public class Tasks implements TaskProvider {
 
     @Override
     public void build() {
-
         new BooleanTask(new BooleanTaskFlag(){
             @Override
             public void set() {
-                demove = true;
+                disableCoalesce = true;
             }
             
-        }, "demove", "Remove redundant moves", "reg-alloc");
+        }, "demove", "Disable register coalescing", "reg-alloc");
 
         new SimpleTask(new SimpleTaskProvider(){
 			@Override
 			public void only(TaskContext taskContext) {
-                taskContext.assemFragList.accept(new AssemFragmentVisitor(demove, regAllocFactory, taskContext.out));
+                taskContext.assemFragList.accept(new AssemFragmentVisitor(disableCoalesce, regAllocFactory, taskContext.out));
 			}
         }, "reg-alloc", "Select x64 as target", "instr-compute");
     }

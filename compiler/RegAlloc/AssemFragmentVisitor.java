@@ -33,10 +33,12 @@ class AssemFragmentVisitor implements FragmentVisitor {
         TempMap tempMap = new CombineMap(procFrag.frame, regAlloc);
         instrs = regAlloc.getInstrList();
         Proc proc = procFrag.frame.procEntryExit3(instrs);
+        // write assembly prolog
         out.println(".text");
         for (InstrList prolog = proc.prolog; prolog != null; prolog = prolog.tail) {
             out.println(prolog.head.format(procFrag.frame));
         }
+        // remove moves with same src and destination.
         for (InstrList body = proc.body; body != null; body = body.tail) {
             if(body.head instanceof MOVE) {
                 Temp def = body.head.def().head;
@@ -49,6 +51,7 @@ class AssemFragmentVisitor implements FragmentVisitor {
                 out.println(body.head.format(tempMap));
             }
         }
+        // write assembly epilog
         for (InstrList epilog = proc.epilog; epilog != null; epilog = epilog.tail) {
             out.println(epilog.head.format(procFrag.frame));
         }
