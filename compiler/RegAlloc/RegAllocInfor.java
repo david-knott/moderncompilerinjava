@@ -1,6 +1,7 @@
 package RegAlloc;
 
 import Assem.InstrList;
+import Liveness.Liveness;
 import Temp.DefaultMap;
 import Temp.Temp;
 import Temp.TempList;

@@ -1,4 +1,4 @@
-package RegAlloc;
+package Liveness;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -13,7 +13,7 @@ import Graph.NodeList;
 import Temp.Temp;
 import Temp.TempList;
 
-class Liveness {
+public class Liveness {
     private Hashtable<Node, BitSet> liveInMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, BitSet> liveOutMap = new Hashtable<Node, BitSet>();
     private Hashtable<Node, TempList> liveMapHash;
@@ -193,6 +193,4 @@ class Liveness {
         }
         return nodeWorkList;
     }
-
-
 }

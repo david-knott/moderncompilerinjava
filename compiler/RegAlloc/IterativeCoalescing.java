@@ -13,6 +13,7 @@ import FlowGraph.FlowGraph;
 import Frame.Access;
 import Frame.Frame;
 import Graph.Node;
+import Liveness.Liveness;
 import Temp.Temp;
 import Temp.TempList;
 import Temp.TempMap;
