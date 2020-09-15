@@ -88,6 +88,14 @@ public class TaskRegister {
         return f.head.task;
     }
 
+    /**
+     * Executes all the active tasks, using the supplied streams and error class.
+     * @param in stream to read the tiger input from.
+     * @param out stream to write the compiled assembly to.
+     * @param log stream to write debug information to.
+     * @param errorMsg object to capture error messages.
+     * @return task register instance.
+     */
     public TaskRegister execute(InputStream in, OutputStream out, OutputStream log, ErrorMsg errorMsg) {
         TaskContext taskContext = new TaskContext(in, out, log, errorMsg);
         for (LL<TaskWrapper> t = this.tasks; t != null; t = t.tail) {

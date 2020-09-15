@@ -64,7 +64,9 @@ public class IterativeCoalescing extends Component implements RegAlloc {
      */
     private LL<Temp> freezeWorkList;
     private Hashtable<Temp, LL<Instr>> moveList = new Hashtable<Temp, LL<Instr>>();
-
+    /**
+     * Hashtable that maps coalesced temps.
+     */
     private Hashtable<Temp, Temp> alias = new Hashtable<Temp, Temp>();
 
     private void updateUseAndDefCounts() {
@@ -536,7 +538,6 @@ public class IterativeCoalescing extends Component implements RegAlloc {
         this.colour.clear();
         this.defCount.clear();
         this.useCount.clear();
-        ;
         this.moveList.clear();
         this.instrList = newList;
         this.coalescedMoves = null;

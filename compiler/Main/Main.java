@@ -32,9 +32,15 @@ public class Main {
                 .register(new Parse.Tasks(new CupParser(in, errorMsg)))
                 .register(new Bind.Tasks())
                 .register(new FindEscape.Tasks())
-                .register(new Absyn.Tasks()).register(new Semant.Tasks()).register(new Translate.Tasks())
-                .register(new Canon.Tasks(new CanonicalizationImpl())).register(new Intel.Tasks(null, null))
-                .register(new RegAlloc.Tasks(new RegAllocFactory())).parseArgs(args).execute(in, out, err, errorMsg);
+                .register(new Absyn.Tasks())
+                .register(new Types.Tasks())
+                .register(new Semant.Tasks())
+                .register(new Translate.Tasks())
+                .register(new Canon.Tasks(new CanonicalizationImpl()))
+                .register(new Intel.Tasks(null, null))
+                .register(new RegAlloc.Tasks(new RegAllocFactory()))
+                .parseArgs(args)
+                .execute(in, out, err, errorMsg);
         Timer.instance.stop();
         Timer.instance.dump(err);
     }

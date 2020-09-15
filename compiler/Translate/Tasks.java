@@ -1,14 +1,9 @@
 package Translate;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import ErrorMsg.ErrorMsg;
 import Intel.IntelFrame;
 import Temp.Label;
 import Tree.PrettyPrinter;
 import Tree.TreeVisitor;
-import Util.Assert;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
