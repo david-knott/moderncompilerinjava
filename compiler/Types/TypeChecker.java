@@ -41,7 +41,7 @@ import ErrorMsg.ErrorMsg;
  * 
  * https://gitlab.lrde.epita.fr/tiger/tc-base/-/blob/2022/src/type/type-checker.cc
  */
-class TypeChecker extends DefaultVisitor {
+public class TypeChecker extends DefaultVisitor {
     
     Type expType;
     private final ErrorMsg errorMsg;
@@ -49,6 +49,7 @@ class TypeChecker extends DefaultVisitor {
     public TypeChecker(ErrorMsg errorMsg) {
         this.errorMsg = errorMsg;
     }
+
     @Override
     public void visit(IntExp exp) {
         this.expType = Constants.INT;
@@ -60,13 +61,41 @@ class TypeChecker extends DefaultVisitor {
     }
 
     @Override
+    public void visit(NameTy exp) {
+        // what type is namety ??
+        throw new java.lang.Error("TBD: Calculate NameTy type.");
+    }
+
+    @Override
     public void visit(NilExp exp) {
         this.expType = Constants.NIL;
     }
 
     @Override
     public void visit(CallExp exp) {
-        //check the argument types
+        // check the formal argument types against the actual argument types.
+    }
+
+    /**
+     * Type check ForExp.
+     */
+    @Override
+    public void visit(ForExp exp) {
+        //not implemented.
+        // check var dec is not assigned too in the body.
+        //exp.body.accept(this);
+        throw new java.lang.Error("TBD: Ensure index is not assigned too.");
+    }
+
+    @Override
+    public void visit(OpExp exp) {
+        exp.left.accept(this);
+        Type leftType = this.expType;
+        exp.right.accept(this);
+        Type rightType = this.expType;
+        if(!leftType.coerceTo(rightType)) {
+            this.errorMsg.error(exp.pos, String.format("type mismatch\nright operand type:%s\nexpected type:%s", rightType, leftType));
+        }
     }
 
     /**
@@ -76,7 +105,7 @@ class TypeChecker extends DefaultVisitor {
      */
     @Override
     public void visit(AssignExp exp) {
-        //check lvaue type is same as rvalue
+        // check lvaue type is same type as rvalue
         exp.var.accept(this);
         Type lValueType = this.expType;
         exp.exp.accept(this);
@@ -84,6 +113,7 @@ class TypeChecker extends DefaultVisitor {
         if (!lValueType.coerceTo(rValueType)) {
             this.errorMsg.error(exp.pos, "");
         }
+        // check we are not assigning to a ready only variable.
     }
 
 	/**
@@ -93,12 +123,13 @@ class TypeChecker extends DefaultVisitor {
 	@Override
 	public void visit(VarDec exp) {
         // visit initializer.
-		exp.init.accept(this);
+        exp.init.accept(this);
 		Type initType = this.expType;
 		// visit the type if defined.
 		if(exp.typ != null) {
-			exp.typ.accept(this);
-			if(!this.expType.coerceTo(initType)) {
+            exp.typ.accept(this);
+            Type declaredType = this.expType;
+			if(!declaredType.coerceTo(initType)) {
                 this.errorMsg.error(exp.pos, "");
 			}
 		}

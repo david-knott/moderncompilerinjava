@@ -5,7 +5,6 @@ import Types.Type;
 
 public class SimpleVar extends Var implements Typable {
    public Symbol name;
-   public Absyn def;
    private Type type;
 
    public SimpleVar(int p, Symbol n) {
