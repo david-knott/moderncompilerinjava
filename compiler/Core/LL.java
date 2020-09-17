@@ -1,7 +1,6 @@
 package Core;
 
 import Util.Assert;
-
 public class LL<T> {
 
     public static <S extends Comparable<S>> int size(LL<S> l) {

@@ -1,5 +1,9 @@
 package Absyn;
+
 abstract public class Var extends Absyn {
 
-   public Absyn def;
+    /**
+     * Pointer to the definition of this variable.
+     */
+    public Absyn def;
 }

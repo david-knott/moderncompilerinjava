@@ -1,6 +1,11 @@
 package Types;
 
 import Absyn.DefaultVisitor;
+
+import java.util.LinkedList;
+import java.util.Collection;
+
+import Absyn.Absyn;
 import Absyn.ArrayExp;
 import Absyn.ArrayTy;
 import Absyn.AssignExp;
@@ -30,6 +35,7 @@ import Absyn.Var;
 import Absyn.VarDec;
 import Absyn.VarExp;
 import Absyn.WhileExp;
+import Core.LL;
 import ErrorMsg.Error;
 import ErrorMsg.ErrorMsg;
 
@@ -44,10 +50,12 @@ import ErrorMsg.ErrorMsg;
 public class TypeChecker extends DefaultVisitor {
     
     Type expType;
-    private final ErrorMsg errorMsg;
+    final ErrorMsg errorMsg;
+    Collection<Absyn> readonlyVarDecs = null;
 
     public TypeChecker(ErrorMsg errorMsg) {
         this.errorMsg = errorMsg;
+        this.readonlyVarDecs = new LinkedList<Absyn>();
     }
 
     @Override
@@ -61,12 +69,6 @@ public class TypeChecker extends DefaultVisitor {
     }
 
     @Override
-    public void visit(NameTy exp) {
-        // what type is namety ??
-        throw new java.lang.Error("TBD: Calculate NameTy type.");
-    }
-
-    @Override
     public void visit(NilExp exp) {
         this.expType = Constants.NIL;
     }
@@ -76,14 +78,23 @@ public class TypeChecker extends DefaultVisitor {
         // check the formal argument types against the actual argument types.
     }
 
+    @Override
+    public void visit(SimpleVar exp) {
+        throw new java.lang.Error("TBD: Calculate type for simplevar.");
+    }
+
+    @Override
+    public void visit(NameTy exp) {
+        // what type is namety ??
+        throw new java.lang.Error("TBD: Calculate NameTy type.");
+    }
     /**
      * Type check ForExp.
      */
     @Override
     public void visit(ForExp exp) {
-        //not implemented.
-        // check var dec is not assigned too in the body.
-        //exp.body.accept(this);
+        this.readonlyVarDecs.add(exp.var);
+        exp.body.accept(this);
         throw new java.lang.Error("TBD: Ensure index is not assigned too.");
     }
 
@@ -113,7 +124,9 @@ public class TypeChecker extends DefaultVisitor {
         if (!lValueType.coerceTo(rValueType)) {
             this.errorMsg.error(exp.pos, "");
         }
-        // check we are not assigning to a ready only variable.
+        if(this.readonlyVarDecs.contains(exp.var.def)) {
+            this.errorMsg.error(exp.pos, "");
+        }
     }
 
 	/**

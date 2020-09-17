@@ -1,4 +1,11 @@
 # Diary
+## 17th September 2020 ##
+
+Started the TypeChecker phase. Checking for for loop variable assignment using
+a list that stores all the variable declarations and comparing assignment expression
+with it.
+
+I still need to implement code that binds the type to expressions.
 
 ## 12 September 2020 ##
 
