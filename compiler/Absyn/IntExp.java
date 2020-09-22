@@ -1,10 +1,7 @@
 package Absyn;
 
-import Types.Type;
-
-public class IntExp extends Exp implements Typable {
+public class IntExp extends Exp {
    public int value;
-   private Type type;
 
    public IntExp(int p, int v) {
       pos = p;
@@ -14,15 +11,5 @@ public class IntExp extends Exp implements Typable {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-   }
-
-   @Override
-   public Type getType() {
-      return this.type;
-   }
-
-   @Override
-   public void setType(Type type) {
-      this.type = type;
    }
 }

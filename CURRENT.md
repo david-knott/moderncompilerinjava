@@ -1,4 +1,8 @@
 # Diary
+## 22th September 2020 ##
+
+Implemented CallExp visitor method. I still need to implement the associated test.
+
 ## 17th September 2020 ##
 
 Started the TypeChecker phase. Checking for for loop variable assignment using
