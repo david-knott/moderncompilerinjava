@@ -156,7 +156,7 @@ public class PrettyPrinter implements AbsynVisitor {
                 }
                 say(":");
                 space();
-                say(exp.typ);
+                say(exp.typ.name);
                 // type usage.
                 if(this.bindingsDisplay) {
                     space();

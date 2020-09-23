@@ -10,7 +10,8 @@ import Symbol.Symbol;
  */
 public class FieldList extends Absyn {
    public Symbol name;
-   public Symbol typ;
+ //  public Symbol typ;
+   public NameTy typ;
    public final FieldList tail;
    public boolean escape = true;
    /**
@@ -18,7 +19,7 @@ public class FieldList extends Absyn {
     */
    public Absyn def;
 
-   public FieldList(int p, Symbol n, Symbol t, FieldList x) {
+   public FieldList(int p, Symbol n, NameTy t, FieldList x) {
       pos = p;
       name = n;
       typ = t;
@@ -33,5 +34,4 @@ public class FieldList extends Absyn {
    public void setDef(Absyn exp) {
       this.def = exp;
    }
-
 }

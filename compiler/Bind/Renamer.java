@@ -61,9 +61,8 @@ public class Renamer extends DefaultVisitor {
                 // update the ty name, create new symbol for formal args, except for int & strings.
                 for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
                     // set the renamed type symbol.
-                    // TODO: change FieldList.ty field to use NameTy rather than Symbol.
                     if(fl.def != null) {
-                        fl.typ =  newNames.get(fl.def);
+                        fl.typ.name =  newNames.get(fl.def);
                     }
                     // create new param names for formal arguments.
                     String uniqueParamName = fl.name + "_" + (this.id++);

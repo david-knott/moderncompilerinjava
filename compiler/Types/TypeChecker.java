@@ -111,9 +111,11 @@ public class TypeChecker extends DefaultVisitor {
         ExpList actuals = exp.args;
         FieldList formals = functionDec.params;
         for (;;) {
+            // visit each actual parameter
             actuals.head.accept(this);
             Type actualType = this.getExpType();
-            NameTy formalTypeExp = null;
+            // get the type of the formal from its types def.
+            NameTy formalTypeExp = formals.typ;
             Type formalType = formalTypeExp.getType();
             this.checkTypes(actuals.head, "", actualType, "", formalType);
             //TODO: Check types match...

@@ -125,7 +125,7 @@ fieldDecList ::= fieldDec:fd fieldDecListAux:fdla {: RESULT = new Absyn.FieldLis
 fieldDecListAux ::= COMMA fieldDec:fd fieldDecListAux:fdla {: RESULT = new Absyn.FieldList(fdleft, fd.name, fd.typ, fdla); :}
 | /* empty */;
 
-fieldDec ::= ID:i COLON ID:ty {: RESULT = new Absyn.FieldList(ileft, Symbol.Symbol.symbol(i), Symbol.Symbol.symbol(ty), null); :};
+fieldDec ::= ID:i COLON ID:ty {: RESULT = new Absyn.FieldList(ileft, Symbol.Symbol.symbol(i), new Absyn.NameTy(tyleft, Symbol.Symbol.symbol(ty)), null); :};
 
 funcDec ::= FUNCTION ID:i LPAREN fieldDecList:fdl RPAREN EQ exp:e1 {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, null, e1, null ); :}
 | FUNCTION ID:i LPAREN fieldDecList:fdl RPAREN COLON ID:ty EQ exp:e1 {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, new Absyn.NameTy(ileft, Symbol.Symbol.symbol(ty)), e1, null ); :}

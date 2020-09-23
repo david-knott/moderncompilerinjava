@@ -81,6 +81,7 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(LetExp exp) {
+        exp.setType(Constants.VOID);
         this.typeSymbolTable.beginScope();
         this.varSymbolTable.beginScope();
         this.functionSymbolTable.beginScope();
@@ -94,7 +95,6 @@ public class Binder extends DefaultVisitor {
         this.functionSymbolTable.endScope();
         this.varSymbolTable.endScope();
         this.typeSymbolTable.endScope();
-        exp.setType(Constants.VOID);
     }
 
     /**
@@ -126,6 +126,7 @@ public class Binder extends DefaultVisitor {
 
     /**
      * Visit a simple var expression and bind it to its declaration.
+     * Sets the simple var type to its definition type.
      */
     @Override
     public void visit(SimpleVar exp) {
@@ -169,7 +170,7 @@ public class Binder extends DefaultVisitor {
                 this.errorMsg.error(exp.pos, "undefined type:" + exp.typ.pos);
             }
         }
-        //visit the initialize for var dec.
+        //visit the initializer for the var dec.
         exp.init.accept(this);
         exp.setType(exp.init.getType());
         Type initType = this.type;
@@ -249,7 +250,7 @@ public class Binder extends DefaultVisitor {
     /**
      * Visit a function declaration. Visit the function header first, this includes the function name
      * its formal arguments and return type. These are added to the function symbol table. A second pass
-     * then examines each contigour function body and adds the formals to variable environment.
+     * then examines each contigious function body and adds the formals to variable environment.
      */
     @Override
     public void visit(FunctionDec exp) {
@@ -270,22 +271,25 @@ public class Binder extends DefaultVisitor {
             }
             RECORD paramType = null;
             if(functionDec.params != null) {
-                // call accept, which sets this.type
+                // call accept method on paraneter, which sets this.type
                 functionDec.params.accept(this);
                 paramType = (RECORD)this.type;
             }
             // function definition
             if(!this.functionSymbolTable.contains(functionDec.name, false)) {
+                FUNCTION functionType = new FUNCTION(
+                    paramType, 
+                    returnType
+                );
                 this.functionSymbolTable.put(
                     functionDec.name, 
                     new SymbolTableElement(
-                        new FUNCTION(
-                            paramType, 
-                            returnType
-                        ),
+                        functionType,
                         functionDec
                     )
                 );
+                // set the function type
+                exp.setType(functionType); 
             } else {
                 this.errorMsg.error(exp.pos, "redefinition:" + functionDec.name);
             }
@@ -294,7 +298,7 @@ public class Binder extends DefaultVisitor {
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
             this.varSymbolTable.beginScope();
             for (var param = functionDec.params; param != null; param = param.tail) {
-                SymbolTableElement paramType = this.typeSymbolTable.lookup(param.typ);
+                SymbolTableElement paramType = this.typeSymbolTable.lookup(param.typ.name);
                 param.setDef(paramType.exp);
                 // formal variable definition
                 if(!this.varSymbolTable.contains(param.name, false)) {
@@ -360,8 +364,9 @@ public class Binder extends DefaultVisitor {
         {
             temp = last;
             // type usage
-            if(this.typeSymbolTable.contains(expList.typ)) {
-                SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ);
+            // TODO: Check if this should be visited..
+            if(this.typeSymbolTable.contains(expList.typ.name)) {
+                SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ.name);
                 //sets the type definition for the field list.
                 if(def == null) {
                     throw new Error("No thing found.");

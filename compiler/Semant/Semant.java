@@ -82,11 +82,11 @@ public class Semant extends Component{
     private RECORD getRecordType(final FieldList fields) {
         RECORD recordType = null;
         if (fields != null) {
-            var fieldType = getType(fields.typ, fields.pos);
+            var fieldType = getType(fields.typ.name, fields.pos);
             recordType = new RECORD(fields.name, fieldType, null);
             var fieldTail = fields.tail;
             while (fieldTail != null) {
-                fieldType = getType(fieldTail.typ, fieldTail.pos);
+                fieldType = getType(fieldTail.typ.name, fieldTail.pos);
                 recordType.append(fieldTail.name, fieldType);
                 fieldTail = fieldTail.tail;
             }
@@ -118,11 +118,11 @@ public class Semant extends Component{
      */
     Types.Type transTy(final Absyn.RecordTy t) {
         // go through each the fields in this record type
-        var fieldType = getType(t.fields.typ, t.pos);
+        var fieldType = getType(t.fields.typ.name, t.pos);
         var record = new Types.RECORD(t.fields.name, fieldType, null);
         var item = t.fields.tail;
         while (item != null) {
-            fieldType = getType(item.typ, item.pos);
+            fieldType = getType(item.typ.name, item.pos);
             record.append(item.name, fieldType);
             item = item.tail;
         }
@@ -319,7 +319,7 @@ public class Semant extends Component{
             var translateAccess = translator.stripStaticLink(newLevel.formals);
             for (var p = current.params; p != null; p = p.tail) {
                 var varEntry = new VarEntry(
-                    env.tenv.get(p.typ).actual(), 
+                    env.tenv.get(p.typ.name).actual(), 
                     translateAccess.head
                 );
                 env.venv.put(p.name, varEntry);
