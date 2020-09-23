@@ -143,12 +143,11 @@ public class TypeChecker extends DefaultVisitor {
     }
 
     /**
-     * Visit a NameTy node. This in turn visits its definition to retrive its type.
+     * Visit a NameTy node. This in turn visits its definition to retreive its type.
      */
     @Override
     public void visit(NameTy exp) {
         exp.def.accept(this);
-
         Type typeType = this.expType;
     }
 

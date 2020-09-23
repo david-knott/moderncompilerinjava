@@ -1,4 +1,11 @@
 # Diary
+## 23th September 2020 ##
+
+I am not happy with the Binder, TypeChecker and Renamer visitors. They are a bit messy.
+In particular sometimes I set a global variable ( Type ), this smells a bit as its easy
+to forget to set it, also it is not always set. Lets investigate this a bit further.
+
+
 ## 22th September 2020 ##
 
 Implemented CallExp visitor method. I still need to implement the associated test.

@@ -164,6 +164,8 @@ public class Binder extends DefaultVisitor {
         // maybe the type wasn't specified.
         if(exp.typ != null) {
             if(this.typeSymbolTable.contains(exp.typ.name)) {
+                // visit the type
+                exp.typ.accept(this);
                 SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ.name);
                 exp.typ.setDef(def.exp);
             } else {
@@ -364,13 +366,11 @@ public class Binder extends DefaultVisitor {
         {
             temp = last;
             // type usage
-            // TODO: Check if this should be visited..
             if(this.typeSymbolTable.contains(expList.typ.name)) {
+                expList.typ.accept(this);
+                // the type is available at the point
                 SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ.name);
                 //sets the type definition for the field list.
-                if(def == null) {
-                    throw new Error("No thing found.");
-                }
                 expList.setDef(def.exp);
                 last = new RECORD(expList.name, def.type, null);
                 if(first == null) {
