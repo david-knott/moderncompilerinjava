@@ -118,7 +118,6 @@ public class TypeChecker extends DefaultVisitor {
             NameTy formalTypeExp = formals.typ;
             Type formalType = formalTypeExp.getType();
             this.checkTypes(actuals.head, "", actualType, "", formalType);
-            //TODO: Check types match...
             if(actuals.tail == null || formals.tail != null) {
                 break;
             }
