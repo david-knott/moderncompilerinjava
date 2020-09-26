@@ -19,7 +19,6 @@ public class NameTy extends Ty {
    @Override
    public void accept(AbsynVisitor visitor) {
       visitor.visit(this);
-
    }
 
    public void setDef(Absyn exp) {

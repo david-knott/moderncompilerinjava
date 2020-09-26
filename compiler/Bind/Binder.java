@@ -40,25 +40,44 @@ import Util.Assert;
 
 /**
  * The Binder class traverses the abstract syntax tree and binds variable,
- * function and type declarations to their respective symbol tables.
+ * function and type uses to their definitions. This is done using the symbol tables.
  * These are used in the type checking and translation phases.
+ * 
+ * A Question, what is the purpose of the type member variable ? What does it do ?
+ * 1) During traversal, it allows types calculated at a child node be propagated 
+ * back to parent nodes.
  */
 public class Binder extends DefaultVisitor {
 
     SymbolTable typeSymbolTable;
     SymbolTable varSymbolTable;
     SymbolTable functionSymbolTable;
-    Type type = null;
+    Type visitedType = null;
     private Stack<Absyn> loops = new Stack<Absyn>();
     private final ErrorMsg errorMsg;
 
+    @FunctionalInterface
+    interface SymbolTableAccessCallback {
+
+        public void execute(SymbolTableElement symbolTableElement);
+    }
+
+    public void tryInstall(SymbolTableAccessCallback callback, Symbol symbol, SymbolTable hashtable) {
+
+    }
+
+    public void tryLookup(SymbolTableAccessCallback callback, Symbol symbol, SymbolTable hashtable) {
+
+    }
+
     public Binder(ErrorMsg errorMsg) {
+        
         this.errorMsg = errorMsg;
         // base system types
         Hashtable<Symbol, SymbolTableElement> tinit = new Hashtable<Symbol, SymbolTableElement>();
         // hack so that type usages for ints and string does not show a zero.
-        tinit.put(Symbol.symbol("int"), new SymbolTableElement(Constants.INT, null));
-        tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING, null));
+        tinit.put(Symbol.symbol("int"), new SymbolTableElement(Constants.INT, new IntExp(0, 0)));
+        tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING, new StringExp(0, "")));
         this.typeSymbolTable = new SymbolTable(tinit);
         // base functions
         Hashtable<Symbol, SymbolTableElement> finit = new Hashtable<Symbol, SymbolTableElement>();
@@ -103,7 +122,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(IntExp exp) {
         exp.setType(Constants.INT);
-        this.type = Constants.INT;
+        this.visitedType = Constants.INT;
     }
 
     /**
@@ -112,7 +131,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(StringExp exp) {
         exp.setType(Constants.STRING);
-        this.type = Constants.STRING;
+        this.visitedType = Constants.STRING;
     }
 
     /**
@@ -121,7 +140,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(NilExp exp) {
         exp.setType(Constants.NIL);
-        this.type = Constants.NIL;
+        this.visitedType = Constants.NIL;
     }
 
     /**
@@ -132,7 +151,7 @@ public class Binder extends DefaultVisitor {
     public void visit(SimpleVar exp) {
         if(this.varSymbolTable.contains(exp.name)) {
             SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
-            this.type = def.type;
+            this.visitedType = def.type;
             exp.setDef(def.exp);
             exp.setType(def.type);
         } else {
@@ -149,7 +168,7 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
             exp.setDef(def.exp);
             exp.setType(def.type);
-            this.type = def.type;
+            this.visitedType = def.type;
             super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undeclared function:" + exp.func);
@@ -161,11 +180,10 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(VarDec exp) {
-        // maybe the type wasn't specified.
+        // if the variable type was specified.
         if(exp.typ != null) {
+            // check for the symbol in the type environment.
             if(this.typeSymbolTable.contains(exp.typ.name)) {
-                // visit the type
-                exp.typ.accept(this);
                 SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ.name);
                 exp.typ.setDef(def.exp);
             } else {
@@ -175,7 +193,7 @@ public class Binder extends DefaultVisitor {
         //visit the initializer for the var dec.
         exp.init.accept(this);
         exp.setType(exp.init.getType());
-        Type initType = this.type;
+        Type initType = this.visitedType;
         // variable definition
         if(!this.varSymbolTable.contains(exp.name, false)) {
             this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
@@ -190,7 +208,7 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             exp.setDef(def.exp);
             exp.setType(def.type);
-            this.type = def.type;
+            this.visitedType = def.type;
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
         }
@@ -203,7 +221,7 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             exp.setDef(def.exp);
             exp.setType(def.type);
-            this.type = def.type;
+            this.visitedType = def.type;
             super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
@@ -223,7 +241,6 @@ public class Binder extends DefaultVisitor {
             exp.loop = this.loops.peek();
         }
     }
-
 
     /**
      * Visit while loop and capture and breaks within its body.
@@ -275,7 +292,7 @@ public class Binder extends DefaultVisitor {
             if(functionDec.params != null) {
                 // call accept method on paraneter, which sets this.type
                 functionDec.params.accept(this);
-                paramType = (RECORD)this.type;
+                paramType = (RECORD)this.visitedType;
             }
             // function definition
             if(!this.functionSymbolTable.contains(functionDec.name, false)) {
@@ -318,42 +335,73 @@ public class Binder extends DefaultVisitor {
      * Visits a user defined type declaration and binds the symbol to its type
      * representation. This allows further lookups using the exp.name which will
      * resolve the the user defined type.
+     * 
+     * type a = int  // TypeDec(NameTy(SymbolTy))
+     * tpye intArray = array of int // TypeDec(ArrayTy(SymbolTy))
+     * type rec = {first: typ1, secont: ty2} // TypeDec(RecordTy(FieldList)))
      */
     @Override
     public void visit(TypeDec exp) {
-        // visit the header first and create a name type
+        // for a block of type declarations, visit the lvalue
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
-            this.type = new NAME(typeDec.name);
-            typeDec.setType(this.type);
-            // install type definition
+            // create a new name type for the lvalue.
+            Type nameType = new NAME(typeDec.name);
+            // set the type of this abstract syntax type declaration.
+            typeDec.setType(nameType);
+            // install new type definitio. in symbol table.
             if(!this.typeSymbolTable.contains(typeDec.name)) {
-                this.typeSymbolTable.put(typeDec.name, new SymbolTableElement(this.type, typeDec));
+                this.typeSymbolTable.put(typeDec.name, new SymbolTableElement(nameType, typeDec));
             } else {
                 this.errorMsg.error(typeDec.pos, "redefinition:" + typeDec.name);
             }
         }
-        // visit again and bind inside the typeDec.ty.accept method
+        // visit again and process the rvalue, which could be namety, arrayty or recordty. 
         for(TypeDec typeDec = exp; typeDec != null; typeDec = typeDec.next) {
-            SymbolTableElement def = this.typeSymbolTable.lookup(typeDec.name);
-            this.type = def.type;
+            NAME nameType = (NAME)typeDec.getType();
+            // visit lvalue to get the type..
             typeDec.ty.accept(this);
+            // bind the ty value.
+            nameType.bind(this.visitedType);
+            // set the type of the right value.
+            typeDec.ty.setType(this.visitedType);
+        }
+    }
+
+   /**
+     * Visit a explicit type in a var declaration, eg var a:int = 1, where int is
+     * the NameTy or visit the return type defined in a function declaration eg
+     * function a():int, where int is the NameTy, or type t = int, where int is NameTy.
+     * It can also be used in a FieldList {a: int, b: b}
+     */
+    @Override
+    public void visit(NameTy exp) {
+        // lookup the rvalue type in the symbol table.
+        if(this.typeSymbolTable.contains(exp.name)) {
+            SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
+            // set the type for binding.
+            this.visitedType = def.type;
+        } else {
+            this.errorMsg.error(exp.pos, "undefined type:" + exp.name);
         }
     }
 
     /**
-     * Visits a record type within a type declaration. It expects
-     * that named is set.
+     * Visits an array type within a type declaration. Contructs an ARRAY type and
+     * stores it in the symbol table.
      */
     @Override
-    public void visit(RecordTy exp) {
-        Assert.assertNotNull(this.type);
-        NAME named = (NAME)this.type;
-        if(exp.fields != null) {
-            exp.fields.accept(this);
-            named.bind(this.type);
+    public void visit(ArrayTy exp) {
+        // type usage
+        if(this.typeSymbolTable.contains(exp.typ)) {
+            SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
+            // set the type for binding
+            this.visitedType = new ARRAY(def.type);
+        } else {
+            this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
         }
     }
 
+ 
     /**
      * Visits a fieldlist, used for both function arguments and
      * record definitions.
@@ -367,11 +415,10 @@ public class Binder extends DefaultVisitor {
             temp = last;
             // type usage
             if(this.typeSymbolTable.contains(expList.typ.name)) {
-                expList.typ.accept(this);
-                // the type is available at the point
+                // note we dont visit the NameTy as it has already
+                // been processed in a TypeDec
                 SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ.name);
-                //sets the type definition for the field list.
-                expList.setDef(def.exp);
+               // expList.setDef(def.exp);
                 last = new RECORD(expList.name, def.type, null);
                 if(first == null) {
                     first = last;
@@ -383,41 +430,6 @@ public class Binder extends DefaultVisitor {
             }
             expList = expList.tail;
         }while(expList != null);
-        this.type = first;
-    }
-
-    /**
-     * Visits an array type within a type declaration. Contructs an ARRAY type and
-     * stores it in the symbol table.
-     */
-    @Override
-    public void visit(ArrayTy exp) {
-        // type usage
-        if(this.typeSymbolTable.contains(exp.typ)) {
-            SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
-            exp.setDef(def.exp);
-            exp.setType(def.type);
-            ((NAME)this.type).bind(new ARRAY(def.type));
-        } else {
-            this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
-        }
-    }
-
-    /**
-     * Visit a explicit type in a var declaration, eg var a:int = 1, where int is
-     * the NameTy or visit the return type defined in a function declaration eg
-     * function a():int, where int is the NameTy, or type t = int, where int is NameTy
-     */
-    @Override
-    public void visit(NameTy exp) {
-        // type usuge
-        if(this.typeSymbolTable.contains(exp.name)) {
-            SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
-            exp.setDef(def.exp);
-            exp.setType(def.type);
-            ((NAME)this.type).bind(def.type);
-        } else {
-            this.errorMsg.error(exp.pos, "undefined type:" + exp.name);
-        }
+        this.visitedType = first;
     }
 }

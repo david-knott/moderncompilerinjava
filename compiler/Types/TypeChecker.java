@@ -61,7 +61,7 @@ public class TypeChecker extends DefaultVisitor {
 
     private void checkTypes(Absyn loc, String synCat1, Type first, String synCat2, Type second) {
         if (!first.coerceTo(second)) {
-            this.errorMsg.error(loc.pos, "checkTypes error");
+            this.errorMsg.error(loc.pos, "checkTypes error " + first + "!=" + second);
         }
     }
 
@@ -144,11 +144,14 @@ public class TypeChecker extends DefaultVisitor {
 
     /**
      * Visit a NameTy node. This in turn visits its definition to retreive its type.
+     * Currently there is a problem if the NameTy refers to an int or string. Native types
+     * do not have a definition and because of the the NameTy def property is null.
      */
     @Override
     public void visit(NameTy exp) {
-        exp.def.accept(this);
-        Type typeType = this.expType;
+        if(exp.def != null) {
+            exp.def.accept(this);
+        }
     }
 
     /**
@@ -202,10 +205,6 @@ public class TypeChecker extends DefaultVisitor {
         }
     }
 
-    @Override
-    public void visit(TypeDec exp) {
-        this.expType = exp.getType();
-    }
 
     /** ============== AST Declarations ============================== **/
 
@@ -222,10 +221,13 @@ public class TypeChecker extends DefaultVisitor {
         if (exp.typ != null) {
             exp.typ.accept(this);
             Type declaredType = this.expType;
-            if (!declaredType.coerceTo(initType)) {
-                this.errorMsg.error(exp.pos, "");
-            }
+            this.checkTypes(exp, "", declaredType, "", initType);
         }
+    }
+
+    @Override
+    public void visit(TypeDec exp) {
+        this.expType = exp.getType();
     }
 
     /**

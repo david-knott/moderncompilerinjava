@@ -5,6 +5,8 @@ I am not happy with the Binder, TypeChecker and Renamer visitors. They are a bit
 In particular sometimes I set a global variable ( Type ), this smells a bit as its easy
 to forget to set it, also it is not always set. Lets investigate this a bit further.
 
+Still not happy, added in a dummy exp for the int & string definition in the type symbol table.
+
 
 ## 22th September 2020 ##
 

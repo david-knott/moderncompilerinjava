@@ -15,7 +15,7 @@ import Parse.Program;
 public class BinderTest {
 
     @Test
-    public void typeDefs() {
+    public void varTypeDef() {
         Parser parser = new CupParser("let type a = int var a:a := 1 in a end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         PrintStream outputStream = System.out;
@@ -27,6 +27,30 @@ public class BinderTest {
     }
 
     @Test
+    public void arrayTypeDef() {
+        Parser parser = new CupParser("let type intArray = array of int var a := intArray [ 10 ] of 3 in a[3] end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+    }
+
+    @Test
+    public void recTypeDef() {
+        Parser parser = new CupParser("let type tuple = {first: int, second: int} var t1: tuple := tuple {first = 1, second = 2} in t1.first end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+    }
+
+    @Test
     public void recursiveTypeDefs() {
         Parser parser = new CupParser("let type list = {first: int, rest: list} in 1 end",
                 new ErrorMsg("", System.out));
@@ -34,8 +58,10 @@ public class BinderTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-
         program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+
     }
 
     @Test
@@ -45,7 +71,6 @@ public class BinderTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
