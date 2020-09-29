@@ -3,7 +3,11 @@ package Bind;
 import java.io.PrintStream;
 import java.util.Hashtable;
 
+import Absyn.Absyn;
+import Absyn.TypeDec;
+import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
+import Types.Type;
 import Util.Assert;
 
 class SymbolTable {
@@ -21,6 +25,30 @@ class SymbolTable {
 
         InnerTable(InnerTable parent) {
             this.parent = parent;
+        }
+    }
+
+    @FunctionalInterface
+    interface SymbolTableAccessCallback {
+        public void execute(SymbolTableElement symbolTableElement);
+    }
+
+    void tryInstallFunction(SymbolTableAccessCallback callback, Symbol symbol, Absyn typeDec, Type type, ErrorMsg errorMsg) {
+        if (!this.contains(symbol)) {
+            SymbolTableElement symbolTableElement = new SymbolTableElement(type, typeDec);
+            this.put(symbol, symbolTableElement);
+            callback.execute(symbolTableElement);
+        } else {
+            errorMsg.error(typeDec.pos, "redefinition:" + symbol);
+        }
+    }
+
+    void tryLookup(SymbolTableAccessCallback callback, Symbol symbol, Absyn loc, ErrorMsg errorMsg) {
+        if (this.contains(symbol)) {
+            SymbolTableElement def = this.lookup(symbol);
+            callback.execute(def);
+        } else {
+            errorMsg.error(loc.pos, "undefined:" + symbol);
         }
     }
 
@@ -46,12 +74,11 @@ class SymbolTable {
     public void put(Symbol symbol, SymbolTableElement o) {
         Assert.assertNotNull(symbol);
         Assert.assertNotNull(o);
-        if(this.current.table.containsKey(symbol)) {
+        if (this.current.table.containsKey(symbol)) {
             throw new Error("Duplicate symbol in scope.");
         }
         this.current.table.put(symbol, o);
     }
-
 
     public boolean contains(Symbol symbol) {
         return this.contains(symbol, true);
@@ -71,6 +98,7 @@ class SymbolTable {
 
     /**
      * Finds symbol in current scope or parent.
+     * 
      * @param symbol
      * @return the symbol element or throws an exception.
      */

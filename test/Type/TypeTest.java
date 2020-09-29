@@ -48,7 +48,7 @@ public class TypeTest {
     public void test_4_32() {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
-        Parser parser = new CupParser("/* error: index variable erroneously assigned to.  */ for i := 10 to 1 do i := i - 1",errorMsg);
+        Parser parser = new CupParser("/* error: index variable erroneously assigned to.  */ for i := 10 to 1 do i := i - 1", errorMsg);
         Program program = parser.parse();
         Binder binder = new Binder(errorMsg);
         program.absyn.accept(binder);

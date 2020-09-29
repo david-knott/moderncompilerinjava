@@ -1,5 +1,6 @@
 package Bind;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.PrintStream;
@@ -15,7 +16,7 @@ import Parse.Program;
 public class BinderTest {
 
     @Test
-    public void varTypeDef() {
+    public void typeDef() {
         Parser parser = new CupParser("let type a = int var a:a := 1 in a end", new ErrorMsg("", System.out));
         Program program = parser.parse();
         PrintStream outputStream = System.out;
@@ -24,7 +25,22 @@ public class BinderTest {
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
+        assertTrue(!errorMsg.anyErrors);
     }
+
+    @Test
+    public void typeNoDef() {
+        Parser parser = new CupParser("let type a = int var a:b := 1 in a end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
 
     @Test
     public void arrayTypeDef() {
@@ -36,7 +52,48 @@ public class BinderTest {
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
+        assertTrue(!errorMsg.anyErrors);
     }
+
+    @Test
+    public void arrayTypeNoDef1() {
+        Parser parser = new CupParser("let type intArray = array of int var a := badArray [ 10 ] of 3 in a[3] end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void arrayTypeNoDef2() {
+        Parser parser = new CupParser("let type intArray = array of bint var a := intArray [ 10 ] of 3 in a[3] end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void arrayTypeNoDef3() {
+        Parser parser = new CupParser("let type intArray = array of bint var a := badArray [ 10 ] of 3 in a[3] end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
 
     @Test
     public void recTypeDef() {
@@ -48,6 +105,7 @@ public class BinderTest {
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
         program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
     }
 
     @Test
@@ -61,7 +119,7 @@ public class BinderTest {
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
-
+        assertFalse(errorMsg.anyErrors);
     }
 
     @Test
@@ -72,8 +130,9 @@ public class BinderTest {
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
         program.absyn.accept(binder);
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
         program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
     }
 
     @Test
@@ -83,10 +142,10 @@ public class BinderTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
     }
 
     @Test
@@ -97,6 +156,9 @@ public class BinderTest {
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
         program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
     }
 
     @Test
@@ -109,7 +171,7 @@ public class BinderTest {
         program.absyn.accept(binder);
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
-
+        assertFalse(errorMsg.anyErrors);
     }
 
     @Test
@@ -124,6 +186,21 @@ public class BinderTest {
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
         program.absyn.accept(prettyPrinter);
     }
+
+    @Test
+    public void functionNoDef() {
+        Parser parser = new CupParser("let function a():int = 1 in b() end", new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+
+        program.absyn.accept(binder);
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
 
     @Test
     public void functionArgsDef() {

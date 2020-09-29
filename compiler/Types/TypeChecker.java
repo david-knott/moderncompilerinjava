@@ -66,7 +66,9 @@ public class TypeChecker extends DefaultVisitor {
     }
 
     private void checkTypes(Absyn loc, String synCat1, Typable first, String synCat2, Typable second) {
-
+       // if (!first.coerceTo(second)) {
+          //  this.errorMsg.error(loc.pos, "checkTypes error " + first + "!=" + second);
+       //S }
     }
 
     private Type getExpType() {
@@ -163,7 +165,7 @@ public class TypeChecker extends DefaultVisitor {
         exp.hi.accept(this);
         Type hiType = this.expType;
         this.checkTypes(exp, "", hiType, "", Constants.INT);
-        exp.var.accept(this);
+        exp.var.init.accept(this);
         Type varType = this.expType;
         this.readonlyVarDecs.add(exp.var);
         this.checkTypes(exp, "", varType, "", Constants.INT);
