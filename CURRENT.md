@@ -1,4 +1,13 @@
 # Diary
+## 30th September 2020 ##
+
+I have refactored the type checker and binder. The binder sets the AST definitions
+for calls, types and variables. Similarly the Type.Type is set on certain AST nodes.
+These are used in the TypeChecking phase. This will alll need to be unit tested.
+
+There is a bug in the renamer code. Perhaps I should wait until the type checker is done
+before fixing this.
+
 ## 23th September 2020 ##
 
 I am not happy with the Binder, TypeChecker and Renamer visitors. They are a bit messy.
