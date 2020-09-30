@@ -152,6 +152,7 @@ public class Binder extends DefaultVisitor {
             exp.setDef(def.exp);
         } else {
             this.errorMsg.error(exp.pos, "undeclared variable:" + exp.name);
+            this.visitedType = null;
         }
     }
 
@@ -168,6 +169,7 @@ public class Binder extends DefaultVisitor {
             super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undeclared function:" + exp.func);
+            this.visitedType = null;
         }
     }
 
@@ -205,6 +207,7 @@ public class Binder extends DefaultVisitor {
             super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
+            this.visitedType = null;
         }
     }
 
@@ -221,8 +224,8 @@ public class Binder extends DefaultVisitor {
             super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
+            this.visitedType = null;
         }
-        super.visit(exp);
     }
 
     /**
@@ -370,9 +373,10 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
             // set the type for binding.
             this.visitedType = def.type;
-            this.setType(exp, def.type);
+            this.setType(exp, this.visitedType);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.name);
+            this.visitedType = null;
         }
     }
 
@@ -391,6 +395,7 @@ public class Binder extends DefaultVisitor {
             this.setType(exp, this.visitedType);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
+            this.visitedType = null;
         }
     }
 
@@ -401,6 +406,7 @@ public class Binder extends DefaultVisitor {
             this.setType(exp, this.visitedType);
         }
     }
+
     /**
      * Visits a fieldlist, used for both function arguments and record definitions.
      */
@@ -412,11 +418,20 @@ public class Binder extends DefaultVisitor {
         do {
             temp = last;
             // type usage
+            expList.typ.accept(this);
+            // this.visitedType could be null if the type does not exist.
+            if(this.visitedType != null) {
+                this.setType(expList.typ, this.visitedType);
+                last = new RECORD(expList.name, this.visitedType, null);
+                if (first == null) {
+                    first = last;
+                } else {
+                    temp.tail = last;
+                }
+            }
+            /*
             if (this.typeSymbolTable.contains(expList.typ.name)) {
-                // note we dont visit the NameTy as it has already
-                // been processed in a TypeDec
                 SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ.name);
-                // expList.setDef(def.exp);
                 last = new RECORD(expList.name, def.type, null);
                 if (first == null) {
                     first = last;
@@ -425,7 +440,7 @@ public class Binder extends DefaultVisitor {
                 }
             } else {
                 this.errorMsg.error(expList.pos, "undefined type:" + expList.typ.name);
-            }
+            }*/
             expList = expList.tail;
         } while (expList != null);
         this.visitedType = first;

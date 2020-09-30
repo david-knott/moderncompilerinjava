@@ -113,7 +113,7 @@ public class TypeChecker extends DefaultVisitor {
         FunctionDec functionDec = (FunctionDec)exp.def;
         ExpList actuals = exp.args;
         FieldList formals = functionDec.params;
-        for (;;) {
+        while(actuals != null && formals != null) {
             // visit each actual parameter
             actuals.head.accept(this);
             Type actualType = this.getExpType();
@@ -121,18 +121,15 @@ public class TypeChecker extends DefaultVisitor {
             NameTy formalTypeExp = formals.typ;
             Type formalType = formalTypeExp.getType();
             this.checkTypes(actuals.head, "", actualType, "", formalType);
-            if(actuals.tail == null || formals.tail != null) {
-                break;
-            }
             actuals = actuals.tail;
             formals = formals.tail;
         }
-        if(actuals.tail != null) {
-            this.errorMsg.error(actuals.head.pos, "more actuals than expected");
+        if(actuals != null) {
+            this.errorMsg.error(actuals.head.pos, "more actuals than expected:" + actuals.head);
 
         }
-        if(formals.tail != null) {
-            this.errorMsg.error(exp.pos, "less actuals than expected");
+        if(formals != null) {
+            this.errorMsg.error(exp.pos, "less actuals than expected:" + formals.name);
         }
     }
 
