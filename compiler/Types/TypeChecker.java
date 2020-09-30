@@ -61,7 +61,8 @@ public class TypeChecker extends DefaultVisitor {
 
     private void checkTypes(Absyn loc, String synCat1, Type first, String synCat2, Type second) {
         if (!first.coerceTo(second)) {
-            this.errorMsg.error(loc.pos, "checkTypes error " + first + "!=" + second);
+            this.errorMsg.error(loc.pos,
+                    String.format("type mismatch\nright operand type:%s\nexpected type:%s", first, second));
         }
     }
 
@@ -139,14 +140,20 @@ public class TypeChecker extends DefaultVisitor {
     public void visit(IfExp exp) {
         exp.test.accept(this);
         Type testType = this.expType;
-        this.checkTypes(exp, "", testType, "", Constants.INT);
+        this.checkTypes(exp.test, "", testType, "", Constants.INT);
         exp.thenclause.accept(this);
         Type thenType = this.expType;
         if(exp.elseclause != null) {
             exp.elseclause.accept(this);
             Type elseType = this.expType;
-            this.checkTypes(exp, "", thenType, "", elseType);
+            this.checkTypes(exp.elseclause, "", thenType, "", elseType);
         }
+    }
+
+    @Override
+    public void visit(FieldList exp) {
+        this.expType = Constants.VOID;
+        super.visit(exp);
     }
 
     /**
@@ -156,6 +163,20 @@ public class TypeChecker extends DefaultVisitor {
     @Override
     public void visit(SimpleVar exp) {
         this.expType = exp.getType();
+    }
+
+    /**
+     * Ensures that the expType member is set to VOID
+     * If the ExpList is not null, this will be modified
+     * to the last item in the list. If the ExpList is null
+     * the expType member is have been unchanged and still
+     * referencing the VOID type. This ensures that expressions such
+     * as () are evaluated as VOID.
+     */
+    @Override
+    public void visit(SeqExp exp) {
+        this.expType = Constants.VOID;
+        super.visit(exp);
     }
 
     /**
@@ -207,13 +228,26 @@ public class TypeChecker extends DefaultVisitor {
         Type leftType = this.expType;
         exp.exp.accept(this);
         Type rightType = this.expType;
+        this.checkTypes(exp, "", rightType, "", leftType);
+        /*
         if (!leftType.coerceTo(rightType)) {
             this.errorMsg.error(exp.pos,
                     String.format("type mismatch\nright operand type:%s\nexpected type:%s", rightType, leftType));
-        }
+        }*/
         if (this.readonlyVarDecs.contains(exp.var.def)) {
             this.errorMsg.error(exp.pos, "variable is read only");
         }
+        this.expType = Constants.VOID;
+    }
+
+    @Override
+    public void visit(WhileExp exp) {
+        exp.test.accept(this);
+        Type testType = this.expType;
+        this.checkTypes(exp.test, "", testType, "", Constants.INT);
+        exp.body.accept(this);
+        Type bodyType = this.expType;
+        this.checkTypes(exp.body, "", bodyType, "", Constants.VOID);
     }
 
 

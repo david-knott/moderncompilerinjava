@@ -60,12 +60,10 @@ public class Binder extends DefaultVisitor {
 
     private void setType(Ty exp, Type type) {
         exp.setType(type);
-        System.out.println(exp + " -> " + type);
     }
 
     private void setType(Var exp, Type type) {
         exp.setType(type);
-        System.out.println(exp + " -> " + type);
     }
 
     private void setType(Exp exp, Type type) {
