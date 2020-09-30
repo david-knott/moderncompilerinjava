@@ -135,6 +135,20 @@ public class TypeChecker extends DefaultVisitor {
         }
     }
 
+    @Override
+    public void visit(IfExp exp) {
+        exp.test.accept(this);
+        Type testType = this.expType;
+        this.checkTypes(exp, "", testType, "", Constants.INT);
+        exp.thenclause.accept(this);
+        Type thenType = this.expType;
+        if(exp.elseclause != null) {
+            exp.elseclause.accept(this);
+            Type elseType = this.expType;
+            this.checkTypes(exp, "", thenType, "", elseType);
+        }
+    }
+
     /**
      * Type check implementation for simple var. This sets the current visited type
      * to its own type.
@@ -151,9 +165,7 @@ public class TypeChecker extends DefaultVisitor {
      */
     @Override
     public void visit(NameTy exp) {
-        if(exp.def != null) {
-            exp.def.accept(this);
-        }
+        this.expType = exp.getType();
     }
 
     /**
@@ -181,10 +193,7 @@ public class TypeChecker extends DefaultVisitor {
         Type leftType = this.expType;
         exp.right.accept(this);
         Type rightType = this.expType;
-        if (!leftType.coerceTo(rightType)) {
-            this.errorMsg.error(exp.pos,
-                    String.format("type mismatch\nright operand type:%s\nexpected type:%s", rightType, leftType));
-        }
+        this.checkTypes(exp, "", leftType, "", rightType);
     }
 
     /**

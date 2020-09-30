@@ -9,6 +9,7 @@ import Absyn.ArrayTy;
 import Absyn.BreakExp;
 import Absyn.CallExp;
 import Absyn.DefaultVisitor;
+import Absyn.Exp;
 import Absyn.ExpList;
 import Absyn.FieldList;
 import Absyn.ForExp;
@@ -22,8 +23,10 @@ import Absyn.RecordTy;
 import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.StringExp;
+import Absyn.Ty;
 import Absyn.Typable;
 import Absyn.TypeDec;
+import Absyn.Var;
 import Absyn.VarDec;
 import Absyn.WhileExp;
 import ErrorMsg.ErrorMsg;
@@ -54,6 +57,20 @@ public class Binder extends DefaultVisitor {
     private Type visitedType = null;
     private final Stack<Absyn> loops = new Stack<Absyn>();
     private final ErrorMsg errorMsg;
+
+    private void setType(Ty exp, Type type) {
+        exp.setType(type);
+        System.out.println(exp + " -> " + type);
+    }
+
+    private void setType(Var exp, Type type) {
+        exp.setType(type);
+        System.out.println(exp + " -> " + type);
+    }
+
+    private void setType(Exp exp, Type type) {
+        exp.setType(type);
+    }
 
     public Binder(ErrorMsg errorMsg) {
         this.errorMsg = errorMsg;
@@ -102,6 +119,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(IntExp exp) {
         this.visitedType = Constants.INT;
+        this.setType(exp, this.visitedType);
     }
 
     /**
@@ -110,6 +128,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(StringExp exp) {
         this.visitedType = Constants.STRING;
+        this.setType(exp, this.visitedType);
     }
 
     /**
@@ -118,6 +137,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(NilExp exp) {
         this.visitedType = Constants.NIL;
+        this.setType(exp, this.visitedType);
     }
 
     /**
@@ -129,6 +149,8 @@ public class Binder extends DefaultVisitor {
         if (this.varSymbolTable.contains(exp.name)) {
             SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
             this.visitedType = def.type;
+            this.setType(exp, this.visitedType);
+            exp.setType(def.type);
             exp.setDef(def.exp);
         } else {
             this.errorMsg.error(exp.pos, "undeclared variable:" + exp.name);
@@ -143,6 +165,7 @@ public class Binder extends DefaultVisitor {
         if (this.functionSymbolTable.contains(exp.func)) {
             SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
             exp.setDef(def.exp);
+            this.setType(exp, def.type);
             this.visitedType = def.type;
             super.visit(exp);
         } else {
@@ -157,18 +180,12 @@ public class Binder extends DefaultVisitor {
     public void visit(VarDec exp) {
         // if the variable type was specified.
         if (exp.typ != null) {
-            // check for the symbol in the type environment.
-            if (this.typeSymbolTable.contains(exp.typ.name)) {
-                SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ.name);
-                exp.typ.setDef(def.exp);
-            } else {
-                this.errorMsg.error(exp.pos, "undefined type:" + exp.typ.pos);
-            }
+            exp.typ.accept(this);
         }
         // visit the initializer for the var dec.
         exp.init.accept(this);
         Type initType = this.visitedType;
-        // variable definition
+        // check the variable is present in variable table.
         if (!this.varSymbolTable.contains(exp.name, false)) {
             this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
         } else {
@@ -185,7 +202,7 @@ public class Binder extends DefaultVisitor {
         if (this.typeSymbolTable.contains(exp.typ)) {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             exp.setDef(def.exp);
-            //set the visited type
+            this.setType(exp, def.type);
             this.visitedType = def.type;
             super.visit(exp);
         } else {
@@ -201,7 +218,7 @@ public class Binder extends DefaultVisitor {
         if (this.typeSymbolTable.contains(exp.typ)) {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             exp.setDef(def.exp);
-            // set the visited type
+            this.setType(exp, def.type);
             this.visitedType = def.type;
             super.visit(exp);
         } else {
@@ -355,6 +372,7 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
             // set the type for binding.
             this.visitedType = def.type;
+            this.setType(exp, def.type);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.name);
         }
@@ -372,11 +390,19 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             // set the type for binding
             this.visitedType = new ARRAY(def.type);
+            this.setType(exp, this.visitedType);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
         }
     }
 
+    @Override
+    public void visit(RecordTy exp) {
+        if(exp.fields != null) {
+            exp.fields.accept(this);
+            this.setType(exp, this.visitedType);
+        }
+    }
     /**
      * Visits a fieldlist, used for both function arguments and record definitions.
      */

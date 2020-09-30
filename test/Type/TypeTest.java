@@ -71,4 +71,32 @@ public class TypeTest {
         program.absyn.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
+
+    @Test
+    public void ifThenElseReturnType() {
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Parser parser = new CupParser("let in if (1) then 2 else \"string\" end",errorMsg);
+        Program program = parser.parse();
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void ifThenElseTestType() {
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Parser parser = new CupParser("let in if (\"string\") then 2 else 3 end",errorMsg);
+        Program program = parser.parse();
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
 }
