@@ -417,7 +417,6 @@ public class Binder extends DefaultVisitor {
         FieldList expList = exp;
         do {
             temp = last;
-            // type usage
             expList.typ.accept(this);
             // this.visitedType could be null if the type does not exist.
             if(this.visitedType != null) {
@@ -429,18 +428,6 @@ public class Binder extends DefaultVisitor {
                     temp.tail = last;
                 }
             }
-            /*
-            if (this.typeSymbolTable.contains(expList.typ.name)) {
-                SymbolTableElement def = this.typeSymbolTable.lookup(expList.typ.name);
-                last = new RECORD(expList.name, def.type, null);
-                if (first == null) {
-                    first = last;
-                } else {
-                    temp.tail = last;
-                }
-            } else {
-                this.errorMsg.error(expList.pos, "undefined type:" + expList.typ.name);
-            }*/
             expList = expList.tail;
         } while (expList != null);
         this.visitedType = first;
