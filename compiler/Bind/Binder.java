@@ -292,15 +292,15 @@ public class Binder extends DefaultVisitor {
             }
             RECORD paramType = null;
             if (functionDec.params != null) {
-                // call accept method on paraneter, which sets this.type
+                // call accept method on paraneter, which sets this.visitedType
                 functionDec.params.accept(this);
                 paramType = (RECORD) this.visitedType;
             }
             // function definition
             if (!this.functionSymbolTable.contains(functionDec.name, false)) {
                 FUNCTION functionType = new FUNCTION(paramType, returnType);
+                functionDec.setType(functionType);
                 this.functionSymbolTable.put(functionDec.name, new SymbolTableElement(functionType, functionDec));
-                // set the function type
             } else {
                 this.errorMsg.error(exp.pos, "redefinition:" + functionDec.name);
             }
@@ -402,6 +402,7 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(RecordTy exp) {
         if(exp.fields != null) {
+            // the field accept call sets visited type
             exp.fields.accept(this);
             this.setType(exp, this.visitedType);
         }

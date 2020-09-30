@@ -62,7 +62,8 @@ public class TypeChecker extends DefaultVisitor {
     private void checkTypes(Absyn loc, String synCat1, Type first, String synCat2, Type second) {
         if (!first.coerceTo(second)) {
             this.errorMsg.error(loc.pos,
-                    String.format("type mismatch\nright operand type:%s\nexpected type:%s", first, second));
+                    //String.format("type mismatch\nright operand type:%s\nexpected type:%s", first, second));
+                    String.format("type mismatch\n%s:%s\n%s:%s", synCat1, first, synCat2, second));
         }
     }
 
@@ -120,7 +121,7 @@ public class TypeChecker extends DefaultVisitor {
             // get the type of the formal from its types def.
             NameTy formalTypeExp = formals.typ;
             Type formalType = formalTypeExp.getType();
-            this.checkTypes(actuals.head, "", actualType, "", formalType);
+            this.checkTypes(actuals.head, "supplied arg type", actualType, "expected arg type", formalType);
             actuals = actuals.tail;
             formals = formals.tail;
         }
@@ -194,11 +195,11 @@ public class TypeChecker extends DefaultVisitor {
     public void visit(ForExp exp) {
         exp.hi.accept(this);
         Type hiType = this.expType;
-        this.checkTypes(exp, "", hiType, "", Constants.INT);
+        this.checkTypes(exp, "for hi type", hiType, "expected type", Constants.INT);
         exp.var.init.accept(this);
         Type varType = this.expType;
         this.readonlyVarDecs.add(exp.var);
-        this.checkTypes(exp, "", varType, "", Constants.INT);
+        this.checkTypes(exp, "for var type", varType, "expected type", Constants.INT);
         exp.body.accept(this);
     }
 
@@ -211,7 +212,7 @@ public class TypeChecker extends DefaultVisitor {
         Type leftType = this.expType;
         exp.right.accept(this);
         Type rightType = this.expType;
-        this.checkTypes(exp, "", leftType, "", rightType);
+        this.checkTypes(exp, "left type", leftType, "right type", rightType);
     }
 
     /**
@@ -225,14 +226,9 @@ public class TypeChecker extends DefaultVisitor {
         Type leftType = this.expType;
         exp.exp.accept(this);
         Type rightType = this.expType;
-        this.checkTypes(exp, "", rightType, "", leftType);
-        /*
-        if (!leftType.coerceTo(rightType)) {
-            this.errorMsg.error(exp.pos,
-                    String.format("type mismatch\nright operand type:%s\nexpected type:%s", rightType, leftType));
-        }*/
+        this.checkTypes(exp, "right operand type", rightType, "expected type", leftType);
         if (this.readonlyVarDecs.contains(exp.var.def)) {
-            this.errorMsg.error(exp.pos, "variable is read only");
+            this.errorMsg.error(exp.pos, "variable " + exp.var.def + " is read only");
         }
         this.expType = Constants.VOID;
     }
@@ -241,10 +237,10 @@ public class TypeChecker extends DefaultVisitor {
     public void visit(WhileExp exp) {
         exp.test.accept(this);
         Type testType = this.expType;
-        this.checkTypes(exp.test, "", testType, "", Constants.INT);
+        this.checkTypes(exp.test, "while test type", testType, "expected type", Constants.INT);
         exp.body.accept(this);
         Type bodyType = this.expType;
-        this.checkTypes(exp.body, "", bodyType, "", Constants.VOID);
+        this.checkTypes(exp.body, "while body type", bodyType, "expected type", Constants.VOID);
     }
 
 

@@ -228,6 +228,20 @@ public class TypeTest {
     }
 
     @Test
+    public void functionInvalidArgType() {
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Parser parser = new CupParser("let function a(a:int, b:int) = () in a(1, \"string\") end",errorMsg);
+        Program program = parser.parse();
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+    @Test
     public void functionMissingArgs() {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
