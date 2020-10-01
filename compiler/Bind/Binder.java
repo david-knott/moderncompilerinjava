@@ -147,9 +147,8 @@ public class Binder extends DefaultVisitor {
         if (this.varSymbolTable.contains(exp.name)) {
             SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
             this.visitedType = def.type;
-            this.setType(exp, this.visitedType);
-            exp.setType(def.type);
             exp.setDef(def.exp);
+            this.setType(exp, this.visitedType);
         } else {
             this.errorMsg.error(exp.pos, "undeclared variable:" + exp.name);
             this.visitedType = null;
@@ -199,12 +198,12 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(ArrayExp exp) {
+        super.visit(exp);
         if (this.typeSymbolTable.contains(exp.typ)) {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             exp.setDef(def.exp);
             this.setType(exp, def.type);
             this.visitedType = def.type;
-            super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
             this.visitedType = null;
@@ -216,12 +215,12 @@ public class Binder extends DefaultVisitor {
      */
     @Override
     public void visit(RecordExp exp) {
+        super.visit(exp);
         if (this.typeSymbolTable.contains(exp.typ)) {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.typ);
             exp.setDef(def.exp);
             this.setType(exp, def.type);
             this.visitedType = def.type;
-            super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undefined type:" + exp.typ);
             this.visitedType = null;

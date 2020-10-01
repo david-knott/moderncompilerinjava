@@ -149,9 +149,42 @@ public class TypeChecker extends DefaultVisitor {
     }
 
     @Override
+    public void visit(ArrayExp exp) {
+        this.expType = exp.getType();
+        exp.init.accept(this);
+        Type initType = this.expType;
+        TypeDec def = (TypeDec)exp.def;
+        ARRAY arrayType = (ARRAY)def.ty.getType(); 
+        this.checkTypes(exp, "array initialiser", initType, "expected type", arrayType.element);
+        exp.size.accept(this);
+        Type sizeType = this.expType;
+        this.checkTypes(exp, "array size", sizeType, "expected type", Constants.INT);
+        this.expType = exp.getType();
+    }
+
+    @Override
+    public void visit(RecordExp exp) {
+        this.expType = exp.getType();
+        //process the fields.
+        exp.fields.accept(this);
+    }
+    
+    @Override
+    public void visit(FieldExpList exp) {
+        RECORD record = (RECORD)this.expType.actual();
+        while(record != null && exp != null) {
+            exp.init.accept(this);
+            Type fieldType = this.expType;
+            this.checkTypes(exp, "", record.fieldType, "", fieldType);
+            record = record.tail;
+            exp = exp.tail;
+        }
+    }
+
+    @Override
     public void visit(FieldList exp) {
-        this.expType = Constants.VOID;
         super.visit(exp);
+        this.expType = Constants.VOID;
     }
 
     /**
@@ -254,6 +287,7 @@ public class TypeChecker extends DefaultVisitor {
     public void visit(VarDec exp) {
         // visit initializer.
         exp.init.accept(this);
+        // expect that the initizer type is set here ( either int, string, namety, recordty, arrayty)
         Type initType = this.expType;
         // visit the type if defined.
         if (exp.typ != null) {

@@ -217,7 +217,7 @@ public class TypeTest {
     public void whileOk2() {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
-        Parser parser = new CupParser("let var r:int := 0 in while (1) do () end",errorMsg);
+        Parser parser = new CupParser("let  in while (1) do () end",errorMsg);
         Program program = parser.parse();
         Binder binder = new Binder(errorMsg);
         program.absyn.accept(binder);
@@ -270,7 +270,114 @@ public class TypeTest {
     }
 
 
+    @Test
+    public void recAssignToInt() {
+        Parser parser = new CupParser("let type rec = { a : int} var r := rec { a = 42} in r := 1 end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
 
+    @Test
+    public void recAssignField() {
+        Parser parser = new CupParser("let type rec = { a : string} var r := rec { a = 42} in r := nil end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+
+    @Test
+    public void recAssignToNil() {
+        Parser parser = new CupParser("let type rec = { a : int} var r := rec { a = 42} in r := nil end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void arraySizeString() {
+        Parser parser = new CupParser("let type iat = array of int var a:iat := iat[\"\"] of 0 in end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void arrayInitialiserInt() {
+        Parser parser = new CupParser("let type iat = array of string var a:iat := iat[0] of 1 in end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+
+    @Test
+    public void arrayInitialiserString() {
+        Parser parser = new CupParser("let type iat = array of int var a:iat := iat[0] of \"string\" in end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+
+
+    @Test
+    public void arrayAssignToIn() {
+        Parser parser = new CupParser("let type iat = array of int var a:iat := iat[10] of 0 in end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
 
 
 }
