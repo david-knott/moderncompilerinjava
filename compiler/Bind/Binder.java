@@ -6,6 +6,7 @@ import java.util.Stack;
 import Absyn.Absyn;
 import Absyn.ArrayExp;
 import Absyn.ArrayTy;
+import Absyn.AssignExp;
 import Absyn.BreakExp;
 import Absyn.CallExp;
 import Absyn.DefaultVisitor;
@@ -109,6 +110,12 @@ public class Binder extends DefaultVisitor {
         this.functionSymbolTable.endScope();
         this.varSymbolTable.endScope();
         this.typeSymbolTable.endScope();
+    }
+
+    @Override
+    public void visit(AssignExp exp) {
+        super.visit(exp);
+        this.visitedType = Constants.VOID;
     }
 
     /**
@@ -431,5 +438,14 @@ public class Binder extends DefaultVisitor {
             expList = expList.tail;
         } while (expList != null);
         this.visitedType = first;
+    }
+
+    @Override
+    public void visit(SeqExp exp) {
+        if(exp.list == null) {
+            this.visitedType = Constants.VOID;
+        } else {
+            exp.list.accept(this);
+        }
     }
 }

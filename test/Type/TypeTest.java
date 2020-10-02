@@ -300,7 +300,6 @@ public class TypeTest {
         assertTrue(errorMsg.anyErrors);
     }
 
-
     @Test
     public void recAssignToNil() {
         Parser parser = new CupParser("let type rec = { a : int} var r := rec { a = 42} in r := nil end",
@@ -346,7 +345,6 @@ public class TypeTest {
         assertTrue(errorMsg.anyErrors);
     }
 
-
     @Test
     public void arrayInitialiserString() {
         Parser parser = new CupParser("let type iat = array of int var a:iat := iat[0] of \"string\" in end",
@@ -362,10 +360,23 @@ public class TypeTest {
         assertTrue(errorMsg.anyErrors);
     }
 
-
+    @Test
+    public void arrayAssignToInt() {
+        Parser parser = new CupParser("let type iat = array of int var a:iat := iat[10] of 0 in a := 1 end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
 
     @Test
-    public void arrayAssignToIn() {
+    public void arrayOk() {
         Parser parser = new CupParser("let type iat = array of int var a:iat := iat[10] of 0 in end",
                 new ErrorMsg("", System.out));
         Program program = parser.parse();
@@ -378,6 +389,70 @@ public class TypeTest {
         program.absyn.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
+
+    @Test
+    public void desugarStringEquality() {
+        Parser parser = new CupParser("\"foo\" = \"bar\"",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void desugarStringLess() {
+        Parser parser = new CupParser("\"foo\" < \"bar\"",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void desugarFor() {
+        Parser parser = new CupParser("for i := 0 to 10 do print_int(i)",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void voidTest() {
+        Parser parser = new CupParser("let var void1 := () var void2 := () var void3 := () in void1 :=  void2 := void3 := () end",
+                new ErrorMsg("", System.out));
+        Program program = parser.parse();
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
+
+
+
+
 
 
 }

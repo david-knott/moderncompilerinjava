@@ -62,15 +62,8 @@ public class TypeChecker extends DefaultVisitor {
     private void checkTypes(Absyn loc, String synCat1, Type first, String synCat2, Type second) {
         if (!first.coerceTo(second)) {
             this.errorMsg.error(loc.pos,
-                    //String.format("type mismatch\nright operand type:%s\nexpected type:%s", first, second));
-                    String.format("type mismatch\n%s:%s\n%s:%s", synCat1, first, synCat2, second));
+                    String.format("type mismatch\n%s:%s\n%s:%s", synCat1, first.actual(), synCat2, second.actual()));
         }
-    }
-
-    private void checkTypes(Absyn loc, String synCat1, Typable first, String synCat2, Typable second) {
-       // if (!first.coerceTo(second)) {
-          //  this.errorMsg.error(loc.pos, "checkTypes error " + first + "!=" + second);
-       //S }
     }
 
     private Type getExpType() {
@@ -111,17 +104,15 @@ public class TypeChecker extends DefaultVisitor {
      */
     @Override
     public void visit(CallExp exp) {
-        FunctionDec functionDec = (FunctionDec)exp.def;
+        FUNCTION function = (FUNCTION)exp.getType();
         ExpList actuals = exp.args;
-        FieldList formals = functionDec.params;
+        RECORD formals = function.formals;
         while(actuals != null && formals != null) {
             // visit each actual parameter
             actuals.head.accept(this);
             Type actualType = this.getExpType();
             // get the type of the formal from its types def.
-            NameTy formalTypeExp = formals.typ;
-            Type formalType = formalTypeExp.getType();
-            this.checkTypes(actuals.head, "supplied arg type", actualType, "expected arg type", formalType);
+            this.checkTypes(actuals.head, "supplied arg type", actualType, "expected arg type", formals.fieldType);
             actuals = actuals.tail;
             formals = formals.tail;
         }
@@ -130,7 +121,7 @@ public class TypeChecker extends DefaultVisitor {
 
         }
         if(formals != null) {
-            this.errorMsg.error(exp.pos, "less actuals than expected:" + formals.name);
+            this.errorMsg.error(exp.pos, "less actuals than expected:" + formals.fieldName);
         }
     }
 
@@ -144,6 +135,7 @@ public class TypeChecker extends DefaultVisitor {
         if(exp.elseclause != null) {
             exp.elseclause.accept(this);
             Type elseType = this.expType;
+            //todo check no nil.
             this.checkTypes(exp.elseclause, "", thenType, "", elseType);
         }
     }
@@ -165,8 +157,8 @@ public class TypeChecker extends DefaultVisitor {
     @Override
     public void visit(RecordExp exp) {
         this.expType = exp.getType();
-        //process the fields.
         exp.fields.accept(this);
+        this.expType = exp.getType();
     }
     
     @Override
@@ -175,7 +167,7 @@ public class TypeChecker extends DefaultVisitor {
         while(record != null && exp != null) {
             exp.init.accept(this);
             Type fieldType = this.expType;
-            this.checkTypes(exp, "", record.fieldType, "", fieldType);
+            this.checkTypes(exp, "expected field type", record.fieldType, "supplied field type", fieldType);
             record = record.tail;
             exp = exp.tail;
         }
@@ -274,6 +266,7 @@ public class TypeChecker extends DefaultVisitor {
         exp.body.accept(this);
         Type bodyType = this.expType;
         this.checkTypes(exp.body, "while body type", bodyType, "expected type", Constants.VOID);
+        this.expType = Constants.VOID;
     }
 
 
@@ -295,6 +288,7 @@ public class TypeChecker extends DefaultVisitor {
             Type declaredType = this.expType;
             this.checkTypes(exp, "", declaredType, "", initType);
         }
+        this.expType = Constants.VOID;
     }
 
     @Override
