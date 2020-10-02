@@ -118,11 +118,11 @@ public class TypeChecker extends DefaultVisitor {
         }
         if(actuals != null) {
             this.errorMsg.error(actuals.head.pos, "more actuals than expected:" + actuals.head);
-
         }
         if(formals != null) {
             this.errorMsg.error(exp.pos, "less actuals than expected:" + formals.fieldName);
         }
+        this.expType = function.result;
     }
 
     @Override
@@ -137,6 +137,9 @@ public class TypeChecker extends DefaultVisitor {
             Type elseType = this.expType;
             //todo check no nil.
             this.checkTypes(exp.elseclause, "", thenType, "", elseType);
+            this.expType = elseType;
+        } else {
+            this.expType = Constants.VOID;
         }
     }
 
@@ -171,8 +174,14 @@ public class TypeChecker extends DefaultVisitor {
             record = record.tail;
             exp = exp.tail;
         }
+        this.expType = Constants.VOID;
     }
 
+    /**
+     * Visit a FieldList expression, visit using the 
+     * super class implementation. The final return type 
+     * is void.
+     */
     @Override
     public void visit(FieldList exp) {
         super.visit(exp);
@@ -200,6 +209,7 @@ public class TypeChecker extends DefaultVisitor {
     public void visit(SeqExp exp) {
         this.expType = Constants.VOID;
         super.visit(exp);
+        //this.expTyp is set to the last visited item in exp.
     }
 
     /**
@@ -258,6 +268,9 @@ public class TypeChecker extends DefaultVisitor {
         this.expType = Constants.VOID;
     }
 
+    /**
+     * Type check a WhileExp. Ensures the body returns void and the test is an int.
+     */
     @Override
     public void visit(WhileExp exp) {
         exp.test.accept(this);
@@ -291,13 +304,16 @@ public class TypeChecker extends DefaultVisitor {
         this.expType = Constants.VOID;
     }
 
+    /**
+     * Visit a type declaration, set the type.
+     */
     @Override
     public void visit(TypeDec exp) {
         this.expType = exp.getType();
     }
 
     /**
-     * 
+     * Visit a function declaration, set the type. 
      */
     @Override
     public void visit(FunctionDec exp) {
