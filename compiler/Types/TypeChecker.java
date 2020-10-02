@@ -136,7 +136,7 @@ public class TypeChecker extends DefaultVisitor {
             exp.elseclause.accept(this);
             Type elseType = this.expType;
             //todo check no nil.
-            this.checkTypes(exp.elseclause, "", thenType, "", elseType);
+            this.checkTypes(exp.elseclause, "then", thenType, "else", elseType);
             this.expType = elseType;
         } else {
             this.expType = Constants.VOID;
@@ -299,7 +299,7 @@ public class TypeChecker extends DefaultVisitor {
         if (exp.typ != null) {
             exp.typ.accept(this);
             Type declaredType = this.expType;
-            this.checkTypes(exp, "", declaredType, "", initType);
+            this.checkTypes(exp, "declared", declaredType, "actual", initType);
         }
         this.expType = Constants.VOID;
     }

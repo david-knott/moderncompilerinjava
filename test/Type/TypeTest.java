@@ -74,6 +74,64 @@ public class TypeTest {
     }
 
     @Test
+    public void binopAssignIntToString() {
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Parser parser = new CupParser("let var a:string := 1 + 2 in end",errorMsg);
+        Program program = parser.parse();
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void binopAssignIntOk() {
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Parser parser = new CupParser("let var a:int := 1 + 2 in end",errorMsg);
+        Program program = parser.parse();
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void binopAssignStringToInt() {
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Parser parser = new CupParser("let var a:int := \"one\" + \"two\" in end",errorMsg);
+        Program program = parser.parse();
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        program.absyn.accept(prettyPrinter);
+        assertTrue(errorMsg.anyErrors);
+    }
+
+    @Test
+    public void binopAssignStringOk() {
+        PrintStream outputStream = System.out;
+        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
+        Parser parser = new CupParser("let var a:string := \"one\" + \"two\" in end",errorMsg);
+        Program program = parser.parse();
+        Binder binder = new Binder(errorMsg);
+        program.absyn.accept(binder);
+        program.absyn.accept(new TypeChecker(errorMsg));
+        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
+        program.absyn.accept(prettyPrinter);
+        assertFalse(errorMsg.anyErrors);
+    }
+
+
+
+    @Test
     public void ifThenElseOk() {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
