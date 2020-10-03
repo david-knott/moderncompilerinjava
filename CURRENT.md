@@ -1,4 +1,8 @@
 # Diary
+
+## 3rd October 2020 ##
+Added type visitor.
+
 ## 30th September 2020 ##
 
 I have refactored the type checker and binder. The binder sets the AST definitions

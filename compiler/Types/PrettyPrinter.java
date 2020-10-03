@@ -43,8 +43,9 @@ public class PrettyPrinter implements GenVisitor {
 
     @Override
     public void visit(ARRAY tarray) {
-        // TODO Auto-generated method stub
-
+        this.out.print("array=(");
+        tarray.element.accept(this);
+        this.out.print(")");
     }
 
     @Override

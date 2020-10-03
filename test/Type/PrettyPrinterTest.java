@@ -13,6 +13,7 @@ import Parse.CupParser;
 import Parse.Parser;
 import Parse.Program;
 import Symbol.Symbol;
+import Types.ARRAY;
 import Types.Constants;
 import Types.INT;
 import Types.PrettyPrinter;
@@ -42,4 +43,31 @@ public class PrettyPrinterTest {
         RECORD record = new RECORD(Symbol.symbol("sfield"), tstring, new RECORD(Symbol.symbol("ifield"), tint, null));
         record.accept(new PrettyPrinter(System.out));
     }
+
+    @Test
+    public void arrayprinter() {
+        STRING tstring = Constants.STRING;
+        ARRAY tarray = new ARRAY(tstring);
+        tarray.accept(new PrettyPrinter(System.out));
+    }
+
+    @Test
+    public void nestedrecordprinter() {
+        STRING tstring = Constants.STRING;
+        ARRAY tarray = new ARRAY(tstring);
+        INT tint = Constants.INT;
+        RECORD record = new RECORD(Symbol.symbol("sfield"), tarray, new RECORD(Symbol.symbol("ifield"), tint, null));
+        record.accept(new PrettyPrinter(System.out));
+    }
+
+    @Test
+    public void nestedarrayprinter() {
+        STRING tstring = Constants.STRING;
+        INT tint = Constants.INT;
+        RECORD record = new RECORD(Symbol.symbol("sfield"), tstring, new RECORD(Symbol.symbol("ifield"), tint, null));
+        ARRAY tarray = new ARRAY(record);
+        tarray.accept(new PrettyPrinter(System.out));
+    }
+
+
 }
