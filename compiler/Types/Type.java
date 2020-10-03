@@ -8,4 +8,7 @@ public abstract class Type {
    public boolean coerceTo(Type t) {
       return false;
    }
+
+   public abstract void accept(GenVisitor genVisitor);
+
 }

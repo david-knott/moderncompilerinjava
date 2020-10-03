@@ -13,4 +13,8 @@ public class INT extends Type {
 	public String toString() {
 		return NAME;
 	}
+
+	public void accept(GenVisitor genVisitor) {
+		genVisitor.visit(this);
+	}
 }

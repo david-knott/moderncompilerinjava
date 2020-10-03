@@ -10,9 +10,13 @@ public class FUNCTION extends Type {
 	public FUNCTION(RECORD formals, Type result) {
 		this.formals = formals;
 		this.result = result;
-    }
-    
-    public boolean coerceTo(Type t) {
+	}
+
+	public boolean coerceTo(Type t) {
 		return (t.actual() instanceof FUNCTION);
+	}
+
+	public void accept(GenVisitor genVisitor) {
+		genVisitor.visit(this);
 	}
 }

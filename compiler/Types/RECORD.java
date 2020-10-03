@@ -33,4 +33,8 @@ public class RECORD extends Type {
          throw new IllegalArgumentException("Type t cannot be null");
       return this == t.actual();
    }
+
+   public void accept(GenVisitor genVisitor) {
+      genVisitor.visit(this);
+   }
 }

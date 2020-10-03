@@ -11,7 +11,7 @@ import Symbol.Symbol;
  * https://www.lrde.epita.fr/~tiger/assignments.split/TC_002d2-Pretty_002dPrinting-Samples.html#TC_002d2-Pretty_002dPrinting-Samples
  */
 public class PrettyPrinter implements AbsynVisitor {
-    private PrintStream out;
+    private final PrintStream out;
     private boolean spaces = true;
     private final int indentation = 4;
     private int currentIndentation = 0;

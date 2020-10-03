@@ -3,6 +3,7 @@ package Types;
 public class NIL extends Type {
 
 	private static String NAME = "nil";
+
 	public NIL() {
 	}
 
@@ -13,5 +14,9 @@ public class NIL extends Type {
 
 	public String toString() {
 		return NAME;
+	}
+
+	public void accept(GenVisitor genVisitor) {
+		genVisitor.visit(this);
 	}
 }
