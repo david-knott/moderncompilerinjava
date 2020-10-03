@@ -16,6 +16,7 @@ import Symbol.Symbol;
 import Types.ARRAY;
 import Types.Constants;
 import Types.INT;
+import Types.NAME;
 import Types.PrettyPrinter;
 import Types.RECORD;
 import Types.STRING;
@@ -36,6 +37,14 @@ public class PrettyPrinterTest {
         tstring.accept(new PrettyPrinter(System.out));
     }
      
+    @Test
+    public void nameprinter() {
+        INT tint = Constants.INT;
+        NAME tname = new NAME(Symbol.symbol("tname"));
+        tname.bind(tint);
+        tname.accept(new PrettyPrinter(System.out));
+    }
+
     @Test
     public void recordprinter() {
         STRING tstring = Constants.STRING;
@@ -69,5 +78,13 @@ public class PrettyPrinterTest {
         tarray.accept(new PrettyPrinter(System.out));
     }
 
-
+    @Test
+    public void nestednameprinter() {
+        STRING tstring = Constants.STRING;
+        INT tint = Constants.INT;
+        RECORD record = new RECORD(Symbol.symbol("sfield"), tstring, new RECORD(Symbol.symbol("ifield"), tint, null));
+        NAME tname = new NAME(Symbol.symbol("tname"));
+        tname.bind(record);
+        tname.accept(new PrettyPrinter(System.out));
+    }
 }

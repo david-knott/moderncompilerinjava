@@ -39,6 +39,9 @@ public class PrettyPrinter implements GenVisitor {
     @Override
     public void visit(NAME tname) {
         out.print(tname.name);
+        out.print("=(");
+        tname.actual().accept(this);
+        out.print(")");
     }
 
     @Override
