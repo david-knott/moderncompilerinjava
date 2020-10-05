@@ -26,4 +26,8 @@ public class Assert {
         if (iterations > mAX_ITERATIONS)
             throw new Error("Exceeded max");
     }
+
+	public static void unreachable() {
+        throw new Error("unreachable");
+	}
 }

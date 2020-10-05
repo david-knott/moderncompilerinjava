@@ -1,0 +1,330 @@
+package Cloner;
+
+import Absyn.AbsynVisitor;
+import Absyn.ArrayExp;
+import Absyn.ArrayTy;
+import Absyn.AssignExp;
+import Absyn.BreakExp;
+import Absyn.CallExp;
+import Absyn.Dec;
+import Absyn.DecList;
+import Absyn.Exp;
+import Absyn.ExpList;
+import Absyn.FieldExpList;
+import Absyn.FieldList;
+import Absyn.FieldVar;
+import Absyn.ForExp;
+import Absyn.FunctionDec;
+import Absyn.IfExp;
+import Absyn.IntExp;
+import Absyn.LetExp;
+import Absyn.NameTy;
+import Absyn.NilExp;
+import Absyn.OpExp;
+import Absyn.RecordExp;
+import Absyn.RecordTy;
+import Absyn.SeqExp;
+import Absyn.SimpleVar;
+import Absyn.StringExp;
+import Absyn.SubscriptVar;
+import Absyn.Ty;
+import Absyn.TypeDec;
+import Absyn.Var;
+import Absyn.VarDec;
+import Absyn.VarExp;
+import Absyn.WhileExp;
+import Util.Assert;
+
+/**
+ * Creates a copy of the original AST without bindings or 
+ * Type information.
+ */
+public class AbsynCloner implements AbsynVisitor {
+
+    Exp visitedExp;
+    private Ty visitedTy;
+    private Var visitedVar;
+    private Dec visitedDec;
+
+    @Override
+    public void visit(ArrayExp exp) {
+        exp.size.accept(this);
+        Exp sizeExp = this.visitedExp;
+        exp.init.accept(this);
+        Exp initExp = this.visitedExp;
+        this.visitedExp = new ArrayExp(exp.pos, exp.typ, sizeExp, initExp);
+    }
+
+    @Override
+    public void visit(ArrayTy exp) {
+        this.visitedTy = new ArrayTy(exp.pos, exp.typ);
+    }
+
+    @Override
+    public void visit(AssignExp exp) {
+        exp.exp.accept(this);
+        Exp expExp = this.visitedExp;
+        exp.var.accept(this);
+        Var varVar = this.visitedVar; 
+        this.visitedExp = new AssignExp(exp.pos, varVar, expExp);
+    }
+
+    @Override
+    public void visit(BreakExp exp) {
+        this.visitedExp = new BreakExp(exp.pos);
+    }
+
+    @Override
+    public void visit(CallExp exp) {
+        ExpList cexpList = null, last = null, temp = null;
+        for(ExpList expList = exp.args; expList != null; expList = expList.tail) {
+            if(cexpList == null) {
+                cexpList = last = new ExpList(expList.head, null);
+            } else {
+                temp = last;
+                last = new ExpList(expList.head, null);
+                temp.tail = last;
+            }
+        }
+        this.visitedExp = new CallExp(exp.pos, exp.func, cexpList);
+    }
+
+    @Override
+    public void visit(DecList exp) {
+        Assert.unreachable();
+    }
+
+    @Override
+    public void visit(ExpList exp) {
+        Assert.unreachable();
+    }
+
+    @Override
+    public void visit(FieldExpList exp) {
+        Assert.unreachable();
+    }
+
+    @Override
+    public void visit(FieldList exp) {
+        Assert.unreachable();
+    }
+
+    @Override
+    public void visit(FieldVar exp) {
+        exp.var.accept(this);
+        Var clonedVar = this.visitedVar;
+        this.visitedVar = new FieldVar(exp.pos, clonedVar, exp.field);
+    }
+
+    @Override
+    public void visit(ForExp exp) {
+        exp.var.accept(this);
+        VarDec clonedVarDec = (VarDec)this.visitedDec;
+        exp.hi.accept(this);
+        Exp clonedHiExp = this.visitedExp;
+        exp.body.accept(this);
+        Exp clonedBodyExp = this.visitedExp;
+        this.visitedExp = new ForExp(exp.pos, clonedVarDec, clonedHiExp, clonedBodyExp);
+    }
+
+    @Override
+    public void visit(FunctionDec exp) {
+        FunctionDec clonedFunctionDec = null, temp = null, first = null;
+        for(;exp != null; exp = exp.next) {
+            exp.body.accept(this);
+            Exp clonedBody = this.visitedExp;
+            FieldList clonedFieldList = null, temp1 = null, first1 = null;
+            for(FieldList fieldList = exp.params; fieldList != null; fieldList = fieldList.tail) {
+                fieldList.typ.accept(this);
+                NameTy clonedFieldListType = (NameTy)this.visitedTy;
+                if(first1 == null) {
+                    first1 = clonedFieldList = new FieldList(fieldList.pos, fieldList.name, clonedFieldListType, null);
+                } else {
+                    temp1 = clonedFieldList;
+                    clonedFieldList = new FieldList(fieldList.pos, fieldList.name, clonedFieldListType, null);
+                    temp1.tail = clonedFieldList;
+                }
+            }
+            exp.result.accept(this);
+            NameTy clonedReturnType = null;
+            if (first == null) {
+                first = clonedFunctionDec = new FunctionDec(exp.pos, exp.name, clonedFieldList, clonedReturnType, clonedBody, null);
+            } else {
+                temp = clonedFunctionDec;
+                clonedFunctionDec = new FunctionDec(exp.pos, exp.name, clonedFieldList, clonedReturnType, clonedBody, null);
+                temp.next = clonedFunctionDec;
+            }
+        }
+        this.visitedDec = first;
+    }
+
+    @Override
+    public void visit(IfExp exp) {
+        exp.test.accept(this);
+        Exp clonedTest = this.visitedExp;
+        exp.thenclause.accept(this);
+        Exp clonedThen = this.visitedExp;
+        Exp clonedElse = null;
+        if(exp.elseclause != null) {
+            exp.elseclause.accept(this);
+            clonedElse = this.visitedExp;
+        }
+        this.visitedExp = new IfExp(exp.pos, clonedTest, clonedThen, clonedElse);
+    }
+
+    @Override
+    public void visit(IntExp exp) {
+        this.visitedExp = new IntExp(exp.pos, exp.value);
+    }
+
+    @Override
+    public void visit(LetExp exp) {
+        DecList clonedDecList = null, first = null, temp = null;
+        if(exp.decs != null) {
+            for(DecList decList = exp.decs; decList != null; decList = decList.tail) {
+                decList.head.accept(this);
+                Dec clonedDec = this.visitedDec;
+                if(first == null) {
+                    first = clonedDecList = new DecList(clonedDec, null);
+                } else {
+                    temp = clonedDecList;
+                    clonedDecList = new DecList(clonedDec, null);
+                    temp.tail = clonedDecList;
+                }
+            }
+        }
+        Exp clonedBody = null;
+        if(exp.body != null) {
+            exp.body.accept(this);
+            clonedBody = this.visitedExp;
+        }
+        this.visitedExp = new LetExp(exp.pos, first, clonedBody);
+    }
+
+    @Override
+    public void visit(NameTy exp) {
+        this.visitedTy = new NameTy(exp.pos, exp.name);
+    }
+
+    @Override
+    public void visit(NilExp exp) {
+        this.visitedExp = new NilExp(exp.pos);
+    }
+
+    @Override
+    public void visit(OpExp exp) {
+        exp.left.accept(this);
+        Exp clonedLeft = this.visitedExp;
+        exp.right.accept(this);
+        Exp clonedRight = this.visitedExp;
+        this.visitedExp = new OpExp(exp.pos, clonedLeft, exp.oper, clonedRight);
+    }
+
+    @Override
+    public void visit(RecordExp exp) {
+        FieldExpList clonedFieldExpList = null;
+        this.visitedExp = new RecordExp(exp.pos, exp.typ, clonedFieldExpList);
+    }
+
+    @Override
+    public void visit(RecordTy exp) {
+        FieldList clonedFields = null, first = null, temp = null;
+        for(FieldList fieldList = exp.fields; fieldList != null; fieldList = fieldList.tail) {
+            fieldList.typ.accept(this);
+            NameTy clonedNameTy = (NameTy)this.visitedTy;
+            if(first == null) {
+                clonedFields = first = new FieldList(fieldList.pos, fieldList.name, clonedNameTy, null);
+            } else {
+                temp = clonedFields;
+                clonedFields = new FieldList(fieldList.pos, fieldList.name, clonedNameTy, null);
+                temp.tail = clonedFields;
+            }
+        }
+        this.visitedTy = new RecordTy(exp.pos, first);
+    }
+
+    @Override
+    public void visit(SeqExp exp) {
+        ExpList clonedExpList = null, first = null, temp = null;
+        if(exp.list != null) {
+            for(ExpList expList = exp.list; expList != null; expList = expList.tail) {
+                expList.head.accept(this);
+                Exp clonedHead = this.visitedExp;
+                if(first == null) {
+                    first = clonedExpList = new ExpList(clonedHead, null);
+                } else {
+                    temp = clonedExpList;
+                    clonedExpList = new ExpList(clonedHead, null);
+                    temp.tail = clonedExpList;
+                }
+            }
+        }
+        this.visitedExp = new SeqExp(exp.pos, first);
+
+    }
+
+    @Override
+    public void visit(SimpleVar exp) {
+        this.visitedVar = new SimpleVar(exp.pos, exp.name);
+    }
+
+    @Override
+    public void visit(StringExp exp) {
+        this.visitedExp = new StringExp(exp.pos, exp.value);
+    }
+
+    @Override
+    public void visit(SubscriptVar exp) {
+        exp.var.accept(this);
+        Var clonedVar = this.visitedVar;
+        exp.index.accept(this);
+        Exp clonedIndex = this.visitedExp;
+        this.visitedVar = new SubscriptVar(exp.pos, clonedVar, clonedIndex);
+    }
+
+    @Override
+    public void visit(TypeDec exp) {
+        TypeDec clonedTypeDec = null, temp = null, first = null;
+        for (; exp != null; exp = exp.next) {
+            exp.ty.accept(this);
+            Ty clonedTy = this.visitedTy;
+            if(first == null) {
+                first = clonedTypeDec = new TypeDec(exp.pos, exp.name, clonedTy, null);
+            } else {
+                temp = clonedTypeDec;
+                clonedTypeDec = new TypeDec(exp.pos, exp.name, clonedTy, null);
+                temp.next = clonedTypeDec;
+            }
+        }
+        this.visitedDec = first;
+    }
+
+    @Override
+    public void visit(Var exp) {
+        Assert.unreachable();
+    }
+
+    @Override
+    public void visit(VarDec exp) {
+        exp.init.accept(this);
+        Exp clonedInitExp = this.visitedExp;
+        exp.typ.accept(this);
+        NameTy clonedNameTy = (NameTy)(this.visitedTy);
+        this.visitedDec = new VarDec(exp.pos, exp.name, clonedNameTy, clonedInitExp);
+    }
+
+    @Override
+    public void visit(VarExp exp) {
+        exp.var.accept(this);
+        this.visitedExp = new VarExp(exp.pos,this.visitedVar);
+    }
+
+    @Override
+    public void visit(WhileExp exp) {
+        exp.test.accept(this);
+        Exp clonedTestExp = this.visitedExp;
+        exp.body.accept(this);
+        Exp clonedBodyExp = this.visitedExp;
+        this.visitedExp = new WhileExp(exp.pos, clonedTestExp, clonedBodyExp);
+    }
+}

@@ -12,7 +12,7 @@ public class FieldList extends Absyn {
    public Symbol name;
  //  public Symbol typ;
    public NameTy typ;
-   public final FieldList tail;
+   public FieldList tail;
    public boolean escape = true;
    /**
     * Pointer to Type definition of this FieldList.
