@@ -145,13 +145,16 @@ public class AbsynCloner implements AbsynVisitor {
                     temp1.tail = clonedFieldList;
                 }
             }
-            exp.result.accept(this);
             NameTy clonedReturnType = null;
+            if(exp.result != null) {
+                exp.result.accept(this);
+                clonedReturnType = (NameTy)this.visitedTy;
+            }
             if (first == null) {
-                first = clonedFunctionDec = new FunctionDec(exp.pos, exp.name, clonedFieldList, clonedReturnType, clonedBody, null);
+                first = clonedFunctionDec = new FunctionDec(exp.pos, exp.name, first1, clonedReturnType, clonedBody, null);
             } else {
                 temp = clonedFunctionDec;
-                clonedFunctionDec = new FunctionDec(exp.pos, exp.name, clonedFieldList, clonedReturnType, clonedBody, null);
+                clonedFunctionDec = new FunctionDec(exp.pos, exp.name, first1, clonedReturnType, clonedBody, null);
                 temp.next = clonedFunctionDec;
             }
         }
@@ -222,8 +225,19 @@ public class AbsynCloner implements AbsynVisitor {
 
     @Override
     public void visit(RecordExp exp) {
-        FieldExpList clonedFieldExpList = null;
-        this.visitedExp = new RecordExp(exp.pos, exp.typ, clonedFieldExpList);
+        FieldExpList clonedFieldExpList = null, first = null, temp = null;
+        for(FieldExpList fieldExpList = exp.fields; fieldExpList != null; fieldExpList = fieldExpList.tail) {
+            fieldExpList.init.accept(this);
+            Exp clonedInitExp = this.visitedExp;
+            if(first == null) {
+                first = clonedFieldExpList = new FieldExpList(fieldExpList.pos, fieldExpList.name, clonedInitExp, null);
+            } else {
+                temp = clonedFieldExpList;
+                clonedFieldExpList = new FieldExpList(fieldExpList.pos, fieldExpList.name, clonedInitExp, null);
+                temp.tail = clonedFieldExpList;
+            }
+        }
+        this.visitedExp = new RecordExp(exp.pos, exp.typ, first);
     }
 
     @Override
@@ -308,8 +322,11 @@ public class AbsynCloner implements AbsynVisitor {
     public void visit(VarDec exp) {
         exp.init.accept(this);
         Exp clonedInitExp = this.visitedExp;
-        exp.typ.accept(this);
-        NameTy clonedNameTy = (NameTy)(this.visitedTy);
+        NameTy clonedNameTy = null; 
+        if(exp.typ != null) {
+            exp.typ.accept(this);
+            clonedNameTy = (NameTy)(this.visitedTy);
+        }
         this.visitedDec = new VarDec(exp.pos, exp.name, clonedNameTy, clonedInitExp);
     }
 
