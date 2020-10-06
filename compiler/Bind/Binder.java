@@ -85,6 +85,21 @@ public class Binder extends DefaultVisitor {
                 new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.STRING, null), Constants.VOID)));
         finit.put(Symbol.symbol("print_int"), new SymbolTableElement(
                 new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.INT, null), Constants.VOID)));
+        finit.put(Symbol.symbol("print_err"), new SymbolTableElement(
+                new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.STRING, null), Constants.VOID)));
+        finit.put(Symbol.symbol("exit"), new SymbolTableElement(
+                new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.INT, null), Constants.VOID)));
+        finit.put(Symbol.symbol("strcmp"), 
+            new SymbolTableElement(
+                new FUNCTION(
+                    new RECORD(Symbol.symbol("a"), Constants.STRING, 
+                        new RECORD(Symbol.symbol("b"), Constants.STRING,  null)
+                    ), 
+                    Constants.INT
+                )
+            )
+        );
+
         this.functionSymbolTable = new SymbolTable(finit);
         // var table
         this.varSymbolTable = new SymbolTable();

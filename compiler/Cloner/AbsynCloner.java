@@ -41,7 +41,7 @@ import Util.Assert;
  */
 public class AbsynCloner implements AbsynVisitor {
 
-    Exp visitedExp;
+    public Exp visitedExp;
     private Ty visitedTy;
     private Var visitedVar;
     private Dec visitedDec;
