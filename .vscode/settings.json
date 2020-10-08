@@ -5,16 +5,13 @@
 "java.configuration.runtimes": [
   {
     "name": "JavaSE-1.8",
-    "path": "/path/to/jdk-8",
-  },
-  {
-    "name": "JavaSE-11",
-    "path": "/path/to/jdk-11",
+    "path": "/home/david/jdk8u265-b01"
   },
   {
     "name": "JavaSE-15",
-    "path": "/path/to/jdk-15",
+    "path": "/home/david/jdk-15",
     "default": true
   }
-]
+],
+"editor.fontSize": 15
 }
