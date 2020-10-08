@@ -5,6 +5,7 @@ import org.junit.Test;
 import Absyn.PrettyPrinter;
 import Bind.Binder;
 import Bind.Renamer;
+import CallGraph.CallGraphVisitor;
 import ErrorMsg.ErrorMsg;
 import Inlining.Pruner;
 import Parse.CupParser;
@@ -20,6 +21,7 @@ public class PrunerTest {
         Program program = parser.parse();
         program.absyn.accept(new Binder(errorMsg));
         program.absyn.accept(new Renamer());
+        program.absyn.accept(new CallGraphVisitor());
         Pruner pruner = new Pruner();
         program.absyn.accept(pruner);
         pruner.visitedExp.accept(new PrettyPrinter(System.out));
