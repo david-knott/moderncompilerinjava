@@ -1,5 +1,8 @@
 # Diary
 
+## 8rd October 2020 ##
+Added inliner and pruner visitors. Not quote finished yet.
+
 ## 3rd October 2020 ##
 Added type visitor.
 
