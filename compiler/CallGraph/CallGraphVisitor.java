@@ -10,7 +10,12 @@ import Absyn.FunctionDec;
  */
 public class CallGraphVisitor extends DefaultVisitor {
 
+    public static FunctionCallGraph computeClosure(FunctionCallGraph functionCallGraph) {
+        return null;
+    }
+
     FunctionDec visitedFunction;
+    public FunctionCallGraph functionCallGraph;
     
     @Override
     public void visit(FunctionDec exp) {

@@ -2,6 +2,18 @@
 
 ## 8rd October 2020 ##
 Added inliner and pruner visitors. Not quote finished yet.
+Need to use a call graph to figure out what can be pruned and
+inlined.
+
+a -> b -> c 
+
+If a function dec is not present in the call graph it can be
+pruned from then source. 
+
+Calculating the transisitive closure of the graph will have generate
+all paths where
+
+TODO: Calculate the transitive closure, draw the transitive closure.
 
 ## 3rd October 2020 ##
 Added type visitor.

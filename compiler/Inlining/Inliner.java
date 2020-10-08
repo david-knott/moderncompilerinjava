@@ -3,6 +3,7 @@ package Inlining;
 import java.util.ArrayList;
 import java.util.List;
 
+import Absyn.Absyn;
 import Absyn.CallExp;
 import Absyn.DecList;
 import Absyn.Exp;
@@ -14,6 +15,8 @@ import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.VarDec;
 import Absyn.VarExp;
+import CallGraph.CallGraphVisitor;
+import CallGraph.FunctionCallGraph;
 import Cloner.AbsynCloner;
 import Symbol.Symbol;
 
@@ -26,8 +29,16 @@ public class Inliner extends AbsynCloner {
     
     List<FunctionDec> recursive = new ArrayList<FunctionDec>();
 
+    public Inliner(Absyn absyn) {
+        CallGraphVisitor callGraphVisitor = new CallGraphVisitor();
+        absyn.accept(callGraphVisitor);
+        FunctionCallGraph functionCallGraph = callGraphVisitor.functionCallGraph;
+        FunctionCallGraph closure = CallGraphVisitor.computeClosure(callGraphVisitor.functionCallGraph);
+    }
+
     @Override
     public void visit(FunctionDec exp) {
+        
         if(exp.next != null) {
             for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next ) {
                 recursive.add(functionDec);
