@@ -24,8 +24,6 @@ public class Pruner extends AbsynCloner {
 
     @Override
     public void visit(LetExp exp) {
-        exp.decs = null;
-
         super.visit(exp);
     }
 }
