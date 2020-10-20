@@ -28,21 +28,18 @@ import Symbol.Symbol;
 public class Inliner extends AbsynCloner {
     
     List<FunctionDec> recursive = new ArrayList<FunctionDec>();
+    FunctionCallGraph callGraph;
 
     public Inliner(Absyn absyn) {
         CallGraphVisitor callGraphVisitor = new CallGraphVisitor();
         absyn.accept(callGraphVisitor);
-        FunctionCallGraph functionCallGraph = callGraphVisitor.functionCallGraph;
-        FunctionCallGraph closure = CallGraphVisitor.computeClosure(callGraphVisitor.functionCallGraph);
+        this.callGraph = callGraphVisitor.functionCallGraph;
     }
 
     @Override
     public void visit(FunctionDec exp) {
-        
-        if(exp.next != null) {
-            for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next ) {
-                recursive.add(functionDec);
-            }
+        if(this.callGraph.inCycle(exp)) {
+            recursive.add(exp);
         }
         super.visit(exp);
     }
@@ -64,10 +61,13 @@ public class Inliner extends AbsynCloner {
                 }
                 argList = argList.tail;
             }
+            
+            //if the return type is void, we dont need a res.
             VarDec varDec = new VarDec(0, Symbol.symbol("res"), functionDec.result,  functionDec.body/* exp */);
-            temp = decList;
-            decList = new DecList(varDec, null);
-            temp.tail = decList;
+            DecList end = first;
+            while(end != null) end = end.tail;
+            end = new DecList(varDec, null);
+
             Exp letExp = new LetExp(0, first, new SeqExp(0, new ExpList(new VarExp(0, new SimpleVar(0, Symbol.symbol("res"))), null)));
             this.visitedExp = letExp;
         } else {

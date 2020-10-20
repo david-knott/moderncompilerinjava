@@ -1,8 +1,15 @@
 package CallGraph;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 import Absyn.CallExp;
 import Absyn.DefaultVisitor;
 import Absyn.FunctionDec;
+import Graph.Graph;
+import Graph.Node;
+import Graph.NodeList;
 
 /**
  * Creates a call graph of functions, 
@@ -10,27 +17,28 @@ import Absyn.FunctionDec;
  */
 public class CallGraphVisitor extends DefaultVisitor {
 
-    public static FunctionCallGraph computeClosure(FunctionCallGraph functionCallGraph) {
-        return null;
-    }
-
     FunctionDec visitedFunction;
     public FunctionCallGraph functionCallGraph;
+    Hashtable<FunctionDec, Node> functionDecs = new Hashtable<FunctionDec, Node>();
+    
+    public CallGraphVisitor() {
+        this.functionCallGraph = new FunctionCallGraph();
+    }
     
     @Override
     public void visit(FunctionDec exp) {
+        FunctionDec prev = this.visitedFunction;
         this.visitedFunction = exp;
         super.visit(exp);
+        this.visitedFunction = prev;
     }
 
     @Override
     public void visit(CallExp exp) {
         FunctionDec src = this.visitedFunction;
-        addEdge(src, (FunctionDec)exp.def);
+        if(src != null) {
+            this.functionCallGraph.addEdge(src, (FunctionDec)exp.def);
+        }
         super.visit(exp);
-    }
-
-    private void addEdge(FunctionDec src, FunctionDec args) {
-        System.out.println("edge:" + src + " " + args);
     }
 }

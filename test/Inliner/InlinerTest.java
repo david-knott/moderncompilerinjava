@@ -26,7 +26,7 @@ public class InlinerTest {
         Program program = parser.parse();
         program.absyn.accept(new Binder(errorMsg));
         program.absyn.accept(new Renamer());
-        Inliner inliner = new Inliner();
+        Inliner inliner = new Inliner(program.absyn);
         program.absyn.accept(inliner);
         inliner.visitedExp.accept(new PrettyPrinter(System.out));
     }

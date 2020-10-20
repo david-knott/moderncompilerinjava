@@ -1,5 +1,16 @@
 # Diary
 
+## 16th October 2020
+
+Changed cycle detection in function call graph to use DFS.
+Transistive closure is not being used. I am implementing tests
+on the call graph to ensure is is correct.
+
+
+## 15th October 2020
+
+Transitive Closure cycle detection is still in progress.
+
 ## 8rd October 2020 ##
 Added inliner and pruner visitors. Not quote finished yet.
 Need to use a call graph to figure out what can be pruned and
