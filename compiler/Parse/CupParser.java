@@ -6,7 +6,6 @@ import java.nio.charset.Charset;
 
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
-import Util.TaskContext;
 
 /**
  * Parses an input stream and reports any lexical or parse errors.

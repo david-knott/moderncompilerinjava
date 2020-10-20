@@ -2,7 +2,26 @@
 
 ## 20th October 2020
 
-Cycle test on graph.
+Cycle tests on graph.
+
+TODO: Implement outer tiger main wrapper. If tiger program does not contain an outer function
+wrapper, create it.
+
+Question, what happens if the program does have a main function ?
+
+Wrap the created AST in an outer function call
+
+
+```
+1 + 2
+```
+becomes
+```
+function _main() = (
+    1 + 2
+)
+
+```
 
 ## 16th October 2020
 
