@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.Test;
 
-public class TCTest {
+public class GraphCycleTest {
 
     @Test
     public void graphContainsNoCycles() {

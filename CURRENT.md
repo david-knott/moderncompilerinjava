@@ -1,5 +1,9 @@
 # Diary
 
+## 20th October 2020
+
+Cycle test on graph.
+
 ## 16th October 2020
 
 Changed cycle detection in function call graph to use DFS.
