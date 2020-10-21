@@ -61,4 +61,5 @@ public class PrettyPrinterTests {
         assertTrue(!errorMsg.anyErrors);
         assertEquals(this.baos.toString(), "\nif (1 = 1) \nthen 1\nelse (2 = 2)");
     }
+
 }

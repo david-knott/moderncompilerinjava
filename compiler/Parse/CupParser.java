@@ -50,7 +50,7 @@ public class CupParser implements Parser {
                 throw new Error(e.toString());
             }
         }
-        return (Program)rootSymbol.value;
+        return rootSymbol != null ? (Program)rootSymbol.value : null;
     }
 
     @Override
