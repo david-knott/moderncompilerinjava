@@ -1,5 +1,11 @@
 # Diary
 
+## 28th October 2020
+
+Modifying code so that the external functions are passed in as a prelude file. This is to support
+the new functionality where the entire expression is wrapped in a function, which is linked into
+the c runtime main call.
+
 ## 20th October 2020
 
 Cycle tests on graph.

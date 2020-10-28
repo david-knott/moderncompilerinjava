@@ -72,6 +72,7 @@ digits=[0-9]+
 <YYINITIAL>"else"	{return tok(sym.ELSE, null);}
 <YYINITIAL>"end"	{return tok(sym.END, null);}
 <YYINITIAL>"function"	{return tok(sym.FUNCTION, null);}
+<YYINITIAL>"primitive"	{return tok(sym.PRIMITIVE, null);}
 <YYINITIAL>"var"	{return tok(sym.VAR, null);}
 <YYINITIAL>"["	{return tok(sym.LBRACK, null);}
 <YYINITIAL>"]"	{return tok(sym.RBRACK, null);}

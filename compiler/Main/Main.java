@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import Canon.CanonicalizationImpl;
 import ErrorMsg.ErrorMsg;
 import Parse.CupParser;
+import Parse.ParserFactory;
 import RegAlloc.RegAllocFactory;
 import Util.TaskRegister;
 import Util.Timer;
@@ -19,7 +20,6 @@ public class Main {
     public static void main(String[] args) throws FileNotFoundException {
         Timer.instance.start();
         Timer.instance.push("rest");
-     //   PrintStream out = new PrintStream(new java.io.FileOutputStream(args[args.length - 1] + ".s"));
         PrintStream out = System.out;
         if (args.length == 1) {
            args = new String[] {"--reg-alloc", "--clone", "--escapes-compute", "--demove", args[0] };
@@ -29,7 +29,7 @@ public class Main {
         ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);
         TaskRegister.instance
                 .register(new Tasks())
-                .register(new Parse.Tasks(new CupParser(in, errorMsg)))
+                .register(new Parse.Tasks(new ParserFactory()))
                 .register(new Cloner.Tasks())
                 .register(new CallGraph.Tasks())
                 .register(new Liveness.Tasks())

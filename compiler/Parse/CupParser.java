@@ -1,6 +1,8 @@
 package Parse;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
@@ -8,8 +10,8 @@ import ErrorMsg.ErrorMsg;
 import Util.Assert;
 
 /**
- * Parses an input stream and reports any lexical or parse errors.
- * This implementation uses the JLex Lexer & Cup Parser. 
+ * Parses an input stream and reports any lexical or parse errors. This
+ * implementation uses the JLex Lexer & Cup Parser.
  */
 public class CupParser implements Parser {
 
@@ -50,7 +52,7 @@ public class CupParser implements Parser {
                 throw new Error(e.toString());
             }
         }
-        return rootSymbol != null ? (Program)rootSymbol.value : null;
+        return rootSymbol != null ? (Program) rootSymbol.value : null;
     }
 
     @Override

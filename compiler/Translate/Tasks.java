@@ -16,13 +16,12 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                // TODO: remove reference to IntelFrame.
-                Frame.Frame frame = new IntelFrame(Label.create("tigermain"), null);
-                Level topLevel = new Level(frame);
-                Translator translate = new Translator();
-                Semant.Semant semant = new Semant.Semant(taskContext.errorMsg, topLevel, translate);
-                FragList frags = FragList.reverse(semant.getTreeFragments(taskContext.program.absyn));
-                taskContext.setFragList(frags);
+                // Level outerMost contains the primitive language functions, such as print and printi.
+                Level outerMost = new Level(new IntelFrame(Label.create("tigermain"), null));
+                // create new semantic analysis module to type check the AST.
+                Semant.Semant semant = new Semant.Semant(taskContext.errorMsg, outerMost, new Translator());
+                // pass the AST into the semantic analysis module and get the generated tree fragments.
+                taskContext.setFragList(semant.getTreeFragments(taskContext.program.absyn));
             }
         }, "hir-compute", "Translate abstract syntax to HIR", "typed");
         new SimpleTask(new SimpleTaskProvider() {

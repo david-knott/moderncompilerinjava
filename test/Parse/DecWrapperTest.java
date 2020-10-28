@@ -12,7 +12,7 @@ public class DecWrapperTest {
 
     @Test
     public void wrapExp() {
-        ErrorMsg errorMsg = new ErrorMsg("errorRecovery", System.out);
+        ErrorMsg errorMsg = new ErrorMsg("Dec Wrapper", System.out);
         String tiger = "1 = 1 | 2 = 2";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
         Program program = new CupParser(targetStream, errorMsg).parse();
@@ -22,7 +22,7 @@ public class DecWrapperTest {
 
     @Test
     public void wrapCallExp() {
-        ErrorMsg errorMsg = new ErrorMsg("errorRecovery", System.out);
+        ErrorMsg errorMsg = new ErrorMsg("Dec Wrapper", System.out);
         String tiger = "print(\"hi\")";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
         Program program = new CupParser(targetStream, errorMsg).parse();
@@ -32,7 +32,7 @@ public class DecWrapperTest {
 
     @Test
     public void wrapFunctionExp() {
-        ErrorMsg errorMsg = new ErrorMsg("errorRecovery", System.out);
+        ErrorMsg errorMsg = new ErrorMsg("Dec Wrapper", System.out);
         String tiger = "let function a():int = 1 in a() end";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
         Program program = new CupParser(targetStream, errorMsg).parse();

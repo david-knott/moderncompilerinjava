@@ -68,10 +68,13 @@ public class Semant extends Component{
      * @return
      */
     public FragList getTreeFragments(Absyn.Exp absyn) {
-        this.trigger(SEMANT_START, absyn);
+        // start translating.
         var trans = this.transExp(absyn);
+        // wrap generated function code with calling convention code
+        // and callee save code.
         translator.procEntryExit(level, trans.exp);
-        return translator.getResult();
+        // return the generated fragment list.
+        return FragList.reverse(translator.getResult());
     }
 
     /**

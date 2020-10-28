@@ -1,5 +1,8 @@
 package Absyn;
 
+/**
+ * DecList class is a singled linked list of @see Absyn.Dec items.
+ */
 public class DecList {
    public Dec head;
    public DecList tail;

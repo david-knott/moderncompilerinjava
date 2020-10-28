@@ -6,7 +6,7 @@ import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
-
+import java_cup.parser;
 import Util.Assert;
 
 /**
@@ -16,26 +16,35 @@ import Util.Assert;
  */
 public class Tasks implements TaskProvider {
 
-    final Parser parseTask;
+   // final Parser parser;
+    final ParserFactory parserFactory;
 
     public Tasks(Parser parser) {
         Assert.assertNotNull(parser);
-        this.parseTask = parser;
-	}
+//        this.parser = parser;
+        this.parserFactory = null;
+    }
+    
+    public Tasks(ParserFactory parserFactory) {
+        Assert.assertNotNull(parserFactory);
+        this.parserFactory = parserFactory;
+  //      this.parser = null;
+    }
 
 	@Override
     public void build() {
         new BooleanTask(new BooleanTaskFlag() {
             @Override
             public void set() {
-                parseTask.setParserTrace(true);
+                parserFactory.setParserTrace(true);
             }
         }, "parse-trace", "parse-trace", "parse");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                Program program = parseTask.parse();
-                if(!parseTask.hasErrors()) {
+                Parser parser = parserFactory.getParser(taskContext.in, taskContext.errorMsg); 
+                Program program = parser.parse();
+                if(!parser.hasErrors()) {
                     taskContext.setAst(program);
                 } else {
                     throw new Error("Errors");

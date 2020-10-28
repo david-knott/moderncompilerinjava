@@ -6,6 +6,7 @@ import Symbol.Symbol;
 
 public class Program {
     public Absyn.Exp absyn;
+
     /**
      * Returns the program as a sequence of declarations.
      * @return
