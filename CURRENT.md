@@ -1,5 +1,12 @@
 # Diary
 
+## 29th October 2020
+
+Modified  TaskContext to use DecList instead of Program.
+Added new prelude tiger file with the built in functions.
+Still need to modify the grammar to use DecList as the top level
+object.
+
 ## 28th October 2020
 
 Modifying code so that the external functions are passed in as a prelude file. This is to support

@@ -1,6 +1,5 @@
 package Cloner;
 
-import Parse.Program;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -14,8 +13,9 @@ public class Tasks implements TaskProvider {
             @Override
             public void only(TaskContext taskContext) {
                 AbsynCloner absynCloner = new AbsynCloner();
-                taskContext.program.absyn.accept(absynCloner);
-                taskContext.setAst(new Program(absynCloner.visitedExp));
+                taskContext.decList.accept(absynCloner);
+               // taskContext.setAst(new Program(absynCloner.visitedExp));
+               throw new Error("Fix me");
             }
         }, "clone", "Clone the ast", "parse");
     }

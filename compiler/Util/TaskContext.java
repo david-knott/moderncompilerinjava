@@ -10,7 +10,7 @@ import Parse.Program;
 import Translate.FragList;
 
 public class TaskContext {
-    public Program program;
+   // public Program program;
     public boolean escapesDisplay = false;
     public boolean bindingsDisplay = false;
     public FragList hirFragList;
@@ -29,10 +29,11 @@ public class TaskContext {
         this.errorMsg = errorMsg;
     }
 
+    /*
     public void setAst(final Program value) {
         this.program = value;
     }
-
+*/
     public void setDecList(final DecList value) {
         this.decList = value;
     }

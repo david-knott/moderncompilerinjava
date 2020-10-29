@@ -1,0 +1,2 @@
+/* primitive functions */
+primitive print_i(a: int)

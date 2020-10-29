@@ -21,7 +21,7 @@ public class Tasks implements TaskProvider {
                 // create new semantic analysis module to type check the AST.
                 Semant.Semant semant = new Semant.Semant(taskContext.errorMsg, outerMost, new Translator());
                 // pass the AST into the semantic analysis module and get the generated tree fragments.
-                taskContext.setFragList(semant.getTreeFragments(taskContext.program.absyn));
+                taskContext.setFragList(semant.getTreeFragments(taskContext.decList));
             }
         }, "hir-compute", "Translate abstract syntax to HIR", "typed");
         new SimpleTask(new SimpleTaskProvider() {

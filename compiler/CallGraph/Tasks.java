@@ -1,6 +1,5 @@
 package CallGraph;
 
-import Parse.Program;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -13,13 +12,11 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                Program boundProgram = taskContext.program;
             }
         }, "callgraph-compute", "build the call graph", "bindings-compute");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                Program boundProgram = taskContext.program;
             }
         }, "callgraph-dump", "dump the call graph", "callgraph-compute");
     }

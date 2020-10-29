@@ -1,5 +1,6 @@
 package Semant;
 
+import Absyn.DecList;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
@@ -58,6 +59,22 @@ public class Semant extends Component{
      */
     public boolean hasErrors() {
         return this.env.errorMsg.anyErrors;
+    }
+
+    /**
+     * Main method returns a list of translated declarations
+     * along with a Frame reference.
+     * @param decList
+     * @return a @see Translate.FragList
+     */
+    public FragList getTreeFragments(DecList decList) {
+        // translate the primitives, and function body.
+        for(;decList != null; decList = decList.tail) {
+            // translate, we dont need the result.
+            transDec(decList.head);
+        }
+        // return the fraglist build during tree traversal.
+        return FragList.reverse(translator.getResult());
     }
 
     /**
@@ -276,14 +293,6 @@ public class Semant extends Component{
      * @return
      */
     Exp transDec(final Absyn.FunctionDec e) {
-        // if we have already processed this function while
-        // to handling recursive functions
-        // add function entry to environment tables so it
-        // is available for lookup inside the function body
-        // this is to facilitate recursive function calls
-    //    if(env.venv.get(e.name) != null) {
-      //      return this.translator.Noop(); 
-      //  }
         for(FunctionDec current = e; current != null; current = current.next) {
             // get the functions return type
             var functionReturnType = current.result != null ? transTy(current.result) : Semant.VOID;

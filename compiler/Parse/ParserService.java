@@ -29,8 +29,8 @@ public class ParserService {
             return program;
         }
         // parse the prelude, external functions defined in the runtime.
-        Parser prelude;
-        prelude = parserFactory.getParser(new FileInputStream("./data/prelude.tih"), errorMsg);
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        Parser prelude = parserFactory.getParser(new FileInputStream("./data/prelude.tih"), errorMsg);
         DecList preludeList = prelude.parse().getDecList();
         // append the user code to end of prelude declarations.
         DecList end;

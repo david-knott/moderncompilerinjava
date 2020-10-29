@@ -17,12 +17,14 @@ public class Tasks implements TaskProvider {
             @Override
             public void set() {
                 //set
+                throw new Error(); 
             }
         }, "desugar-for", "Desugar 'for' loops", "");
         new BooleanTask(new BooleanTaskFlag() {
             @Override
             public void set() {
                 //set
+                throw new Error(); 
             }
         }, "desugar-string-cmp", "Desugar string comparisions", "");
         //TODO: create disjunctive tasks desugared ( removes all syntactix sugar )
@@ -30,8 +32,9 @@ public class Tasks implements TaskProvider {
             @Override
             public void only(TaskContext taskContext) {
                 Desugar desugar = new Desugar();
-                taskContext.program.absyn.accept(desugar);
-                taskContext.setAst(new Program(desugar.visitedExp));
+                taskContext.decList.accept(desugar);
+                //taskContext.setAst(new Program(desugar.visitedExp));
+                throw new Error(); 
             }
         }, "desugar", "desugar the AST", "types-compute rename");
     }

@@ -1,6 +1,6 @@
 package Bind;
 
-import Parse.Program;
+import Absyn.DecList;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -14,7 +14,7 @@ public class Tasks implements TaskProvider {
             @Override
             public void only(TaskContext taskContext) {
                 Binder b = new Binder(taskContext.errorMsg);
-                taskContext.program.absyn.accept(b);
+                taskContext.decList.accept(b);
             }
         }, "b|bindings-compute", "Performs binding", "parse");
         new SimpleTask(new SimpleTaskProvider() {
@@ -26,8 +26,8 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                Program boundProgram = taskContext.program;
-                boundProgram.absyn.accept(new Renamer());
+                DecList boundProgram = taskContext.decList;
+                boundProgram.accept(new Renamer());
             }
         }, "rename", "Performs binding", "bindings-compute");
     }

@@ -1,6 +1,5 @@
 package FindEscape;
 
-
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -14,7 +13,7 @@ public class Tasks implements TaskProvider {
             @Override
             public void only(TaskContext taskContext) {
                 EscapeVisitor escapeVisitor = new EscapeVisitor(taskContext.errorMsg);
-                taskContext.program.absyn.accept(escapeVisitor);
+                taskContext.decList.accept(escapeVisitor);
             }
         }, "e|escapes-compute", "escape", "parse");
 
