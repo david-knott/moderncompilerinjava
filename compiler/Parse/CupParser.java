@@ -18,7 +18,6 @@ public class CupParser implements Parser {
     boolean parserTrace = false;
     final InputStream inputStream;
     final ErrorMsg errorMsg;
-    final Yylex yylex;
     Program ast;
 
     public CupParser(InputStream inputStream, ErrorMsg errorMsg) {
@@ -26,7 +25,6 @@ public class CupParser implements Parser {
         Assert.assertNotNull(errorMsg);
         this.inputStream = inputStream;
         this.errorMsg = errorMsg;
-        this.yylex = new Yylex(inputStream, errorMsg);
     }
 
     public CupParser(String string, ErrorMsg errorMsg) {
@@ -34,12 +32,12 @@ public class CupParser implements Parser {
         Assert.assertNotNull(errorMsg);
         this.inputStream = new ByteArrayInputStream(string.getBytes(Charset.forName("UTF-8")));
         this.errorMsg = errorMsg;
-        this.yylex = new Yylex(inputStream, errorMsg);
     }
 
     @Override
     public Program parse() {
-        Grm parser = new Grm(new DebugLexer(this.yylex, System.out), this.errorMsg);
+        Yylex yylex = new Yylex(inputStream, errorMsg);
+        Grm parser = new Grm(new DebugLexer(yylex, System.out), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
         try {
             rootSymbol = !this.parserTrace ? parser.parse() : parser.debug_parse();

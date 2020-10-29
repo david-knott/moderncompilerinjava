@@ -5,7 +5,17 @@
 Modified  TaskContext to use DecList instead of Program.
 Added new prelude tiger file with the built in functions.
 Still need to modify the grammar to use DecList as the top level
-object.
+object.  
+
+The primitive.tih file is a declist, the input program file is an exp.
+We wrap the input program with a function which allows us to link it
+into the runtime function.
+
+We need to wrap the input stream rather that the ast. I think the pretty
+printer is used for this. 
+
+Problem is that the parser expects an expression.
+
 
 ## 28th October 2020
 

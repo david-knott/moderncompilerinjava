@@ -49,6 +49,7 @@ class Const {
         symnames[sym.LET] = "LET";
         symnames[sym.THEN] = "THEN";
         symnames[sym.EQ] = "EQ";
+        symnames[sym.PRIMITIVE] = "primitive";
     }
 }
 
