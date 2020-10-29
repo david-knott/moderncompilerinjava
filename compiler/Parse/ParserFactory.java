@@ -4,6 +4,11 @@ import java.io.InputStream;
 
 import ErrorMsg.ErrorMsg;
 
+
+/**
+ * ParserFactory creates a new configured parser instance using a specific
+ * input stream and @see ErrorMsg.ErrorMsg 
+ */
 public class ParserFactory {
     
     private boolean parserTrace = false;

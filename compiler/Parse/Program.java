@@ -8,7 +8,8 @@ public class Program {
     public Absyn.Exp absyn;
 
     /**
-     * Returns the program as a sequence of declarations.
+     * Returns the program as a sequence of declarations, wrapped in a function
+     * call, which links into the runtime main.
      * @return
      */
     public DecList getDecList() {

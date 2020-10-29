@@ -3,6 +3,7 @@ package Util;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import Absyn.DecList;
 import Assem.InstrList;
 import ErrorMsg.ErrorMsg;
 import Parse.Program;
@@ -19,6 +20,7 @@ public class TaskContext {
     public OutputStream out = null;
     public OutputStream log = null;
     public ErrorMsg errorMsg = null;
+    public DecList decList;
 
     public TaskContext(InputStream in, OutputStream out, OutputStream log, ErrorMsg errorMsg) {
         this.in = in;
@@ -27,11 +29,12 @@ public class TaskContext {
         this.errorMsg = errorMsg;
     }
 
-
-    //public InstrList instrList;
-
     public void setAst(final Program value) {
         this.program = value;
+    }
+
+    public void setDecList(final DecList value) {
+        this.decList = value;
     }
 
     public void setEscapesDisplay(final boolean value) {

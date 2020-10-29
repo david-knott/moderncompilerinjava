@@ -7,47 +7,55 @@ import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
 import java_cup.parser;
+
+import java.io.FileNotFoundException;
+
+import Absyn.DecList;
 import Util.Assert;
 
 /**
- * Provides a collection of tasks related to the parse
- * phase. Constructor accepts the parser implementation
- * to use.
+ * Provides a collection of tasks related to the parse phase. Constructor
+ * accepts the parser implementation to use.
  */
 public class Tasks implements TaskProvider {
 
-   // final Parser parser;
-    final ParserFactory parserFactory;
+    final ParserService parserService;
 
-    public Tasks(Parser parser) {
-        Assert.assertNotNull(parser);
-//        this.parser = parser;
-        this.parserFactory = null;
-    }
-    
-    public Tasks(ParserFactory parserFactory) {
-        Assert.assertNotNull(parserFactory);
-        this.parserFactory = parserFactory;
-  //      this.parser = null;
+    public Tasks(ParserService parserService) {
+        Assert.assertNotNull(parserService);
+        this.parserService = parserService;
     }
 
-	@Override
+    @Override
     public void build() {
         new BooleanTask(new BooleanTaskFlag() {
             @Override
             public void set() {
-                parserFactory.setParserTrace(true);
+                parserService.configure(p -> p.setParserTrace(true));
             }
-        }, "parse-trace", "parse-trace", "parse");
+        }, "parse-trace", "Enable parsers traces.", "parse");
+        new BooleanTask(new BooleanTaskFlag() {
+            @Override
+            public void set() {
+                parserService.configure(p -> p.setNoPrelude(true));
+            }
+        }, "X|no-prelude", "Don’t include prelude.", "parse");
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                Parser parser = parserFactory.getParser(taskContext.in, taskContext.errorMsg); 
-                Program program = parser.parse();
-                if(!parser.hasErrors()) {
-                    taskContext.setAst(program);
-                } else {
-                    throw new Error("Errors");
+                try {
+                    DecList decList = parserService.parse(taskContext.in, taskContext.errorMsg);
+                    if(taskContext.errorMsg.anyErrors) {
+                        // there was a lexical or parse error, cannot continue
+                        System.exit(0);
+                    } else {
+                        taskContext.setDecList(decList);
+                    }
+                } catch (FileNotFoundException e) {
+                    // some sort of error was caught
+                    // prelude file not found ?
+                    // unhandled parse / lex error.
+                    e.printStackTrace();
                 }
             }
         }, "parse", "parse", ""); 

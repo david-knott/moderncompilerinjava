@@ -6,8 +6,8 @@ import java.io.PrintStream;
 
 import Canon.CanonicalizationImpl;
 import ErrorMsg.ErrorMsg;
-import Parse.CupParser;
 import Parse.ParserFactory;
+import Parse.ParserService;
 import RegAlloc.RegAllocFactory;
 import Util.TaskRegister;
 import Util.Timer;
@@ -29,7 +29,7 @@ public class Main {
         ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);
         TaskRegister.instance
                 .register(new Tasks())
-                .register(new Parse.Tasks(new ParserFactory()))
+                .register(new Parse.Tasks(new ParserService(new ParserFactory())))
                 .register(new Cloner.Tasks())
                 .register(new CallGraph.Tasks())
                 .register(new Liveness.Tasks())
