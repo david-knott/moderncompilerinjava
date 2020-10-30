@@ -13,6 +13,7 @@ import ErrorMsg.FunctionNotDefinedError;
 import ErrorMsg.TypeMismatchError;
 import ErrorMsg.UndefinedTypeError;
 import ErrorMsg.UndefinedVariableError;
+import Intel.IntelFrame;
 import Symbol.Symbol;
 import Temp.Label;
 import Translate.Exp;
@@ -42,13 +43,13 @@ public class Semant extends Component{
     public SemantValidator semantValidator;
     
     public Semant(ErrorMsg err, final Level lvl, Translator trans) {
-        this(new Env(err, lvl), null, lvl, trans);
+        this(new Env(err), null, lvl, trans);
     }
 
     Semant(final Env e, Label bsl, Level lev, Translator trans) {
         env = e;
         breakScopeLabel = bsl;
-        level = lev;
+      //  level = lev;
         translator = trans;
         this.semantValidator = new SemantValidator(e);
     }
@@ -68,6 +69,8 @@ public class Semant extends Component{
      * @return a @see Translate.FragList
      */
     public FragList getTreeFragments(DecList decList) {
+
+      //  level = new Level(new IntelFrame(Label.create("tigermain"), null));
         // translate the primitives, and function body.
         for(;decList != null; decList = decList.tail) {
             // translate, we dont need the result.
@@ -77,14 +80,8 @@ public class Semant extends Component{
         return FragList.reverse(translator.getResult());
     }
 
-    /**
-     * Main method to translate and type check ast.
-     * We also must translate the top level implicit function
-     * 
-     * @param absyn
-     * @return
-     */
-    public FragList getTreeFragments(Absyn.Exp absyn) {
+    /*
+    private FragList getTreeFragments(Absyn.Exp absyn) {
         // start translating.
         var trans = this.transExp(absyn);
         // wrap generated function code with calling convention code
@@ -92,7 +89,7 @@ public class Semant extends Component{
         translator.procEntryExit(level, trans.exp);
         // return the generated fragment list.
         return FragList.reverse(translator.getResult());
-    }
+    }*/
 
     /**
      * Returns a record type.
@@ -302,7 +299,9 @@ public class Semant extends Component{
             // creates a new level and a new frame and allocates
             // space for the formal parameters
             // for each formal parameter, we need to get its frame access
-            Label functionLabel = Label.create();
+            
+            // if current has no body, meaning its a primitive, use its name as its label.
+            Label functionLabel = current.body != null ? Label.create() : Label.create(e.name);
             var functionEntry = new FunEntry(
                 new Level(
                     level, 
@@ -321,8 +320,6 @@ public class Semant extends Component{
             env.venv.put(current.name, functionEntry);
         } 
         for(FunctionDec current = e; current != null; current = current.next) {
-            // I think we begin scope here because we
-            // are processing the function body in this loop
             env.venv.beginScope();
             // get the new level created in the parent scope for this function
             var newLevel = ((FunEntry) env.venv.get(current.name)).level;
@@ -337,11 +334,14 @@ public class Semant extends Component{
                 env.venv.put(p.name, varEntry);
                 translateAccess = translateAccess.tail;
             }
-            var transBody = new Semant(env, breakScopeLabel, newLevel, translator).transExp(current.body);
-            this.semantValidator.sameType(transBody, vent.result, current.pos);
+            // body of function is null if externally defined.
+            if(current.body != null) {
+                var transBody = new Semant(env, breakScopeLabel, newLevel, translator).transExp(current.body);
+                this.semantValidator.sameType(transBody, vent.result, current.pos);
+                Exp translatedBody = this.translator.functionDec(newLevel, transBody);
+                this.translator.procEntryExit(newLevel, translatedBody);
+            }
             env.venv.endScope();
-            Exp translatedBody = this.translator.functionDec(newLevel, transBody);
-            this.translator.procEntryExit(newLevel, translatedBody);
         }
         return translator.Noop();
     }
@@ -846,7 +846,7 @@ public class Semant extends Component{
         else if (e instanceof Absyn.NilExp)
             return transExp((Absyn.NilExp) e);
         else
-            throw new Error("Cannot handle " + e.getClass().getName());
+            throw new Error("Cannot handle " + e);
     }
 
     /**

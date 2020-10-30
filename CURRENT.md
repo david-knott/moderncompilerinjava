@@ -4,9 +4,34 @@
 
 Cloner is broken after modifing code to use declists.
 Its likely alot of the absyn visitors are broken now.
+
 We had originally assumed that a function body cannot be null,
 this is not the case now. It can be null in the case of primitive
 declarations, this could be refactored into the base absyn visitor.
+
+There are also prolems with the Semant phase. When should the level
+be created, the level also has a reference to the frame and its associated
+label, which corresponds to a specific function. We need to make sure that
+that we bind our runtime functions.
+
+Level -> Function Dec ( Name ) -> Activation Record ( Label )
+
+
+Outermost Level
+    
+    Primitives...
+
+    Tiger Main Level
+
+        User Code.
+
+
+Also how to be provide the frame to the semant phase ?
+
+The level constructor doesn't support creating a level without either a frame or a parent level.
+
+The answer to both questions might be separate the frame and level classes.
+
 
 ## 29th October 2020
 

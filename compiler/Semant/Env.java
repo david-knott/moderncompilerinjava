@@ -6,20 +6,17 @@ import ErrorMsg.ErrorMsg;
 import Symbol.GenericTable;
 import Symbol.Symbol;
 import Symbol.SymbolTable;
-import Temp.Label;
-import Translate.Level;
 
 public class Env {
     GenericTable<Entry> venv;
     GenericTable<Type> tenv;
     ErrorMsg errorMsg;
-    Level outerMost;
 
-    Env(ErrorMsg err, Level outerMost) {
+    Env(ErrorMsg err) {
         this.errorMsg = err;
-        this.outerMost = outerMost;
         // initialize function values
         venv = new GenericTable<Entry>();
+        /*
         venv.put(Symbol.symbol("print"),
                 new FunEntry(outerMost, Label.create("print"), new RECORD(Symbol.symbol("s"), Semant.STRING, null), Semant.VOID));
         venv.put(Symbol.symbol("printi"),
@@ -43,6 +40,7 @@ public class Env {
                 new FunEntry(outerMost, Label.create("not"), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.INT));
         venv.put(Symbol.symbol("exit"),
                 new FunEntry(outerMost, Label.create("exit"), new RECORD(Symbol.symbol("i"), Semant.INT, null), Semant.VOID));
+                */
         // initialize types table
         tenv = new GenericTable<Type>();
         tenv.put(Symbol.symbol("int"), Semant.INT);
@@ -55,9 +53,5 @@ public class Env {
 
     public SymbolTable<Entry> getVEnv() {
         return this.venv;
-    }
-
-    public ErrorMsg getErrorMsg() {
-            return this.errorMsg;
     }
 }

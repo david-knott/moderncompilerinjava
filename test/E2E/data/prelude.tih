@@ -1,7 +1,7 @@
 /* primitive functions */
 primitive print(string : string)
 primitive print_err(string : string)
-primitive print_i(int : int)
+primitive printi(int : int)
 primitive flush()
 primitive getchar() : string
 primitive ord(string : string) : int

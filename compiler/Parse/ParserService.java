@@ -36,7 +36,13 @@ public class ParserService {
         }
         if(tree instanceof Exp) {
             program = new DecList(
-                new FunctionDec(0, Symbol.symbol("_main"), null, null, (Exp)tree, null), 
+                new FunctionDec(0, 
+                    Symbol.symbol("tigermain"), 
+                    null, 
+                    null, 
+                    (Exp)tree, 
+                    null
+                ), 
                 null
             );
         }

@@ -17,9 +17,9 @@ public class Tasks implements TaskProvider {
             @Override
             public void only(TaskContext taskContext) {
                 // Level outerMost contains the primitive language functions, such as print and printi.
-                Level outerMost = new Level(new IntelFrame(Label.create("tigermain"), null));
+              //  Level outerMost = new Level(new IntelFrame(Label.create("tigermain"), null));
                 // create new semantic analysis module to type check the AST.
-                Semant.Semant semant = new Semant.Semant(taskContext.errorMsg, outerMost, new Translator());
+                Semant.Semant semant = new Semant.Semant(taskContext.errorMsg, null /* outerMost */, new Translator());
                 // pass the AST into the semantic analysis module and get the generated tree fragments.
                 taskContext.setFragList(semant.getTreeFragments(taskContext.decList));
             }

@@ -20,19 +20,12 @@ public class Level {
     Level parent;
     public AccessList formals;
 
-    // associate a frame with this level
+    /**
+     * Creates the root Level using frame reference f.
+     * @param f
+     */
     public Level(Frame.Frame f) {
         frame = f;
-    }
-
-    /**
-     * Returns true if this level is the top level. This is used
-     * to identify functions that are in the runtime.c file and
-     * not the assembly.
-     * @return
-     */
-    public boolean isTopLevel() {
-        return this.parent == null;
     }
 
     /**
@@ -55,6 +48,16 @@ public class Level {
                 formals = formals.append(new Access(this, frameFormals.head));
             }
         }
+    }
+
+    /**
+     * Returns true if this level is the top level. This is used
+     * to identify functions that are in the runtime.c file and
+     * not the assembly.
+     * @return
+     */
+    public boolean isTopLevel() {
+        return this.parent == null;
     }
 
     /**
