@@ -44,7 +44,7 @@ terminal COMMA, COLON, SEMICOLON, LPAREN, RPAREN,
 	ASSIGN, ARRAY, IF, THEN, ELSE, WHILE, FOR, TO, DO, 
 	LET, IN, END, OF, BREAK, NIL, FUNCTION, VAR, TYPE, PRIMITIVE;
 
-non terminal Program program;
+non terminal Absyn.Absyn program;
 non terminal Absyn.Exp exp;
 non terminal Absyn.ExpList expList;
 non terminal Absyn.ExpList expListAux, paramList, paramListAux;
@@ -81,7 +81,10 @@ precedence left TIMES, DIVIDE;
 
 start with program;
 
-program ::= exp:e {: RESULT = new Program(e); :};
+
+program ::= exp:e {: RESULT = e; :}
+| decList:dl {: RESULT = dl; :}
+;
 
 tyDecList ::= tyDec:h {: RESULT = new Absyn.TypeDec(h.pos, h.name, h.ty, null); :}
 | tyDec:h tyDecList:t {: RESULT = new Absyn.TypeDec(h.pos, h.name, h.ty, t);  :}

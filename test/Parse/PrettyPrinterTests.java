@@ -10,6 +10,7 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
+import Absyn.Absyn;
 import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
 
@@ -29,9 +30,9 @@ public class PrettyPrinterTests {
         ErrorMsg errorMsg = new ErrorMsg("errorRecovery", System.out);
         String tiger = "((((((((((0))))))))))";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
-        Program program = new CupParser(targetStream, errorMsg).parse();
+        Absyn program = new CupParser(targetStream, errorMsg).parse();
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(!errorMsg.anyErrors);
         assertEquals(this.baos.toString(), "\n(\n    0\n)");
     }
@@ -42,9 +43,9 @@ public class PrettyPrinterTests {
         ErrorMsg errorMsg = new ErrorMsg("errorRecovery", System.out);
         String tiger = "1 = 1 & 2 = 2";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
-        Program program = new CupParser(targetStream, errorMsg).parse();
+        Absyn program = new CupParser(targetStream, errorMsg).parse();
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(!errorMsg.anyErrors);
         assertEquals(this.baos.toString(), "\nif (1 = 1) \nthen (2 = 2)\nelse 0");
     }
@@ -55,9 +56,9 @@ public class PrettyPrinterTests {
         ErrorMsg errorMsg = new ErrorMsg("errorRecovery", System.out);
         String tiger = "1 = 1 | 2 = 2";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
-        Program program = new CupParser(targetStream, errorMsg).parse();
+        Absyn program = new CupParser(targetStream, errorMsg).parse();
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(!errorMsg.anyErrors);
         assertEquals(this.baos.toString(), "\nif (1 = 1) \nthen 1\nelse (2 = 2)");
     }

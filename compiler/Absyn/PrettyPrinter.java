@@ -2,6 +2,7 @@ package Absyn;
 
 import java.io.PrintStream;
 
+import ErrorMsg.FunctionNotDefinedError;
 import Util.Assert;
 import Symbol.Symbol;
 
@@ -210,7 +211,7 @@ public class PrettyPrinter implements AbsynVisitor {
     @Override
     public void visit(FunctionDec functionDec) {
         lineBreakAndIndent();
-        say("function");
+        say(functionDec.body != null ? "function" : "primitive");
         space();
         say(functionDec.name.toString());
         if(this.bindingsDisplay) {
@@ -228,12 +229,14 @@ public class PrettyPrinter implements AbsynVisitor {
             space();
             functionDec.result.accept(this);
         }
-        space();
-        say("=");
-        space();
-        currentIndentation++;
-        functionDec.body.accept(this);
-        currentIndentation--;
+        if(functionDec.body != null) {
+            space();
+            say("=");
+            space();
+            currentIndentation++;
+            functionDec.body.accept(this);
+            currentIndentation--;
+        }
         if(functionDec.next != null) {
             functionDec.next.accept(this);
         }

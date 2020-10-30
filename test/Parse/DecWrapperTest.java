@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
+import Absyn.Absyn;
 import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
 
@@ -15,9 +16,9 @@ public class DecWrapperTest {
         ErrorMsg errorMsg = new ErrorMsg("Dec Wrapper", System.out);
         String tiger = "1 = 1 | 2 = 2";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
-        Program program = new CupParser(targetStream, errorMsg).parse();
+        Absyn program = new CupParser(targetStream, errorMsg).parse();
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
-        program.getDecList().accept(prettyPrinter);
+        program.accept(prettyPrinter);
     }
 
     @Test
@@ -25,9 +26,9 @@ public class DecWrapperTest {
         ErrorMsg errorMsg = new ErrorMsg("Dec Wrapper", System.out);
         String tiger = "print(\"hi\")";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
-        Program program = new CupParser(targetStream, errorMsg).parse();
+        Absyn program = new CupParser(targetStream, errorMsg).parse();
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
-        program.getDecList().accept(prettyPrinter);
+        program.accept(prettyPrinter);
     }
 
     @Test
@@ -35,8 +36,8 @@ public class DecWrapperTest {
         ErrorMsg errorMsg = new ErrorMsg("Dec Wrapper", System.out);
         String tiger = "let function a():int = 1 in a() end";
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
-        Program program = new CupParser(targetStream, errorMsg).parse();
+        Absyn program = new CupParser(targetStream, errorMsg).parse();
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, true, true);
-        program.getDecList().accept(prettyPrinter);
+        program.accept(prettyPrinter);
     }
 }

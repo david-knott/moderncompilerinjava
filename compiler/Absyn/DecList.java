@@ -3,7 +3,7 @@ package Absyn;
 /**
  * DecList class is a singled linked list of @see Absyn.Dec items.
  */
-public class DecList {
+public class DecList extends Absyn {
    public Dec head;
    public DecList tail;
 

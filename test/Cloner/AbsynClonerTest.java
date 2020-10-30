@@ -7,6 +7,7 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
+import Absyn.Absyn;
 import Absyn.PrettyPrinter;
 import Bind.Binder;
 import ErrorMsg.ErrorMsg;
@@ -19,12 +20,12 @@ public class AbsynClonerTest {
      @Test
     public void typeDef() {
         Parser parser = new CupParser("let type a = int var a:a := 1 in a end", new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         AbsynCloner absynCloner = new AbsynCloner();
-        program.absyn.accept(absynCloner);
+        program.accept(absynCloner);
         PrintStream outputStream = System.out;
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         absynCloner.visitedExp.accept(prettyPrinter);
 
     }

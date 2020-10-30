@@ -1,11 +1,10 @@
 package Parse;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import Absyn.Absyn;
 import ErrorMsg.ErrorMsg;
 import Util.Assert;
 
@@ -35,7 +34,7 @@ public class CupParser implements Parser {
     }
 
     @Override
-    public Program parse() {
+    public Absyn parse() {
         Yylex yylex = new Yylex(inputStream, errorMsg);
         Grm parser = new Grm(new DebugLexer(yylex, System.out), this.errorMsg);
         java_cup.runtime.Symbol rootSymbol = null;
@@ -50,7 +49,8 @@ public class CupParser implements Parser {
                 throw new Error(e.toString());
             }
         }
-        return rootSymbol != null ? (Program) rootSymbol.value : null;
+        //return rootSymbol != null ? (Program) rootSymbol.value : null;
+        return rootSymbol != null ? (Absyn) rootSymbol.value : null;
     }
 
     @Override

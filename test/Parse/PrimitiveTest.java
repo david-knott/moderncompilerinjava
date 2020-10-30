@@ -7,6 +7,7 @@ import java.io.InputStream;
 import org.junit.Test;
 
 import Absyn.DecList;
+import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
 
 public class PrimitiveTest {
@@ -19,6 +20,7 @@ public class PrimitiveTest {
         InputStream targetStream = new ByteArrayInputStream(tiger.getBytes());
         ParserService parserService = new ParserService(new ParserFactory());
         DecList decList = parserService.parse(targetStream, errorMsg);
+        decList.accept(new PrettyPrinter(System.out));
         
 
     }

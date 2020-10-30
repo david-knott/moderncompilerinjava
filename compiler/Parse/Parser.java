@@ -1,8 +1,10 @@
 package Parse;
 
+import Absyn.Absyn;
+
 public interface Parser {
 
-    public Program parse();
+    public Absyn parse();
 
     public boolean hasErrors();
 

@@ -14,7 +14,9 @@ into the runtime function.
 We need to wrap the input stream rather that the ast. I think the pretty
 printer is used for this. 
 
-Problem is that the parser expects an expression.
+Problem is that the parser expects an expression or a declist. I added a rule
+to the grammar to allow either a declist or a expression to be the root 
+of the parse tree.
 
 
 ## 28th October 2020

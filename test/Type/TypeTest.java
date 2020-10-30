@@ -7,6 +7,7 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
+import Absyn.Absyn;
 import Absyn.PrettyPrinter;
 import Bind.Binder;
 import ErrorMsg.ErrorMsg;
@@ -22,12 +23,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("1 + \"2\"",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
  
@@ -36,12 +37,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("\"1\" + 2",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -50,12 +51,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("/* error: index variable erroneously assigned to.  */ for i := 10 to 1 do i := i - 1", errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -64,12 +65,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var a:string := 1 in end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -78,12 +79,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var a:string := 1 + 2 in end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -92,12 +93,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var a:int := 1 + 2 in end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -106,12 +107,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var a:int := \"one\" + \"two\" in end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -120,12 +121,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var a:string := \"one\" + \"two\" in end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -136,12 +137,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in r := (if (1) then 2 else 3) end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -150,12 +151,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:string := \"\" in r := (if (1) then 2 else 3) end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -164,12 +165,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in r := (if (1) then 2 else \"string\") end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -178,12 +179,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in r := (if (\"string\") then 2 else 3) end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -192,12 +193,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in r := (1; 2; 3; 4; \"string\") end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -206,12 +207,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in r := (1; 2; 3; 4; r := r + 1) end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -220,12 +221,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in r := (1; 2; 3; 4; 5) end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -234,12 +235,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in while (\"string\") do r := r + 1 end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -248,12 +249,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in while (1) do r end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -262,12 +263,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let var r:int := 0 in while (1) do r := r + 1 end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -276,12 +277,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let  in while (1) do () end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -290,12 +291,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let function a(a:int, b:int) = () in a(1, \"string\") end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -304,12 +305,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let function a(a:int, b:int) = () in a() end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -318,12 +319,12 @@ public class TypeTest {
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Parser parser = new CupParser("let function a(a:int, b:int) = () in a(1, 2, 3) end",errorMsg);
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -332,14 +333,14 @@ public class TypeTest {
     public void recAssignToInt() {
         Parser parser = new CupParser("let type rec = { a : int} var r := rec { a = 42} in r := 1 end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -347,14 +348,14 @@ public class TypeTest {
     public void recAssignField() {
         Parser parser = new CupParser("let type rec = { a : string} var r := rec { a = 42} in r := nil end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -362,14 +363,14 @@ public class TypeTest {
     public void recAssignToNil() {
         Parser parser = new CupParser("let type rec = { a : int} var r := rec { a = 42} in r := nil end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -377,14 +378,14 @@ public class TypeTest {
     public void arraySizeString() {
         Parser parser = new CupParser("let type iat = array of int var a:iat := iat[\"\"] of 0 in end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -392,14 +393,14 @@ public class TypeTest {
     public void arrayInitialiserInt() {
         Parser parser = new CupParser("let type iat = array of string var a:iat := iat[0] of 1 in end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -407,14 +408,14 @@ public class TypeTest {
     public void arrayInitialiserString() {
         Parser parser = new CupParser("let type iat = array of int var a:iat := iat[0] of \"string\" in end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -422,14 +423,14 @@ public class TypeTest {
     public void arrayAssignToInt() {
         Parser parser = new CupParser("let type iat = array of int var a:iat := iat[10] of 0 in a := 1 end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertTrue(errorMsg.anyErrors);
     }
 
@@ -437,14 +438,14 @@ public class TypeTest {
     public void arrayOk() {
         Parser parser = new CupParser("let type iat = array of int var a:iat := iat[10] of 0 in end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -452,14 +453,14 @@ public class TypeTest {
     public void desugarStringEquality() {
         Parser parser = new CupParser("\"foo\" = \"bar\"",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -467,14 +468,14 @@ public class TypeTest {
     public void desugarStringLess() {
         Parser parser = new CupParser("\"foo\" < \"bar\"",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -482,14 +483,14 @@ public class TypeTest {
     public void desugarFor() {
         Parser parser = new CupParser("for i := 0 to 10 do print_int(i)",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
@@ -497,14 +498,14 @@ public class TypeTest {
     public void voidTest() {
         Parser parser = new CupParser("let var void1 := () var void2 := () var void3 := () in void1 :=  void2 := void3 := () end",
                 new ErrorMsg("", System.out));
-        Program program = parser.parse();
+        Absyn program = parser.parse();
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("", outputStream);
         Binder binder = new Binder(errorMsg);
-        program.absyn.accept(binder);
-        program.absyn.accept(new TypeChecker(errorMsg));
+        program.accept(binder);
+        program.accept(new TypeChecker(errorMsg));
         PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, true);
-        program.absyn.accept(prettyPrinter);
+        program.accept(prettyPrinter);
         assertFalse(errorMsg.anyErrors);
     }
 
