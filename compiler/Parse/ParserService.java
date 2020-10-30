@@ -3,17 +3,13 @@ package Parse;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
 
 import Absyn.Absyn;
 import Absyn.DecList;
 import Absyn.Exp;
 import Absyn.FunctionDec;
-import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
-import java_cup.parser;
 
 public class ParserService {
 
@@ -34,6 +30,7 @@ public class ParserService {
         Parser parser = parserFactory.getParser(inputStream, errorMsg);
         Absyn tree = parser.parse();
         DecList program = null;
+        // TODO: Checking for DecList might not be neccessary.
         if(tree instanceof DecList) {
             program = (DecList)tree;
         }
@@ -48,7 +45,7 @@ public class ParserService {
         }
         // parse the prelude file which contains the references to 
         // the functions defined in the runtime.
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+     //   System.out.println("Working Directory = " + System.getProperty("user.dir"));
         Parser prelude = parserFactory.getParser(new FileInputStream("./data/prelude.tih"), errorMsg);
         DecList preludeList = (DecList)prelude.parse();
         // append the user code to end of prelude declarations.

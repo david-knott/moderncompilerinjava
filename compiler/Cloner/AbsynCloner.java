@@ -42,6 +42,7 @@ import Util.Assert;
 public class AbsynCloner implements AbsynVisitor {
 
     public Exp visitedExp;
+    public DecList visitedDecList;
     private Ty visitedTy;
     private Var visitedVar;
     private Dec visitedDec;
@@ -91,7 +92,19 @@ public class AbsynCloner implements AbsynVisitor {
 
     @Override
     public void visit(DecList exp) {
-        Assert.unreachable();
+        DecList clonedDecList = null, first = null, temp = null;
+        for(DecList decList = exp; decList != null; decList = decList.tail) {
+            decList.head.accept(this);
+            Dec clonedDec = this.visitedDec;
+            if(first == null) {
+                first = clonedDecList = new DecList(clonedDec, null);
+            } else {
+                temp = clonedDecList;
+                clonedDecList = new DecList(clonedDec, null);
+                temp.tail = clonedDecList;
+            }
+        }
+        this.visitedDecList = clonedDecList;
     }
 
     @Override

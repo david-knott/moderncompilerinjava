@@ -31,14 +31,11 @@ import Translate.Exp;
 
 public class SemantTests {
 
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-
-
     private Semant semant;
 
     public SemantTests() {
-//        System.setErr(new PrintStream(errContent));
+        System.setErr(new PrintStream(errContent));
         Frame frame = new IntelFrame(Label.create("tigermain"), null);
         Level topLevel = new Level(frame);
         Translator translate = new Translator();

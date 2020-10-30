@@ -1,5 +1,13 @@
 # Diary
 
+## 30th October 2020
+
+Cloner is broken after modifing code to use declists.
+Its likely alot of the absyn visitors are broken now.
+We had originally assumed that a function body cannot be null,
+this is not the case now. It can be null in the case of primitive
+declarations, this could be refactored into the base absyn visitor.
+
 ## 29th October 2020
 
 Modified  TaskContext to use DecList instead of Program.
