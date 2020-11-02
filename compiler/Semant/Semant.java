@@ -116,7 +116,7 @@ public class Semant extends Component{
             if(current.body == null) {
                 env.venv.put(current.name, new FunEntry(
                     null, /* primitives are not part of a level */
-                    Label.create(e.name), 
+                    Label.create(current.name), 
                     getRecordType(
                         current.params
                     ), 

@@ -51,16 +51,6 @@ public class Level {
     }
 
     /**
-     * Returns true if this level is the top level. This is used
-     * to identify functions that are in the runtime.c file and
-     * not the assembly.
-     * @return
-     */
-    public boolean isTopLevel() {
-        return this.parent == null;
-    }
-
-    /**
      * Creates a local access within the frame for this level
      * @param escape should the variable escape or not
      * @return the new access

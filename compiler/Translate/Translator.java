@@ -574,7 +574,7 @@ public class Translator extends Component {
                             )
                     );
                     // if callee and caller have a common parent
-                    //if callee is not parent of caller,
+                    // if callee is not parent of caller,
                     while(l.parent != calleeLevel.parent) {
                         staticLink = new MEM( 
                             new BINOP(
