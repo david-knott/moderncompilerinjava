@@ -36,11 +36,9 @@ public class SemantTests {
 
     public SemantTests() {
         System.setErr(new PrintStream(errContent));
-        Frame frame = new IntelFrame(Label.create("tigermain"), null);
-        Level topLevel = new Level(frame);
         Translator translate = new Translator();
         ErrorMsg errorMsg = new ErrorMsg("test", System.err);
-        this.semant = new Semant(errorMsg, topLevel, translate);
+        this.semant = new Semant(errorMsg, translate);
     }
 
     @Test

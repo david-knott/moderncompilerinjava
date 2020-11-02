@@ -42,14 +42,14 @@ public class Semant extends Component{
     public static final Types.Type NIL = new Types.NIL();
     public SemantValidator semantValidator;
     
-    public Semant(ErrorMsg err, final Level lvl, Translator trans) {
-        this(new Env(err), null, lvl, trans);
+    public Semant(ErrorMsg err, /*final Level lvl, */Translator trans) {
+        this(new Env(err), null, null, trans);
     }
 
     Semant(final Env e, Label bsl, Level lev, Translator trans) {
         env = e;
         breakScopeLabel = bsl;
-      //  level = lev;
+        level = lev;
         translator = trans;
         this.semantValidator = new SemantValidator(e);
     }
@@ -70,8 +70,9 @@ public class Semant extends Component{
      */
     public FragList getTreeFragments(DecList decList) {
 
+        //outer level, which contains the primitive functions.
+       // Level outer = null;
       //  level = new Level(new IntelFrame(Label.create("tigermain"), null));
-        // translate the primitives, and function body.
         for(;decList != null; decList = decList.tail) {
             // translate, we dont need the result.
             transDec(decList.head);
@@ -79,6 +80,196 @@ public class Semant extends Component{
         // return the fraglist build during tree traversal.
         return FragList.reverse(translator.getResult());
     }
+
+    /**
+     * COnverts a field list into a BoolList. Each
+     * boolean in this list represents a variable, where
+     * a true indicates the variable should escape and false
+     * where it should not.
+     * @param fields
+     * @return
+     */
+    private BoolList getBoolList(final FieldList fields) {
+        BoolList boolList = null; //
+        if (fields != null) {
+            boolList = new BoolList(fields != null ? fields.escape : null, null);
+            var fieldTail = fields.tail;
+            while (fieldTail != null) {
+                boolList.append(fieldTail.escape);
+                fieldTail = fieldTail.tail;
+            }
+        }
+        return boolList;
+    }
+
+    /**
+     * Translate a function declaration into an intermediate expresion:w
+     * 
+     * @param
+     * @return
+     */
+    Exp transDec(final Absyn.FunctionDec e) {
+        // visit the function header
+        for(FunctionDec current = e; current != null; current = current.next) {
+            // get the functions return type
+            var functionReturnType = current.result != null ? transTy(current.result) : Semant.VOID;
+            if(current.body == null) {
+                env.venv.put(current.name, new FunEntry(
+                    null, /* primitives are not part of a level */
+                    Label.create(e.name), 
+                    getRecordType(
+                        current.params
+                    ), 
+                    functionReturnType)
+                );
+            } else if(e.name.toString().equals("tigermain")) {
+                Label label = Label.create("tigermain");
+                this.level = new Level(new IntelFrame(label, null));
+                env.venv.put(current.name, new FunEntry(
+                    new Level(
+                        level, 
+                        label, 
+                        getBoolList(
+                            current.params
+                        )
+                    ),
+                    label,
+                    getRecordType(
+                        current.params
+                    ), 
+                    functionReturnType
+                ));
+            } else {
+                this.level = new Level(
+                    level, 
+                    Label.create(), 
+                    getBoolList(
+                        current.params
+                    )
+                );
+                Label label = Label.create();
+                env.venv.put(current.name, new FunEntry(
+                    new Level(
+                        level, 
+                        label, 
+                        getBoolList(
+                            current.params
+                        )
+                    ),
+                    label,
+                    getRecordType(
+                        current.params
+                    ), 
+                    functionReturnType
+                ));
+            }
+        } 
+
+        // visit the function body
+        for(FunctionDec current = e; current != null; current = current.next) {
+            if(e.body == null)
+                continue;
+            env.venv.beginScope();
+            // get the new level created in the parent scope for this function
+            var newLevel = ((FunEntry) env.venv.get(current.name)).level;
+            var vent = (FunEntry) env.venv.get(current.name);
+            // iterate formals adding access to the created var entries
+            var translateAccess = translator.stripStaticLink(newLevel.formals);
+            for (var p = current.params; p != null; p = p.tail) {
+                var varEntry = new VarEntry(
+                    env.tenv.get(p.typ.name).actual(), 
+                    translateAccess.head
+                );
+                env.venv.put(p.name, varEntry);
+                translateAccess = translateAccess.tail;
+            }
+            // body of function is null if externally defined.
+            if(current.body != null) {
+                var transBody = new Semant(env, breakScopeLabel, newLevel, translator).transExp(current.body);
+                this.semantValidator.sameType(transBody, vent.result, current.pos);
+                Exp translatedBody = this.translator.functionDec(newLevel, transBody);
+                this.translator.procEntryExit(newLevel, translatedBody);
+            }
+            env.venv.endScope();
+        }
+        return translator.Noop();
+    }
+
+    /**
+     * Recursive support for declarations No intermediate code is generated here
+     * 
+     * @param e
+     * @return
+     */
+    Exp transDec(final Absyn.TypeDec e) {
+        // we assume that contiguous declarations may be recursive
+        // process headers first to capture a reference to type name
+        TypeDec next = e;
+        do {
+            var namedType = new Types.NAME(next.name);
+            // stick it into the type env with a null type binding
+            // we can use the name type for other declarations that
+            // depend on it, and set its binding type later.
+            env.tenv.put(next.name, namedType);
+            next = next.next;
+        } while (next != null);
+        // process type declarations expressions, where the type name above
+        // may be used recursively
+        next = e;
+        do {
+            // set the name types actual type to the
+            // type returned by the the transTy function
+            var mappedType = transTy(next.ty);
+            // get the named type from the env
+            var namedType = (NAME) env.tenv.get(next.name);
+            namedType.bind(mappedType);
+            next = next.next;
+        } while (next != null);
+        //check that all namedTypes have a binding
+        for(var o = e; o != null; o = o.next) {
+            var namedType = (NAME) env.tenv.get(o.name);
+            if(namedType.isLoop()){
+                throw new Error("Loop");
+            }
+        }
+        return translator.Noop();
+    }
+
+    /**
+     * Translates a variable declaration into an intermediate expression
+     * 
+     * @param e
+     * @return
+     */
+    Exp transDec(final Absyn.VarDec e) {
+        ExpTy initExpTy = transExp(e.init);
+        Types.Type type = initExpTy.ty.actual();
+        if(e.typ != null) {
+            Types.Type other = transTy(e.typ);
+            this.semantValidator.sameType(initExpTy, other, e.pos);
+            this.semantValidator.nilAssignedToRecord(initExpTy, other, e.pos);
+        }
+        var translateAccess = level.allocLocal(e.escape);
+        var varEntry = new VarEntry(type, translateAccess);
+        env.venv.put(e.name, varEntry);
+        return translator.transDec(level, translateAccess, initExpTy.exp);
+    }
+
+    /**
+     * Dispatcher for declaration types. Note that the symbol tables are populated
+     * in these methods
+     */
+    Exp transDec(final Absyn.Dec e) {
+        if (e instanceof Absyn.VarDec)
+            return transDec((Absyn.VarDec) e);
+        else if (e instanceof Absyn.TypeDec)
+            return transDec((Absyn.TypeDec) e);
+        else if (e instanceof Absyn.FunctionDec)
+            return transDec((Absyn.FunctionDec) e);
+        else
+            throw new Error("Not Implemented " + e.getClass().getName());
+    }
+
 
     /*
     private FragList getTreeFragments(Absyn.Exp absyn) {
@@ -262,164 +453,7 @@ public class Semant extends Component{
         throw new Error("Not Implemented " + e.getClass().getName());
     }
 
-    /**
-     * COnverts a field list into a BoolList. Each
-     * boolean in this list represents a variable, where
-     * a true indicates the variable should escape and false
-     * where it should not.
-     * @param fields
-     * @return
-     */
-    private BoolList getBoolList(final FieldList fields) {
-        BoolList boolList = null; //
-        if (fields != null) {
-            boolList = new BoolList(fields != null ? fields.escape : null, null);
-            var fieldTail = fields.tail;
-            while (fieldTail != null) {
-                boolList.append(fieldTail.escape);
-                fieldTail = fieldTail.tail;
-            }
-        }
-        return boolList;
-    }
-
-    /**
-     * Translate a function declaration into an intermediate expresion:w
-     * 
-     * @param
-     * @return
-     */
-    Exp transDec(final Absyn.FunctionDec e) {
-        for(FunctionDec current = e; current != null; current = current.next) {
-            // get the functions return type
-            var functionReturnType = current.result != null ? transTy(current.result) : Semant.VOID;
-            // add a new nesting level into the function entry
-            // add allocations for the parameters to be passed
-            // to this function
-            // creates a new level and a new frame and allocates
-            // space for the formal parameters
-            // for each formal parameter, we need to get its frame access
-            
-            // if current has no body, meaning its a primitive, use its name as its label.
-            Label functionLabel = current.body != null ? Label.create() : Label.create(e.name);
-            var functionEntry = new FunEntry(
-                new Level(
-                    level, 
-                    functionLabel, 
-                    getBoolList(
-                        current.params
-                    )
-                ),
-                functionLabel,
-                getRecordType(
-                    current.params
-                ), 
-                functionReturnType
-            );
-            // add function entry into the value environment
-            env.venv.put(current.name, functionEntry);
-        } 
-        for(FunctionDec current = e; current != null; current = current.next) {
-            env.venv.beginScope();
-            // get the new level created in the parent scope for this function
-            var newLevel = ((FunEntry) env.venv.get(current.name)).level;
-            var vent = (FunEntry) env.venv.get(current.name);
-            // iterate formals adding access to the created var entries
-            var translateAccess = translator.stripStaticLink(newLevel.formals);
-            for (var p = current.params; p != null; p = p.tail) {
-                var varEntry = new VarEntry(
-                    env.tenv.get(p.typ.name).actual(), 
-                    translateAccess.head
-                );
-                env.venv.put(p.name, varEntry);
-                translateAccess = translateAccess.tail;
-            }
-            // body of function is null if externally defined.
-            if(current.body != null) {
-                var transBody = new Semant(env, breakScopeLabel, newLevel, translator).transExp(current.body);
-                this.semantValidator.sameType(transBody, vent.result, current.pos);
-                Exp translatedBody = this.translator.functionDec(newLevel, transBody);
-                this.translator.procEntryExit(newLevel, translatedBody);
-            }
-            env.venv.endScope();
-        }
-        return translator.Noop();
-    }
-
-    /**
-     * Recursive support for declarations No intermediate code is generated here
-     * 
-     * @param e
-     * @return
-     */
-    Exp transDec(final Absyn.TypeDec e) {
-        // we assume that contiguous declarations may be recursive
-        // process headers first to capture a reference to type name
-        TypeDec next = e;
-        do {
-            var namedType = new Types.NAME(next.name);
-            // stick it into the type env with a null type binding
-            // we can use the name type for other declarations that
-            // depend on it, and set its binding type later.
-            env.tenv.put(next.name, namedType);
-            next = next.next;
-        } while (next != null);
-        // process type declarations expressions, where the type name above
-        // may be used recursively
-        next = e;
-        do {
-            // set the name types actual type to the
-            // type returned by the the transTy function
-            var mappedType = transTy(next.ty);
-            // get the named type from the env
-            var namedType = (NAME) env.tenv.get(next.name);
-            namedType.bind(mappedType);
-            next = next.next;
-        } while (next != null);
-        //check that all namedTypes have a binding
-        for(var o = e; o != null; o = o.next) {
-            var namedType = (NAME) env.tenv.get(o.name);
-            if(namedType.isLoop()){
-                throw new Error("Loop");
-            }
-        }
-        return translator.Noop();
-    }
-
-    /**
-     * Translates a variable declaration into an intermediate expression
-     * 
-     * @param e
-     * @return
-     */
-    Exp transDec(final Absyn.VarDec e) {
-        ExpTy initExpTy = transExp(e.init);
-        Types.Type type = initExpTy.ty.actual();
-        if(e.typ != null) {
-            Types.Type other = transTy(e.typ);
-            this.semantValidator.sameType(initExpTy, other, e.pos);
-            this.semantValidator.nilAssignedToRecord(initExpTy, other, e.pos);
-        }
-        var translateAccess = level.allocLocal(e.escape);
-        var varEntry = new VarEntry(type, translateAccess);
-        env.venv.put(e.name, varEntry);
-        return translator.transDec(level, translateAccess, initExpTy.exp);
-    }
-
-    /**
-     * Dispatcher for declaration types. Note that the symbol tables are populated
-     * in these methods
-     */
-    Exp transDec(final Absyn.Dec e) {
-        if (e instanceof Absyn.VarDec)
-            return transDec((Absyn.VarDec) e);
-        else if (e instanceof Absyn.TypeDec)
-            return transDec((Absyn.TypeDec) e);
-        else if (e instanceof Absyn.FunctionDec)
-            return transDec((Absyn.FunctionDec) e);
-        else
-            throw new Error("Not Implemented " + e.getClass().getName());
-    }
+    
 
     /**
      * Translate a var expressions into ir code and type
@@ -456,9 +490,7 @@ public class Semant extends Component{
         return new ExpTy(irLet, irBody.ty);
     }
 
-
-
-        /**
+    /**
      * Returns an operator expression
      * 
      * @param e
@@ -588,7 +620,7 @@ public class Semant extends Component{
             if (argExpList != null) {
                 env.errorMsg.add(new ArgumentMismatchError(callExp.pos, null, null));
             }
-            return new ExpTy(translator.call(!funEntry.level.isTopLevel(), level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
+            return new ExpTy(translator.call(funEntry.level != null, level, funEntry.level, funEntry.label, expTyList, funEntry.result), funEntry.result);
         } else {
             env.errorMsg.add(new FunctionNotDefinedError(callExp.pos, callExp.func));
             return new ExpTy(translator.Noop(), INT);
