@@ -88,7 +88,7 @@ public class Reducer {
 	}
 
 	public IR storeIndirectWithDisplacement(IR __p, IndirectWithDisplacementExpression dst, Temp src) {
-		emit(new Assem.OPER("movq %`s0, " + dst.displacement() + "(%`s1) # store to offset", 
+		emit(new Assem.OPER("movq %`s0, " + dst.displacement() + "(%`s1) # store to offset 1", 
 			null, 
 			new TempList(src, new TempList(dst.temp()))
 		));
@@ -96,7 +96,7 @@ public class Reducer {
 	}
 
 	public IR storeIndirectWithDisplacement(IR __p, IndirectWithDisplacementExpression dst, Integer src) {
-		emit(new Assem.OPER("movq $" + src + ", " + dst.displacement() + "(%`s0) # store to offset", 
+		emit(new Assem.OPER("movq $" + src + ", " + dst.displacement() + "(%`s0) # store to offset 2", 
 			null, 
 			new TempList(dst.temp())
 		));

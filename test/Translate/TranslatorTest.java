@@ -36,7 +36,7 @@ public class TranslatorTest {
         Label label = Label.create("test");
         frame = new IntelFrame(label, null);
         level = new Level(frame);
-        childLevel = new Level(level, label, null);
+        childLevel = new Level(level, label, null, true);
     }
 
     @Test

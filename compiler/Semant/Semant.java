@@ -124,14 +124,15 @@ public class Semant extends Component{
                 );
             } else if(e.name.toString().equals("tigermain")) {
                 Label label = Label.create("tigermain");
-                this.level = new Level(new IntelFrame(label, null));
+                Level root = new Level(new IntelFrame(label, null));
                 env.venv.put(current.name, new FunEntry(
                     new Level(
-                        level, 
+                        root, 
                         label, 
                         getBoolList(
                             current.params
-                        )
+                        ),
+                        false /* no static link */
                     ),
                     label,
                     getRecordType(
@@ -140,22 +141,17 @@ public class Semant extends Component{
                     functionReturnType
                 ));
             } else {
-                this.level = new Level(
-                    level, 
-                    Label.create(), 
+                Label label = Label.create();
+                Level newLevel = new Level(
+                    this.level, 
+                    label, 
                     getBoolList(
                         current.params
-                    )
-                );
-                Label label = Label.create();
-                env.venv.put(current.name, new FunEntry(
-                    new Level(
-                        level, 
-                        label, 
-                        getBoolList(
-                            current.params
-                        )
                     ),
+                    true /* static link */
+                );
+                env.venv.put(current.name, new FunEntry(
+                    newLevel,
                     label,
                     getRecordType(
                         current.params

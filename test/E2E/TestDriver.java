@@ -10,7 +10,7 @@ public class TestDriver {
     @Test
     public void intDec() throws FileNotFoundException {
 
-        String[] args = new String[] {"--reg-alloc", "--escapes-compute", "--demove", "./test/E2E/good/pplus.tig"};
+        String[] args = new String[] {"--reg-alloc", "--hir-display", "--escapes-compute", "--demove", "./test/E2E/good/pplus.tig"};
         Main.main(args);
         //Main.main(new String[]{"-A", "./test/E2E/good/merge_simple.tig"});
     }
