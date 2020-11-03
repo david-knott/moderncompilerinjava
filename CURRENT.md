@@ -4,7 +4,8 @@
 
 Modified code to use a primitives prelude and an enclosing main function.
 
-I am checking the cloner visitor.
+I am checking the cloner visitor and pretty printer. Adding an equality checker for AST's
+would be useful for testing.
 
 Added some theory type tests for pretty printer.
 
