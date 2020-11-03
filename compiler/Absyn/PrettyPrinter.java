@@ -411,11 +411,7 @@ public class PrettyPrinter implements AbsynVisitor {
         space();
         say("=");
         space();
-        say("{");
-        space();
         exp.ty.accept(this);
-        space();
-        say("}");
         if(exp.next != null) {
             exp.next.accept(this);
         }

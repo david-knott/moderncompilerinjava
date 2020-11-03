@@ -6,6 +6,9 @@ Modified code to use a primitives prelude and an enclosing main function.
 
 I am checking the cloner visitor.
 
+Added some theory type tests for pretty printer.
+
+I plan to move the compilation test from bash to junit.
 
 ## 30th October 2020
 
