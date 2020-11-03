@@ -11,7 +11,6 @@ import Absyn.BreakExp;
 import Absyn.CallExp;
 import Absyn.DefaultVisitor;
 import Absyn.Exp;
-import Absyn.ExpList;
 import Absyn.FieldList;
 import Absyn.ForExp;
 import Absyn.FunctionDec;
@@ -25,21 +24,18 @@ import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.StringExp;
 import Absyn.Ty;
-import Absyn.Typable;
 import Absyn.TypeDec;
 import Absyn.Var;
 import Absyn.VarDec;
 import Absyn.WhileExp;
 import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
-import Tree.CONST;
 import Types.ARRAY;
 import Types.Constants;
 import Types.FUNCTION;
 import Types.NAME;
 import Types.RECORD;
 import Types.Type;
-import Util.Assert;
 
 /**
  * The Binder class traverses the abstract syntax tree and binds variable,

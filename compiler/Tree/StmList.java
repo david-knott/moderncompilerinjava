@@ -91,13 +91,11 @@ public class StmList extends Stm {
 
     @Override
     public ExpList kids() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Stm build(ExpList kids) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -111,19 +109,16 @@ public class StmList extends Stm {
 
     @Override
     public int getOperator() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public int getArity() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public IR getNthChild(int index) {
-        // TODO Auto-generated method stub
         return null;
     }
 }

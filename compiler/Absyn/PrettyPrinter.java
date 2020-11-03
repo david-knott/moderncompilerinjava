@@ -2,7 +2,6 @@ package Absyn;
 
 import java.io.PrintStream;
 
-import ErrorMsg.FunctionNotDefinedError;
 import Util.Assert;
 import Symbol.Symbol;
 

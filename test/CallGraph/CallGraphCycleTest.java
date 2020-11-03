@@ -38,11 +38,12 @@ public class CallGraphCycleTest {
 
     @Test
     public void complexCycle() {
-        Parser parser = new CupParser("let function a() = (b(); c()) function b() = a() function c() = c() in a() end", new ErrorMsg("", System.out));
+        Parser parser = new CupParser("function _main() = ( let function a() = (b(); c()) function b() = c() function c() = c() in a() end )", new ErrorMsg("", System.out));
         Absyn program = parser.parse();
         CallGraphVisitor  callGraphVisitor = new CallGraphVisitor();
         program.accept(new Binder(new ErrorMsg("f", System.out)));
         program.accept(callGraphVisitor);
         assertTrue(callGraphVisitor.functionCallGraph.isCyclic());
+        callGraphVisitor.functionCallGraph.show(System.out);
     }
 }

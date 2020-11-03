@@ -1,9 +1,8 @@
 package Absyn;
 
 import Symbol.Symbol;
-import Types.Type;
 
-public class SimpleVar extends Var implements Typable {
+public class SimpleVar extends Var  {
    public Symbol name;
 
    public SimpleVar(int p, Symbol n) {

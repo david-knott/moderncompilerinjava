@@ -14,8 +14,7 @@ public class Tasks implements TaskProvider {
             public void only(TaskContext taskContext) {
                 AbsynCloner absynCloner = new AbsynCloner();
                 taskContext.decList.accept(absynCloner);
-               // taskContext.setAst(new Program(absynCloner.visitedExp));
-               throw new Error("Fix me");
+                taskContext.setDecList(absynCloner.visitedDecList);
             }
         }, "clone", "Clone the ast", "parse");
     }

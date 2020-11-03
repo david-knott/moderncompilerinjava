@@ -3,6 +3,11 @@ package Cloner;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 import org.junit.Test;
@@ -19,14 +24,19 @@ public class AbsynClonerTest {
 
      @Test
     public void typeDef() {
-        Parser parser = new CupParser("let type a = int var a:a := 1 in a end", new ErrorMsg("", System.out));
+        ErrorMsg errorMsg = new ErrorMsg("f", System.out);
+        Parser parser = new CupParser("let type a = int var a:a := 1 in a end", errorMsg);
         Absyn program = parser.parse();
         AbsynCloner absynCloner = new AbsynCloner();
         program.accept(absynCloner);
-        PrintStream outputStream = System.out;
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.accept(prettyPrinter);
-        absynCloner.visitedExp.accept(prettyPrinter);
+        //create an outstream and write new pretty printed program to it
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrettyPrinter prettyPrinter = new PrettyPrinter(new PrintStream(outputStream));
+        absynCloner.visitedDecList.accept(prettyPrinter);
+        InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+        Parser parser2 = new CupParser(inputStream, errorMsg);
+        Absyn program2 = parser2.parse();
+
 
     }
 

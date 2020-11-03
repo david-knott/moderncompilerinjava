@@ -1,15 +1,11 @@
 package CallGraph;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
 import Absyn.CallExp;
 import Absyn.DefaultVisitor;
 import Absyn.FunctionDec;
-import Graph.Graph;
 import Graph.Node;
-import Graph.NodeList;
 
 /**
  * Creates a call graph of functions, 

@@ -1,10 +1,8 @@
 package Bind;
 
-import java.io.PrintStream;
 import java.util.Hashtable;
 
 import Absyn.Absyn;
-import Absyn.TypeDec;
 import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
 import Types.Type;
@@ -126,16 +124,5 @@ class SymbolTable {
      */
     public void endScope() {
         this.current = this.current.parent;
-    }
-
-    public void debug(PrintStream printStream) {
-        // try(PrintStream printStream = new PrintStream(outputStream)) {
-        printStream.println("## scope debug information");
-        printStream.format("%10s%10s\n", "symbol", "type");
-        for (var keys : this.current.table.keySet()) {
-            // SymbolElement type = this.current.table.get(keys);
-            // printStream.format("%10s%10s\n", keys, type);
-        }
-        // }
     }
 }

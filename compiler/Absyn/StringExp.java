@@ -1,7 +1,5 @@
 package Absyn;
 
-import Types.Type;
-
 public class StringExp extends Exp {
    public String value;
 

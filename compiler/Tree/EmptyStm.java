@@ -36,19 +36,16 @@ public class EmptyStm extends Stm {
 
 	@Override
 	public int getOperator() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int getArity() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public IR getNthChild(int index) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

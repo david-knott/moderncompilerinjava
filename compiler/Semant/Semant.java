@@ -397,7 +397,6 @@ public class Semant extends Component{
             return ExpTy.ERROR;
         var varType = varExp.ty.actual();
         int i = 0;
-        // TODO: Refactor node add
         for (RECORD record = (RECORD) varType; record != null; record = record.tail) {
             if (record.fieldName == e.field) {
                 Exp translateExp = translator.fieldVar(varExp.exp, i, level);
@@ -493,7 +492,6 @@ public class Semant extends Component{
      * @return
      */
     ExpTy transExp(final Absyn.OpExp e) {
-        // TODO: implement this correctly
         var transExpLeft = transExp(e.left);
         var transExpRight = transExp(e.right);
         switch (e.oper) {
@@ -598,7 +596,6 @@ public class Semant extends Component{
             var funEntry = (FunEntry) entry;
             var argExpList = callExp.args;
             // Type check first
-            // TODO: Refactor node add
             ExpTyList expTyList = null;
             for (RECORD fmlType = funEntry.formals; fmlType != null; fmlType = fmlType.tail) {
                 if (argExpList == null) {

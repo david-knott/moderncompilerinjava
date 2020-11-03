@@ -1,5 +1,12 @@
 # Diary
 
+## 3rd November 2020
+
+Modified code to use a primitives prelude and an enclosing main function.
+
+I am checking the cloner visitor.
+
+
 ## 30th October 2020
 
 Cloner is broken after modifing code to use declists.
