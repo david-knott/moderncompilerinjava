@@ -104,7 +104,7 @@ public class AbsynCloner implements AbsynVisitor {
                 temp.tail = clonedDecList;
             }
         }
-        this.visitedDecList = clonedDecList;
+        this.visitedDecList = first;
     }
 
     @Override
@@ -144,8 +144,11 @@ public class AbsynCloner implements AbsynVisitor {
     public void visit(FunctionDec exp) {
         FunctionDec clonedFunctionDec = null, temp = null, first = null;
         for(;exp != null; exp = exp.next) {
-            exp.body.accept(this);
-            Exp clonedBody = this.visitedExp;
+            Exp clonedBody = null;
+            if(exp.body != null) {
+                exp.body.accept(this);
+                clonedBody = this.visitedExp;
+            }
             FieldList clonedFieldList = null, temp1 = null, first1 = null;
             for(FieldList fieldList = exp.params; fieldList != null; fieldList = fieldList.tail) {
                 fieldList.typ.accept(this);

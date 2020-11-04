@@ -25,6 +25,8 @@ public class ParserService {
 
     public void configure(ParserServiceConfigurator parserServiceConfigurator) {
         parserServiceConfigurator.configure(parserServiceConfiguration);
+        parserFactory.setParserTrace(parserServiceConfiguration.isParserTrace());
+        
     }
 
     public DecList parse(String code, ErrorMsg errorMsg) throws FileNotFoundException {

@@ -1,6 +1,6 @@
 package Parse;
 
 @FunctionalInterface
-interface ParserServiceConfigurator {
+public interface ParserServiceConfigurator {
     public void configure(ParserServiceConfiguration parserServiceConfiguration);
 }

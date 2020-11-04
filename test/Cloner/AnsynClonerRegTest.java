@@ -1,4 +1,4 @@
-package Absyn;
+package Cloner;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,12 +20,16 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
+import Absyn.Absyn;
+import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
+import Parse.CupParser;
+import Parse.Parser;
 import Parse.ParserFactory;
 import Parse.ParserService;
 
 @RunWith(Theories.class)
-public class PrettyPrinterRegTest {
+public class AnsynClonerRegTest {
 
     @DataPoints
     public static String[] paths() {
@@ -40,21 +45,24 @@ public class PrettyPrinterRegTest {
 
     @Theory
     public void good(String fileName) {
-        System.out.println("Testing Pretty Printer " + fileName);
+        System.out.println("Testing Cloner " + fileName);
         ErrorMsg errorMsg = new ErrorMsg("f", System.out);
         ParserService parserService = new ParserService(new ParserFactory());
+        parserService.configure(config -> config.setNoPrelude(true));
+        parserService.configure(config -> config.setParserTrace(false));
         try (FileInputStream fin = new FileInputStream(fileName)) {
             Absyn program = parserService.parse(fin, errorMsg);
-            assertNotNull(program);
+            AbsynCloner absynCloner = new AbsynCloner();
+            program.accept(absynCloner);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrettyPrinter prettyPrinter = new PrettyPrinter(new PrintStream(outputStream));
-            program.accept(prettyPrinter);
+            absynCloner.visitedDecList.accept(prettyPrinter);
             InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+            System.out.println(new String(outputStream.toByteArray(), StandardCharsets.UTF_8));
             Absyn program2 = parserService.parse(inputStream, errorMsg);
             assertNotNull(program2);
         }   catch(IOException e) {
-
+            e.printStackTrace();
         } 
-                // should parse without errors.
     }
 }
