@@ -26,15 +26,14 @@ public class ParserService {
     public void configure(ParserServiceConfigurator parserServiceConfigurator) {
         parserServiceConfigurator.configure(parserServiceConfiguration);
         parserFactory.setParserTrace(parserServiceConfiguration.isParserTrace());
-        
     }
 
-    public DecList parse(String code, ErrorMsg errorMsg) throws FileNotFoundException {
+    public DecList parse(String code, ErrorMsg errorMsg) {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(code.getBytes(Charset.defaultCharset()));
         return parse(byteArrayInputStream, errorMsg);
     }
 
-    public DecList parse(InputStream inputStream, ErrorMsg errorMsg) throws FileNotFoundException {
+    public DecList parse(InputStream inputStream, ErrorMsg errorMsg) {
         // parse the program. This is one top level function that contains user code.
         Parser parser = parserFactory.getParser(inputStream, errorMsg);
         Absyn tree = parser.parse();
@@ -61,7 +60,12 @@ public class ParserService {
         // parse the prelude file which contains the references to 
         // the functions defined in the runtime.
      //   System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        Parser prelude = parserFactory.getParser(new FileInputStream("./data/prelude.tih"), errorMsg);
+        Parser prelude;
+        try {
+            prelude = parserFactory.getParser(new FileInputStream("./data/prelude.tih"), errorMsg);
+        } catch (FileNotFoundException e) {
+            throw new PreludeFileNotFoundException();
+        }
         DecList preludeList = (DecList)prelude.parse();
         // append the user code to end of prelude declarations.
         DecList end;

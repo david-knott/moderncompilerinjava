@@ -43,19 +43,12 @@ public class Tasks implements TaskProvider {
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
-                try {
-                    DecList decList = parserService.parse(taskContext.in, taskContext.errorMsg);
-                    if(taskContext.errorMsg.anyErrors) {
-                        // there was a lexical or parse error, cannot continue
-                        System.exit(0);
-                    } else {
-                        taskContext.setDecList(decList);
-                    }
-                } catch (FileNotFoundException e) {
-                    // some sort of error was caught
-                    // prelude file not found ?
-                    // unhandled parse / lex error.
-                    e.printStackTrace();
+                DecList decList = parserService.parse(taskContext.in, taskContext.errorMsg);
+                if(taskContext.errorMsg.anyErrors) {
+                    // there was a lexical or parse error, cannot continue
+                    System.exit(0);
+                } else {
+                    taskContext.setDecList(decList);
                 }
             }
         }, "parse", "parse", ""); 
