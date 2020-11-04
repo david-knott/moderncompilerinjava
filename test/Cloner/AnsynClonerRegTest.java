@@ -23,8 +23,6 @@ import org.junit.runner.RunWith;
 import Absyn.Absyn;
 import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
-import Parse.CupParser;
-import Parse.Parser;
 import Parse.ParserFactory;
 import Parse.ParserService;
 
