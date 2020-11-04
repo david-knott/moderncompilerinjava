@@ -105,6 +105,7 @@ digits=[0-9]+
 <STRING>\"	{yybegin(YYINITIAL);String ret = buffer; buffer = ""; return tok(sym.STRING, ret);}
 <STRING>\n  { buffer+= "\n"; /* handle carriage return in string */ }
 <STRING>\t  { buffer+= "\t"; /* handle tab in string */ }
+<STRING>\\\"  { buffer+= "\\\""; /* handle escaped double quote in string */ }
 <STRING>. { buffer+= yytext(); }
 
 <YYINITIAL>"/*"	{ yybegin(COMMENT); commentDepth++; } 

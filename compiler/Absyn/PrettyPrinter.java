@@ -28,6 +28,7 @@ public class PrettyPrinter implements AbsynVisitor {
         this.out = printStream;
         this.escapesDisplay = escapesDisplay;
         this.bindingsDisplay = bindingsDisplay;
+        say("/* == Abstract Syntax Tree. == */");
 	}
 
     private void lineBreakAndIndent() {
@@ -344,9 +345,11 @@ public class PrettyPrinter implements AbsynVisitor {
 
     @Override
     public void visit(RecordTy exp) {
+        say("{");
         if(exp.fields != null) {
             exp.fields.accept(this);
         }
+        say("}");
     }
 
     private SeqExp foldSeqExp(SeqExp exp) {

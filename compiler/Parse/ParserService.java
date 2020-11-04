@@ -1,8 +1,10 @@
 package Parse;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import Absyn.Absyn;
 import Absyn.DecList;
@@ -23,6 +25,11 @@ public class ParserService {
 
     public void configure(ParserServiceConfigurator parserServiceConfigurator) {
         parserServiceConfigurator.configure(parserServiceConfiguration);
+    }
+
+    public DecList parse(String code, ErrorMsg errorMsg) throws FileNotFoundException {
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(code.getBytes(Charset.defaultCharset()));
+        return parse(byteArrayInputStream, errorMsg);
     }
 
     public DecList parse(InputStream inputStream, ErrorMsg errorMsg) throws FileNotFoundException {
