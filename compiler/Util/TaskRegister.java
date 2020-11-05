@@ -8,7 +8,7 @@ import Core.LL;
 import ErrorMsg.ErrorMsg;
 
 public class TaskRegister {
-    public static TaskRegister instance = new TaskRegister();
+    public final static TaskRegister instance = new TaskRegister();
     InputStream in = null;
     OutputStream out = null;
     ErrorMsg errorMsg = null;
@@ -41,7 +41,7 @@ public class TaskRegister {
                 Task task = this.findTaskByLongName(args[i].substring(2));
                 this.resolveDeps(task);
                 if(i + 1 < args.length - 1  && args[i + 1].length() > 2 && !args[i + 1].substring(0, 2).equals("--")) {
-                    System.out.println("lvalue =" + args[i + 1]);
+                    //System.out.println("lvalue =" + args[i + 1]);
                     i++;
                     // ignored for now
                     // set argument in TaskWrapper.
@@ -89,7 +89,7 @@ public class TaskRegister {
     }
 
     /**
-     * Executes all the active tasks, using the supplied streams and error class.
+     * Executes all the active tasks. A @see Util.TaskContext instance is created using the streams and error instance.
      * @param in stream to read the tiger input from.
      * @param out stream to write the compiled assembly to.
      * @param log stream to write debug information to.

@@ -76,27 +76,7 @@ public class Binder extends DefaultVisitor {
         tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING, null));
         this.typeSymbolTable = new SymbolTable(tinit);
         // base functions
-        Hashtable<Symbol, SymbolTableElement> finit = new Hashtable<Symbol, SymbolTableElement>();
-        finit.put(Symbol.symbol("print"), new SymbolTableElement(
-                new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.STRING, null), Constants.VOID)));
-        finit.put(Symbol.symbol("print_int"), new SymbolTableElement(
-                new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.INT, null), Constants.VOID)));
-        finit.put(Symbol.symbol("print_err"), new SymbolTableElement(
-                new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.STRING, null), Constants.VOID)));
-        finit.put(Symbol.symbol("exit"), new SymbolTableElement(
-                new FUNCTION(new RECORD(Symbol.symbol("s"), Constants.INT, null), Constants.VOID)));
-        finit.put(Symbol.symbol("strcmp"), 
-            new SymbolTableElement(
-                new FUNCTION(
-                    new RECORD(Symbol.symbol("a"), Constants.STRING, 
-                        new RECORD(Symbol.symbol("b"), Constants.STRING,  null)
-                    ), 
-                    Constants.INT
-                )
-            )
-        );
-
-        this.functionSymbolTable = new SymbolTable(finit);
+        this.functionSymbolTable = new SymbolTable();
         // var table
         this.varSymbolTable = new SymbolTable();
     }
@@ -335,7 +315,9 @@ public class Binder extends DefaultVisitor {
                     this.errorMsg.error(param.pos, "redefinition:" + param.name);
                 }
             }
-            functionDec.body.accept(this);
+            if(functionDec.body != null) {
+                functionDec.body.accept(this);
+            }
             this.varSymbolTable.endScope();
         }
         this.visitedType = Constants.VOID;
