@@ -11,21 +11,10 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import Absyn.Absyn;
+import Absyn.PrettyPrinter;
 import ErrorMsg.ErrorMsg;
 import Parse.ParserFactory;
 import Parse.ParserService;
-
-
-import java.io.PrintStream;
-
-import org.junit.Test;
-
-import Absyn.Absyn;
-import Absyn.PrettyPrinter;
-import ErrorMsg.ErrorMsg;
-import Parse.CupParser;
-import Parse.Parser;
-import Parse.Program;
 
 @RunWith(Theories.class)
 public class RenamerTest {
@@ -36,7 +25,8 @@ public class RenamerTest {
             {"let type a = { a: int } function a(a: a): a = a { a = a + a } var a : a := a(1, 2) in a.a end", false},
             {"let function foo() : int = bar() function bar() : int = foo() function foobar() : int = let function foofoo() : int = bar() in 1 end in 0 end", false},
             {"let type a = { a: string } function a(a: a): a = a { a = a.a + a.a } var a : a := a(a{a = \"\"}) in a.a end", false},
-            {"printi(1)", false}
+            {"printi(1)", false},
+            {"let function sub(i: int, j: int) :int = i + j in printi(sub(1, 2)) end", false}
         });
     }
 

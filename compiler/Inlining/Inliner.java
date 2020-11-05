@@ -38,7 +38,8 @@ public class Inliner extends AbsynCloner {
 
     @Override
     public void visit(FunctionDec exp) {
-        if(this.callGraph.inCycle(exp)) {
+        // if exp.body is null this is a primitive which we ignore.
+        if(exp.body == null || this.callGraph.inCycle(exp)) {
             recursive.add(exp);
         }
         super.visit(exp);

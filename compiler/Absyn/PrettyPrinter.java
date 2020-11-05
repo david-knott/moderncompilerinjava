@@ -19,8 +19,7 @@ public class PrettyPrinter implements AbsynVisitor {
     public boolean bindingsDisplay = false;
 
     public PrettyPrinter(PrintStream o) {
-        Assert.assertNotNull(o);
-        this.out = o;
+        this(o, false, false);
     }
 
     public PrettyPrinter(PrintStream printStream, boolean escapesDisplay, boolean bindingsDisplay) {
@@ -28,7 +27,7 @@ public class PrettyPrinter implements AbsynVisitor {
         this.out = printStream;
         this.escapesDisplay = escapesDisplay;
         this.bindingsDisplay = bindingsDisplay;
-        say("/* == Abstract Syntax Tree. == */");
+        say("\n/* == Abstract Syntax Tree. == */");
 	}
 
     private void lineBreakAndIndent() {

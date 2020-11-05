@@ -111,12 +111,8 @@ public class Renamer extends DefaultVisitor {
      */
     @Override
     public void visit(CallExp exp) {
-        // if we are calling a primitive return.
-        if(((FunctionDec)exp.def).body == null) {
-            return;
-        }
-        // if runtime function exp.def will be null
-        if(exp.def != null) {
+        // rename call if not primitive.
+        if(((FunctionDec)exp.def).body != null) {
             exp.func = newNames.get(exp.def);
         }
         if(exp.args != null) {
