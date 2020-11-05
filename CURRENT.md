@@ -8,6 +8,8 @@ valid syntax.
 
 Refactored renamer tests to use junit theories.
 
+Nested functions fail in inliner.
+
 ## 3rd November 2020
 
 Modified code to use a primitives prelude and an enclosing main function.

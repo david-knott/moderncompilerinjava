@@ -38,7 +38,8 @@ public class Inliner extends AbsynCloner {
 
     @Override
     public void visit(FunctionDec exp) {
-        // if exp.body is null this is a primitive which we ignore.
+        // if function is in cycle or if exp.body is null 
+        // this is a primitive which we ignore.
         if(exp.body == null || this.callGraph.inCycle(exp)) {
             recursive.add(exp);
         }
@@ -66,9 +67,8 @@ public class Inliner extends AbsynCloner {
             //if the return type is void, we dont need a res.
             VarDec varDec = new VarDec(0, Symbol.symbol("res"), functionDec.result,  functionDec.body/* exp */);
             DecList end = first;
-            while(end != null) end = end.tail;
-            end = new DecList(varDec, null);
-
+            for(;end.tail != null; end = end.tail);
+            end.tail = new DecList(varDec, null);
             Exp letExp = new LetExp(0, first, new SeqExp(0, new ExpList(new VarExp(0, new SimpleVar(0, Symbol.symbol("res"))), null)));
             this.visitedExp = letExp;
         } else {
