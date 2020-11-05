@@ -15,7 +15,6 @@ import ErrorMsg.ErrorMsg;
 import Parse.ParserFactory;
 import Parse.ParserService;
 
-
 @RunWith(Theories.class)
 public class BinderTest {
 

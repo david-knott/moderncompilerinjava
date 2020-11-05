@@ -1,6 +1,7 @@
 package Absyn;
 
 import Types.Type;
+import Util.Assert;
 
 abstract public class Exp extends Absyn implements Typable {
     Type type;
@@ -10,6 +11,7 @@ abstract public class Exp extends Absyn implements Typable {
     }
 
     public void setType(Type type) {
+        Assert.assertNotNull(type);
         this.type = type;
     }
 }

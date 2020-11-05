@@ -48,27 +48,35 @@ public class Renamer extends DefaultVisitor {
         exp.init.accept(this);
     }
 
+    private boolean isSpecialName(FunctionDec exp) {
+        return (exp.body == null || exp.name.toString().equals("tigermain"));
+    }
+
     @Override
     public void visit(FunctionDec exp) {
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
-            String uniqueFunctionName = functionDec.name.toString() + "_" + (this.id++);
-            Symbol newSymbol = Symbol.symbol(uniqueFunctionName);
-            newNames.put(functionDec, newSymbol);
-            functionDec.name = newSymbol;
+            if(!isSpecialName(functionDec)) {
+                String uniqueFunctionName = functionDec.name.toString() + "_" + (this.id++);
+                Symbol newSymbol = Symbol.symbol(uniqueFunctionName);
+                newNames.put(functionDec, newSymbol);
+                functionDec.name = newSymbol;
+            }
         }
         for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
-            if(functionDec.params != null) {
-                // update the ty name, create new symbol for formal args, except for int & strings.
-                for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
-                    // set the renamed type symbol.
-                    if(fl.def != null) {
-                        fl.typ.name =  newNames.get(fl.def);
+            if(!isSpecialName(functionDec)) {
+                if(functionDec.params != null) {
+                    // update the ty name, create new symbol for formal args, except for int & strings.
+                    for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
+                        // set the renamed type symbol.
+                        if(fl.def != null) {
+                            fl.typ.name =  newNames.get(fl.def);
+                        }
+                        // create new param names for formal arguments.
+                        String uniqueParamName = fl.name + "_" + (this.id++);
+                        Symbol newPSymbol = Symbol.symbol(uniqueParamName);
+                        newNames.put(fl, newPSymbol);
+                        fl.name = newPSymbol;
                     }
-                    // create new param names for formal arguments.
-                    String uniqueParamName = fl.name + "_" + (this.id++);
-                    Symbol newPSymbol = Symbol.symbol(uniqueParamName);
-                    newNames.put(fl, newPSymbol);
-                    fl.name = newPSymbol;
                 }
             }
             // rename the return type of the function, except for int & strings.
@@ -76,7 +84,7 @@ public class Renamer extends DefaultVisitor {
                 functionDec.result.accept(this);
             }
             // process body.
-            if (functionDec.body != null) {
+            if(functionDec.body != null) {
                 functionDec.body.accept(this);
             }
         }
@@ -103,6 +111,10 @@ public class Renamer extends DefaultVisitor {
      */
     @Override
     public void visit(CallExp exp) {
+        // if we are calling a primitive return.
+        if(((FunctionDec)exp.def).body == null) {
+            return;
+        }
         // if runtime function exp.def will be null
         if(exp.def != null) {
             exp.func = newNames.get(exp.def);

@@ -36,6 +36,7 @@ import Types.FUNCTION;
 import Types.NAME;
 import Types.RECORD;
 import Types.Type;
+import Util.Assert;
 
 /**
  * The Binder class traverses the abstract syntax tree and binds variable,
@@ -370,6 +371,7 @@ public class Binder extends DefaultVisitor {
         // lookup the rvalue type in the symbol table.
         if (this.typeSymbolTable.contains(exp.name)) {
             SymbolTableElement def = this.typeSymbolTable.lookup(exp.name);
+            exp.setDef(def.exp);
             // set the type for binding.
             this.visitedType = def.type;
             this.setType(exp, this.visitedType);

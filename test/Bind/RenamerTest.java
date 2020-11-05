@@ -1,5 +1,21 @@
 package Bind;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.PrintStream;
+import java.util.Arrays;
+
+import org.junit.experimental.theories.DataPoints;
+import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
+import org.junit.runner.RunWith;
+
+import Absyn.Absyn;
+import ErrorMsg.ErrorMsg;
+import Parse.ParserFactory;
+import Parse.ParserService;
+
+
 import java.io.PrintStream;
 
 import org.junit.Test;
@@ -11,58 +27,35 @@ import Parse.CupParser;
 import Parse.Parser;
 import Parse.Program;
 
+@RunWith(Theories.class)
 public class RenamerTest {
 
-    @Test
-    public void test4_30() {
-        Parser parser = new CupParser(
-                "let type a = { a: int } function a(a: a): a = a { a = a + a } var a : a := a(1, 2) in a.a end",
-                new ErrorMsg("", System.out));
-        Absyn program = parser.parse();
-        PrintStream outputStream = System.out;
-        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
-        Binder binder = new Binder(errorMsg);
-
-        program.accept(binder);
-        Renamer renamer = new Renamer();
-        program.accept(renamer);
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.accept(prettyPrinter);
+    @DataPoints
+    public static Iterable<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {"let type a = { a: int } function a(a: a): a = a { a = a + a } var a : a := a(1, 2) in a.a end", false},
+            {"let function foo() : int = bar() function bar() : int = foo() function foobar() : int = let function foofoo() : int = bar() in 1 end in 0 end", false},
+            {"let type a = { a: string } function a(a: a): a = a { a = a.a + a.a } var a : a := a(a{a = \"\"}) in a.a end", false},
+            {"printi(1)", false}
+        });
     }
 
-    @Test
-    public void test4_recfunction() {
-        Parser parser = new CupParser(
-                "let function foo() : int = bar() function bar() : int = foo() function foobar() : int = let function foofoo() : int = bar() in 1 end in 0 end",
-                new ErrorMsg("", System.out));
-        Absyn program = parser.parse();
-        PrintStream outputStream = System.out;
-        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
-        Binder binder = new Binder(errorMsg);
+    private ParserService parserService;
 
-        program.accept(binder);
-        Renamer renamer = new Renamer();
-        program.accept(renamer);
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.accept(prettyPrinter);
+    public RenamerTest() {
+        parserService = new ParserService(new ParserFactory());
     }
 
-    @Test
-    public void test4_string() {
-        Parser parser = new CupParser(
-                "let type a = { a: string } function a(a: a): a = a { a = a.a + a.a } var a : a := a(a{a = \"\"}) in a.a end",
-                new ErrorMsg("", System.out));
-        Absyn program = parser.parse();
+    @Theory
+    public void template(Object[] data) {
+        String code = (String)data[0];
+        boolean res = (boolean)data[1];
         PrintStream outputStream = System.out;
-        ErrorMsg errorMsg = new ErrorMsg("", outputStream);
-        Binder binder = new Binder(errorMsg);
-
-        program.accept(binder);
-        Renamer renamer = new Renamer();
-        program.accept(renamer);
-        PrettyPrinter prettyPrinter = new PrettyPrinter(System.out, false, false);
-        program.accept(prettyPrinter);
+        ErrorMsg errorMsg = new ErrorMsg("renamer-test", outputStream);
+        Absyn program = parserService.parse(code, errorMsg);
+        program.accept(new Binder(errorMsg));
+        program.accept(new Renamer());
+        program.accept(new PrettyPrinter(System.out, false, false));
+        assertEquals(res, errorMsg.anyErrors, code);
     }
-
-
 }

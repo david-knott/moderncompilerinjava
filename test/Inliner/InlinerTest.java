@@ -15,17 +15,24 @@ import ErrorMsg.ErrorMsg;
 import Inlining.Inliner;
 import Parse.CupParser;
 import Parse.Parser;
+import Parse.ParserFactory;
+import Parse.ParserService;
 import Parse.Program;
 
 
 
 public class InlinerTest {
 
-     @Test
+    private ParserService parserService;
+
+    public InlinerTest() {
+        parserService = new ParserService(new ParserFactory());
+    }
+
+    @Test
     public void foorLoop() {
         ErrorMsg errorMsg = new ErrorMsg("", System.out);
-        Parser parser = new CupParser("let function sub(i: int, j: int) :int = i + j in sub(1, 2) end", new ErrorMsg("", System.out));
-        Absyn program = parser.parse();
+        Absyn program = parserService.parse("let function sub(i: int, j: int) :int = i + j in sub(1, 2) end", new ErrorMsg("", System.out));
         program.accept(new Binder(errorMsg));
         program.accept(new Renamer());
         Inliner inliner = new Inliner(program);

@@ -1,5 +1,13 @@
 # Diary
 
+## 5th November 2020
+
+Fixed some bugs in binder, renamer and pretty printer. I am still not certain
+these classes are 100% correct. In particular the renamr tests don't look like
+valid syntax.
+
+Refactored renamer tests to use junit theories.
+
 ## 3rd November 2020
 
 Modified code to use a primitives prelude and an enclosing main function.
