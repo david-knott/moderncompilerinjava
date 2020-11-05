@@ -46,7 +46,7 @@ public class AnsynClonerRegTest {
         System.out.println("Testing Cloner " + fileName);
         ErrorMsg errorMsg = new ErrorMsg("f", System.out);
         ParserService parserService = new ParserService(new ParserFactory());
-        parserService.configure(config -> config.setNoPrelude(true));
+        parserService.configure(config -> config.setNoPrelude(false));
         parserService.configure(config -> config.setParserTrace(false));
         try (FileInputStream fin = new FileInputStream(fileName)) {
             Absyn program = parserService.parse(fin, errorMsg);

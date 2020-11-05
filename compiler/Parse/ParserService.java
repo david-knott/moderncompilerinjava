@@ -57,13 +57,11 @@ public class ParserService {
         if(parserServiceConfiguration.isNoPrelude()) {
             return program;
         }
-        // parse the prelude file which contains the references to 
-        // the functions defined in the runtime.
-     //   System.out.println("Working Directory = " + System.getProperty("user.dir"));
         Parser prelude;
         try {
             prelude = parserFactory.getParser(new FileInputStream("./data/prelude.tih"), errorMsg);
         } catch (FileNotFoundException e) {
+            //   System.out.println("Working Directory = " + System.getProperty("user.dir"));
             throw new PreludeFileNotFoundException();
         }
         DecList preludeList = (DecList)prelude.parse();
