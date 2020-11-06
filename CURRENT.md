@@ -4,6 +4,8 @@
 
 Fixed nested function failure in inliner.
 
+Pruner has not been implemented.
+
 ## 5th November 2020
 
 Fixed some bugs in binder, renamer and pretty printer. I am still not certain
