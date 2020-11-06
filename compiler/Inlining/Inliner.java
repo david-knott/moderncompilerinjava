@@ -20,14 +20,13 @@ import CallGraph.FunctionCallGraph;
 import Cloner.AbsynCloner;
 import Symbol.Symbol;
 
-
 /**
  * Identifies functions that are only called once and
  * inlines them into the call site.
  */
 public class Inliner extends AbsynCloner {
     
-    List<FunctionDec> recursive = new ArrayList<FunctionDec>();
+    List<FunctionDec> ignore = new ArrayList<FunctionDec>();
     FunctionCallGraph callGraph;
 
     public Inliner(Absyn absyn) {
@@ -40,8 +39,10 @@ public class Inliner extends AbsynCloner {
     public void visit(FunctionDec exp) {
         // if function is in cycle or if exp.body is null 
         // this is a primitive which we ignore.
-        if(exp.body == null || this.callGraph.inCycle(exp)) {
-            recursive.add(exp);
+        for(FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
+            if(functionDec.body == null || this.callGraph.inCycle(functionDec)) {
+                ignore.add(functionDec);
+            }
         }
         super.visit(exp);
     }
@@ -49,7 +50,7 @@ public class Inliner extends AbsynCloner {
     @Override
     public void visit(CallExp exp) {
         FunctionDec functionDec = (FunctionDec)exp.def;
-        if(!recursive.contains(functionDec)) {
+        if(!ignore.contains(functionDec)) {
             ExpList argList = exp.args;
             DecList decList = null, first = null, temp = null;
             for(FieldList fieldList = functionDec.params; fieldList != null; fieldList = fieldList.tail){
@@ -63,8 +64,7 @@ public class Inliner extends AbsynCloner {
                 }
                 argList = argList.tail;
             }
-            
-            //if the return type is void, we dont need a res.
+            //TODO: if the return type is void, we dont need a res.
             VarDec varDec = new VarDec(0, Symbol.symbol("res"), functionDec.result,  functionDec.body/* exp */);
             DecList end = first;
             for(;end.tail != null; end = end.tail);

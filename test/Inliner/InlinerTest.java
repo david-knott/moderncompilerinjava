@@ -1,10 +1,5 @@
 package Inliner;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.PrintStream;
-
 import org.junit.Test;
 
 import Absyn.Absyn;
@@ -13,13 +8,8 @@ import Bind.Binder;
 import Bind.Renamer;
 import ErrorMsg.ErrorMsg;
 import Inlining.Inliner;
-import Parse.CupParser;
-import Parse.Parser;
 import Parse.ParserFactory;
 import Parse.ParserService;
-import Parse.Program;
-
-
 
 public class InlinerTest {
 

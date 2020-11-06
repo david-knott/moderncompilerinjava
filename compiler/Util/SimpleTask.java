@@ -5,8 +5,8 @@ public class SimpleTask extends Task {
 
     public SimpleTask(SimpleTaskProvider prov, String name, String description, String deps) {
         super(name, description, deps);
-        TaskRegister.instance.register(this);
         this.prov = prov;
+        TaskRegister.instance.register(this);
     }
 
     @Override

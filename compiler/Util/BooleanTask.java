@@ -8,9 +8,8 @@ public class BooleanTask extends Task {
 
     public BooleanTask(BooleanTaskFlag flag, String name, String description, String deps) {
         super(name, description, deps);
-        Assert.assertNotNull(flag);
-        TaskRegister.instance.register(this);
         this.booleanTaskFlag = flag;
+        TaskRegister.instance.register(this);
     }
 
     @Override

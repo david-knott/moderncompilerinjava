@@ -1,5 +1,9 @@
 # Diary
 
+## 6th November 2020
+
+Fixed nested function failure in inliner.
+
 ## 5th November 2020
 
 Fixed some bugs in binder, renamer and pretty printer. I am still not certain
@@ -8,7 +12,7 @@ valid syntax.
 
 Refactored renamer tests to use junit theories.
 
-Nested functions fail in inliner.
+~~Nested functions fail in inliner.~~
 
 ## 3rd November 2020
 
