@@ -6,6 +6,7 @@ import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
+import Util.TaskRegister;
 
 /**
  * A collection of tasks related to code generation for the intel x64 instruction set.
@@ -26,20 +27,24 @@ public class Tasks implements TaskProvider {
     }
 
     @Override
-    public void build() {
-        new BooleanTask(new BooleanTaskFlag(){
-            @Override
-            public void set() {
-                disableCoalesce = true;
-            }
-            
-        }, "demove", "Disable register coalescing", "reg-alloc");
+    public void build(TaskRegister taskRegister) {
+        taskRegister.register(
+            new BooleanTask(new BooleanTaskFlag(){
+                @Override
+                public void set() {
+                    disableCoalesce = true;
+                }
+                
+            }, "demove", "Disable register coalescing", "reg-alloc")
+        );
 
-        new SimpleTask(new SimpleTaskProvider(){
-			@Override
-			public void only(TaskContext taskContext) {
-                taskContext.assemFragList.accept(new AssemFragmentVisitor(disableCoalesce, regAllocFactory, taskContext.out));
-			}
-        }, "reg-alloc", "Select x64 as target", "instr-compute");
+        taskRegister.register(
+            new SimpleTask(new SimpleTaskProvider(){
+                @Override
+                public void only(TaskContext taskContext) {
+                    taskContext.assemFragList.accept(new AssemFragmentVisitor(disableCoalesce, regAllocFactory, taskContext.out));
+                }
+            }, "reg-alloc", "Select x64 as target", "instr-compute")
+        );
     }
 }

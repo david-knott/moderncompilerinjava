@@ -4,11 +4,13 @@ import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
+import Util.TaskRegister;
 
 public class Tasks implements TaskProvider {
 
     @Override
-    public void build() {
+    public void build(TaskRegister taskRegister) {
+        /*
         new SimpleTask(new SimpleTaskProvider() {
             @Override
             public void only(TaskContext taskContext) {
@@ -39,5 +41,6 @@ public class Tasks implements TaskProvider {
 
             }
         }, "target-ia64", "Select x64 as target", null);
+        */
     }
 }

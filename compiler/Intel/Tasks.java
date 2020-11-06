@@ -7,6 +7,7 @@ import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
+import Util.TaskRegister;
 
 /**
  * A collection of tasks related to code generation for the intel x64
@@ -24,36 +25,41 @@ public class Tasks implements TaskProvider {
     }
 
     @Override
-    public void build() {
-
-        new SimpleTask(new SimpleTaskProvider() {
-            @Override
-            public void only(TaskContext taskContext) {
-                FragList lirFragList = taskContext.lirFragList;
-                AssemblyGeneratorVisitor assemblyFragmentVisitor = new AssemblyGeneratorVisitor(new CodeGen());
-                lirFragList.accept(assemblyFragmentVisitor);
-                taskContext.setAssemFragList(assemblyFragmentVisitor.getAssemFragList());
-            }
-        }, "instr-compute", "Select x64 as target", "lir-compute" );
+    public void build(TaskRegister taskRegister) {
+        taskRegister.register(
+            new SimpleTask(new SimpleTaskProvider() {
+                @Override
+                public void only(TaskContext taskContext) {
+                    FragList lirFragList = taskContext.lirFragList;
+                    AssemblyGeneratorVisitor assemblyFragmentVisitor = new AssemblyGeneratorVisitor(new CodeGen());
+                    lirFragList.accept(assemblyFragmentVisitor);
+                    taskContext.setAssemFragList(assemblyFragmentVisitor.getAssemFragList());
+                }
+            }, "instr-compute", "Select x64 as target", "lir-compute" )
+        );
         
-        new SimpleTask(new SimpleTaskProvider() {
-            @Override
-            public void only(TaskContext taskContext) {
-                Assem.FragList assemblyFragList = taskContext.assemFragList;
-                assemblyFragList.accept(new UnallocatedAssmeblyDump(taskContext.log));
+        taskRegister.register(
+            new SimpleTask(new SimpleTaskProvider() {
+                @Override
+                public void only(TaskContext taskContext) {
+                    Assem.FragList assemblyFragList = taskContext.assemFragList;
+                    assemblyFragList.accept(new UnallocatedAssmeblyDump(taskContext.log));
 
-			}
-        }, "instr-display", "Dump the unallocated assembly", "instr-compute");
+                }
+            }, "instr-display", "Dump the unallocated assembly", "instr-compute")
+        );
 
-        new SimpleTask(new SimpleTaskProvider() {
-            @Override
-            public void only(TaskContext taskContext) {
-                Assem.FragList assemblyFragList = taskContext.assemFragList;
-                UnAllocatedAssemblyStats assemblyStats = new UnAllocatedAssemblyStats();
-                assemblyFragList.accept(assemblyStats);
-                assemblyStats.dump(taskContext.log);
+        taskRegister.register(
+            new SimpleTask(new SimpleTaskProvider() {
+                @Override
+                public void only(TaskContext taskContext) {
+                    Assem.FragList assemblyFragList = taskContext.assemFragList;
+                    UnAllocatedAssemblyStats assemblyStats = new UnAllocatedAssemblyStats();
+                    assemblyFragList.accept(assemblyStats);
+                    assemblyStats.dump(taskContext.log);
 
-			}
-        }, "instr-stats", "Display instruction type counts", "instr-compute");
+                }
+            }, "instr-stats", "Display instruction type counts", "instr-compute")
+        );
     }
 }

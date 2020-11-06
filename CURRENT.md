@@ -6,6 +6,8 @@ Fixed nested function failure in inliner.
 
 Pruner has not been implemented.
 
+Refactored Tasks so they dont reference the static instance of the TaskRegister.
+
 ## 5th November 2020
 
 Fixed some bugs in binder, renamer and pretty printer. I am still not certain

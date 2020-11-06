@@ -2,7 +2,9 @@ package Util;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 
 import Core.LL;
 import ErrorMsg.ErrorMsg;
@@ -33,6 +35,7 @@ public class TaskRegister {
     }
 
     private LL<TaskWrapper> tasks = null;
+    private List<Task> activeTasks = new ArrayList<Task>();
 
     public TaskRegister parseArgs(String[] args) {
         //only interested in n - 1 args, as nth arg is filename.
@@ -61,6 +64,9 @@ public class TaskRegister {
  
     private void resolveDeps(Task task) {
         task.active = true;
+        if(!activeTasks.contains(task)) {
+            activeTasks.add(task);
+        }
         if(task.deps != null) {
             for(String dep : task.deps.split("\\s+")) {
                 if(!dep.equals("")) {
@@ -109,7 +115,8 @@ public class TaskRegister {
     }
 
     public TaskRegister register(TaskProvider taskProvider) {
-        taskProvider.build();
+        taskProvider.build(this);
+  //      taskProvider.build();
         return this;
     }
 
@@ -142,10 +149,5 @@ public class TaskRegister {
         String longName = !names[1].equals("") ? names[1] : names[0];
         String shortName = !names[1].equals("") ? names[0] : names[1];
         this.tasks = LL.<TaskWrapper>insertRear(this.tasks, new TaskWrapper(booleanTask, longName, shortName));
-    }
-
-    public TaskRegister setErrorHandler(ErrorMsg errorMsg) {
-        this.errorMsg = errorMsg;
-        return this;
     }
 }

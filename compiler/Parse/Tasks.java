@@ -6,6 +6,7 @@ import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
 import Util.TaskProvider;
+import Util.TaskRegister;
 import java_cup.parser;
 
 import java.io.FileNotFoundException;
@@ -27,30 +28,36 @@ public class Tasks implements TaskProvider {
     }
 
     @Override
-    public void build() {
-        new BooleanTask(new BooleanTaskFlag() {
-            @Override
-            public void set() {
-                parserService.configure(p -> p.setParserTrace(true));
-            }
-        }, "parse-trace", "Enable parsers traces.", "parse");
-        new BooleanTask(new BooleanTaskFlag() {
-            @Override
-            public void set() {
-                parserService.configure(p -> p.setNoPrelude(true));
-            }
-        }, "X|no-prelude", "Don’t include prelude.", "parse");
-        new SimpleTask(new SimpleTaskProvider() {
-            @Override
-            public void only(TaskContext taskContext) {
-                DecList decList = parserService.parse(taskContext.in, taskContext.errorMsg);
-                if(taskContext.errorMsg.anyErrors) {
-                    // there was a lexical or parse error, cannot continue
-                    System.exit(0);
-                } else {
-                    taskContext.setDecList(decList);
+    public void build(TaskRegister taskRegister) {
+        taskRegister.register(
+            new BooleanTask(new BooleanTaskFlag() {
+                @Override
+                public void set() {
+                    parserService.configure(p -> p.setParserTrace(true));
                 }
-            }
-        }, "parse", "parse", ""); 
+            }, "parse-trace", "Enable parsers traces.", "parse")
+        );
+        taskRegister.register(
+            new BooleanTask(new BooleanTaskFlag() {
+                @Override
+                public void set() {
+                    parserService.configure(p -> p.setNoPrelude(true));
+                }
+            }, "X|no-prelude", "Don’t include prelude.", "parse")
+        );
+        taskRegister.register(
+            new SimpleTask(new SimpleTaskProvider() {
+                @Override
+                public void only(TaskContext taskContext) {
+                    DecList decList = parserService.parse(taskContext.in, taskContext.errorMsg);
+                    if(taskContext.errorMsg.anyErrors) {
+                        // there was a lexical or parse error, cannot continue
+                        System.exit(0);
+                    } else {
+                        taskContext.setDecList(decList);
+                    }
+                }
+            }, "parse", "parse", "")
+        );
     }
 }

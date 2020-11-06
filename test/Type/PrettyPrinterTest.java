@@ -1,17 +1,7 @@
 package Type;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.PrintStream;
-
 import org.junit.Test;
 
-import Bind.Binder;
-import ErrorMsg.ErrorMsg;
-import Parse.CupParser;
-import Parse.Parser;
-import Parse.Program;
 import Symbol.Symbol;
 import Types.ARRAY;
 import Types.Constants;
@@ -20,7 +10,6 @@ import Types.NAME;
 import Types.PrettyPrinter;
 import Types.RECORD;
 import Types.STRING;
-import Types.TypeChecker;
 
 
 public class PrettyPrinterTest {
