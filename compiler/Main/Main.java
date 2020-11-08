@@ -28,7 +28,7 @@ public class Main {
         InputStream in = new java.io.FileInputStream(args[args.length - 1]);
         PrintStream err = System.err;
         ErrorMsg errorMsg = new ErrorMsg(args[args.length - 1], err);
-        TaskRegister.instance
+        new TaskRegister()
                 .register(new Tasks())
                 .register(new Parse.Tasks(new ParserService(new ParserFactory())))
                 .register(new Cloner.Tasks())

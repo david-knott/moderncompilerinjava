@@ -6,7 +6,6 @@ public class TaskRegisterTest {
     
     @Test
     public void def() {
-        TaskRegister taskRegister = TaskRegister.instance;
     }
      
 }

@@ -3,14 +3,12 @@ package Util;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 
 import Core.LL;
 import ErrorMsg.ErrorMsg;
 
 public class TaskRegister {
-    public final static TaskRegister instance = new TaskRegister();
     InputStream in = null;
     OutputStream out = null;
     ErrorMsg errorMsg = null;
@@ -116,7 +114,6 @@ public class TaskRegister {
 
     public TaskRegister register(TaskProvider taskProvider) {
         taskProvider.build(this);
-  //      taskProvider.build();
         return this;
     }
 
