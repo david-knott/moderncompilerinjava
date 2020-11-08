@@ -79,11 +79,13 @@ public class AbsynCloner implements AbsynVisitor {
     public void visit(CallExp exp) {
         ExpList cexpList = null, last = null, temp = null;
         for(ExpList expList = exp.args; expList != null; expList = expList.tail) {
+            expList.head.accept(this);
+            Exp expListHead = this.visitedExp;
             if(cexpList == null) {
-                cexpList = last = new ExpList(expList.head, null);
+                cexpList = last = new ExpList(expListHead, null);
             } else {
                 temp = last;
-                last = new ExpList(expList.head, null);
+                last = new ExpList(expListHead, null);
                 temp.tail = last;
             }
         }

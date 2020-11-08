@@ -12,7 +12,6 @@ import Bind.Binder;
 import ErrorMsg.ErrorMsg;
 import Parse.CupParser;
 import Parse.Parser;
-import Parse.Program;
 
 public class CallGraphCycleTest {
 
