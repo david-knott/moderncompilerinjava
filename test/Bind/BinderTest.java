@@ -60,6 +60,7 @@ public class BinderTest {
         boolean res = (boolean)data[1];
         PrintStream outputStream = System.out;
         ErrorMsg errorMsg = new ErrorMsg("binder-test", outputStream);
+        System.out.println("Testing:" + code);
         Absyn program = parserService.parse(code, errorMsg);
         Binder binder = new Binder(errorMsg);
         program.accept(binder);

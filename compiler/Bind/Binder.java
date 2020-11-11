@@ -147,7 +147,10 @@ public class Binder extends DefaultVisitor {
             SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
             this.visitedType = def.type;
             exp.setDef(def.exp);
-            this.setType(exp, this.visitedType);
+            // TODO: visitedType can be null if its type was undefined.
+            if(this.visitedType != null) {
+                this.setType(exp, this.visitedType);
+            }
         } else {
             this.errorMsg.error(exp.pos, "undeclared variable:" + exp.name);
             this.visitedType = null;

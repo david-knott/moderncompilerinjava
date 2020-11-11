@@ -1,5 +1,7 @@
 package Inliner;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.Test;
 
 import Absyn.Absyn;
@@ -28,7 +30,8 @@ public class InlinerTest {
         program.accept(new PrettyPrinter(System.out));
         Inliner inliner = new Inliner(program);
         program.accept(inliner);
-        inliner.visitedExp.accept(new PrettyPrinter(System.out));
+        inliner.visitedDecList.accept(new PrettyPrinter(System.out));
+        assertEquals(1, inliner.inlinedCount);
     }
 
     @Test
@@ -40,6 +43,33 @@ public class InlinerTest {
         program.accept(new PrettyPrinter(System.out));
         Inliner inliner = new Inliner(program);
         program.accept(inliner);
-        inliner.visitedExp.accept(new PrettyPrinter(System.out));
+        inliner.visitedDecList.accept(new PrettyPrinter(System.out));
+        assertEquals(1, inliner.inlinedCount);
+    }
+
+    @Test
+    public void recursiveFunction() {
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let function sub(i: int, j: int) :int = sub(i, j) in sub(1, 2) end", new ErrorMsg("", System.out));
+        program.accept(new Binder(errorMsg));
+        program.accept(new Renamer());
+        program.accept(new PrettyPrinter(System.out));
+        Inliner inliner = new Inliner(program);
+        program.accept(inliner);
+        inliner.visitedDecList.accept(new PrettyPrinter(System.out));
+        assertEquals(0, inliner.inlinedCount);
+    }
+
+    @Test
+    public void nestedRecursiveFunction() {
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let function sub(i: int, j: int) :int = sub(i, j) in printi(sub(1, 2)) end", new ErrorMsg("", System.out));
+        program.accept(new Binder(errorMsg));
+        program.accept(new Renamer());
+        program.accept(new PrettyPrinter(System.out));
+        Inliner inliner = new Inliner(program);
+        program.accept(inliner);
+        inliner.visitedDecList.accept(new PrettyPrinter(System.out));
+        assertEquals(0, inliner.inlinedCount);
     }
 }

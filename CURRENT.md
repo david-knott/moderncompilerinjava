@@ -1,4 +1,9 @@
 # Diary
+## 11th November 2020
+
+Inliner and Pruner. I think it is complete now.
+
+TODO: Add base theory class that allows me to test all the E2E tests.
 
 ## 6th November 2020
 

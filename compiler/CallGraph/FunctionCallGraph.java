@@ -13,8 +13,12 @@ public class FunctionCallGraph extends Graph {
 	public boolean inCycle(FunctionDec exp) {
 		return super.inCycle(this.functionDecs.get(exp));
     }
+
+    public Node getNode(FunctionDec functionDec) {
+        return this.functionDecs.get(functionDec);
+    }
     
-    private Node getNode(FunctionDec src) {
+    private Node getOrCreateNode(FunctionDec src) {
         Node srcNode = null;
         if(this.functionDecs.containsKey(src)) {
             srcNode = this.functionDecs.get(src);
@@ -26,8 +30,8 @@ public class FunctionCallGraph extends Graph {
     }
 
     public void addEdge(FunctionDec src, FunctionDec args) {
-        Node srcNode = this.getNode(src);
-        Node destNode = this.getNode(args);
+        Node srcNode = this.getOrCreateNode(src);
+        Node destNode = this.getOrCreateNode(args);
         this.addEdge(srcNode, destNode);
     }
 

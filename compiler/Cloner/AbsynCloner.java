@@ -45,7 +45,7 @@ public class AbsynCloner implements AbsynVisitor {
     public DecList visitedDecList;
     private Ty visitedTy;
     private Var visitedVar;
-    private Dec visitedDec;
+    protected Dec visitedDec;
 
     @Override
     public void visit(ArrayExp exp) {

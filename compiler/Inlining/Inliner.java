@@ -28,6 +28,7 @@ public class Inliner extends AbsynCloner {
     
     List<FunctionDec> ignore = new ArrayList<FunctionDec>();
     FunctionCallGraph callGraph;
+    public int inlinedCount;
 
     public Inliner(Absyn absyn) {
         CallGraphVisitor callGraphVisitor = new CallGraphVisitor();
@@ -44,6 +45,7 @@ public class Inliner extends AbsynCloner {
                 ignore.add(functionDec);
             }
         }
+        // call super to perform clone.
         super.visit(exp);
     }
 
@@ -54,7 +56,9 @@ public class Inliner extends AbsynCloner {
             ExpList argList = exp.args;
             DecList decList = null, first = null, temp = null;
             for(FieldList fieldList = functionDec.params; fieldList != null; fieldList = fieldList.tail){
-                VarDec varDec = new VarDec(0, fieldList.name, fieldList.typ, argList.head/* argument */);
+                argList.head.accept(this);
+                Exp clonedExp = this.visitedExp;
+                VarDec varDec = new VarDec(0, fieldList.name, fieldList.typ, clonedExp/* argument */);
                 if(first == null) {
                     first = decList = new DecList(varDec, null);
                 } else {
@@ -65,11 +69,14 @@ public class Inliner extends AbsynCloner {
                 argList = argList.tail;
             }
             //TODO: if the return type is void, we dont need a res.
-            VarDec varDec = new VarDec(0, Symbol.symbol("res"), functionDec.result,  functionDec.body/* exp */);
+            functionDec.body.accept(this);
+            Exp clonedBody = this.visitedExp;
+            VarDec varDec = new VarDec(0, Symbol.symbol("res"), functionDec.result,  clonedBody/* exp */);
             DecList end = first;
             for(;end.tail != null; end = end.tail);
             end.tail = new DecList(varDec, null);
             Exp letExp = new LetExp(0, first, new SeqExp(0, new ExpList(new VarExp(0, new SimpleVar(0, Symbol.symbol("res"))), null)));
+            inlinedCount++;
             this.visitedExp = letExp;
         } else {
             super.visit(exp);

@@ -1,5 +1,7 @@
 package Inliner;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.Test;
 
 import Absyn.Absyn;
@@ -7,24 +9,41 @@ import Absyn.PrettyPrinter;
 import Bind.Binder;
 import Bind.Renamer;
 import CallGraph.CallGraphVisitor;
+import Cloner.AbsynCloner;
 import ErrorMsg.ErrorMsg;
 import Inlining.Pruner;
-import Parse.CupParser;
-import Parse.Parser;
-import Parse.Program;
+import Parse.ParserFactory;
+import Parse.ParserService;
 
 public class PrunerTest {
 
-     @Test
-    public void foorLoop() {
+    private ParserService parserService;
+
+    public PrunerTest() {
+        parserService = new ParserService(new ParserFactory());
+    }
+
+    @Test
+    public void prune() {
         ErrorMsg errorMsg = new ErrorMsg("", System.out);
-        Parser parser = new CupParser("let function sub(i: int, j: int) :int = i + j in sub(1, 2) end", new ErrorMsg("", System.out));
-        Absyn program = parser.parse();
+        Absyn program = parserService.parse("let function prune() :int = 1 in 1 end", new ErrorMsg("", System.out));
         program.accept(new Binder(errorMsg));
         program.accept(new Renamer());
-        program.accept(new CallGraphVisitor());
-        Pruner pruner = new Pruner();
+        Pruner pruner = new Pruner(program);
         program.accept(pruner);
-        pruner.visitedExp.accept(new PrettyPrinter(System.out));
+        pruner.visitedDecList.accept(new PrettyPrinter(System.out));
+        assertEquals(1, pruner.pruneCount);
+    }
+
+    @Test
+    public void noPrune() {
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let function prune() :int = 1 in prune() end", new ErrorMsg("", System.out));
+        program.accept(new Binder(errorMsg));
+        program.accept(new Renamer());
+        Pruner pruner = new Pruner(program);
+        program.accept(pruner);
+        pruner.visitedDecList.accept(new PrettyPrinter(System.out));
+        assertEquals(0, pruner.pruneCount);
     }
 }
