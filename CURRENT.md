@@ -1,4 +1,9 @@
 # Diary
+
+Started translate visitor
+
+TODO: Implement Loop End;
+
 ## 11th November 2020
 
 Inliner and Pruner. I think it is complete now.
