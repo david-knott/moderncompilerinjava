@@ -23,14 +23,14 @@ public class TranslateVisitorTest {
 
     @Test
     public void canCreateInstance() {
-        TranslatorV translator = new TranslatorV();
+        TranslatorVisitor translator = new TranslatorVisitor();
         assertNotNull(translator);
     }
 
     @Test
     public void translateInt() {
 
-        TranslatorV translator = new TranslatorV();
+        TranslatorVisitor translator = new TranslatorVisitor();
         assertNotNull(translator);
         ErrorMsg errorMsg = new ErrorMsg("", System.out);
         Absyn program = parserService.parse("1", new ErrorMsg("", System.out));
