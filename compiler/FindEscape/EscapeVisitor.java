@@ -19,7 +19,7 @@ public class EscapeVisitor extends DefaultVisitor {
     final Symbol.GenericTable<Escape> escEnv = new Symbol.GenericTable<Escape>();
     int depth = 0;
 
-    EscapeVisitor(ErrorMsg errorMsg) {
+    public EscapeVisitor(ErrorMsg errorMsg) {
         this.errorMsg = errorMsg;
     }
 
