@@ -36,7 +36,6 @@ import Types.FUNCTION;
 import Types.NAME;
 import Types.RECORD;
 import Types.Type;
-import Util.Assert;
 
 /**
  * The Binder class traverses the abstract syntax tree and binds variable,

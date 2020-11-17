@@ -2,7 +2,6 @@ package Translate;
 
 import java.util.Hashtable;
 
-import Absyn.Absyn;
 import Absyn.ArrayExp;
 import Absyn.AssignExp;
 import Absyn.BreakExp;
@@ -31,14 +30,17 @@ import Intel.IntelFrame;
 import Temp.Label;
 import Temp.Temp;
 import Tree.BINOP;
+import Tree.CALL;
 import Tree.CONST;
 import Tree.ESEQ;
+import Tree.EXP;
 import Tree.ExpList;
 import Tree.JUMP;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.NAME;
 import Tree.TEMP;
+import Types.Constants;
 
 class TranslatorVisitor extends DefaultVisitor {
 
@@ -46,8 +48,6 @@ class TranslatorVisitor extends DefaultVisitor {
     private Level currentLevel;
 
     public TranslatorVisitor() {
-        Label label = Label.create("tigermain");
-        currentLevel = new Level(new IntelFrame(label, null));
     }
 
     /**
@@ -122,13 +122,77 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(BreakExp exp) {
-        Absyn loop = exp.loop;
+        Absyn.Absyn loop = exp.loop;
         Label loopEnd = null;
         this.visitedExp = new Nx(new JUMP(loopEnd));
     }
 
+    private Hashtable<Absyn.Absyn, Level> functionAccess = new Hashtable<Absyn.Absyn, Level>();
+    private Hashtable<Absyn.Absyn, Label> functionLabel = new Hashtable<Absyn.Absyn, Label>();
+
     @Override
     public void visit(CallExp exp) {
+
+        Level usageLevel = this.currentLevel;
+        Level definedLevel = this.functionAccess.get(exp.def);
+        // if the function being called has no body its a primitive
+        // and doesn't need a static link.
+        FunctionDec defined = (FunctionDec)exp.def;
+        boolean useStaticLink = defined.body == null;
+        ExpList expList = null;
+        if(useStaticLink) {
+            Tree.Exp staticLink = null;
+            if(definedLevel == usageLevel) { //recusive or same level, pass calleers static link ( not frame pointer )
+                staticLink = new MEM(
+                    new BINOP(
+                        BINOP.MINUS,
+                        new TEMP(definedLevel.frame.FP()),
+                        new CONST(definedLevel.frame.wordSize())
+                    )
+                );
+            } else {
+                //if calling a function in a higher level, we pass the callers frame pointer
+                //if calling a function in a lower level, we pass the callers static link
+                if(definedLevel.parent == usageLevel) {
+                    staticLink = new TEMP(usageLevel.frame.FP());
+                } else {
+                    Level l = usageLevel;
+                    //get callers static link ( frame pointer address of parent frame)
+                    staticLink = new MEM(
+                        new BINOP(
+                                BINOP.MINUS,
+                                new TEMP(l.frame.FP()),
+                                new CONST(l.frame.wordSize())
+                            )
+                    );
+                    // if callee and caller have a common parent
+                    // if callee is not parent of caller,
+                    while(l.parent != definedLevel.parent) {
+                        staticLink = new MEM( 
+                            new BINOP(
+                                BINOP.MINUS,
+                                staticLink,
+                                new CONST(l.frame.wordSize())
+                            )
+                        );
+                        l = l.parent;
+                    }
+                }
+            }
+            expList = ExpList.append(expList, staticLink);
+        }
+
+        for(Absyn.ExpList argList = exp.args; argList != null; argList = argList.tail) {
+            argList.head.accept(this);
+            Exp translatedArg = this.visitedExp;
+            expList = ExpList.append(expList, translatedArg.unEx());
+        }
+        Label functionLabel = this.functionLabel.get(exp.def);
+        if(exp.getType().coerceTo(Constants.VOID)) {
+            this.visitedExp = new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
+        } else {
+            this.visitedExp =  new Ex(new CALL(new NAME(functionLabel), expList));
+        }
     }
 
     @Override
@@ -173,8 +237,13 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(FunctionDec exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+        if(this.currentLevel == null) {
+            currentLevel = new Level(new IntelFrame(Label.create("tigermain"), null));
+        } else {
+            currentLevel = new Level(this.currentLevel, Label.create(), null /* formals */, false /* static link */);
+        }
+        // TODO: Visit params, body
+        
     }
 
     @Override

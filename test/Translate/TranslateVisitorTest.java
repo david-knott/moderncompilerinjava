@@ -58,4 +58,17 @@ public class TranslateVisitorTest {
         program.accept(translator);
         System.out.println("done");
     }
+    
+    @Test
+    public void primitiveUsage() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("print(1)", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        System.out.println("done");
+    }
+
+
 }
