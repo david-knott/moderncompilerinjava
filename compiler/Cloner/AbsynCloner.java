@@ -151,15 +151,17 @@ public class AbsynCloner implements AbsynVisitor {
                 exp.body.accept(this);
                 clonedBody = this.visitedExp;
             }
-            FieldList clonedFieldList = null, temp1 = null, first1 = null;
-            for(FieldList fieldList = exp.params; fieldList != null; fieldList = fieldList.tail) {
-                fieldList.typ.accept(this);
+            DecList clonedFieldList = null, temp1 = null, first1 = null;
+            for(DecList decList = exp.params; decList != null; decList = decList.tail) {
+                VarDec varDec = (VarDec)decList.head;
+                varDec.typ.accept(this);
                 NameTy clonedFieldListType = (NameTy)this.visitedTy;
+                VarDec clonedVarDec = new VarDec(varDec.pos, varDec.name, clonedFieldListType, varDec.init);
                 if(first1 == null) {
-                    first1 = clonedFieldList = new FieldList(fieldList.pos, fieldList.name, clonedFieldListType, null);
+                    first1 = clonedFieldList = new DecList(clonedVarDec, null);
                 } else {
                     temp1 = clonedFieldList;
-                    clonedFieldList = new FieldList(fieldList.pos, fieldList.name, clonedFieldListType, null);
+                    clonedFieldList = new DecList(clonedVarDec, null);
                     temp1.tail = clonedFieldList;
                 }
             }

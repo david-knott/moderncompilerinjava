@@ -1,9 +1,11 @@
 package FindEscape;
 
-class FormalEscape extends Escape {
-    Absyn.FieldList fl;
+import Absyn.VarDec;
 
-    FormalEscape(int d, Absyn.FieldList f) {
+class FormalEscape extends Escape {
+    Absyn.VarDec fl;
+
+    FormalEscape(int d, VarDec f) {
         depth = d;
         fl = f;
         fl.escape = false;

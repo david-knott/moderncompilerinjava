@@ -9,6 +9,7 @@ import Absyn.ArrayTy;
 import Absyn.AssignExp;
 import Absyn.BreakExp;
 import Absyn.CallExp;
+import Absyn.DecList;
 import Absyn.DefaultVisitor;
 import Absyn.Exp;
 import Absyn.FieldList;
@@ -308,9 +309,13 @@ public class Binder extends DefaultVisitor {
         // second pass for function body.
         for (FunctionDec functionDec = exp; functionDec != null; functionDec = functionDec.next) {
             this.varSymbolTable.beginScope();
-            for (var param = functionDec.params; param != null; param = param.tail) {
+            for (DecList decList = functionDec.params; decList != null; decList = decList.tail) {
+                // params are a list of variable declarations.
+                VarDec param = (VarDec)decList.head; 
+                // lookup params type in the type symbol table.
                 SymbolTableElement paramType = this.typeSymbolTable.lookup(param.typ.name);
-                param.setDef(paramType.exp);
+                // bind the type to the vardec
+                param.setType(paramType.type);
                 // formal variable definition
                 if (!this.varSymbolTable.contains(param.name, false)) {
                     this.varSymbolTable.put(param.name, new SymbolTableElement(paramType.type, param));

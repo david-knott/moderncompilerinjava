@@ -293,13 +293,15 @@ class TranslatorVisitor extends DefaultVisitor {
      * @param fields @see Absyn.FieldList which can be null.
      * @return a single linked list where each node represents either a true or false value or null.
      */
-    private BoolList getBoolList(final FieldList fields) {
+    private BoolList getBoolList(final DecList decList) {
         BoolList boolList = null; //
-        if (fields != null) {
-            boolList = new BoolList(fields != null ? fields.escape : null, null);
-            var fieldTail = fields.tail;
+        if (decList != null) {
+            VarDec varDec = (VarDec)decList.head;
+            boolList = new BoolList(varDec.escape, null);
+            var fieldTail = decList.tail;
             while (fieldTail != null) {
-                boolList.append(fieldTail.escape);
+                VarDec vd2 = (VarDec)fieldTail.head;
+                boolList.append(vd2.escape);
                 fieldTail = fieldTail.tail;
             }
         }

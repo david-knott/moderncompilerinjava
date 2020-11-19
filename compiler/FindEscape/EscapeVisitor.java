@@ -38,8 +38,9 @@ public class EscapeVisitor extends DefaultVisitor {
         this.escEnv.beginScope();
         this.depth++;
         for (var fl = e.params; fl != null; fl = fl.tail) {
-            var formalEscape = new FormalEscape(this.depth, fl);
-            this.escEnv.put(fl.name, formalEscape);
+            VarDec vd = (VarDec)fl.head;
+            var formalEscape = new FormalEscape(this.depth, vd);
+            this.escEnv.put(vd.name, formalEscape);
         }
         if(e.body != null) {
             e.body.accept(this);

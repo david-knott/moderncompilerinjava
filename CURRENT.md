@@ -1,5 +1,14 @@
 # Diary
 
+## 18th November 2020
+
+Chaning the function dec ast to use  a dec list of vardecs instead of 
+a field list. This will allow easier hashtable lookups in the translate
+visitor. The function dec visit method adds the formals as variable declarations.
+This makes sense as the compiler treats these as new variable declations. This
+change has broken the original Semant class and the Grm file, so these
+need to be fixed.
+
 Started translate visitor
 
 TODO: Implement Loop End;
