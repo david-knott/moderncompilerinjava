@@ -1,10 +1,7 @@
 package Translate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import Absyn.Absyn;
@@ -33,9 +30,11 @@ public class TranslateVisitorTest {
     public void translateInt() {
         TranslatorVisitor translator = new TranslatorVisitor();
         assertNotNull(translator);
-        Absyn program = parserService.parse("1", new ErrorMsg("", System.out));
+        Absyn program = parserService.parse("3", new ErrorMsg("", System.out));
         program.accept(translator);
-        System.out.println("done");
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        assertNotNull(fragList);
     }
 
     @Test
