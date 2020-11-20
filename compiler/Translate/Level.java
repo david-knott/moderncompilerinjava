@@ -33,9 +33,12 @@ public class Level {
      * The symbol name relates to the function that is linked to this level. 
      * Note that we create a the formal list with the first argument as the static 
      * link.
-     * @param prnt
-     * @param name
-     * @param fmls
+     * Internally a new frame is created and referenced by this instance. The new
+     * frame may create @see Frame.Access for the functions formal arguments.
+     * @param prnt the parent level and associated frame.
+     * @param name the label of the function
+     * @param fmls the list of formal arguments
+     * @param sl should a static link be created in the frame
      */
     public Level(Level prnt, Label name, BoolList fmls, boolean sl) {
         parent = prnt;

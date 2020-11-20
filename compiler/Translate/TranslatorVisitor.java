@@ -66,7 +66,6 @@ class TranslatorVisitor extends DefaultVisitor {
      * higher up the stack. If the variable is defined in the current stack frame,
      * the static link will just refer to the current activation records frame
      * pointer.
-     * 
      * @param access the @see Translate.Access, which contains the @see Frame.Access
      *               and @see Translate.Level.
      * @param level  @see Translate.Level where we are accessing the variable from.
@@ -120,7 +119,6 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(CallExp exp) {
-
         Level usageLevel = this.currentLevel;
         Level definedLevel = this.functionLevels.get(exp.def);
         // if the function being called has no body its a primitive
@@ -168,7 +166,6 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(DecList exp) {
-        // TODO Auto-generated method stub
         super.visit(exp);
     }
 
@@ -200,7 +197,7 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(ForExp exp) {
-        // TODO Auto-generated method stub
+        // TODO Handle breaks.
         super.visit(exp);
     }
 
@@ -214,23 +211,25 @@ class TranslatorVisitor extends DefaultVisitor {
                 this.functionLabels.put(exp, label);
             } else if(current.name.toString().equals("tigermain")) {
                 Label label = Label.create("tigermain");
+                // getBoolList is null here...
                 this.currentLevel = new Level(new IntelFrame(label, getBoolList(current.params)));
                 this.functionLevels.put(current, this.currentLevel);
                 this.functionLabels.put(exp, label);
             } else {
-                // notice that we creat the new level
+                // notice that we create the new level
                 // using the function formal arguments
                 // these are supplied so the level & frame
                 // can create Frame.Access ( Temp or Mem )
                 // for the function.
                 Label label = Label.create();
+                // create level and access for function
                 this.currentLevel = new Level(
                     this.currentLevel, 
                     label, 
                     getBoolList(
                         current.params
                     ),
-                    true /* static link */
+                    true /* create static link */
                 );
                 this.functionLabels.put(exp, label);
                 this.functionLevels.put(current, this.currentLevel);
@@ -244,22 +243,32 @@ class TranslatorVisitor extends DefaultVisitor {
                 // find level created for function and enter it.
                 this.currentLevel = this.functionLevels.get(current);
                 // get the translate access list ( frame.access & level )
-                for(AccessList formals = this.currentLevel.formals; formals != null; formals = formals.tail) {
-
-//                    this.functionAccesses.put(exp.)
+                DecList formalVarDecs = current.params;
+                // get reference to level formals
+                AccessList formals = this.currentLevel.formals;
+                //skip static link if not in main function.
+                if(!current.name.toString().equals("tigermain")) {
+                    formals = formals.tail;
                 }
-                // visit body of function using new level, breakScope
+                // add formal parameters to access lookup so they
+                // can be used inside the function body.
+                for(; formals != null; formals = formals.tail) {
+                    Access access = formals.head;
+                    this.functionAccesses.put((VarDec)formalVarDecs.head, access);
+                }
+                // visit body of function using new saved level
                 exp.body.accept(this);
                 // get translated fragment.
                 Exp translatedBody = this.visitedExp;
                 // creates a new fragment for the function.
                 this.procEntryExit(this.currentLevel, translatedBody);
-
+                // reset the current level back
                 this.currentLevel = parent;
             }
-
         }
-        // TODO: Correct ?
+        // reset the visitedExp to nil
+        // as we create a new Fragment for
+        // the next function
         this.visitedExp = new Ex(new CONST(0));
     }
 
@@ -332,8 +341,25 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(OpExp exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+        exp.left.accept(this);
+        Exp leftTrans = this.visitedExp;
+        exp.right.accept(this);
+        Exp rightTrans = this.visitedExp;
+        switch(exp.oper) {
+            case OpExp.DIV: case OpExp.MINUS: case OpExp.MUL: case OpExp.PLUS:
+                this.visitedExp = new Ex(
+                    new BINOP(
+                        exp.oper, 
+                        leftTrans.unEx(), 
+                        rightTrans.unEx()
+                    )
+                );
+                break;
+            default:
+                this.visitedExp = new RelCx(leftTrans.unEx(), rightTrans.unEx(), exp.oper);
+            break;
+        }
+        
     }
 
     @Override
@@ -405,13 +431,13 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(VarExp exp) {
-        // visit the variable expression.
+        // just visit the variable expression.
         exp.var.accept(this);
     }
 
     @Override
     public void visit(WhileExp exp) {
-        // TODO Auto-generated method stub
+        // TODO Handle breaks.
         super.visit(exp);
     }
 

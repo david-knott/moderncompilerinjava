@@ -38,6 +38,17 @@ public class TranslateVisitorTest {
     }
 
     @Test
+    public void translateAdd() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        assertNotNull(translator);
+        Absyn program = parserService.parse("3 + 5", new ErrorMsg("", System.out));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        assertNotNull(fragList);
+    }
+
+    @Test
     public void translateVarDec() {
         TranslatorVisitor translator = new TranslatorVisitor();
         assertNotNull(translator);
@@ -68,6 +79,4 @@ public class TranslateVisitorTest {
         program.accept(translator);
         System.out.println("done");
     }
-
-
 }
