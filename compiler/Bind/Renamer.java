@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import Absyn.Absyn;
 import Absyn.CallExp;
+import Absyn.DecList;
 import Absyn.DefaultVisitor;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
@@ -66,11 +67,10 @@ public class Renamer extends DefaultVisitor {
             if(!isSpecialName(functionDec)) {
                 if(functionDec.params != null) {
                     // update the ty name, create new symbol for formal args, except for int & strings.
-                    for(FieldList fl = functionDec.params; fl != null; fl = fl.tail) {
+                    for(DecList decList = functionDec.params; decList != null; decList = decList.tail) {
+                        VarDec fl = (VarDec)decList.head;
                         // set the renamed type symbol.
-                        if(fl.def != null) {
-                            fl.typ.name =  newNames.get(fl.def);
-                        }
+                        fl.typ.name =  newNames.get(fl.typ.def);
                         // create new param names for formal arguments.
                         String uniqueParamName = fl.name + "_" + (this.id++);
                         Symbol newPSymbol = Symbol.symbol(uniqueParamName);

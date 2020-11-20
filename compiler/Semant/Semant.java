@@ -4,6 +4,7 @@ import Absyn.DecList;
 import Absyn.FieldList;
 import Absyn.FunctionDec;
 import Absyn.TypeDec;
+import Absyn.VarDec;
 import Util.Assert;
 import Core.CompilerEventType;
 import Core.Component;
@@ -103,6 +104,27 @@ public class Semant extends Component{
     }
 
     /**
+     * Overload of @see Semant.getBoolList() used by FunctionDecs.
+     * @param fields
+     * @return
+     */
+    private BoolList getBoolList(final DecList decList) {
+        BoolList boolList = null; //
+        if (decList != null) {
+            VarDec fields = (VarDec)decList.head;
+            boolList = new BoolList(fields != null ? fields.escape : null, null);
+            var decListTail = decList.tail;
+            while (decListTail != null) {
+                fields = (VarDec)decList.head;
+                boolList.append(fields.escape);
+                decListTail = decListTail.tail;
+            }
+        }
+        return boolList;
+    }
+
+
+    /**
      * Translate a function declaration into an intermediate expresion:w
      * 
      * @param
@@ -172,11 +194,12 @@ public class Semant extends Component{
             // iterate formals adding access to the created var entries
             var translateAccess = translator.stripStaticLink(newLevel.formals);
             for (var p = current.params; p != null; p = p.tail) {
+                VarDec vd = (VarDec)p.head;
                 var varEntry = new VarEntry(
-                    env.tenv.get(p.typ.name).actual(), 
+                    env.tenv.get(vd.typ.name).actual(), 
                     translateAccess.head
                 );
-                env.venv.put(p.name, varEntry);
+                env.venv.put(vd.name, varEntry);
                 translateAccess = translateAccess.tail;
             }
             // body of function is null if externally defined.
@@ -279,7 +302,7 @@ public class Semant extends Component{
     }*/
 
     /**
-     * Returns a record type.
+     * Returns a record type for record expressions.
      * @param fields
      * @return
      */
@@ -297,6 +320,29 @@ public class Semant extends Component{
         }
         return recordType;
     }
+
+    /**
+     * Returns a record type for function declations.
+     * @param fields
+     * @return
+     */
+    private RECORD getRecordType(final DecList decList) {
+        RECORD recordType = null;
+        if (decList != null) {
+            var fields = (VarDec)decList.head;
+            var fieldType = getType(fields.typ.name, fields.pos);
+            recordType = new RECORD(fields.name, fieldType, null);
+            var decListTail = decList.tail;
+            while (decListTail != null) {
+                var fieldTail = (VarDec)decListTail.head;
+                fieldType = getType(fieldTail.typ.name, fieldTail.pos);
+                recordType.append(fieldTail.name, fieldType);
+                decListTail = decListTail.tail;
+            }
+        }
+        return recordType;
+    }
+
 
     /**
      * Returns the type of symbol or null if that symbols is

@@ -55,9 +55,10 @@ public class Inliner extends AbsynCloner {
         if(!ignore.contains(functionDec)) {
             ExpList argList = exp.args;
             DecList decList = null, first = null, temp = null;
-            for(FieldList fieldList = functionDec.params; fieldList != null; fieldList = fieldList.tail){
+            for(DecList paramDecList = functionDec.params; paramDecList != null; paramDecList = paramDecList.tail){
                 argList.head.accept(this);
                 Exp clonedExp = this.visitedExp;
+                VarDec fieldList = (VarDec)paramDecList.head;
                 VarDec varDec = new VarDec(0, fieldList.name, fieldList.typ, clonedExp/* argument */);
                 if(first == null) {
                     first = decList = new DecList(varDec, null);

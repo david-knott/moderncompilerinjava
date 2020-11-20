@@ -49,9 +49,9 @@ non terminal Absyn.Exp exp;
 non terminal Absyn.ExpList expList;
 non terminal Absyn.ExpList expListAux, paramList, paramListAux;
 non terminal Absyn.Exp letExp;
-non terminal Absyn.DecList decList;
+non terminal Absyn.DecList decList, formalVarDecList, formalVarDecListAux;
 non terminal Absyn.Dec dec;
-non terminal Absyn.VarDec varDec;
+non terminal Absyn.VarDec varDec, formalVarDec;
 non terminal Absyn.FunctionDec funcDec, primDec, funcDecList, primDecList; 
 non terminal Absyn.TypeDec tyDec, tyDecList;
 non terminal Absyn.Ty ty;
@@ -116,8 +116,6 @@ ty ::= ID:i {: RESULT = new Absyn.NameTy(ileft, Symbol.Symbol.symbol(i)); :}
 
 arrTy ::= ARRAY OF ID:i {: RESULT = new Absyn.ArrayTy(ileft, Symbol.Symbol.symbol(i)); :};
 
-recTy ::= LBRACE fieldDecList:fl RBRACE {:  RESULT = new Absyn.RecordTy(flleft, fl); :};
-
 fieldDecList ::= fieldDec:fd fieldDecListAux:fdla {: RESULT = new Absyn.FieldList(fdleft, fd.name, fd.typ, fdla); :}
 | /* empty */ ;
 
@@ -126,17 +124,33 @@ fieldDecListAux ::= COMMA fieldDec:fd fieldDecListAux:fdla {: RESULT = new Absyn
 
 fieldDec ::= ID:i COLON ID:ty {: RESULT = new Absyn.FieldList(ileft, Symbol.Symbol.symbol(i), new Absyn.NameTy(tyleft, Symbol.Symbol.symbol(ty)), null); :};
 
-funcDec ::= FUNCTION ID:i LPAREN fieldDecList:fdl RPAREN EQ exp:e1 {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, null, e1, null ); :}
-| FUNCTION ID:i LPAREN fieldDecList:fdl RPAREN COLON ID:ty EQ exp:e1 {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, new Absyn.NameTy(ileft, Symbol.Symbol.symbol(ty)), e1, null ); :}
+recTy ::= LBRACE fieldDecList:fl RBRACE {:  RESULT = new Absyn.RecordTy(flleft, fl); :};
+
+
+formalVarDec ::= ID:i COLON ty:t {: RESULT = new Absyn.VarDec(ileft, Symbol.Symbol.symbol(i), (Absyn.NameTy)t, null); :}
 ;
 
-primDec ::= PRIMITIVE ID:i LPAREN fieldDecList:fdl RPAREN {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, null, null /* no body */, null ); :}
-| PRIMITIVE ID:i LPAREN fieldDecList:fdl RPAREN COLON ID:ty {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, new Absyn.NameTy(ileft, Symbol.Symbol.symbol(ty)), null /* no body */, null ); :}
+formalVarDecList ::= formalVarDec:d formalVarDecListAux:dl  {: RESULT = new Absyn.DecList(d, dl); :}
+| /* empty */;
+
+
+formalVarDecListAux ::= COMMA formalVarDec:d formalVarDecListAux:dl  {: RESULT = new Absyn.DecList(d, dl); :}
+| /* empty */;
+
+
+funcDec ::= FUNCTION ID:i LPAREN formalVarDecList:fdl RPAREN EQ exp:e1 {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, null, e1, null ); :}
+| FUNCTION ID:i LPAREN formalVarDecList:fdl RPAREN COLON ID:ty EQ exp:e1 {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, new Absyn.NameTy(ileft, Symbol.Symbol.symbol(ty)), e1, null ); :}
+;
+
+primDec ::= PRIMITIVE ID:i LPAREN formalVarDecList:fdl RPAREN {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, null, null /* no body */, null ); :}
+| PRIMITIVE ID:i LPAREN formalVarDecList:fdl RPAREN COLON ID:ty {: RESULT = new Absyn.FunctionDec(ileft, Symbol.Symbol.symbol(i), fdl, new Absyn.NameTy(ileft, Symbol.Symbol.symbol(ty)), null /* no body */, null ); :}
 ;
 
 varDec ::= VAR ID:i ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symbol.symbol(i), null, e); :}
 | VAR ID:i COLON ty:t ASSIGN exp:e {: RESULT = new Absyn.VarDec(ileft, Symbol.Symbol.symbol(i), (Absyn.NameTy)t, e); :}
 ;
+
+
 
 //https://stackoverflow.com/questions/26968665/bison-shift-reduce-conflict-tiger-compiler
 lValue ::= ID:id  {: RESULT = new Absyn.SimpleVar(idleft, Symbol.Symbol.symbol(id)); :}
