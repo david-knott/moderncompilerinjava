@@ -79,4 +79,15 @@ public class TranslateVisitorTest {
         program.accept(translator);
         System.out.println("done");
     }
+
+    @Test
+    public void forTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("for a := 1 to 10 do ()", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        System.out.println("done");
+    }
 }

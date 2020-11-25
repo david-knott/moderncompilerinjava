@@ -176,19 +176,22 @@ public class Binder extends DefaultVisitor {
 
     /**
      * Visit a variable declaration and add it to the symbol table.
+     * This is only used for variable declarations inside a let expression.
+     * VarDec used as formal argument is handled directly inside the FunctionDec
+     * visit method.
      */
     @Override
     public void visit(VarDec exp) {
+        Type varDecType = null;
         // if the variable type was specified.
         if (exp.typ != null) {
             exp.typ.accept(this);
+            varDecType = this.visitedType;
         }
-        // visit the initializer for the var dec.
         exp.init.accept(this);
-        Type initType = this.visitedType;
-        // check the variable is present in variable table.
+        varDecType = this.visitedType;
         if (!this.varSymbolTable.contains(exp.name, false)) {
-            this.varSymbolTable.put(exp.name, new SymbolTableElement(initType, exp));
+            this.varSymbolTable.put(exp.name, new SymbolTableElement(varDecType, exp));
         } else {
             this.errorMsg.error(exp.pos, "redefinition:" + exp.name);
         }
@@ -268,6 +271,46 @@ public class Binder extends DefaultVisitor {
         this.visitedType = Constants.VOID;
     }
 
+    public RECORD getRecord(DecList decList) {
+        // build record type 
+        RECORD last = null, first = null, temp = null;
+        if(decList == null) {
+            return null;
+        }
+        for(;decList != null; decList = decList.tail) {
+            VarDec varDec = (VarDec)decList.head;
+            varDec.typ.accept(this);
+            last = new RECORD(varDec.name, this.visitedType, null);
+            if (first == null) {
+                first = last;
+            } else {
+                temp.tail = last;
+            }
+            temp = last;
+        }
+        return first;
+        /*
+        FieldList expList = exp;
+        do {
+            temp = last;
+            expList.typ.accept(this);
+            // this.visitedType could be null if the type does not exist.
+            if(this.visitedType != null) {
+                this.setType(expList.typ, this.visitedType);
+                last = new RECORD(expList.name, this.visitedType, null);
+                if (first == null) {
+                    first = last;
+                } else {
+                    temp.tail = last;
+                }
+            }
+            expList = expList.tail;
+        } while (expList != null);
+        this.visitedType = first;
+        */
+    }
+
+
     /**
      * Visit a function declaration. Visit the function header first, this includes
      * the function name its formal arguments and return type. These are added to
@@ -291,12 +334,16 @@ public class Binder extends DefaultVisitor {
             } else {
                 returnType = Constants.VOID;
             }
-            RECORD paramType = null;
+            RECORD paramType = this.getRecord(functionDec.params);
+            /*
             if (functionDec.params != null) {
-                // call accept method on paraneter, which sets this.visitedType
+                // call accept method on formal dec list
+                // which should build a record type for 
+                // function.
                 functionDec.params.accept(this);
+                // dont visit the function dec.
                 paramType = (RECORD) this.visitedType;
-            }
+            }*/
             // function definition
             if (!this.functionSymbolTable.contains(functionDec.name, false)) {
                 FUNCTION functionType = new FUNCTION(paramType, returnType);

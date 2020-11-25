@@ -14,6 +14,7 @@ import Absyn.SimpleVar;
 import Absyn.TypeDec;
 import Absyn.VarDec;
 import Symbol.Symbol;
+import Util.Assert;
 
 /**
  * Ensures that all variables, types and functions have unique names
@@ -68,14 +69,17 @@ public class Renamer extends DefaultVisitor {
                 if(functionDec.params != null) {
                     // update the ty name, create new symbol for formal args, except for int & strings.
                     for(DecList decList = functionDec.params; decList != null; decList = decList.tail) {
-                        VarDec fl = (VarDec)decList.head;
+                        VarDec varDec = (VarDec)decList.head;
                         // set the renamed type symbol.
-                        fl.typ.name =  newNames.get(fl.typ.def);
+                        // null would indicate typ is int or string.
+                        if(varDec.typ.def != null) {
+                            varDec.typ.name =  newNames.get(varDec.typ.def);
+                        }
                         // create new param names for formal arguments.
-                        String uniqueParamName = fl.name + "_" + (this.id++);
+                        String uniqueParamName = varDec.name + "_" + (this.id++);
                         Symbol newPSymbol = Symbol.symbol(uniqueParamName);
-                        newNames.put(fl, newPSymbol);
-                        fl.name = newPSymbol;
+                        newNames.put(varDec, newPSymbol);
+                        varDec.name = newPSymbol;
                     }
                 }
             }

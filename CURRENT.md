@@ -6,6 +6,7 @@ Refactored ast function dec to use var decs as formals.
 
 Need to check all the unit tests still.
 
+Bug in TranslateVisitorTest.forTest, strange reference to STRING.
 ## 18th November 2020
 
 Chaning the function dec ast to use  a dec list of vardecs instead of 

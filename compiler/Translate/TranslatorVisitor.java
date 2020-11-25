@@ -1,6 +1,7 @@
 package Translate;
 
 import java.util.Hashtable;
+import java.util.Stack;
 
 import Absyn.ArrayExp;
 import Absyn.AssignExp;
@@ -31,17 +32,21 @@ import Temp.Label;
 import Temp.Temp;
 import Tree.BINOP;
 import Tree.CALL;
+import Tree.CJUMP;
 import Tree.CONST;
 import Tree.ESEQ;
 import Tree.EXP;
 import Tree.ExpList;
 import Tree.JUMP;
+import Tree.LABEL;
 import Tree.MEM;
 import Tree.MOVE;
 import Tree.NAME;
+import Tree.SEQ;
 import Tree.Stm;
 import Tree.TEMP;
 import Types.Constants;
+import Util.Assert;
 import Util.BoolList;
 
 class TranslatorVisitor extends DefaultVisitor {
@@ -49,6 +54,7 @@ class TranslatorVisitor extends DefaultVisitor {
     private Hashtable<VarDec, Access> functionAccesses = new Hashtable<VarDec, Access>();
     private Hashtable<Absyn.Absyn, Label> functionLabels = new Hashtable<Absyn.Absyn, Label>();
     private Hashtable<FunctionDec, Level> functionLevels = new Hashtable<FunctionDec, Level>();
+    private Stack<Label> loopExits = new Stack<Label>();
 
     private Exp visitedExp;
     private Level currentLevel;
@@ -112,8 +118,10 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(BreakExp exp) {
-        Absyn.Absyn loop = exp.loop;
-        Label loopEnd = null;
+        if(this.loopExits.empty()) {
+            Assert.unreachable();
+        }
+        Label loopEnd = this.loopExits.peek();
         this.visitedExp = new Nx(new JUMP(loopEnd));
     }
 
@@ -197,8 +205,59 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(ForExp exp) {
-        // TODO Handle breaks.
-        super.visit(exp);
+        exp.hi.accept(this);
+        Exp exphi = this.visitedExp;
+        exp.var.init.accept(this);
+        Exp explo = this.visitedExp;
+        exp.body.accept(this);
+        Exp expbody = this.visitedExp;
+        Temp limit = Temp.create();
+        Label forStart = Label.create();
+        Label loopStart = Label.create();
+        Label loopExit1 = Label.create();
+        // Push loopend label onto stack.
+        Label loopEnd = Label.create();
+        this.loopExits.push(loopEnd);
+        // Create non escaping variable for lowVar
+        Access translateAccess = this.currentLevel.allocLocal(false);
+        // store in hash table for future usage.
+        functionAccesses.put(exp.var, translateAccess);
+        Tree.Exp lowVar = translateAccess.acc.exp(staticLinkOffset(translateAccess, this.currentLevel));
+		this.visitedExp = new Nx(
+            new SEQ(
+                new MOVE(lowVar, explo.unEx()),
+                new SEQ(
+                    new MOVE(new TEMP(limit), exphi.unEx()),
+                    new SEQ(
+                        new LABEL(forStart),
+                        new SEQ(
+                            new CJUMP(CJUMP.LE, lowVar, new TEMP(limit), loopStart, loopEnd),
+                            new SEQ(
+                                new LABEL(loopStart),
+                                new SEQ(
+                                    expbody.unNx(),
+                                    new SEQ(
+                                        new CJUMP(CJUMP.EQ, lowVar, new TEMP(limit), loopEnd, loopExit1), //check if int at max
+                                        new SEQ(
+                                            new LABEL(loopExit1),
+                                            new SEQ(
+                                                new MOVE(lowVar, new BINOP(BINOP.PLUS, lowVar, new CONST(1))),
+                                                new SEQ(
+                                                    new JUMP(forStart),
+                                                    new LABEL(loopEnd)
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ) 
+                )
+            )
+        );
+        // out ot loop, pop last exit label.
+        this.loopExits.pop();
     }
 
     @Override
