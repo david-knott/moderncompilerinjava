@@ -2,6 +2,8 @@
 
 ## 20th November 2020
 
+In progress - FieldExpressionList. Builds a sequence of statements that initialize a record.
+
 Renamer - In FunctionDeclaration renamer, we check if formal argument type definition is null.
 If it is we assume the type is primitive. I am not sure this is a good way to do this.
 

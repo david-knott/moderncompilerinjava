@@ -84,10 +84,23 @@ public class TranslateVisitorTest {
     public void forTest() {
         TranslatorVisitor translator = new TranslatorVisitor();
         ErrorMsg errorMsg = new ErrorMsg("", System.out);
-        Absyn program = parserService.parse("for a := 1 to 10 do ()", errorMsg);
+        Absyn program = parserService.parse("for a := 3 to 13 do ()", errorMsg);
         program.accept(new EscapeVisitor(errorMsg));
         program.accept(new Binder(errorMsg));
         program.accept(translator);
-        System.out.println("done");
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+    }
+
+    @Test
+    public void whileTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("while -2 > 3  do ()", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
     }
 }

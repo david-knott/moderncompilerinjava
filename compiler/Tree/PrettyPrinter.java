@@ -155,8 +155,44 @@ public class PrettyPrinter implements TreeVisitor {
     public void visit(CJUMP cjump) {
         this.write("cjump(");
         this.incLevel();
+        String op = null;
+        switch(cjump.relop) {
+            case CJUMP.EQ:
+                op = "EQ";
+                break;
+             case CJUMP.GE:
+                op = "GE";
+                break;
+             case CJUMP.GT:
+                op = "GT";
+                break;
+             case CJUMP.LE:
+                op = "LE";
+                break;
+             case CJUMP.LT:
+                op = "LT";
+                break;
+             case CJUMP.NE:
+                op = "NE";
+                break;
+             case CJUMP.UGE:
+                op = "UGE";
+                break;
+             case CJUMP.UGT:
+                op = "UGT";
+                break;
+              case CJUMP.ULE:
+                op = "ULE";
+                break;
+               case CJUMP.ULT:
+                op = "ULT";
+                break;
+        }
+        this.write(op);
         cjump.left.accept(this);
         cjump.right.accept(this);
+        this.write(cjump.iftrue.toString());
+        this.write(cjump.iffalse.toString());
         this.decLevel();
         this.write(")");
     }

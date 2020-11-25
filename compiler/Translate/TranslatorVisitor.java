@@ -109,7 +109,6 @@ class TranslatorVisitor extends DefaultVisitor {
     @Override
     public void visit(AssignExp exp) {
         exp.var.accept(this);
-        ;
         Exp varExp = this.visitedExp;
         exp.exp.accept(this);
         Exp expExp = this.visitedExp;
@@ -158,12 +157,13 @@ class TranslatorVisitor extends DefaultVisitor {
             }
             expList = ExpList.append(expList, staticLink);
         }
-
+        // visit each actual parameter of the called function and add to expList.
         for (Absyn.ExpList argList = exp.args; argList != null; argList = argList.tail) {
             argList.head.accept(this);
             Exp translatedArg = this.visitedExp;
             expList = ExpList.append(expList, translatedArg.unEx());
         }
+        //
         Label functionLabel = this.functionLabels.get(exp.def);
         if (exp.getType().coerceTo(Constants.VOID)) {
             this.visitedExp = new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
@@ -187,8 +187,11 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(FieldExpList exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+        for(; exp != null; exp = exp.tail) {
+            exp.init.accept(this);
+            Exp fieldExpression = this.visitedExp;
+        }
+        // set the 
     }
 
     @Override
@@ -331,6 +334,18 @@ class TranslatorVisitor extends DefaultVisitor {
         this.visitedExp = new Ex(new CONST(0));
     }
 
+    private void addFrag(Frag frag) {
+        if(this.fragList == null) {
+            this.fragList = new FragList(frag);
+        } else {
+            FragList end = this.fragList;
+            while(end.tail != null) {
+                end = end.tail;
+            }
+            end.tail = new FragList(frag);
+        }
+    }
+
     /**
      * This function saves a translated rocFrag to an internal
      * linked list. This linked list is used after translate
@@ -342,15 +357,7 @@ class TranslatorVisitor extends DefaultVisitor {
         if (body == null)
             return;
         Stm procStat =  level.frame.procEntryExit1(body.unNx());
-        if(this.fragList == null) {
-            this.fragList = new FragList(new ProcFrag(procStat, level.frame));
-        } else {
-            FragList end = this.fragList;
-            while(end.tail != null) {
-                end = end.tail;
-            }
-            end.tail = new FragList(new ProcFrag(procStat, level.frame));
-        }
+        this.addFrag(new ProcFrag(procStat, level.frame));
     }
 
     /**
@@ -415,7 +422,27 @@ class TranslatorVisitor extends DefaultVisitor {
                 );
                 break;
             default:
-                this.visitedExp = new RelCx(leftTrans.unEx(), rightTrans.unEx(), exp.oper);
+                int relop = 0;
+                switch(exp.oper) {
+                    case OpExp.EQ:
+                        relop = CJUMP.EQ;
+                        break;
+                    case OpExp.GE:
+                        relop = CJUMP.GE;
+                        break;
+                    case OpExp.GT:
+                        relop = CJUMP.GT;
+                        break;
+                    case OpExp.LE:
+                        relop = CJUMP.LE;
+                        break;
+                    case OpExp.LT:
+                        relop = CJUMP.LT;
+                        break;
+                    default:
+                        Assert.unreachable();
+                }
+                this.visitedExp = new RelCx(leftTrans.unEx(), rightTrans.unEx(), relop);
             break;
         }
         
@@ -423,13 +450,34 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(RecordExp exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+        Temp recordPointer =  Temp.create();
+        // build all the statements that initialise the record.
+        exp.fields.accept(this);
+        //Stm stm = fieldList(recordPointer, expTyList, this.currentLevel);
+        // count all the fields, we assume that all use the same heap space.
+        int total = 0;
+        for (FieldExpList s = exp.fields; s != null; s = s.tail) total++;
+        int size = this.currentLevel.frame.wordSize() * total;
+        // build translated expression.
+        this.visitedExp = new Ex(new ESEQ(
+            new SEQ(
+                new MOVE(
+                    new TEMP(recordPointer),
+                    this.currentLevel.frame.externalCall(
+                        "initRecord", 
+                        new ExpList(
+                            new CONST(size), 
+                            null
+                        )
+                    )
+                ), 
+                stm
+            ),
+            new TEMP(recordPointer)));
     }
 
     @Override
     public void visit(SeqExp exp) {
-        // TODO Auto-generated method stub
         super.visit(exp);
     }
 
@@ -446,7 +494,7 @@ class TranslatorVisitor extends DefaultVisitor {
     public void visit(StringExp exp) {
         Label label = Label.create();
         var stringFragment = currentLevel.frame.string(label, exp.value);
-        //addFrag(new DataFrag(stringFragment));
+        addFrag(new DataFrag(stringFragment));
         this.visitedExp = new Ex(new NAME(label));
     }
 
@@ -490,15 +538,36 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(VarExp exp) {
-        // just visit the variable expression.
         exp.var.accept(this);
     }
 
     @Override
     public void visit(WhileExp exp) {
-        // TODO Handle breaks.
-        super.visit(exp);
+        var whileStart = new Label();
+        var loopStart = new Label();
+        exp.test.accept(this);
+        Exp testExp = this.visitedExp;
+        exp.body.accept(this);
+        Exp transBody = this.visitedExp;
+        Label loopEnd = Label.create();
+        this.loopExits.push(loopEnd);
+        this.visitedExp = new Nx(
+            new SEQ(
+                new Tree.LABEL(whileStart),
+                new SEQ(
+                    testExp.unCx(loopStart, loopEnd), 
+                    new SEQ(
+                        new Tree.LABEL(loopStart),
+                        new SEQ(
+                            transBody.unNx(), 
+                            new SEQ(
+                                new Tree.JUMP(whileStart), 
+                                new Tree.LABEL(loopEnd)
+                            )
+                        )
+                    )
+                )
+            )
+        );
     }
-
-
 }
