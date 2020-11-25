@@ -1,12 +1,24 @@
 # Diary
 
+## 20th November 2020
+
+Renamer - In FunctionDeclaration renamer, we check if formal argument type definition is null.
+If it is we assume the type is primitive. I am not sure this is a good way to do this.
+
+Binder - In FunctionDeclaration formals arguments, which are represented as a DecList of VarDec classes are not processed by their respective vistor methods. We create a RECORD within the FunDec
+visitor method.
+
+PrettyPrinter - In FunctionDeclaration formals arguments, which are represented as a DecList of VarDec classes are not processed by their respective vistor methods. We create a RECORD within the FunDec
+visitor method.
+
+
 ## 19th November 2020
 
 Refactored ast function dec to use var decs as formals.
 
-Need to check all the unit tests still.
+~~Need to check all the unit tests still.
 
-Bug in TranslateVisitorTest.forTest, strange reference to STRING.
+~~Bug in TranslateVisitorTest.forTest, strange reference to STRING.
 ## 18th November 2020
 
 Chaning the function dec ast to use  a dec list of vardecs instead of 
