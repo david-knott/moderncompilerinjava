@@ -187,11 +187,23 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(FieldExpList exp) {
+        // calculate size where we assume that all use the same heap space.
+        
+
+        SEQ first = null, temp = null, last = null; 
         for(; exp != null; exp = exp.tail) {
             exp.init.accept(this);
             Exp fieldExpression = this.visitedExp;
+            if(first == null) {
+                first = last = new SEQ(fieldExpression.unNx(), null);
+            } else {
+                last = new SEQ(fieldExpression.unNx(), null);
+                temp.right = last;
+            }
+            temp = last;
         }
         // set the 
+        this.visitedExp = new Nx(first);
     }
 
     @Override
@@ -445,35 +457,96 @@ class TranslatorVisitor extends DefaultVisitor {
                 this.visitedExp = new RelCx(leftTrans.unEx(), rightTrans.unEx(), relop);
             break;
         }
-        
+    }
+
+    /**
+     * Helper function used by @see TranslatorVisitor.visit(RecordExp).
+     * @param recordPointer the record pointer.
+     * @param total the total bytes required to store the record.
+     * @param fieldTranslated the translated @see Translate.Exp
+     * @return a @see Tree.MOVE statement, which moves the fieldTranslated into offset total * 
+     * wordSize from record pointer.
+     */
+    private Stm fieldStatement(Temp recordPointer, int total, Exp fieldTranslated) {
+        return new MOVE(
+            new MEM(
+                new BINOP(
+                    BINOP.PLUS, 
+                    new TEMP(recordPointer), 
+                    new CONST(this.currentLevel.frame.wordSize() * total)
+                )
+            ),
+            fieldTranslated.unEx()
+        );
     }
 
     @Override
     public void visit(RecordExp exp) {
+        // no fields, so no data to store, so dont do anything.
+        if(exp.fields == null) {
+            return;
+        }
+        // base heap pointer for record. 
         Temp recordPointer =  Temp.create();
         // build all the statements that initialise the record.
-        exp.fields.accept(this);
-        //Stm stm = fieldList(recordPointer, expTyList, this.currentLevel);
-        // count all the fields, we assume that all use the same heap space.
-        int total = 0;
-        for (FieldExpList s = exp.fields; s != null; s = s.tail) total++;
-        int size = this.currentLevel.frame.wordSize() * total;
-        // build translated expression.
-        this.visitedExp = new Ex(new ESEQ(
-            new SEQ(
-                new MOVE(
-                    new TEMP(recordPointer),
-                    this.currentLevel.frame.externalCall(
-                        "initRecord", 
-                        new ExpList(
-                            new CONST(size), 
-                            null
+        int size = 0;
+        for (FieldExpList s = exp.fields; s != null; s = s.tail) {
+            size += this.currentLevel.frame.wordSize();
+        }
+        // visit field init and capture it in member var visitedExp
+        exp.fields.init.accept(this);
+        Exp fieldTranslated = this.visitedExp;
+        int fieldCounter = 0;
+        Stm stm = this.fieldStatement(recordPointer, fieldCounter++, fieldTranslated);
+        // more than one item in list, so create a SEQ.
+        if(exp.fields.tail != null) {
+            stm = new SEQ(stm, null);
+            FieldExpList rest = exp.fields.tail;
+            // we only iterate from second item to second last item
+            // because the last item should not be created in a SEQ 
+            // with a null right value
+            // We dont want this (SEQ(secondLast, SEQ(last, null)))
+            // We want this (SEQ(secondLast, last))
+            SEQ temp = null, last = null;
+            for(; rest.tail != null; rest = rest.tail) {
+                // visit field init and capture it in member var visitedExp
+                rest.init.accept(this);
+                fieldTranslated = this.visitedExp;
+                Stm middle = this.fieldStatement(recordPointer, fieldCounter++, fieldTranslated);
+                if(temp == null) {
+                    temp = new SEQ(middle, null);
+                } else {
+                    last = new SEQ(middle, null);
+                    temp.right = last;
+                }
+                temp = last;
+            }
+            // visit field init and capture it in member var visitedExp
+            rest.init.accept(this);
+            fieldTranslated = this.visitedExp;
+            ((SEQ)stm).right = this.fieldStatement(recordPointer, fieldCounter++, fieldTranslated);
+        }
+        // build expression sequence, where left value is a statement
+        // and right value is a expression result, which in this case is the 
+        // record pointer. 
+        this.visitedExp = new Ex(
+            new ESEQ(
+                new SEQ(
+                    new MOVE(
+                        new TEMP(recordPointer),
+                        this.currentLevel.frame.externalCall(
+                            "initRecord", 
+                            new ExpList(
+                                new CONST(size), 
+                                null
+                            )
                         )
-                    )
-                ), 
-                stm
-            ),
-            new TEMP(recordPointer)));
+                    ), 
+                    stm
+                ),
+                new TEMP(recordPointer)
+            )
+        );
     }
 
     @Override

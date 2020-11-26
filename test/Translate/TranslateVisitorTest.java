@@ -27,6 +27,17 @@ public class TranslateVisitorTest {
     }
 
     @Test
+    public void translateEmpty() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        assertNotNull(translator);
+        Absyn program = parserService.parse("/* just a comment */", new ErrorMsg("", System.out));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        assertNotNull(fragList);
+    }
+
+    @Test
     public void translateInt() {
         TranslatorVisitor translator = new TranslatorVisitor();
         assertNotNull(translator);
@@ -102,5 +113,65 @@ public class TranslateVisitorTest {
         program.accept(translator);
         FragList fragList = translator.getFragList();
         fragList.accept(new FragmentPrinter(System.out));
+    }
+
+    @Test
+    public void recordExpZeroFieldTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let type rec = { } var v := rec {  } in end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        // expect 1 fragment, with zero SEQ nodes.
+    }
+
+
+    @Test
+    public void recordExpOneFieldTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let type rec = { a : int } var v := rec { a = 1 } in end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        // expect 1 fragment, with 0 SEQ node and a MOVE node with offset 0 from record pointer.
+    }
+
+    @Test
+    public void recordExpTwoFieldsTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let type rec = { a : int, b : int } var v := rec { a = 1, b = 2} in end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        // expect 1 fragment, with 1 SEQ node, 
+        // with left containing MOVE with offset 0 from record pointe.
+        // right containing MOVE with offset 8 from record pointer.
+    }
+
+    @Test
+    public void recordExpThreeFieldsTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let type rec = { a : int, b : int, c: int } var v := rec { a = 1, b = 2, c = 3} in end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        // expect 1 fragment, with 2 SEQ nodes, 
+        // with left containing MOVE with offset 0 from record pointe.
+        // with right containing SEQ node
+        // with left containing MOVE with offset 8 from record pointe.
+        // right containing MOVE with offset 16 from record pointer.
+
     }
 }
