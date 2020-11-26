@@ -10,6 +10,7 @@ import Absyn.Absyn;
 import Absyn.DecList;
 import Absyn.Exp;
 import Absyn.FunctionDec;
+import Absyn.LetExp;
 import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
 
@@ -28,6 +29,13 @@ public class ParserService {
         parserFactory.setParserTrace(parserServiceConfiguration.isParserTrace());
     }
 
+    /**
+     * Parses a string containing tiger code and returns a declaration list.
+     * Internally this uses the overloaded parse(InputStream, ErrorMsg) method.
+     * @param code
+     * @param errorMsg
+     * @return
+     */
     public DecList parse(String code, ErrorMsg errorMsg) {
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(code.getBytes(Charset.defaultCharset()));
         return parse(byteArrayInputStream, errorMsg);
@@ -38,10 +46,24 @@ public class ParserService {
         Parser parser = parserFactory.getParser(inputStream, errorMsg);
         Absyn tree = parser.parse();
         DecList program = null;
-        // TODO: Checking for DecList might not be neccessary.
+        // if passed a declist, wrap in let exp and function dec.
         if(tree instanceof DecList) {
-            program = (DecList)tree;
+            program = new DecList(
+                new FunctionDec(0, 
+                    Symbol.symbol("tigermain"), 
+                    null, 
+                    null, 
+                    new LetExp(
+                        0, 
+                        (DecList)tree, 
+                        null
+                    ),
+                    null
+                ), 
+                null
+            );
         }
+        // if passed an exp, wrap in function dec
         if(tree instanceof Exp) {
             program = new DecList(
                 new FunctionDec(0, 

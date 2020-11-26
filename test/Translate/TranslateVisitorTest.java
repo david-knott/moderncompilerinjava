@@ -63,9 +63,11 @@ public class TranslateVisitorTest {
     public void translateVarDec() {
         TranslatorVisitor translator = new TranslatorVisitor();
         assertNotNull(translator);
-        Absyn program = parserService.parse("var a:int := 1", new ErrorMsg("", System.out));
+        Absyn program = parserService.parse("var a:int := 3", new ErrorMsg("", System.out));
         program.accept(translator);
-        System.out.println("done");
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        assertNotNull(fragList);
     }
 
     @Test

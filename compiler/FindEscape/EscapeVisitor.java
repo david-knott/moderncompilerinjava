@@ -29,7 +29,9 @@ public class EscapeVisitor extends DefaultVisitor {
         for (var dec = letExp.decs; dec != null; dec = dec.tail) {
             letExp.decs.accept(this);
         }
-        letExp.body.accept(this);
+        if(letExp.body != null) {
+            letExp.body.accept(this);
+        }
         this.escEnv.endScope();
     }
 

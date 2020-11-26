@@ -67,6 +67,24 @@ class TranslatorVisitor extends DefaultVisitor {
         return this.fragList;
     }
 
+
+    /**
+     * Returns the current level or creates a new one if one is not
+     * present.
+     * @return existing level or newly created level.
+     */
+    private Level getCurrentLevel() {
+        return this.currentLevel;
+    }
+
+    /**
+     * Sets the current level.
+     * @param level the level.
+     */
+    private void setCurrentLevel(Level level) {
+        this.currentLevel = level;
+    }
+
     /**
      * Returns a MEM object which represents a static link to a variable in a frame
      * higher up the stack. If the variable is defined in the current stack frame,
@@ -102,7 +120,7 @@ class TranslatorVisitor extends DefaultVisitor {
         Temp arrayPointer = Temp.create();
         ExpList args = new ExpList(sizeExp.unEx(), new ExpList(initExp.unEx(), null));
         this.visitedExp = new Ex(
-                new ESEQ(new MOVE(new TEMP(arrayPointer), currentLevel.frame.externalCall("initArray", args)),
+                new ESEQ(new MOVE(new TEMP(arrayPointer), this.getCurrentLevel().frame.externalCall("initArray", args)),
                         new TEMP(arrayPointer)));
     }
 
@@ -126,7 +144,7 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(CallExp exp) {
-        Level usageLevel = this.currentLevel;
+        Level usageLevel = this.getCurrentLevel();
         Level definedLevel = this.functionLevels.get(exp.def);
         // if the function being called has no body its a primitive
         // and doesn't need a static link.
@@ -187,23 +205,7 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(FieldExpList exp) {
-        // calculate size where we assume that all use the same heap space.
-        
-
-        SEQ first = null, temp = null, last = null; 
-        for(; exp != null; exp = exp.tail) {
-            exp.init.accept(this);
-            Exp fieldExpression = this.visitedExp;
-            if(first == null) {
-                first = last = new SEQ(fieldExpression.unNx(), null);
-            } else {
-                last = new SEQ(fieldExpression.unNx(), null);
-                temp.right = last;
-            }
-            temp = last;
-        }
-        // set the 
-        this.visitedExp = new Nx(first);
+        Assert.unreachable();
     }
 
     @Override
@@ -234,10 +236,10 @@ class TranslatorVisitor extends DefaultVisitor {
         Label loopEnd = Label.create();
         this.loopExits.push(loopEnd);
         // Create non escaping variable for lowVar
-        Access translateAccess = this.currentLevel.allocLocal(false);
+        Access translateAccess = this.getCurrentLevel().allocLocal(false);
         // store in hash table for future usage.
         functionAccesses.put(exp.var, translateAccess);
-        Tree.Exp lowVar = translateAccess.acc.exp(staticLinkOffset(translateAccess, this.currentLevel));
+        Tree.Exp lowVar = translateAccess.acc.exp(staticLinkOffset(translateAccess, this.getCurrentLevel()));
 		this.visitedExp = new Nx(
             new SEQ(
                 new MOVE(lowVar, explo.unEx()),
@@ -286,8 +288,8 @@ class TranslatorVisitor extends DefaultVisitor {
             } else if(current.name.toString().equals("tigermain")) {
                 Label label = Label.create("tigermain");
                 // getBoolList is null here...
-                this.currentLevel = new Level(new IntelFrame(label, getBoolList(current.params)));
-                this.functionLevels.put(current, this.currentLevel);
+                this.setCurrentLevel(new Level(new IntelFrame(label, getBoolList(current.params))));
+                this.functionLevels.put(current, this.getCurrentLevel());
                 this.functionLabels.put(exp, label);
             } else {
                 // notice that we create the new level
@@ -297,29 +299,31 @@ class TranslatorVisitor extends DefaultVisitor {
                 // for the function.
                 Label label = Label.create();
                 // create level and access for function
-                this.currentLevel = new Level(
-                    this.currentLevel, 
-                    label, 
-                    getBoolList(
-                        current.params
-                    ),
-                    true /* create static link */
+                this.setCurrentLevel(
+                    new Level(
+                        this.getCurrentLevel(), 
+                        label, 
+                        getBoolList(
+                            current.params
+                        ),
+                        true /* create static link */
+                    )
                 );
                 this.functionLabels.put(exp, label);
-                this.functionLevels.put(current, this.currentLevel);
+                this.functionLevels.put(current, this.getCurrentLevel());
             }
         }
         // visit the declations again 
         for(FunctionDec current = exp; current != null; current = current.next) {
             if(exp.body != null) {
                 // save current level.
-                Level parent = this.currentLevel;
+                Level parent = this.getCurrentLevel();
                 // find level created for function and enter it.
-                this.currentLevel = this.functionLevels.get(current);
+                this.setCurrentLevel(this.functionLevels.get(current));
                 // get the translate access list ( frame.access & level )
                 DecList formalVarDecs = current.params;
                 // get reference to level formals
-                AccessList formals = this.currentLevel.formals;
+                AccessList formals = this.getCurrentLevel().formals;
                 //skip static link if not in main function.
                 if(!current.name.toString().equals("tigermain")) {
                     formals = formals.tail;
@@ -335,9 +339,9 @@ class TranslatorVisitor extends DefaultVisitor {
                 // get translated fragment.
                 Exp translatedBody = this.visitedExp;
                 // creates a new fragment for the function.
-                this.procEntryExit(this.currentLevel, translatedBody);
+                this.procEntryExit(this.getCurrentLevel(), translatedBody);
                 // reset the current level back
-                this.currentLevel = parent;
+                this.setCurrentLevel(parent);
             }
         }
         // reset the visitedExp to nil
@@ -473,7 +477,7 @@ class TranslatorVisitor extends DefaultVisitor {
                 new BINOP(
                     BINOP.PLUS, 
                     new TEMP(recordPointer), 
-                    new CONST(this.currentLevel.frame.wordSize() * total)
+                    new CONST(this.getCurrentLevel().frame.wordSize() * total)
                 )
             ),
             fieldTranslated.unEx()
@@ -491,7 +495,7 @@ class TranslatorVisitor extends DefaultVisitor {
         // build all the statements that initialise the record.
         int size = 0;
         for (FieldExpList s = exp.fields; s != null; s = s.tail) {
-            size += this.currentLevel.frame.wordSize();
+            size += this.getCurrentLevel().frame.wordSize();
         }
         // visit field init and capture it in member var visitedExp
         exp.fields.init.accept(this);
@@ -534,7 +538,7 @@ class TranslatorVisitor extends DefaultVisitor {
                 new SEQ(
                     new MOVE(
                         new TEMP(recordPointer),
-                        this.currentLevel.frame.externalCall(
+                        this.getCurrentLevel().frame.externalCall(
                             "initRecord", 
                             new ExpList(
                                 new CONST(size), 
@@ -559,14 +563,14 @@ class TranslatorVisitor extends DefaultVisitor {
         // we need to find where this var was declared first.
         // when var is declared, we allocate space on the frame.
         Access access = functionAccesses.get((VarDec)exp.def);
-        Tree.Exp stateLinkExp =  staticLinkOffset(access, this.currentLevel);
+        Tree.Exp stateLinkExp =  staticLinkOffset(access, this.getCurrentLevel());
         this.visitedExp = new Ex(access.acc.exp(stateLinkExp));
     }
 
     @Override
     public void visit(StringExp exp) {
         Label label = Label.create();
-        var stringFragment = currentLevel.frame.string(label, exp.value);
+        var stringFragment = getCurrentLevel().frame.string(label, exp.value);
         addFrag(new DataFrag(stringFragment));
         this.visitedExp = new Ex(new NAME(label));
     }
@@ -584,7 +588,7 @@ class TranslatorVisitor extends DefaultVisitor {
                 new BINOP(
                     BINOP.MUL, 
                     indexExp.unEx(),
-                    new CONST(currentLevel.frame.wordSize())
+                    new CONST(getCurrentLevel().frame.wordSize())
                 )
             )                
         ));
@@ -596,11 +600,11 @@ class TranslatorVisitor extends DefaultVisitor {
         exp.init.accept(this);
         Exp initExp = this.visitedExp;
         // create a new access for this variable.
-        Access translateAccess = this.currentLevel.allocLocal(exp.escape);
+        Access translateAccess = this.getCurrentLevel().allocLocal(exp.escape);
         // store in hash table for future usage.
         functionAccesses.put(exp, translateAccess);
         // create tree expression along with static link calculation ( is this needed ?? )
-        Tree.Exp decExp = translateAccess.acc.exp(staticLinkOffset(translateAccess, this.currentLevel));
+        Tree.Exp decExp = translateAccess.acc.exp(staticLinkOffset(translateAccess, this.getCurrentLevel()));
         this.visitedExp = new Nx(
             new MOVE(
                 decExp,
