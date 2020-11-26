@@ -1,4 +1,11 @@
 # Diary
+## 21th November 2020
+Completed record expresssion translation and testing.
+
+Modified parser to better handle dec list source code. Previously the parser would fail
+on source code such as var a:int = 1, as there was no related level created to place locals.
+I modified the parser to create an implicit function dec and let exp so that a level /frame
+would be created.
 
 ## 20th November 2020
 
