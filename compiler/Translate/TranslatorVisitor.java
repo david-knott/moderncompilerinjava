@@ -149,7 +149,7 @@ class TranslatorVisitor extends DefaultVisitor {
         // if the function being called has no body its a primitive
         // and doesn't need a static link.
         FunctionDec defined = (FunctionDec) exp.def;
-        boolean useStaticLink = defined.body == null;
+        boolean useStaticLink = defined.body != null;
         ExpList expList = null;
         if (useStaticLink) {
             Tree.Exp staticLink = null;
@@ -192,7 +192,25 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(DecList exp) {
-        super.visit(exp);
+        if(exp.tail == null) {
+            exp.head.accept(this);
+            // currentExp has been set now, nothing further to do.
+            return;
+        }
+        SEQ first = null, temp = null, last = null;
+        for(; exp.tail != null; exp = exp.tail) {
+            exp.head.accept(this);
+            if(first == null) {
+                first = last = new SEQ(this.visitedExp.unNx(), null);
+            } else {
+                temp.right = new SEQ(this.visitedExp.unNx(), null);
+                last = (SEQ)temp.right;
+            }
+            temp = last;
+        }
+        exp.head.accept(this);
+        last.right = this.visitedExp.unNx();
+        this.visitedExp = new Nx(first);
     }
 
     /*
@@ -284,13 +302,13 @@ class TranslatorVisitor extends DefaultVisitor {
             if(current.body == null) {
                 // No level for primitives.
                 Label label = Label.create(current.name);
-                this.functionLabels.put(exp, label);
+                this.functionLabels.put(current, label);
             } else if(current.name.toString().equals("tigermain")) {
                 Label label = Label.create("tigermain");
                 // getBoolList is null here...
                 this.setCurrentLevel(new Level(new IntelFrame(label, getBoolList(current.params))));
                 this.functionLevels.put(current, this.getCurrentLevel());
-                this.functionLabels.put(exp, label);
+                this.functionLabels.put(current, label);
             } else {
                 // notice that we create the new level
                 // using the function formal arguments
@@ -309,13 +327,13 @@ class TranslatorVisitor extends DefaultVisitor {
                         true /* create static link */
                     )
                 );
-                this.functionLabels.put(exp, label);
+                this.functionLabels.put(current, label);
                 this.functionLevels.put(current, this.getCurrentLevel());
             }
         }
         // visit the declations again 
         for(FunctionDec current = exp; current != null; current = current.next) {
-            if(exp.body != null) {
+            if(current.body != null) {
                 // save current level.
                 Level parent = this.getCurrentLevel();
                 // find level created for function and enter it.
@@ -335,7 +353,7 @@ class TranslatorVisitor extends DefaultVisitor {
                     this.functionAccesses.put((VarDec)formalVarDecs.head, access);
                 }
                 // visit body of function using new saved level
-                exp.body.accept(this);
+                current.body.accept(this);
                 // get translated fragment.
                 Exp translatedBody = this.visitedExp;
                 // creates a new fragment for the function.
@@ -511,24 +529,26 @@ class TranslatorVisitor extends DefaultVisitor {
             // with a null right value
             // We dont want this (SEQ(secondLast, SEQ(last, null)))
             // We want this (SEQ(secondLast, last))
-            SEQ temp = null, last = null;
+            ///
+            // last is assigned to stm here as we use it at to capture the last item in the list.
+            // as a right value for the last sequence.
+            SEQ temp = (SEQ)stm, last = (SEQ)stm;
             for(; rest.tail != null; rest = rest.tail) {
                 // visit field init and capture it in member var visitedExp
                 rest.init.accept(this);
                 fieldTranslated = this.visitedExp;
                 Stm middle = this.fieldStatement(recordPointer, fieldCounter++, fieldTranslated);
-                if(temp == null) {
-                    temp = new SEQ(middle, null);
-                } else {
-                    last = new SEQ(middle, null);
-                    temp.right = last;
-                }
+                // create new last item
+                last = new SEQ(middle, null);
+                // creater point from previously last item to new last
+                temp.right = last;
+                // set previously last item to new last
                 temp = last;
             }
             // visit field init and capture it in member var visitedExp
             rest.init.accept(this);
             fieldTranslated = this.visitedExp;
-            ((SEQ)stm).right = this.fieldStatement(recordPointer, fieldCounter++, fieldTranslated);
+            last.right = this.fieldStatement(recordPointer, fieldCounter++, fieldTranslated);
         }
         // build expression sequence, where left value is a statement
         // and right value is a expression result, which in this case is the 

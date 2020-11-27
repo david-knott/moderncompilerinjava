@@ -1,6 +1,5 @@
 package Absyn;
 
-import java.io.OutputStream;
 
 abstract public class Absyn {
   public int pos;

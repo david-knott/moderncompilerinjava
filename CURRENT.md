@@ -7,7 +7,6 @@ on source code such as var a:int = 1, as there was no related level created to p
 I modified the parser to create an implicit function dec and let exp so that a level /frame
 would be created.
 
-
 Idea regarding testing trees, why no render as XML and test using XPath ?
 
 ## 20th November 2020
