@@ -12,6 +12,7 @@ import Absyn.CallExp;
 import Absyn.DecList;
 import Absyn.DefaultVisitor;
 import Absyn.Exp;
+import Absyn.ExpList;
 import Absyn.FieldList;
 import Absyn.ForExp;
 import Absyn.FunctionDec;
@@ -72,7 +73,6 @@ public class Binder extends DefaultVisitor {
         this.errorMsg = errorMsg;
         // base system types
         Hashtable<Symbol, SymbolTableElement> tinit = new Hashtable<Symbol, SymbolTableElement>();
-        // hack so that type usages for ints and string does not show a zero.
         tinit.put(Symbol.symbol("int"), new SymbolTableElement(Constants.INT, null));
         tinit.put(Symbol.symbol("string"), new SymbolTableElement(Constants.STRING, null));
         this.typeSymbolTable = new SymbolTable(tinit);
@@ -96,9 +96,7 @@ public class Binder extends DefaultVisitor {
         }
         if (exp.body != null) {
             exp.body.accept(this);
-            //type of let is type of body, if any.
         }
-        // bind stuff to the let exp now
         this.functionSymbolTable.endScope();
         this.varSymbolTable.endScope();
         this.typeSymbolTable.endScope();
@@ -271,7 +269,13 @@ public class Binder extends DefaultVisitor {
         this.visitedType = Constants.VOID;
     }
 
-    public RECORD getRecord(DecList decList) {
+    /**
+     * Private helper function to construct a record
+     * form a function formal argument declaration list
+     * @param decList @Absyn.Declist
+     * @return @see Types.RECORD
+     */
+    private RECORD getRecord(DecList decList) {
         // build record type 
         RECORD last = null, first = null, temp = null;
         if(decList == null) {
@@ -289,25 +293,6 @@ public class Binder extends DefaultVisitor {
             temp = last;
         }
         return first;
-        /*
-        FieldList expList = exp;
-        do {
-            temp = last;
-            expList.typ.accept(this);
-            // this.visitedType could be null if the type does not exist.
-            if(this.visitedType != null) {
-                this.setType(expList.typ, this.visitedType);
-                last = new RECORD(expList.name, this.visitedType, null);
-                if (first == null) {
-                    first = last;
-                } else {
-                    temp.tail = last;
-                }
-            }
-            expList = expList.tail;
-        } while (expList != null);
-        this.visitedType = first;
-        */
     }
 
 
@@ -335,15 +320,6 @@ public class Binder extends DefaultVisitor {
                 returnType = Constants.VOID;
             }
             RECORD paramType = this.getRecord(functionDec.params);
-            /*
-            if (functionDec.params != null) {
-                // call accept method on formal dec list
-                // which should build a record type for 
-                // function.
-                functionDec.params.accept(this);
-                // dont visit the function dec.
-                paramType = (RECORD) this.visitedType;
-            }*/
             // function definition
             if (!this.functionSymbolTable.contains(functionDec.name, false)) {
                 FUNCTION functionType = new FUNCTION(paramType, returnType);
@@ -496,5 +472,7 @@ public class Binder extends DefaultVisitor {
         } else {
             exp.list.accept(this);
         }
+        // set the type of sequence.
+        exp.setType(this.visitedType);
     }
 }

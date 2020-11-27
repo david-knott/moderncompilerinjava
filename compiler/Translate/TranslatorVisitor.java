@@ -430,8 +430,34 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(LetExp exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+        Exp decs = null;
+        if(exp.decs != null) {
+            exp.decs.accept(this);
+            decs = this.visitedExp;
+        } else {
+            decs = new Ex(new CONST(0));
+        }
+        Exp body = null;
+        if(exp.body != null) {
+            exp.body.accept(this);
+            body = this.visitedExp;
+        } else {
+            body = new Ex(new CONST(0));
+        }
+        this.visitedExp = exp.body.getType().coerceTo(Constants.VOID) 
+            ?
+            new Nx(
+                new SEQ(
+                    decs.unNx(),
+                    body.unNx()
+                )
+            ) : 
+            new Ex(
+                new ESEQ(
+                    decs.unNx(),
+                    body.unEx()
+                )
+            );
     }
 
     @Override

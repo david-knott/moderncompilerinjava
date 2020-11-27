@@ -457,6 +457,40 @@ public class TranslateVisitorTest {
     }
 
     @Test
+    public void letNoDecNoBody() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in end", errorMsg);
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+    }
+     
+    @Test
+    public void letNoDecIntBody() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in 3 end", errorMsg);
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        // expect a ESEQ with
+        // expect noop declist as empty ( sxp(const(0)) )
+        // expect const(3)
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<eseq>" +
+            "<sxp>" +
+            "<const value=\"0\" />" +
+            "</sxp>" +
+            "<const value=\"3\" />" +
+            "</eseq>"
+        );
+    }
+     
+    @Test
     public void forTest() {
         TranslatorVisitor translator = new TranslatorVisitor();
         ErrorMsg errorMsg = new ErrorMsg("", System.out);
@@ -479,6 +513,4 @@ public class TranslateVisitorTest {
         FragList fragList = translator.getFragList();
         fragList.accept(new FragmentPrinter(System.out));
     }
-
-
 }

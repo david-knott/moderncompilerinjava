@@ -88,8 +88,8 @@ public class XmlPrinter implements TreeVisitor {
     @Override
     public void visit(ESEQ op) {
         this.writeStartElement("eseq");
-        op.exp.accept(this);
         op.stm.accept(this);
+        op.exp.accept(this);
         this.writeEndElement();
     }
 
