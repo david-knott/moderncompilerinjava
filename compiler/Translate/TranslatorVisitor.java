@@ -240,12 +240,15 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(ForExp exp) {
-        exp.hi.accept(this);
-        Exp exphi = this.visitedExp;
-        exp.var.init.accept(this);
-        Exp explo = this.visitedExp;
-        exp.body.accept(this);
-        Exp expbody = this.visitedExp;
+        // Note that we create the access and labels
+        // and add to loop exit stack before we start
+        // visiting the sub expressions as they need to
+        // present when visit them.
+        // Create non escaping variable for lowVar
+        Access translateAccess = this.getCurrentLevel().allocLocal(false);
+        // store in hash table for future usage.
+        functionAccesses.put(exp.var, translateAccess);
+        // create labels and temps
         Temp limit = Temp.create();
         Label forStart = Label.create();
         Label loopStart = Label.create();
@@ -253,10 +256,13 @@ class TranslatorVisitor extends DefaultVisitor {
         // Push loopend label onto stack.
         Label loopEnd = Label.create();
         this.loopExits.push(loopEnd);
-        // Create non escaping variable for lowVar
-        Access translateAccess = this.getCurrentLevel().allocLocal(false);
-        // store in hash table for future usage.
-        functionAccesses.put(exp.var, translateAccess);
+        // visit sub expressions.
+        exp.hi.accept(this);
+        Exp exphi = this.visitedExp;
+        exp.var.init.accept(this);
+        Exp explo = this.visitedExp;
+        exp.body.accept(this);
+        Exp expbody = this.visitedExp;
         Tree.Exp lowVar = translateAccess.acc.exp(staticLinkOffset(translateAccess, this.getCurrentLevel()));
 		this.visitedExp = new Nx(
             new SEQ(
@@ -351,6 +357,7 @@ class TranslatorVisitor extends DefaultVisitor {
                 for(; formals != null; formals = formals.tail) {
                     Access access = formals.head;
                     this.functionAccesses.put((VarDec)formalVarDecs.head, access);
+                    formalVarDecs = formalVarDecs.tail;
                 }
                 // visit body of function using new saved level
                 current.body.accept(this);
@@ -627,6 +634,7 @@ class TranslatorVisitor extends DefaultVisitor {
     public void visit(SimpleVar exp) {
         // Lookup variable declaration reference 
         Access access = functionAccesses.get((VarDec)exp.def);
+        Assert.assertNotNull(access);
         // Compute static link to variable using definition and current level
         Tree.Exp stateLinkExp =  staticLinkOffset(access, this.getCurrentLevel());
         // Set visited expression.
@@ -685,14 +693,17 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(WhileExp exp) {
+        // create labels and temps first
+        // add to loop list. Then visit
+        // the sub expressions.
+        Label loopEnd = Label.create();
+        this.loopExits.push(loopEnd);
         var whileStart = new Label();
         var loopStart = new Label();
         exp.test.accept(this);
         Exp testExp = this.visitedExp;
         exp.body.accept(this);
         Exp transBody = this.visitedExp;
-        Label loopEnd = Label.create();
-        this.loopExits.push(loopEnd);
         this.visitedExp = new Nx(
             new SEQ(
                 new Tree.LABEL(whileStart),

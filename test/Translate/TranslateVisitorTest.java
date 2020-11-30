@@ -317,7 +317,7 @@ public class TranslateVisitorTest {
     public void arraySubscriptTest() {
         TranslatorVisitor translator = new TranslatorVisitor();
         ErrorMsg errorMsg = new ErrorMsg("", System.out);
-        Absyn program = parserService.parse("let type intArray = array of int var a := intArray[3] of 5  in a[0] end", errorMsg);
+        Absyn program = parserService.parse("let type intArray = array of int var a := intArray[13] of 5  in a[7] end", errorMsg);
         program.accept(new EscapeVisitor(errorMsg));
         program.accept(new Binder(errorMsg));
         program.accept(translator);
@@ -330,7 +330,7 @@ public class TranslateVisitorTest {
             "<binop op=\"0\">" +
             "<temp />" +
             "<binop op=\"2\">" +
-            "<const value=\"0\" />" +
+            "<const value=\"7\" />" +
             "<const value=\"8\" />" +
             "</binop>" +
             "</binop>" +
