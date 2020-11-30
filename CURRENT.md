@@ -1,4 +1,15 @@
 # Diary
+
+## 30th November 2020
+
+Translate Visitor appears to complete.
+
+I am not happy with the Binder and how it attaches types and definitions to AST.
+In theory I think its a great idea. Need to modify it so that types and definitions
+must be set on particular AST nodes. Perhaps a secondary tree that contains this information.
+
+If binder encounters an error and cannot set the type, it will set the expression type to VOID.
+
 ## 21th November 2020
 Completed record expresssion translation and testing.
 

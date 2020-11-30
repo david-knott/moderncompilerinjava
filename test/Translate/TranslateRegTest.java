@@ -21,7 +21,6 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import Absyn.Absyn;
-import Absyn.PrettyPrinter;
 import Bind.Binder;
 import ErrorMsg.ErrorMsg;
 import FindEscape.EscapeVisitor;
@@ -59,7 +58,6 @@ public class TranslateRegTest {
             program.accept(translator);
             FragList fragList = translator.getFragList();
             assertNotNull(fragList);
-            fragList.accept(new FragmentPrinter(System.out));
         }   catch(IOException e) {
             e.printStackTrace();
         } 

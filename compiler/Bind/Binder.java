@@ -12,7 +12,6 @@ import Absyn.CallExp;
 import Absyn.DecList;
 import Absyn.DefaultVisitor;
 import Absyn.Exp;
-import Absyn.ExpList;
 import Absyn.FieldList;
 import Absyn.ForExp;
 import Absyn.FunctionDec;
@@ -102,6 +101,10 @@ public class Binder extends DefaultVisitor {
         this.typeSymbolTable.endScope();
     }
 
+    /**
+     * Visits an assignment expression. Sets visited type
+     * to VOID.
+     */
     @Override
     public void visit(AssignExp exp) {
         super.visit(exp);
@@ -142,8 +145,11 @@ public class Binder extends DefaultVisitor {
     @Override
     public void visit(SimpleVar exp) {
         if (this.varSymbolTable.contains(exp.name)) {
+            // lookup definition in var symbol table.
             SymbolTableElement def = this.varSymbolTable.lookup(exp.name);
+            // set the visited type to the variable definitions type
             this.visitedType = def.type;
+            // set this simple variables defintition to def.
             exp.setDef(def.exp);
             // TODO: visitedType can be null if its type was undefined.
             if(this.visitedType != null) {
@@ -151,7 +157,7 @@ public class Binder extends DefaultVisitor {
             }
         } else {
             this.errorMsg.error(exp.pos, "undeclared variable:" + exp.name);
-            this.visitedType = null;
+            this.visitedType = Constants.VOID;
         }
     }
 
@@ -168,7 +174,7 @@ public class Binder extends DefaultVisitor {
             super.visit(exp);
         } else {
             this.errorMsg.error(exp.pos, "undeclared function:" + exp.func);
-            this.visitedType = null;
+            this.visitedType = Constants.VOID;
         }
     }
 
