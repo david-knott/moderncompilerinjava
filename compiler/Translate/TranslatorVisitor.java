@@ -46,6 +46,7 @@ import Tree.SEQ;
 import Tree.Stm;
 import Tree.TEMP;
 import Types.Constants;
+import Types.Type;
 import Util.Assert;
 import Util.BoolList;
 
@@ -212,14 +213,6 @@ class TranslatorVisitor extends DefaultVisitor {
         last.right = this.visitedExp.unNx();
         this.visitedExp = new Nx(first);
     }
-
-    /*
-     * Commmented out because there is a naming collision between the Translate and
-     * Absyn packages.
-     * 
-     * @Override public void visit(Absyn.ExpList exp) { // TODO Auto-generated
-     * method stub super.visit(exp); }
-     */
 
     @Override
     public void visit(FieldExpList exp) {
@@ -419,8 +412,16 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(IfExp exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+        exp.test.accept(this);
+        Exp test = this.visitedExp;
+        exp.thenclause.accept(this);
+        Exp then = this.visitedExp;
+        Exp els = null;
+        if(exp.elseclause != null) {
+            exp.elseclause.accept(this);
+            els = this.visitedExp;
+        }
+        this.visitedExp = new IfThenElseExp(test, then, els);
     }
 
     @Override
@@ -438,13 +439,16 @@ class TranslatorVisitor extends DefaultVisitor {
             decs = new Ex(new CONST(0));
         }
         Exp body = null;
+        Type bodyType = null;
         if(exp.body != null) {
             exp.body.accept(this);
             body = this.visitedExp;
+            bodyType = exp.body.getType();
         } else {
             body = new Ex(new CONST(0));
+            bodyType = Constants.VOID;
         }
-        this.visitedExp = exp.body.getType().coerceTo(Constants.VOID) 
+        this.visitedExp = bodyType.coerceTo(Constants.VOID) 
             ?
             new Nx(
                 new SEQ(
@@ -528,6 +532,11 @@ class TranslatorVisitor extends DefaultVisitor {
         );
     }
 
+    /**
+     * Translates a record expression eg rectype { a = 1, b = 2}, into
+     * IR. This IR initializes the record on the heap and returns a pointer
+     * which can be stored for future computations.
+     */
     @Override
     public void visit(RecordExp exp) {
         // no fields, so no data to store, so dont do anything.
@@ -601,15 +610,19 @@ class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(SeqExp exp) {
-        super.visit(exp);
+        this.visitedExp = new Ex(new CONST(0));
+        if(exp.list != null) {
+            exp.list.accept(this);
+        }
     }
 
     @Override
     public void visit(SimpleVar exp) {
-        // we need to find where this var was declared first.
-        // when var is declared, we allocate space on the frame.
+        // Lookup variable declaration reference 
         Access access = functionAccesses.get((VarDec)exp.def);
+        // Compute static link to variable using definition and current level
         Tree.Exp stateLinkExp =  staticLinkOffset(access, this.getCurrentLevel());
+        // Set visited expression.
         this.visitedExp = new Ex(access.acc.exp(stateLinkExp));
     }
 
@@ -639,7 +652,6 @@ class TranslatorVisitor extends DefaultVisitor {
             )                
         ));
     }
-
     
     @Override
     public void visit(VarDec exp) {

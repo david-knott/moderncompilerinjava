@@ -465,6 +465,20 @@ public class TranslateVisitorTest {
         program.accept(translator);
         FragList fragList = translator.getFragList();
         fragList.accept(new FragmentPrinter(System.out));
+        // expect SEQ with
+        // expect noop declist as empty ( sxp(const(0)) )
+        // expect noop body as empty ( sxp(const(0)))
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<seq>" +
+            "<sxp>" +
+            "<const value=\"0\" />" +
+            "</sxp>" +
+            "<sxp>" +
+            "<const value=\"0\" />" +
+            "</sxp>" +
+            "</seq>"
+        );
     }
      
     @Test
@@ -490,6 +504,75 @@ public class TranslateVisitorTest {
         );
     }
      
+    @Test
+    public void letNoEscapeDecNoBody() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let var a:int := 3 in () end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        // expect a SEQ with
+        // expect vardec (MOVE(3, temp))
+        // expect noop body as empty ( sxp(const(0)))
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<seq>" +
+            "<move>" +
+            "<temp />" +
+            "<const value=\"3\" />" +
+            "</move>" +
+            "<sxp>" +
+            "<const value=\"0\" />" +
+            "</sxp>" +
+            "</seq>"
+        );
+    }
+     
+    @Test
+    public void ifThe() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("if 3 = 3 then 5", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<cjump value=\"0\">" +
+            "<const value=\"3\" />" +
+            "<const value=\"3\" />" +
+         //   "<label value=\"L0\" />" +
+         //   "<label value=\"L1\" />" +
+            "</cjump>"
+        );
+    }
+
+    @Test
+    public void ifThenElse() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("if 3 = 3 then 5 else 7", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<cjump value=\"0\">" +
+            "<const value=\"3\" />" +
+            "<const value=\"3\" />" +
+         //   "<label value=\"L0\" />" +
+         //   "<label value=\"L1\" />" +
+            "</cjump>"
+        );
+    }
+
+
     @Test
     public void forTest() {
         TranslatorVisitor translator = new TranslatorVisitor();
