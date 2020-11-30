@@ -286,6 +286,59 @@ public class TranslateVisitorTest {
     }
 
     @Test
+    public void arrayDecTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let type intArray = array of int var a := intArray[3] of 5  in end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        // Expect a call to initArray with const(3), for size and const(5) for init, with returned temp
+        // ESEQ(MOVE(temp, call(initArray)), temp)
+        assertContains(procFrag.body, 
+            "<eseq>" +
+            "<move>" +
+            "<temp />" +
+            "<call>" +
+            "<name value=\"initArray\" />" +
+            "<const value=\"3\" />" +
+            "<const value=\"5\" />" +
+            "</call>" +
+            "</move>" +
+            "<temp />" +
+            "</eseq>"
+        );
+    }
+     
+    @Test
+    public void arraySubscriptTest() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let type intArray = array of int var a := intArray[3] of 5  in a[0] end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        // expect a MEM( BINOP(PLUS, base, BINOP(MULT, index, wordSize ))
+        assertContains(procFrag.body, 
+            "<mem>" +
+            "<binop op=\"0\">" +
+            "<temp />" +
+            "<binop op=\"2\">" +
+            "<const value=\"0\" />" +
+            "<const value=\"8\" />" +
+            "</binop>" +
+            "</binop>" +
+            "</mem>"
+        );
+    }
+     
+    @Test
     public void recordExpZeroFieldTest() {
         TranslatorVisitor translator = new TranslatorVisitor();
         ErrorMsg errorMsg = new ErrorMsg("", System.out);

@@ -120,9 +120,16 @@ class TranslatorVisitor extends DefaultVisitor {
         Exp initExp = this.visitedExp;
         Temp arrayPointer = Temp.create();
         ExpList args = new ExpList(sizeExp.unEx(), new ExpList(initExp.unEx(), null));
-        this.visitedExp = new Ex(
-                new ESEQ(new MOVE(new TEMP(arrayPointer), this.getCurrentLevel().frame.externalCall("initArray", args)),
-                        new TEMP(arrayPointer)));
+        this.visitedExp = 
+            new Ex(
+                new ESEQ(
+                    new MOVE(
+                        new TEMP(arrayPointer), 
+                        this.getCurrentLevel().frame.externalCall("initArray", args)
+                    ),
+                    new TEMP(arrayPointer)
+                )
+            );
     }
 
     @Override
