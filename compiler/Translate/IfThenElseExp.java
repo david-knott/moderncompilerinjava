@@ -129,30 +129,4 @@ class IfThenElseExp extends Exp {
                     )
         );
     }
-     /*
-    @Override
-    Stm unCx(Label tt, Label ff) {
-        return new Tree.SEQ(
-            testExp.unCx(trueLabel, falseLabel), // eval test expression (AND: if (a > b) then (b > c) else (0) )
-            new Tree.SEQ(
-                new Tree.LABEL(trueLabel), // add label t
-                    new Tree.SEQ( // eval then express
-                        a.unCx(tt, ff), 
-                        new Tree.SEQ(
-                            new Tree.JUMP(joinLabel), 
-                            new Tree.SEQ(
-                                new Tree.LABEL(falseLabel), // add
-                                new Tree.SEQ(
-                                    b.unCx(tt, ff), // into register r
-                                    new Tree.SEQ(
-                                        new Tree.JUMP(joinLabel),
-                                        new Tree.LABEL(joinLabel)
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-        );
-    }*/
 }
