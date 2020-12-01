@@ -29,7 +29,6 @@ public class TranslatorTest {
     private Level level;
     private Level childLevel;
 
-
     @Before
     public void setup() {
         translator = new Translator(false, false);

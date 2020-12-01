@@ -50,7 +50,7 @@ import Types.Type;
 import Util.Assert;
 import Util.BoolList;
 
-class TranslatorVisitor extends DefaultVisitor {
+public class TranslatorVisitor extends DefaultVisitor {
 
     private Hashtable<VarDec, Access> functionAccesses = new Hashtable<VarDec, Access>();
     private Hashtable<Absyn.Absyn, Label> functionLabels = new Hashtable<Absyn.Absyn, Label>();

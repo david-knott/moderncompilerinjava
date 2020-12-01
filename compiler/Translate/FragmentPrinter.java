@@ -4,7 +4,7 @@ import java.io.PrintStream;
 
 import Tree.PrettyPrinter;
 
-class FragmentPrinter implements FragmentVisitor {
+public class FragmentPrinter implements FragmentVisitor {
 
     private PrintStream out;
 
