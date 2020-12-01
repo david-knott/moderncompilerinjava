@@ -56,13 +56,9 @@ class TranslatorVisitor extends DefaultVisitor {
     private Hashtable<Absyn.Absyn, Label> functionLabels = new Hashtable<Absyn.Absyn, Label>();
     private Hashtable<FunctionDec, Level> functionLevels = new Hashtable<FunctionDec, Level>();
     private Stack<Label> loopExits = new Stack<Label>();
-
     private Exp visitedExp;
     private Level currentLevel;
     private FragList fragList;
-
-    public TranslatorVisitor() {
-    }
 
     public FragList getFragList() {
         return this.fragList;
