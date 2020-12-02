@@ -13,6 +13,7 @@ import Absyn.DecList;
 import Absyn.DefaultVisitor;
 import Absyn.Exp;
 import Absyn.FieldList;
+import Absyn.FieldVar;
 import Absyn.ForExp;
 import Absyn.FunctionDec;
 import Absyn.IntExp;
@@ -24,6 +25,7 @@ import Absyn.RecordTy;
 import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.StringExp;
+import Absyn.SubscriptVar;
 import Absyn.Ty;
 import Absyn.TypeDec;
 import Absyn.Var;
@@ -37,6 +39,7 @@ import Types.FUNCTION;
 import Types.NAME;
 import Types.RECORD;
 import Types.Type;
+import Util.Assert;
 
 /**
  * The Binder class traverses the abstract syntax tree and binds variable,
@@ -169,9 +172,14 @@ public class Binder extends DefaultVisitor {
         if (this.functionSymbolTable.contains(exp.func)) {
             SymbolTableElement def = this.functionSymbolTable.lookup(exp.func);
             exp.setDef(def.exp);
-            this.setType(exp, def.type);
-            this.visitedType = def.type;
-            super.visit(exp);
+            FUNCTION functionType = (FUNCTION)def.type;
+            Assert.assertNotNull(functionType);
+            this.setType(exp, functionType.result.actual());
+            exp.args.accept(this);
+            // set the visited type after we visit the arguments.
+            // otherwise the return type of this call could be
+            // set incorrectly to one of its argument types.
+            this.visitedType = functionType.result.actual();
         } else {
             this.errorMsg.error(exp.pos, "undeclared function:" + exp.func);
             this.visitedType = Constants.VOID;
@@ -437,12 +445,30 @@ public class Binder extends DefaultVisitor {
     }
 
     @Override
+    public void visit(SubscriptVar exp) {
+        exp.var.accept(this);
+        //Type varType = this.visitedType;
+        //exp.var.setType(varType.actual());
+        exp.index.accept(this);
+        //Type indexType = this.visitedType;
+        //exp.index.setType(indexType);
+    }    
+
+    @Override
     public void visit(RecordTy exp) {
         if(exp.fields != null) {
             // the field accept call sets visited type
             exp.fields.accept(this);
             this.setType(exp, this.visitedType);
         }
+    }
+
+    @Override
+    public void visit(FieldVar exp) {
+        //what is the related record ?
+        exp.var.accept(this);
+    //    Type varType = this.visitedType;
+   //     exp.setType(varType.actual());
     }
 
     /**

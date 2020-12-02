@@ -6,6 +6,7 @@ import Translate.FragmentVisitor;
 import Translate.ProcFrag;
 import Tree.TreeSimplifierVisitor;
 import Tree.PrettyPrinter;
+import Util.Assert;
 import Util.SimpleTask;
 import Util.SimpleTaskProvider;
 import Util.TaskContext;
@@ -27,19 +28,17 @@ public class Tasks implements TaskProvider {
                 @Override
                 public void only(TaskContext taskContext) {
                     FragList frags = taskContext.hirFragList;
+                    Assert.assertNotNull(frags);
                     CanonVisitor canonVisitor = new CanonVisitor(canonicalization);
                     frags.accept(canonVisitor);
                     taskContext.setLIR(canonVisitor.fragList);
                 }
             }, "lir-compute", "Perform canonicalisation of HIR tree", "hir-compute")
         );
-
         taskRegister.register(
             new SimpleTask((taskContext) -> taskContext.lirFragList.accept(new FragPrettyPrinter(new PrettyPrinter(taskContext.log))),
                 "lir-display", "Displays the lir", "lir-compute")
         );
-
-
         taskRegister.register(
             new SimpleTask((taskContext) -> taskContext.hirFragList.accept(new FragmentVisitor() {
                 @Override
@@ -56,7 +55,6 @@ public class Tasks implements TaskProvider {
                 "hir-compute"
             )
         );
-
         taskRegister.register(
             new SimpleTask((taskContext) -> taskContext.hirFragList.accept(new FragmentVisitor() {
                     public void visit(ProcFrag frags) {

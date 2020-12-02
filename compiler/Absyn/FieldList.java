@@ -3,8 +3,7 @@ package Absyn;
 import Symbol.Symbol;
 
 /**
- * Represents a list of fields in a record. This can be in a record type
- * declarion or as the formal arguments for a function call.
+ * Represents a list of fields in a record. This is used by record types.
  * By default this ast escapes, unless the FindEscape phase marks this item as
  * not escaping.
  */

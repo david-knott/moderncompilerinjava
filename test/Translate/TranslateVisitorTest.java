@@ -337,6 +337,8 @@ public class TranslateVisitorTest {
             "</mem>"
         );
     }
+
+
      
     @Test
     public void recordExpZeroFieldTest() {
@@ -509,6 +511,77 @@ public class TranslateVisitorTest {
         );
     }
 
+
+
+    @Test
+    public void printSeq() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in printi(3); printi(5); printi(7) end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+       // ProcFrag procFrag = (ProcFrag)fragList.head;
+    }
+
+
+
+    @Test
+    public void sequenceOfTwo() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in (3; 7) end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+       // ProcFrag procFrag = (ProcFrag)fragList.head;
+    }
+
+    @Test
+    public void sequenceOfThree() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in (3; 7; 11) end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+       // ProcFrag procFrag = (ProcFrag)fragList.head;
+    }
+
+    @Test
+    public void sequenceOfFour() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in (3; 7; 11; 13) end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+       // ProcFrag procFrag = (ProcFrag)fragList.head;
+    }
+
+
+
+    @Test
+    public void recordExpThreeUsageFirstField() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let type rec = { a : int, b : int, c: int } var v := rec { a = 3, b = 5, c = 7} in v.a end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+    }
+
     @Test
     public void letNoDecNoBody() {
         TranslatorVisitor translator = new TranslatorVisitor();
@@ -625,6 +698,20 @@ public class TranslateVisitorTest {
         );
     }
 
+    @Test
+    public void functionCallOneArgument() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let function fa(a: int): int = 5 + a in printi(fa(7)) end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        // expect let to return void
+        // expect printi to return void
+        // expect fa(7) to return int
+    }
 
     @Test
     public void forTest() {

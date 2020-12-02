@@ -1,6 +1,7 @@
 package Absyn;
 
 import Symbol.Symbol;
+import Util.Assert;
 
 public class SimpleVar extends Var  {
    public Symbol name;
@@ -16,6 +17,7 @@ public class SimpleVar extends Var  {
    }
 
    public void setDef(Absyn exp) {
+      Assert.assertNotNull(exp);
       this.def = exp;
    }
 }

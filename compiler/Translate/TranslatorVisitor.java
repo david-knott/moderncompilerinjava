@@ -46,6 +46,8 @@ import Tree.SEQ;
 import Tree.Stm;
 import Tree.TEMP;
 import Types.Constants;
+import Types.FUNCTION;
+import Types.RECORD;
 import Types.Type;
 import Util.Assert;
 import Util.BoolList;
@@ -187,7 +189,9 @@ public class TranslatorVisitor extends DefaultVisitor {
         }
         //
         Label functionLabel = this.functionLabels.get(exp.def);
-        if (exp.getType().coerceTo(Constants.VOID)) {
+        Type returnType = exp.getType();
+        Assert.assertNotNull(returnType);
+        if (returnType.coerceTo(Constants.VOID)) {
             this.visitedExp = new Nx(new EXP(new CALL(new NAME(functionLabel), expList)));
         } else {
             this.visitedExp = new Ex(new CALL(new NAME(functionLabel), expList));
@@ -218,20 +222,86 @@ public class TranslatorVisitor extends DefaultVisitor {
     }
 
     @Override
+    public void visit(Absyn.ExpList exp) {
+        // only one item in the expression, just return it
+        if(exp.tail == null) {
+            exp.head.accept(this);
+            return;
+        }
+        if(exp.tail.tail == null) {
+            exp.head.accept(this);
+            Exp firstItem = this.visitedExp;
+            exp.tail.head.accept(this);
+            Exp lastItem = this.visitedExp;
+            this.visitedExp = new Ex(new ESEQ(firstItem.unNx(), lastItem.unEx()));
+            return;
+        }
+        SEQ first = null, temp = null, last = null;
+        Exp sequenceItem = null;
+        for(; exp.tail != null; exp = exp.tail) {
+            exp.head.accept(this);
+            sequenceItem = this.visitedExp;
+            if(first == null) {
+                first = last = new SEQ(sequenceItem.unNx(), null);
+            } else {
+                // if last item is at end
+                if(exp.tail.tail != null) {
+                    last = new SEQ(sequenceItem.unNx(), null);
+                    temp.right = last;
+                } else {
+                    temp.right = sequenceItem.unNx();
+                }
+            }
+            temp = last;
+        }
+        // if the last item is an expression, return an ESEQ
+        // if not, we return return a SEQ.
+        exp.head.accept(this);
+        sequenceItem = this.visitedExp;
+        if(exp.head.getType().actual() == Constants.VOID) {
+            this.visitedExp = new Nx(new SEQ(first, sequenceItem.unNx()));
+        } else {
+            this.visitedExp = new Ex(new ESEQ(first, sequenceItem.unEx()));
+        }
+   }
+
+    @Override
     public void visit(FieldExpList exp) {
         Assert.unreachable();
     }
 
-    @Override
-    public void visit(FieldList exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+    private int fieldIndex(FieldVar fieldVar) {
+        RECORD recordType = (RECORD)fieldVar.var.getType().actual();
+
+        //RECORD recordType = (RECORD)fieldVar.getType();
+        Assert.assertNotNull(recordType);
+        int fieldIndex = 0;
+        for(;recordType != null; recordType = recordType.tail) {
+            if(recordType.fieldName.equals(fieldVar.field)) {
+               return fieldIndex;
+            }
+            fieldIndex++;
+        }
+        Assert.unreachable();
+        return -1;
     }
 
     @Override
     public void visit(FieldVar exp) {
-        // TODO Auto-generated method stub
-        super.visit(exp);
+        exp.var.accept(this);
+        Exp transExp = this.visitedExp;
+        int fieldIndex = this.fieldIndex(exp);
+        this.visitedExp = new Ex(
+                new MEM(
+                    new BINOP(
+                        BINOP.PLUS, 
+                        transExp.unEx(), 
+                        new CONST(
+                            fieldIndex * this.currentLevel.frame.wordSize()
+                        )
+                    )           
+                )
+            );
     }
 
     @Override
@@ -308,8 +378,8 @@ public class TranslatorVisitor extends DefaultVisitor {
             } else if(current.name.toString().equals("tigermain")) {
                 Label label = Label.create("tigermain");
                 // getBoolList is null here...
-                this.setCurrentLevel(new Level(new IntelFrame(label, getBoolList(current.params))));
-                this.functionLevels.put(current, this.getCurrentLevel());
+                Level level = new Level(new IntelFrame(label, getBoolList(current.params)));
+                this.functionLevels.put(current, level);
                 this.functionLabels.put(current, label);
             } else {
                 // notice that we create the new level
@@ -319,7 +389,7 @@ public class TranslatorVisitor extends DefaultVisitor {
                 // for the function.
                 Label label = Label.create();
                 // create level and access for function
-                this.setCurrentLevel(
+                Level level =
                     new Level(
                         this.getCurrentLevel(), 
                         label, 
@@ -327,10 +397,9 @@ public class TranslatorVisitor extends DefaultVisitor {
                             current.params
                         ),
                         true /* create static link */
-                    )
-                );
+                    );
                 this.functionLabels.put(current, label);
-                this.functionLevels.put(current, this.getCurrentLevel());
+                this.functionLevels.put(current, level);
             }
         }
         // visit the declations again 
@@ -620,15 +689,17 @@ public class TranslatorVisitor extends DefaultVisitor {
 
     @Override
     public void visit(SeqExp exp) {
-        this.visitedExp = new Ex(new CONST(0));
         if(exp.list != null) {
             exp.list.accept(this);
+        } else {
+            this.visitedExp = new Ex(new CONST(0));
         }
     }
 
     @Override
     public void visit(SimpleVar exp) {
         // Lookup variable declaration reference 
+        Assert.assertNotNull(exp.def);
         Access access = functionAccesses.get((VarDec)exp.def);
         Assert.assertNotNull(access);
         // Compute static link to variable using definition and current level

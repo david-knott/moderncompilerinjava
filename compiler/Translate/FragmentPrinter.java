@@ -1,5 +1,6 @@
 package Translate;
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 
 import Tree.PrettyPrinter;
@@ -12,17 +13,21 @@ public class FragmentPrinter implements FragmentVisitor {
         this.out = out;
     }
 
-    @Override
+    public FragmentPrinter(OutputStream log) {
+        this.out = new PrintStream(log);
+	}
+
+	@Override
     public void visit(ProcFrag procFrag) {
+        this.out.println("Fragment " + procFrag.frame.name);
         procFrag.body.accept(new PrettyPrinter(this.out));
-        this.out.println("Frame:");
-        this.out.println("Wordsize:" + procFrag.frame.wordSize());
+       // this.out.println("Frame:");
+       // this.out.println("Wordsize:" + procFrag.frame.wordSize());
         //show layout, locals, formals, arguments
     }
 
     @Override
     public void visit(DataFrag dataFrag) {
-        // TODO Auto-generated method stub
         this.out.println("Data:");
         this.out.println(dataFrag.data);
     }

@@ -40,7 +40,7 @@ public class Main {
                 .register(new FindEscape.Tasks())
                 .register(new Absyn.Tasks())
                 .register(new Types.Tasks())
-                .register(new Semant.Tasks())
+              //  .register(new Semant.Tasks())
                 .register(new Translate.Tasks())
                 .register(new Canon.Tasks(new CanonicalizationImpl()))
                 .register(new Intel.Tasks(null, null))
@@ -48,6 +48,6 @@ public class Main {
                 .parseArgs(args)
                 .execute(in, out, err, errorMsg);
         Timer.instance.stop();
-        Timer.instance.dump(err);
+      //  Timer.instance.dump(err);
     }
 }

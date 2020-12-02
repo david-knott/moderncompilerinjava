@@ -20,5 +20,13 @@ public class Tasks implements TaskProvider {
                 }
             }, "types-compute", "Type checks the abstract syntax tree.", "bindings-compute")
         );
+        taskRegister.register(
+            new SimpleTask(new SimpleTaskProvider() {
+                @Override
+                public void only(TaskContext taskContext) {
+                    taskContext.decList.accept(new TypeChecker(taskContext.errorMsg));
+                }
+            }, "typed", "Default type checking.", "types-compute")
+        );
     }
 }
