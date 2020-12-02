@@ -1,5 +1,10 @@
 # Diary
 
+## 2nd Decemeber 2020
+
+Fixing bugs around types and how they affect the translation. 
+In particular, sequences and expression sequences, return types of calls.
+
 ## 30th November 2020
 
 Translate Visitor appears to complete.
