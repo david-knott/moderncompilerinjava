@@ -17,6 +17,14 @@ public class TestDriver {
     }
 
     @Test
+    public void prime() throws FileNotFoundException {
+        String[] args = new String[] {"--hir-display", "--escapes-compute", "./test/E2E/good/prime.tig"};
+        Main.main(args);
+        //Main.main(new String[]{"-A", "./test/E2E/good/merge_simple.tig"});
+    }
+
+
+    @Test
     public void test() throws FileNotFoundException {
         Main.main(new String[]{"-AB", "./test/E2E/good/linked_list_size.tig"});
     }

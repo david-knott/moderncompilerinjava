@@ -80,9 +80,8 @@ public class PrettyPrinter implements TreeVisitor {
     public void visit(ESEQ op) {
         this.write("eseq(");
         this.incLevel();
-        ;
-        op.exp.accept(this);
         op.stm.accept(this);
+        op.exp.accept(this);
         this.decLevel();
         this.write(")");
     }

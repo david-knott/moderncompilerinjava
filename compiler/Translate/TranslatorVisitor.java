@@ -228,12 +228,18 @@ public class TranslatorVisitor extends DefaultVisitor {
             exp.head.accept(this);
             return;
         }
+        // two items in the expressioin list,
         if(exp.tail.tail == null) {
             exp.head.accept(this);
             Exp firstItem = this.visitedExp;
             exp.tail.head.accept(this);
             Exp lastItem = this.visitedExp;
-            this.visitedExp = new Ex(new ESEQ(firstItem.unNx(), lastItem.unEx()));
+            // ensure we return correct type
+            if(exp.tail.head.getType().coerceTo(Constants.VOID)) {
+                this.visitedExp = new Nx(new SEQ(firstItem.unNx(), lastItem.unNx()));
+            } else {
+                this.visitedExp = new Ex(new ESEQ(firstItem.unNx(), lastItem.unEx()));
+            }
             return;
         }
         SEQ first = null, temp = null, last = null;

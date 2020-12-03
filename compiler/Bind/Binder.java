@@ -30,6 +30,7 @@ import Absyn.Ty;
 import Absyn.TypeDec;
 import Absyn.Var;
 import Absyn.VarDec;
+import Absyn.VarExp;
 import Absyn.WhileExp;
 import ErrorMsg.ErrorMsg;
 import Symbol.Symbol;
@@ -98,6 +99,9 @@ public class Binder extends DefaultVisitor {
         }
         if (exp.body != null) {
             exp.body.accept(this);
+            exp.setType(exp.body.getType());
+        } else {
+            exp.setType(Constants.VOID);
         }
         this.functionSymbolTable.endScope();
         this.varSymbolTable.endScope();
@@ -112,6 +116,7 @@ public class Binder extends DefaultVisitor {
     public void visit(AssignExp exp) {
         super.visit(exp);
         this.visitedType = Constants.VOID;
+        exp.setType(Constants.VOID);
     }
 
     /**
@@ -139,6 +144,12 @@ public class Binder extends DefaultVisitor {
     public void visit(NilExp exp) {
         this.visitedType = Constants.NIL;
         this.setType(exp, this.visitedType);
+    }
+
+    @Override
+    public void visit(VarExp exp) {
+        super.visit(exp);
+        exp.setType(exp.var.getType());
     }
 
     /**
@@ -175,7 +186,9 @@ public class Binder extends DefaultVisitor {
             FUNCTION functionType = (FUNCTION)def.type;
             Assert.assertNotNull(functionType);
             this.setType(exp, functionType.result.actual());
-            exp.args.accept(this);
+            if(exp.args != null) {
+                exp.args.accept(this);
+            }
             // set the visited type after we visit the arguments.
             // otherwise the return type of this call could be
             // set incorrectly to one of its argument types.
@@ -254,6 +267,7 @@ public class Binder extends DefaultVisitor {
         } else {
             exp.loop = this.loops.peek();
         }
+        exp.setType(Constants.VOID);
         this.visitedType = Constants.VOID;
     }
 
@@ -267,6 +281,7 @@ public class Binder extends DefaultVisitor {
         // visit the body which could contain a break.
         exp.body.accept(this);
         this.loops.pop();
+        exp.setType(Constants.VOID);
         this.visitedType = Constants.VOID;
     }
 
@@ -280,6 +295,7 @@ public class Binder extends DefaultVisitor {
         exp.hi.accept(this);
         exp.body.accept(this);
         this.loops.pop();
+        exp.setType(Constants.VOID);
         this.visitedType = Constants.VOID;
     }
 
@@ -450,6 +466,10 @@ public class Binder extends DefaultVisitor {
         //Type varType = this.visitedType;
         //exp.var.setType(varType.actual());
         exp.index.accept(this);
+        exp.setType(exp.var.getType().actual());
+
+        //Type of subscript is the element type of the array
+
         //Type indexType = this.visitedType;
         //exp.index.setType(indexType);
     }    
@@ -465,10 +485,9 @@ public class Binder extends DefaultVisitor {
 
     @Override
     public void visit(FieldVar exp) {
-        //what is the related record ?
         exp.var.accept(this);
-    //    Type varType = this.visitedType;
-   //     exp.setType(varType.actual());
+        // need the type of the field, retrieve from record
+        exp.setType(exp.var.getType().actual());
     }
 
     /**
@@ -505,6 +524,8 @@ public class Binder extends DefaultVisitor {
             exp.list.accept(this);
         }
         // set the type of sequence.
+        // which is the last visited type
+        // of its elements.
         exp.setType(this.visitedType);
     }
 }

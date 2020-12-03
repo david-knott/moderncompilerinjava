@@ -511,10 +511,128 @@ public class TranslateVisitorTest {
         );
     }
 
-
+    @Test
+    public void expSeq() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in 3 end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<eseq>" +
+            "<sxp>" +
+            "<const value=\"0\" />" +
+            "</sxp>" +
+            "<const value=\"3\" />" +
+            "</eseq>"
+        );
+    }
 
     @Test
-    public void printSeq() {
+    public void expExpSeq() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in 3; 5 end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<eseq>" +
+            "<sxp>" +
+            "<const value=\"3\" />" +
+            "</sxp>" +
+            "<const value=\"5\" />" +
+            "</eseq>"
+        );
+    }
+
+    @Test
+    public void expExpExpSeq() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in 3; 5; 7 end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        assertContains(procFrag.body, 
+            "<eseq>" +
+            "<seq>" +
+            "<sxp>" +
+            "<const value=\"3\" />" +
+            "</sxp>" +
+            "<sxp>" +
+            "<const value=\"5\" />" +
+            "</sxp>" +
+            "</seq>" +
+            "<const value=\"7\" />" +
+            "</eseq>"
+        );
+    }
+
+    @Test
+    public void stmSeq() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in printi(3)end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        // expect sxp(call(print, 3))
+        assertContains(procFrag.body, 
+            "<sxp>" +
+            "<call>" +
+            "<name value=\"printi\" />" +
+            "<const value=\"3\" />" +
+            "</call>" +
+            "</sxp>"
+        );
+    }
+
+    @Test
+    public void stmSmtSeq() {
+        TranslatorVisitor translator = new TranslatorVisitor();
+        ErrorMsg errorMsg = new ErrorMsg("", System.out);
+        Absyn program = parserService.parse("let in printi(3); printi(5) end", errorMsg);
+        program.accept(new EscapeVisitor(errorMsg));
+        program.accept(new Binder(errorMsg));
+        program.accept(translator);
+        FragList fragList = translator.getFragList();
+        fragList.accept(new FragmentPrinter(System.out));
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        // expect seq(sxp(call(print, 3)), seq(sxp(call(print, 5),
+        assertContains(procFrag.body, 
+            "<seq>" +
+            "<sxp>" +
+            "<call>" +
+            "<name value=\"printi\" />" +
+            "<const value=\"3\" />" +
+            "</call>" +
+            "</sxp>" +
+            "<sxp>" +
+            "<call>" +
+            "<name value=\"printi\" />" +
+            "<const value=\"5\" />" +
+            "</call>" +
+            "</sxp>" +
+            "</seq>"
+        );
+    }
+
+    @Test
+    public void stmStmStmSeq() {
         TranslatorVisitor translator = new TranslatorVisitor();
         ErrorMsg errorMsg = new ErrorMsg("", System.out);
         Absyn program = parserService.parse("let in printi(3); printi(5); printi(7) end", errorMsg);
@@ -523,9 +641,33 @@ public class TranslateVisitorTest {
         program.accept(translator);
         FragList fragList = translator.getFragList();
         fragList.accept(new FragmentPrinter(System.out));
-       // ProcFrag procFrag = (ProcFrag)fragList.head;
+        ProcFrag procFrag = (ProcFrag)fragList.head;
+        // expect seq(sxp(call(print, 3)), seq(sxp(call(print, 5)), sxp(call(print, 7))))
+        assertContains(procFrag.body, 
+            "<seq>" +
+            "<seq>" +
+            "<sxp>" +
+            "<call>" +
+            "<name value=\"printi\" />" +
+            "<const value=\"3\" />" +
+            "</call>" +
+            "</sxp>" +
+            "<sxp>" +
+            "<call>" +
+            "<name value=\"printi\" />" +
+            "<const value=\"5\" />" +
+            "</call>" +
+            "</sxp>" +
+            "</seq>" +
+            "<sxp>" +
+            "<call>" +
+            "<name value=\"printi\" />" +
+            "<const value=\"7\" />" +
+            "</call>" +
+            "</sxp>" +
+            "</seq>"
+        );
     }
-
 
 
     @Test

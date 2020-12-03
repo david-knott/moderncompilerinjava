@@ -1,5 +1,8 @@
 # Diary
 
+## 3rd Decemeber 2020
+
+More tests are now passing. There are still some errors in the regression tests.
 ## 2nd Decemeber 2020
 
 Fixing bugs around types and how they affect the translation. 
