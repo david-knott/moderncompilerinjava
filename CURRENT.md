@@ -1,5 +1,10 @@
 # Diary
 
+## 4th December 2020
+
+Bug - function result not being placed back into rax. I missed some code in the FuncDec visitor which does this.
+There are only 2 tests now failing.
+
 ## 3rd Decemeber 2020
 
 More tests are now passing. There are still some errors in the regression tests.

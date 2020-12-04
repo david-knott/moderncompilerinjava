@@ -8,7 +8,15 @@ import Main.Main;
 
 public class TestDriver {
     @Test
-    public void intDec() throws FileNotFoundException {
+    public void functionOne() throws FileNotFoundException {
+
+        //String[] args = new String[] {"--reg-alloc", "--lir-display", "--escapes-compute", "--demove", "./test/E2E/good/tbi.tig"};
+        String[] args = new String[] {"--lir-display", "--escapes-compute", "./test/E2E/good/function_one_arg.tig"};
+        Main.main(args);
+        //Main.main(new String[]{"-A", "./test/E2E/good/merge_simple.tig"});
+    }
+    @Test
+    public void binSearch() throws FileNotFoundException {
 
         //String[] args = new String[] {"--reg-alloc", "--lir-display", "--escapes-compute", "--demove", "./test/E2E/good/tbi.tig"};
         String[] args = new String[] {"--hir-display", "--escapes-compute", "./test/E2E/good/binsearch.tig"};

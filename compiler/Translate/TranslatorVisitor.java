@@ -434,6 +434,12 @@ public class TranslatorVisitor extends DefaultVisitor {
                 current.body.accept(this);
                 // get translated fragment.
                 Exp translatedBody = this.visitedExp;
+                // if funcion returns, place result into RV register
+                FUNCTION functionType = (FUNCTION)current.getType();
+                Assert.assertNotNull(functionType);
+                if(!functionType.result.coerceTo(Constants.VOID)) {
+                    translatedBody = new Nx(new MOVE(new TEMP(this.currentLevel.frame.RV()), translatedBody.unEx()));
+                }
                 // creates a new fragment for the function.
                 this.procEntryExit(this.getCurrentLevel(), translatedBody);
                 // reset the current level back
