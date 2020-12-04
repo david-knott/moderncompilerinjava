@@ -1,0 +1,5 @@
+let
+in
+	print("\t\t");
+	print("A")
+end

@@ -58,9 +58,9 @@ void print(struct string *s)
     putchar(*p);
 }
 
-void printi(int x) 
+void printi(int n) 
 {
-  printf("%i", x);
+  printf(":%d", n);
 }
 
 void rttest() {

@@ -2,8 +2,20 @@
 
 ## 4th December 2020
 
-Bug - function result not being placed back into rax. I missed some code in the FuncDec visitor which does this.
-There are only 2 tests now failing.
+Bug in c code that prints string, seems to be happening when there are multiple \n or \t in print
+followed by a second print.
+
+```
+let
+in
+        print("\t\t");
+        print("A")
+end
+```
+
+Fixed Bug - string compare is comparing the string pointers and not the string themselves.
+
+Fixed Bug - function result not being placed back into rax. I missed some code in the FuncDec visitor which does this.
 
 ## 3rd Decemeber 2020
 

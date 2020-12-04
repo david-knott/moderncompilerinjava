@@ -20,6 +20,7 @@ import Absyn.IntExp;
 import Absyn.LetExp;
 import Absyn.NameTy;
 import Absyn.NilExp;
+import Absyn.OpExp;
 import Absyn.RecordExp;
 import Absyn.RecordTy;
 import Absyn.SeqExp;
@@ -488,6 +489,13 @@ public class Binder extends DefaultVisitor {
         exp.var.accept(this);
         // need the type of the field, retrieve from record
         exp.setType(exp.var.getType().actual());
+    }
+
+    @Override
+    public void visit(OpExp exp) {
+        super.visit(exp);
+        // type checking phase ensures both types match.
+        exp.setType(exp.left.getType());
     }
 
     /**

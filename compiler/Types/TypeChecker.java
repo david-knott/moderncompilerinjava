@@ -1,43 +1,30 @@
 package Types;
 
-import Absyn.DefaultVisitor;
-
-import java.util.LinkedList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 import Absyn.Absyn;
 import Absyn.ArrayExp;
-import Absyn.ArrayTy;
 import Absyn.AssignExp;
-import Absyn.BreakExp;
 import Absyn.CallExp;
-import Absyn.DecList;
+import Absyn.DefaultVisitor;
 import Absyn.ExpList;
 import Absyn.FieldExpList;
 import Absyn.FieldList;
-import Absyn.FieldVar;
 import Absyn.ForExp;
 import Absyn.FunctionDec;
 import Absyn.IfExp;
 import Absyn.IntExp;
-import Absyn.LetExp;
 import Absyn.NameTy;
 import Absyn.NilExp;
 import Absyn.OpExp;
 import Absyn.RecordExp;
-import Absyn.RecordTy;
 import Absyn.SeqExp;
 import Absyn.SimpleVar;
 import Absyn.StringExp;
-import Absyn.SubscriptVar;
-import Absyn.Typable;
 import Absyn.TypeDec;
-import Absyn.Var;
 import Absyn.VarDec;
-import Absyn.VarExp;
 import Absyn.WhileExp;
-import Core.LL;
-import ErrorMsg.Error;
 import ErrorMsg.ErrorMsg;
 
 /**

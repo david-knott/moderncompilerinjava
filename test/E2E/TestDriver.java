@@ -7,6 +7,18 @@ import org.junit.Test;
 import Main.Main;
 
 public class TestDriver {
+
+
+    @Test
+    public void stringEquals() throws FileNotFoundException {
+
+        //String[] args = new String[] {"--reg-alloc", "--lir-display", "--escapes-compute", "--demove", "./test/E2E/good/tbi.tig"};
+        String[] args = new String[] {"--lir-display", "--escapes-compute", "./test/E2E/good/string_equals.tig"};
+        Main.main(args);
+        //Main.main(new String[]{"-A", "./test/E2E/good/merge_simple.tig"});
+    }
+
+
     @Test
     public void functionOne() throws FileNotFoundException {
 
@@ -15,6 +27,7 @@ public class TestDriver {
         Main.main(args);
         //Main.main(new String[]{"-A", "./test/E2E/good/merge_simple.tig"});
     }
+
     @Test
     public void binSearch() throws FileNotFoundException {
 
@@ -28,12 +41,18 @@ public class TestDriver {
     public void prime() throws FileNotFoundException {
         String[] args = new String[] {"--hir-display", "--escapes-compute", "./test/E2E/good/prime.tig"};
         Main.main(args);
-        //Main.main(new String[]{"-A", "./test/E2E/good/merge_simple.tig"});
     }
 
 
     @Test
-    public void test() throws FileNotFoundException {
+    public void dec2Bin() throws FileNotFoundException {
+        String[] args = new String[] {"--hir-display", "--escapes-compute", "./test/E2E/good/dec2bin.tig"};
+        Main.main(args);
+    }
+
+
+    @Test
+    public void linkedListSize() throws FileNotFoundException {
         Main.main(new String[]{"-AB", "./test/E2E/good/linked_list_size.tig"});
     }
 

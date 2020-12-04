@@ -578,9 +578,11 @@ public class TranslatorVisitor extends DefaultVisitor {
                 break;
             default:
                 int relop = 0;
+                String strOp = null;
                 switch(exp.oper) {
                     case OpExp.EQ:
                         relop = CJUMP.EQ;
+                        strOp = "stringEqual";
                         break;
                     case OpExp.GE:
                         relop = CJUMP.GE;
@@ -597,7 +599,29 @@ public class TranslatorVisitor extends DefaultVisitor {
                     default:
                         Assert.unreachable();
                 }
-                this.visitedExp = new RelCx(leftTrans.unEx(), rightTrans.unEx(), relop);
+                if(exp.left.getType().coerceTo(Constants.STRING) && exp.right.getType().coerceTo(Constants.STRING)) {
+                    Assert.assertNotNull(strOp);
+                    Temp result = Temp.create();
+                    this.visitedExp = new Ex(
+                        new ESEQ(
+                            new MOVE(
+                                new TEMP(result),
+                                this.currentLevel.frame.externalCall(
+                                    strOp, 
+                                    new ExpList(
+                                        leftTrans.unEx(),
+                                        new ExpList(
+                                            rightTrans.unEx()
+                                        )
+                                    )
+                                )  
+                            ), 
+                            new TEMP(result)
+                        )
+                    );
+                } else {
+                    this.visitedExp = new RelCx(leftTrans.unEx(), rightTrans.unEx(), relop);
+                }
             break;
         }
     }

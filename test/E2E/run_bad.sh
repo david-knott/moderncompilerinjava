@@ -7,7 +7,7 @@ rm -rf ./bad/*.s
 $JAVA_HOME/javac -sourcepath ../../compiler/ -d ../../bin ../../compiler/**/*.java
 for f in ./bad/*.tig; do
 
-$JAVA_HOME/java -cp ../../bin Main.Main $f
+$JAVA_HOME/java -cp ../../bin Main.Main $f > $f.s
 gcc -g -w -no-pie -Wimplicit-function-declaration -Wl,--wrap,getchar $f.s ./runtime.c -o $f.out
 ACTUAL=$($f.out)
 EXPECTED=$(cat $f.result)
