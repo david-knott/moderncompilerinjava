@@ -60,7 +60,7 @@ void print(struct string *s)
 
 void printi(int n) 
 {
-  printf(":%d", n);
+  printf("%d", n);
 }
 
 void rttest() {
