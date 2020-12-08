@@ -1,5 +1,9 @@
 package Translate;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import Intel.IntelFrame;
 import Temp.Label;
 import Tree.PrettyPrinter;
@@ -34,6 +38,33 @@ public class Tasks implements TaskProvider {
                     taskContext.hirFragList.accept(new FragmentPrinter(taskContext.log));
                 }
             }, "hir-display", "Display the HIR", "hir-compute")
+        );
+        taskRegister.register(
+            new SimpleTask(new SimpleTaskProvider() {
+                @Override
+                public void only(TaskContext taskContext) {
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    ObjectOutputStream out = null;
+                    try {
+                        out = new ObjectOutputStream(bos);   
+                        out.writeObject(taskContext.hirFragList);
+                        out.flush();
+                        byte[] yourBytes = bos.toByteArray();
+                        //taskContext.out
+                    } catch(Exception ex) {
+
+                    } finally {
+                    try {
+                        bos.close();
+                    } catch (IOException ex) {
+                        // ignore close exception
+                    }
+                    }
+
+
+                    taskContext.hirFragList.accept(new FragmentPrinter(taskContext.log));
+                }
+            }, "serialize", "Serialize the HIR", "hir-compute")
         );
         /*
         taskRegister.register(

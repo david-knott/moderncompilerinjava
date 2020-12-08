@@ -1,6 +1,10 @@
 package Tree;
 
-public abstract class IR {
+import java.io.Serializable;
+
+public abstract class IR implements Serializable {
+
+    private static final long serialVersionUID = 538341853519182529L;
 
     abstract public void accept(TreeVisitor treeVisitor);
 
